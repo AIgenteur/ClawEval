@@ -1,0 +1,171 @@
+# Phase D Hard Test — #49 Algorithm Exploration
+# Tier: 4 | Score: 5/10 | No automated constraints to check
+# Tokens: 6068 | Speed: 100.8 t/s | Time: 60.2s
+
+## PROMPT:
+Design an algorithm for this problem. There's an O(n) solution but most people give O(n log n) or O(n²). Find the optimal one.
+
+Problem: Given an array of n integers, find the maximum difference arr[j] - arr[i] such that j > i (the larger element must come AFTER the smaller element). If no positive difference exists, return 0.
+
+Example: [2, 3, 10, 6, 4, 8, 1] → Answer: 8 (10-2)
+Example: [7, 9, 5, 6, 3, 2] → Answer: 2 (9-7, not 5-2 because 5 comes after 9)
+Example: [10, 8, 6, 4, 2] → Answer: 0 (strictly decreasing)
+
+Requirements:
+1. Give the naive O(n²) solution and explain why it's slow
+2. Give an O(n log n) solution using a common technique
+3. Give the OPTIMAL O(n) solution — track minimum so far
+4. Prove the O(n) solution is correct with a formal argument
+5. Handle edge cases: empty array, single element, all same values, all negative
+6. Provide Python implementation of the O(n) solution with tests
+
+## RESPONSE:
+# Algorithm Design for Maximum Difference in Array
+
+## 1. Naive O(n²) Solution
+### Approach
+The naive approach checks every possible pair (i, j) where j > i and computes the difference `arr[j] - arr[i]`. It keeps track of the maximum difference found.
+
+### Time Complexity
+- **O(n²)**: Due to the nested loops iterating over all pairs of elements.
+
+### Python Implementation
+```python
+def max_diff_naive(arr):
+    max_diff = 0
+    n = len(arr)
+    for i in range(n):
+        for j in range(i + 1, n):
+            diff = arr[j] - arr[i]
+            if diff > max_diff:
+                max_diff = diff
+    return max_diff
+```
+
+### Why It's Slow
+This approach is inefficient for large arrays because it checks all possible pairs, leading to a quadratic time complexity. For example, an array of size 1000 would require 1,000,000 operations.
+
+---
+
+## 2. O(n log n) Solution (Divide and Conquer)
+### Approach
+Use a divide-and-conquer strategy:
+1. **Divide** the array into two halves.
+2. **Conquer** by recursively finding the maximum difference in the left and right halves.
+3. **Combine** by computing the maximum difference that crosses the midpoint (i.e., the maximum value in the right half minus the minimum value in the left half).
+
+### Time Complexity
+- **O(n log n)**: Each level of recursion processes O(n) elements, and there are O(log n) levels.
+
+### Python Implementation
+```python
+def max_diff_divide_conquer(arr, left, right):
+    if left >= right:
+        return (arr[left], arr[left], 0)  # (min_val, max_val, max_diff)
+    
+    mid = (left + right) // 2
+    left_min, left_max, left_diff = max_diff_divide_conquer(arr, left, mid)
+    right_min, right_max, right_diff = max_diff_divide_conquer(arr, mid + 1, right)
+    
+    cross_diff = right_max - left_min
+    max_diff = max(left_diff, right_diff, cross_diff)
+    
+    return (min(left_min, right_min), max(left_max, right_max), max_diff)
+
+def max_diff_divide_conquer_wrapper(arr):
+    if len(arr) < 2:
+        return 0
+    _, _, result = max_diff_divide_conquer(arr, 0, len(arr) - 1)
+    return result
+```
+
+---
+
+## 3. Optimal O(n) Solution (Track Minimum So Far)
+### Approach
+Iterate through the array, keeping track of the minimum value seen so far. For each element, compute the difference between the current element and the minimum so far, updating the maximum difference if needed.
+
+### Time Complexity
+- **O(n)**: Single pass through the array.
+
+### Python Implementation
+```python
+def max_diff_optimal(arr):
+    if len(arr) < 2:
+        return 0
+    min_so_far = arr[0]
+    max_diff = 0
+    for i in range(1, len(arr)):
+        current_diff = arr[i] - min_so_far
+        if current_diff > max_diff:
+            max_diff = current_diff
+        if arr[i] < min_so_far:
+            min_so_far = arr[i]
+    return max_diff
+```
+
+---
+
+## 4. Proof of Correctness for O(n) Solution
+**Key Insight**: For each element `arr[i]`, the maximum possible difference where the smaller element comes before `arr[i]` is `arr[i] - min_so_far`, where `min_so_far` is the minimum value in `arr[0..i-1]`.
+
+**Formal Argument**:
+- Let the maximum difference be `arr[j] - arr[i]` where `j > i`.
+- At the time of processing `arr[j]`, `min_so_far` will be the minimum value in `arr[0..j-1]`, which includes `arr[i]`.
+- If there exists a value `arr[k]` (k < j) smaller than `arr[i]`, then `arr[j] - arr[k]` would be larger than `arr[j] - arr[i]`. However, `min_so_far` would capture `arr[k]`, ensuring the correct difference is computed.
+
+Thus, the algorithm correctly identifies the maximum difference.
+
+---
+
+## 5. Edge Case Handling
+- **Empty array**: Return `0`.
+- **Single element**: Return `0`.
+- **All elements the same**: Return `0`.
+- **Strictly decreasing array**: Return `0`.
+- **All negative numbers with positive differences**: Return the maximum positive difference.
+- **All negative numbers with no positive differences**: Return `0`.
+
+---
+
+## 6. Python Implementation and Tests
+### Code
+```python
+def max_diff_optimal(arr):
+    if len(arr) < 2:
+        return 0
+    min_so_far = arr[0]
+    max_diff = 0
+    for i in range(1, len(arr)):
+        current_diff = arr[i] - min_so_far
+        if current_diff > max_diff:
+            max_diff = current_diff
+        if arr[i] < min_so_far:
+            min_so_far = arr[i]
+    return max_diff
+```
+
+### Tests
+```python
+# Test cases
+assert max_diff_optimal([2, 3, 10, 6, 4, 8, 1]) == 8
+assert max_diff_optimal([7, 9, 5, 6, 3, 2]) == 2
+assert max_diff_optimal([10, 8, 6, 4, 2]) == 0
+assert max_diff_optimal([]) == 0
+assert max_diff_optimal([5]) == 0
+assert max_diff_optimal([5, 5, 5]) == 0
+assert max_diff_optimal([3, 1, 2]) == 1
+assert max_diff_optimal([1, 2, 3, 4, 5]) == 4
+assert max_diff_optimal([5, 4, 3, 2, 1]) == 0
+assert max_diff_optimal([2, 1, 2, 0, 1]) == 1
+assert max_diff_optimal([3, 2, 6, 5, 0, 3]) == 4
+assert max_diff_optimal([-5, -3, -1]) == 2
+assert max_diff_optimal([-1, -2]) == 0
+```
+
+---
+
+## Summary
+- **O(n²) Solution**: Simple but inefficient for large arrays.
+- **O(n log n) Solution**: Divide and conquer, suitable for moderate-sized arrays.
+- **O(n) Solution**: Efficient and optimal, tracking the minimum value as we iterate.

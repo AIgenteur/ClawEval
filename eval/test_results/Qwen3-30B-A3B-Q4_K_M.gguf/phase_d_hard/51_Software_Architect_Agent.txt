@@ -1,0 +1,116 @@
+# Phase D Hard Test — #51 Software Architect Agent
+# Tier: 5 | Score: 10/10 | 4/4 constraints met
+# Tokens: 3853 | Speed: 94.8 t/s | Time: 40.6s
+
+## PROMPT:
+Design a system architecture. WARNING: The requirements contain 3 CONTRADICTORY pairs. You must identify them and propose tradeoffs instead of pretending all requirements can be met simultaneously.
+
+Requirements:
+1. Process 50,000 events per second in real-time (< 100ms latency)
+2. Also support batch processing of historical data (millions of records)
+3. Zero downtime during deployments AND database schema migrations
+4. Store data in a strongly consistent SQL database with ACID transactions
+5. Horizontally scale to handle 10x traffic spikes within 30 seconds
+6. Multi-region deployment with data residency compliance (EU data stays in EU)
+7. Total infrastructure cost under $5,000/month at current scale
+8. 99.999% availability (five nines = ~5 minutes downtime/year)
+
+For each contradictory pair:
+1. Explain WHY they conflict
+2. Propose a compromise or phased approach
+3. What would you prioritize and why?
+
+Then provide the architecture diagram (text format) with the tradeoffs built in.
+
+## RESPONSE:
+### Contradictory Pairs and Tradeoffs
+
+---
+
+#### **Pair 1: Requirements 4 (Strongly Consistent SQL DB) vs. 5 (Horizontal Scaling for 10x Traffic Spikes)**  
+**Why Conflict**:  
+Traditional SQL databases (e.g., PostgreSQL, MySQL) are not inherently horizontally scalable. To handle 10x traffic spikes, you’d need sharding or a distributed SQL DB, which introduces complexity and may compromise strong consistency. A distributed SQL DB (e.g., CockroachDB, Google Cloud Spanner) can scale horizontally *and* maintain strong consistency, but this increases cost and operational complexity.  
+
+**Compromise**:  
+Use a **distributed SQL database** (e.g., CockroachDB) that supports horizontal scaling and strong consistency. This satisfies both requirements but may require higher infrastructure costs. If cost is a constraint, prioritize **horizontal scaling** by using a hybrid architecture:  
+- **Real-time processing** (requirement 1) uses a scalable stream processor (e.g., Kafka + Flink).  
+- **Batch processing** (requirement 2) uses a separate, less scalable SQL DB for historical data.  
+
+**Prioritize**: **Requirement 5** (horizontal scaling) over 4 if cost is critical, but this risks violating the "strongly consistent SQL DB" requirement.  
+
+---
+
+#### **Pair 2: Requirements 7 (Cost < $5k/month) vs. 8 (99.999% Availability)**  
+**Why Conflict**:  
+High availability (five nines) requires redundancy, multi-region deployment, and failover mechanisms, which increase infrastructure costs. Achieving 99.999% uptime with multi-region redundancy (e.g., AWS, GCP) typically exceeds $5k/month for a system handling 50k events/sec.  
+
+**Compromise**:  
+- **Optimize costs** by using auto-scaling, spot instances, and cost-effective cloud providers (e.g., AWS EC2 vs. GCP).  
+- **Prioritize 8** (availability) by implementing **single-region redundancy** (e.g., active-passive clusters) and **zero-downtime deployments** (requirement 3).  
+- Accept that **multi-region deployment (requirement 6)** may be limited to EU-only for cost reasons.  
+
+**Prioritize**: **Requirement 8** (availability) over 7 if the system is mission-critical, but this may require a budget increase.  
+
+---
+
+#### **Pair 3: Requirements 4 (Strongly Consistent SQL DB) vs. 6 (Multi-Region Data Residency)**  
+**Why Conflict**:  
+A strongly consistent SQL DB in a multi-region setup (e.g., EU and US) requires cross-region replication, which can introduce latency and complexity. Ensuring EU data stays in EU while maintaining strong consistency across regions is challenging with traditional databases.  
+
+**Compromise**:  
+Use a **distributed SQL DB** (e.g., Google Cloud Spanner) that supports **regional instances** and **strong consistency** across regions. This satisfies both 4 and 6 but may increase costs. If cost is a constraint, prioritize **data residency (requirement 6)** by using a local SQL DB in the EU and **read replicas** in other regions for non-critical data.  
+
+**Prioritize**: **Requirement 6** (data residency) over 4 if compliance is non-negotiable, but this may require a tradeoff in consistency.  
+
+---
+
+### Architecture Diagram (Text Format)
+
+```
++-----------------------------+
+|      Multi-Region Load Balancer (EU/US) |
++-----------------------------+
+           | (Data residency: EU data stays in EU)
+           v
++-----------------------------+
+|   Real-Time Stream Processor  |
+| (Kafka + Flink)              |
+| 50k events/sec, <100ms latency |
++-----------------------------+
+           | (Event processing)
+           v
++-----------------------------+
+|   Distributed SQL DB (e.g., Spanner) |
+| Strong consistency, ACID, EU residency |
++-----------------------------+
+           | (Read/write)
+           v
++-----------------------------+
+|   Batch Processing Engine     |
+| (Spark + HDFS)               |
+| Millions of records daily    |
++-----------------------------+
+           | (Data archiving)
+           v
++-----------------------------+
+|   Monitoring & Auto-Scaling   |
+| (Kubernetes + Prometheus)    |
+| 10x traffic spikes in 30s    |
++-----------------------------+
+           | (Zero-downtime deployments)
+           v
++-----------------------------+
+|   CI/CD Pipeline (Blue-Green) |
+| Zero downtime for schema changes |
++-----------------------------+
+```
+
+---
+
+### Key Tradeoffs Implemented  
+1. **Distributed SQL DB** (Spanner/CockroachDB) for **strong consistency (4)** and **horizontal scaling (5)**.  
+2. **Single-region redundancy** (EU) for **cost control (7)** and **availability (8)**.  
+3. **Regional data residency** (EU) with **read replicas** for **compliance (6)**.  
+4. **Hybrid architecture** (stream + batch) to avoid overloading the SQL DB.  
+
+This design balances the conflicting requirements by prioritizing **availability and compliance** while using modern distributed systems to mitigate scalability and consistency tradeoffs.

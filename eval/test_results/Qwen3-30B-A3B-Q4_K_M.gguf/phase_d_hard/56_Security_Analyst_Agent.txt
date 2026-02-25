@@ -1,0 +1,185 @@
+# Phase D Hard Test — #56 Security Analyst Agent
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 10095 | Speed: 104.8 t/s | Time: 96.3s
+
+## PROMPT:
+Security audit this code. There are 7 vulnerabilities. Most are obvious, but ONE is subtle (prototype pollution). Find all 7.
+
+```javascript
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+// Utility: deep merge objects
+function merge(target, source) {
+  for (let key in source) {
+    if (typeof source[key] === 'object' && source[key] !== null) {
+      target[key] = target[key] || {};
+      merge(target[key], source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+const users = {};
+
+app.post('/register', (req, res) => {
+  const defaults = { role: 'user', active: true };
+  const userData = merge(defaults, req.body);
+  users[userData.email] = userData;
+  res.json({ message: `Welcome ${userData.name}!`, role: userData.role });
+});
+
+app.get('/user/:email', (req, res) => {
+  const user = users[req.params.email];
+  if (!user) return res.status(404).send('Not found');
+  res.json(user);
+});
+
+app.post('/admin/config', (req, res) => {
+  if (users[req.body.email]?.role !== 'admin') {
+    return res.status(403).send('Forbidden');
+  }
+  const config = require(req.body.configPath);
+  res.json(config);
+});
+
+app.listen(3000);
+```
+
+For each vulnerability:
+1. OWASP category
+2. Severity (Critical/High/Medium/Low)  
+3. Exploitation example (show the malicious request)
+4. Fix
+
+The SUBTLE one: How can an attacker make themselves admin using only the /register endpoint? (Hint: __proto__)
+
+## RESPONSE:
+### **Vulnerability 1: Insecure Direct Object Reference (IDOR)**  
+- **OWASP Category**: A01:2021 - Broken Access Control  
+- **Severity**: High  
+- **Exploitation Example**:  
+  ```http
+  GET /user/attacker@example.com HTTP/1.1
+  Host: example.com
+  ```  
+  An attacker could access another user's data by guessing or manipulating the `:email` parameter.  
+- **Fix**: Implement access control checks to ensure users can only access their own data.  
+
+---
+
+### **Vulnerability 2: Arbitrary Code Execution via `require()`**  
+- **OWASP Category**: A05:2021 - Security Misconfiguration  
+- **Severity**: Critical  
+- **Exploitation Example**:  
+  ```http
+  POST /admin/config HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "admin@example.com", "configPath": "../malicious"}
+  ```  
+  An attacker could execute arbitrary code by specifying a malicious module path.  
+- **Fix**: Validate and sanitize `configPath` to prevent path traversal or arbitrary module loading.  
+
+---
+
+### **Vulnerability 3: Prototype Pollution in `merge()` Function**  
+- **OWASP Category**: A03:2021 - Injection  
+- **Severity**: Medium  
+- **Exploitation Example**:  
+  ```http
+  POST /register HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "attacker@example.com", "__proto__": {"role": "admin"}}
+  ```  
+  The `merge()` function allows adding properties to the `defaults` object, which could be exploited to pollute the `Object` prototype in certain environments.  
+- **Fix**: Use a safe deep merge library (e.g., `lodash.merge`) or explicitly filter out prototype-polluting keys like `__proto__`.  
+
+---
+
+### **Vulnerability 4: Lack of Input Validation in `/register`**  
+- **OWASP Category**: A02:2021 - Cryptographic Failures  
+- **Severity**: Medium  
+- **Exploitation Example**:  
+  ```http
+  POST /register HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "attacker@example.com", "name": "admin", "role": "admin"}
+  ```  
+  The code allows users to set their own `role` field, bypassing the default `user` role.  
+- **Fix**: Validate and sanitize input to prevent overriding critical fields like `role`.  
+
+---
+
+### **Vulnerability 5: Improper Access Control in `/admin/config`**  
+- **OWASP Category**: A01:2021 - Broken Access Control  
+- **Severity**: High  
+- **Exploitation Example**:  
+  ```http
+  POST /admin/config HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "attacker@example.com", "configPath": "config.js"}
+  ```  
+  If an attacker can impersonate an admin user (e.g., via prototype pollution), they can access admin-only functionality.  
+- **Fix**: Enforce strict access control and validate user roles before granting access.  
+
+---
+
+### **Vulnerability 6: Overwriting User Data**  
+- **OWASP Category**: A01:2021 - Broken Access Control  
+- **Severity**: Medium  
+- **Exploitation Example**:  
+  ```http
+  POST /register HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "existing@example.com", "name": "Malicious User"}
+  ```  
+  An attacker could overwrite an existing user's data by using the same email.  
+- **Fix**: Add checks to prevent overwriting existing user data or notify users of conflicts.  
+
+---
+
+### **Vulnerability 7: Prototype Pollution via `__proto__` (Subtle)**  
+- **OWASP Category**: A03:2021 - Injection  
+- **Severity**: Medium  
+- **Exploitation Example**:  
+  ```http
+  POST /register HTTP/1.1
+  Host: example.com
+  Content-Type: application/json
+
+  {"email": "attacker@example.com", "__proto__": {"role": "admin"}}
+  ```  
+  The `merge()` function allows adding `__proto__` keys to the `defaults` object. In some environments, this could pollute the `Object` prototype, allowing the attacker to inherit a `role: "admin"` property.  
+- **Fix**: Use a safe deep merge library or explicitly filter out `__proto__` keys.  
+
+---
+
+### **Subtle Vulnerability: How to Make Yourself Admin via `/register`**  
+**Exploitation**:  
+An attacker can send a request to `/register` with a `__proto__` key in the body:  
+```http
+POST /register HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"email": "attacker@example.com", "__proto__": {"role": "admin"}}
+```  
+**Mechanism**:  
+The `merge()` function merges the `__proto__` key into the `defaults` object. In some JavaScript environments (e.g., older Node.js versions), this could modify the `Object` prototype, allowing the attacker's user object to inherit a `role: "admin"` property.  
+
+**Fix**:  
+- Use a safe deep merge library (e.g., `lodash.merge`) that avoids prototype pollution.  
+- Explicitly filter out `__proto__` keys in user input.

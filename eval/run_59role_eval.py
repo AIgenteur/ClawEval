@@ -158,7 +158,7 @@ def run_automated_tests(client, model, role_ids=None):
             r = timed_completion(
                 client, model,
                 [{"role": "user", "content": test["prompt"]}],
-                max_tokens=800, temperature=0,
+                max_tokens=4000, temperature=0,
             )
             
             ok, reason = check_result(test, r["content"])
@@ -234,7 +234,7 @@ def run_quality_tests(client, model, role_ids=None):
             r = timed_completion(
                 client, model,
                 [{"role": "user", "content": test["quality_prompt"]}],
-                max_tokens=1200, temperature=0.7,
+                max_tokens=4000, temperature=0.7,
             )
             
             preview = r["content"][:120].replace("\n", " ")

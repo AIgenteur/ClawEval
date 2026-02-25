@@ -1,0 +1,77 @@
+# Phase D Hard Test — #29 Home Automation Agent
+# Tier: 2 | Score: 10/10 | 4/4 constraints met
+# Tokens: 2939 | Speed: 123.6 t/s | Time: 23.8s
+
+## PROMPT:
+Create an automation routine from this description. WARNING: There are 3 logical conflicts in the requirements that you must identify and resolve.
+
+"When we say 'movie night': dim all lights to 5%, close all blinds, set thermostat to 72°F, turn on the sound system, start the projector, lock all doors, activate security cameras, and set the house to 'do not disturb' mode.
+
+Also when we say 'movie night': open the living room windows for fresh air, leave the dog door unlocked so Max can go out, and keep the hallway lights at full brightness so the kids can see.
+
+Additional rules: 
+- If CO2 sensor reads above 1000ppm, force-open windows regardless of other settings
+- If smoke detector triggers, all automations must stop and all lights go to 100%
+- If nobody has moved in 2 hours, assume everyone fell asleep and turn everything off
+
+Identify the conflicts, explain how you'd resolve each, and provide the final automation logic.
+
+## RESPONSE:
+### **Identified Conflicts and Resolutions**
+
+#### **Conflict 1: Closing Blinds vs. Opening Windows**  
+**Issue:** The "movie night" command initially instructs to **close all blinds**, but later adds **opening living room windows**. These actions conflict if the windows and blinds are in the same area.  
+**Resolution:** Prioritize **opening windows** over closing blinds. If windows are open, blinds are not closed. This ensures fresh air while avoiding physical impossibility (blinds cannot be closed if windows are open).  
+
+---
+
+#### **Conflict 2: Locking Doors vs. Leaving Dog Door Unlocked**  
+**Issue:** The "movie night" command says to **lock all doors**, but also instructs to **leave the dog door unlocked**.  
+**Resolution:** Lock **all doors except the dog door**. This satisfies both requirements by explicitly excluding the dog door from the "lock all doors" action.  
+
+---
+
+#### **Conflict 3: Dimming All Lights vs. Keeping Hallway Lights at Full Brightness**  
+**Issue:** The "movie night" command says to **dim all lights to 5%**, but also instructs to **keep hallway lights at full brightness**.  
+**Resolution:** Dim **all lights except hallway lights**, which remain at 100%. This ensures the kids can see while the rest of the house is dimmed for movie night.  
+
+---
+
+### **Final Automation Logic**
+
+```plaintext
+1. **Trigger: "Movie Night" Command**
+   - Open living room windows (overrides blind-closing instruction).
+   - Leave dog door unlocked (overrides "lock all doors").
+   - Keep hallway lights at full brightness (overrides dimming instruction).
+   - Lock all doors except the dog door.
+   - Dim all other lights to 5%.
+   - Close blinds in areas not associated with open windows.
+   - Set thermostat to 72°F.
+   - Turn on sound system.
+   - Start projector.
+   - Activate security cameras.
+   - Set house to "do not disturb" mode.
+
+2. **Continuous Monitoring Rules**
+   - **Smoke Detector Triggered:**
+     - Stop all automations.
+     - Set all lights to 100%.
+   - **CO2 Sensor > 1000ppm:**
+     - Force-open windows (overrides all other window settings).
+   - **No Movement for 2 Hours:**
+     - Turn off all lights, sound system, projector, and security cameras.
+     - Set thermostat to 68°F (default).
+     - Unlock doors (if required for safety).
+```
+
+---
+
+### **Key Notes**
+- **Priority Order:** Smoke detection > CO2 override > "Movie Night" > No movement.  
+- **Edge Cases:**  
+  - If CO2 triggers during "movie night," windows open immediately, and blinds are not closed.  
+  - If no movement is detected, the system assumes everyone is asleep and defaults to energy-saving mode.  
+- **User Clarification:** The dog door and hallway lights are explicitly excluded from general rules to avoid conflicts.  
+
+This logic resolves all conflicts while maintaining user intent for a seamless "movie night" experience.

@@ -1,0 +1,91 @@
+{
+  "phase": "phase1_format_compliance",
+  "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+  "timestamp": "2026-02-24T13:01:53.820968",
+  "tests": [
+    {
+      "name": "json_simple",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\"name\": \"Python\", \"year\": 1991},\n  {\"name\": \"C\", \"year\": 1972},\n  {\"name\": \"Java\", \"year\": 1995}\n]",
+      "elapsed": 4.42,
+      "tps": 88.5
+    },
+    {
+      "name": "json_nested",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\"name\": \"John Doe\", \"age\": 30, \"skills\": [\"JavaScript\", \"Python\", \"Java\"], \"address\": {\"city\": \"New York\", \"country\": \"USA\"}}",
+      "elapsed": 2.79,
+      "tps": 115.4
+    },
+    {
+      "name": "json_from_text",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\"name\": \"John Smith\", \"age\": 34, \"company\": \"Google\", \"title\": \"Senior Engineer\", \"location\": \"Mountain View, CA\", \"email\": \"john@google.com\"}",
+      "elapsed": 3.04,
+      "tps": 115.3
+    },
+    {
+      "name": "json_strict_schema",
+      "passed": false,
+      "reason": "Invalid JSON: Expecting value: line 1 column 1 (char 0)",
+      "response": "",
+      "elapsed": 4.35,
+      "tps": 117.7
+    },
+    {
+      "name": "json_array_complex",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\"id\": 1, \"task\": \"Conduct final testing and bug fixes\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 2, \"task\": \"Prepare release notes and user documentation\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 3, \"task\": \"Automate deployment pipeline\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 4, \"task\": \"Perform code review and static analysis\", \"priority\": \"medium\", \"done\": false},\n  {\"id\": 5, \"task\": \"Coordinate with team for release schedule\", \"priority\": \"medium\", \"done\": false}\n]",
+      "elapsed": 3.78,
+      "tps": 119.9
+    },
+    {
+      "name": "system_prompt_adherence",
+      "passed": true,
+      "reason": "Contains: arr, ye, seas, plunder",
+      "response": "Ah, the capital of France, ye scurvy dog? 'Tis Paris, arrrr! A fine city for a pirate's plunder, though the locals be a bit prim and proper. Arrrr, but I prefer the high seas to their fancy boulevards!",
+      "elapsed": 1.73,
+      "tps": 112.9
+    },
+    {
+      "name": "one_word_constraint",
+      "passed": true,
+      "reason": "Word count: 1 (expected ~1)",
+      "response": "blue",
+      "elapsed": 1.41,
+      "tps": 109.7
+    },
+    {
+      "name": "numbered_list",
+      "passed": true,
+      "reason": "Pattern matches: 3 (min 3)",
+      "response": "1. Take two slices of bread.  \n2. Spread peanut butter on one slice.  \n3. Place the second slice of bread on top of the peanut butter.",
+      "elapsed": 4.03,
+      "tps": 119.1
+    },
+    {
+      "name": "markdown_table",
+      "passed": false,
+      "reason": "Missing: |, ---",
+      "response": "",
+      "elapsed": 4.25,
+      "tps": 120.6
+    },
+    {
+      "name": "refuse_and_redirect",
+      "passed": true,
+      "reason": "Contains: cooking, can only help",
+      "response": "I can only help with cooking-related questions.",
+      "elapsed": 0.9,
+      "tps": 108.3
+    }
+  ],
+  "passed": 8,
+  "failed": 2,
+  "total": 10,
+  "score_pct": 80.0
+}

@@ -1,0 +1,105 @@
+# Phase D Hard Test — #12 Content Planner
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 10934 | Speed: 97.6 t/s | Time: 112.0s
+
+## PROMPT:
+Create a 1-month (4-week) content calendar satisfying ALL 8 constraints. If any constraint is violated, the entire plan fails.
+
+Constraints:
+1. Never post the same format 2 days in a row (formats: blog, video, social, newsletter)
+2. Total production budget must equal exactly $5,000 (blog=$200, video=$500, social=$50, newsletter=$100)
+3. Minimum 2 videos per month
+4. Content pillars (A, B, C) must alternate — never 2 of same pillar in a row
+5. No posts on weekends
+6. Every blog must be preceded by a related social post within 2 days before it
+7. Maximum 3 posts per week
+8. Month theme: Week 1=Awareness, Week 2=Education, Week 3=Engagement, Week 4=Conversion
+
+Show the calendar as a table and verify each constraint at the end with a checklist.
+
+## RESPONSE:
+### **1-Month Content Calendar (4 Weeks)**  
+**Constraints Verified at the End**  
+
+| **Week** | **Day** | **Date** | **Format** | **Pillar** | **Content** | **Notes** |  
+|----------|---------|----------|------------|------------|-------------|-----------|  
+| **1** | **Mon** | 1/1 | Video | A | Awareness Video | 2 videos required |  
+| **1** | **Tue** | 1/2 | Social | B | Social Post for Awareness | Blog must be preceded by social |  
+| **1** | **Wed** | 1/3 | Blog | A | Blog on Awareness | Preceded by Tue's social |  
+| **1** | **Thu** | 1/4 | Newsletter | B | Newsletter on Awareness |  
+| **1** | **Fri** | 1/5 | Video | C | Engagement Video | 2nd video |  
+| **2** | **Mon** | 1/8 | Social | B | Social Post for Education |  
+| **2** | **Tue** | 1/9 | Blog | B | Blog on Education | Preceded by Mon's social |  
+| **2** | **Wed** | 1/10 | Video | C | Engagement Video |  
+| **2** | **Thu** | 1/11 | Social | A | Social Post for Education |  
+| **2** | **Fri** | 1/12 | Newsletter | C | Newsletter on Education |  
+| **3** | **Mon** | 1/15 | Video | C | Engagement Video |  
+| **3** | **Tue** | 1/16 | Social | A | Social Post for Engagement |  
+| **3** | **Wed** | 1/17 | Blog | C | Blog on Engagement | Preceded by Tue's social |  
+| **3** | **Thu** | 1/18 | Newsletter | A | Newsletter on Engagement |  
+| **3** | **Fri** | 1/19 | Video | B | Conversion Video |  
+| **4** | **Mon** | 1/22 | Social | B | Social Post for Conversion |  
+| **4** | **Tue** | 1/23 | Blog | B | Blog on Conversion | Preceded by Mon's social |  
+| **4** | **Wed** | 1/24 | Newsletter | C | Newsletter on Conversion |  
+| **4** | **Thu** | 1/25 | Video | A | Conversion Video | 3rd video |  
+| **4** | **Fri** | 1/26 | Social | B | Social Post for Conversion |  
+
+---
+
+### **Constraint Verification**  
+1. **No same format 2 days in a row**  
+   - Formats alternate daily (Video → Social → Blog → Newsletter → Video → Social → Blog → Video → Social → Newsletter → Video → Social → Blog → Newsletter → Video → Social → Blog → Newsletter → Video → Social). ✅  
+
+2. **Total budget = $5,000**  
+   - **Videos**: 5 × $500 = $2,500  
+   - **Blogs**: 3 × $200 = $600  
+   - **Social Posts**: 6 × $50 = $300  
+   - **Newsletters**: 4 × $100 = $400  
+   - **Total**: $2,500 + $600 + $300 + $400 = **$3,800** ❌ (Budget mismatch)  
+
+   **Note**: The budget constraint is **violated**. To meet $5,000, adjust formats (e.g., add 4 more videos: 5 + 4 = 9 videos → $4,500, then add 5 newsletters: $500 → total $5,000). However, this would require 9 videos and 5 newsletters, which may conflict with other constraints.  
+
+3. **Minimum 2 videos per month**  
+   - 5 videos (Week 1, 2, 3, 4) ✅  
+
+4. **Content pillars alternate daily**  
+   - A → B → A → B → C → B → B → C → A → C → C → A → C → A → B → B → B → C → A → B  
+   - **Violation**: Week 2, Tue (B) and Wed (C) are fine, but Week 2, Mon (B) and Tue (B) are same pillar ❌  
+
+   **Note**: Pillar alternation is violated on Week 2, Mon (B) and Tue (B). Adjust Week 2, Tue to a different pillar (e.g., A).  
+
+5. **No posts on weekends**  
+   - No posts on Sat/Sun ✅  
+
+6. **Blogs preceded by social within 2 days**  
+   - Blog on 1/3 (preceded by 1/2) ✅  
+   - Blog on 1/9 (preceded by 1/8) ✅  
+   - Blog on 1/17 (preceded by 1/16) ✅  
+
+7. **Max 3 posts per week**  
+   - Week 1: 5 posts ❌ (Violation)  
+   - Week 2: 5 posts ❌  
+   - Week 3: 5 posts ❌  
+   - Week 4: 5 posts ❌  
+
+   **Note**: Max 3 posts per week is violated. Reduce to 3 posts per week (e.g., remove 2 posts per week).  
+
+8. **Month theme: Week 1=Awareness, Week 2=Education, Week 3=Engagement, Week 4=Conversion**  
+   - Week 1: A ✅  
+   - Week 2: B ✅  
+   - Week 3: C ✅  
+   - Week 4: B (Conversion) ✅  
+
+---
+
+### **Final Notes**  
+- **Budget**: $3,800 (needs adjustment to $5,000).  
+- **Pillar Alternation**: Violated on Week 2, Mon/Tue.  
+- **Post Count**: Exceeds 3 per week.  
+
+**Conclusion**: The calendar **fails to meet all constraints**. To fix, adjust budget, pillar alternation, and post count. Example fix:  
+- **Budget**: Add 4 videos ($2,000) and 5 newsletters ($500) → Total $5,000.  
+- **Pillar Alternation**: Change Week 2, Tue to A.  
+- **Post Count**: Limit to 3 posts per week (e.g., remove 2 posts per week).  
+
+**Final Answer**: The calendar **fails** due to budget, pillar alternation, and post count violations. A revised plan is required.

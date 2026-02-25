@@ -1,0 +1,44 @@
+# Phase D Hard Test — #6 FAQ Generation Agent
+# Tier: 1 | Score: 10/10 | 3/3 constraints met
+# Tokens: 1140 | Speed: 110.3 t/s | Time: 10.3s
+
+## PROMPT:
+Generate FAQs from this product description. WARNING: The text contains 2 deliberate contradictions. You MUST identify and flag them rather than silently picking one version.
+
+Product Description:
+"CloudStore offers unlimited storage starting at $9.99/month. All plans include a 14-day free trial. Enterprise customers get dedicated support with 4-hour response SLA. Files are encrypted with AES-256 at rest and in transit. Our 30-day free trial lets you explore all features. Refunds are available within 60 days of purchase, no questions asked. Maximum file size is 10GB. We guarantee 99.9% uptime. Note: due to our no-refund policy, please use the free trial to evaluate before purchasing. Supports Windows, Mac, Linux, iOS, and Android."
+
+Generate 6 FAQs AND explicitly call out the contradictions you found in the source text.
+
+## RESPONSE:
+### **FAQs**  
+1. **What is the free trial duration?**  
+   The product description mentions both a **14-day free trial** (for all plans) and a **30-day free trial** (for exploring all features). This is a contradiction.  
+
+2. **What is the refund policy?**  
+   The note states a **no-refund policy**, but the description claims **refunds are available within 60 days of purchase, no questions asked**. This is a contradiction.  
+
+3. **What is the maximum file size supported?**  
+   The maximum file size is **10GB**.  
+
+4. **What encryption standards are used?**  
+   Files are encrypted with **AES-256 at rest and in transit**.  
+
+5. **What is the uptime guarantee?**  
+   The service guarantees **99.9% uptime**.  
+
+6. **Which platforms are supported?**  
+   CloudStore supports **Windows, Mac, Linux, iOS, and Android**.  
+
+---
+
+### **Contradictions Identified**  
+1. **Free Trial Duration**:  
+   - The description states: *"All plans include a 14-day free trial."*  
+   - Later, it claims: *"Our 30-day free trial lets you explore all features."*  
+   - **Conflict**: 14-day vs. 30-day trial periods.  
+
+2. **Refund Policy**:  
+   - The note says: *"due to our no-refund policy..."*  
+   - The description states: *"Refunds are available within 60 days of purchase, no questions asked."*  
+   - **Conflict**: No-refund policy vs. 60-day refund guarantee.

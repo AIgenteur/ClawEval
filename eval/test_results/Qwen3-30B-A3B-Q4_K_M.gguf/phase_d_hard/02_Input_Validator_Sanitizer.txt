@@ -1,0 +1,89 @@
+# Phase D Hard Test — #2 Input Validator / Sanitizer
+# Tier: 1 | Score: 10/10 | 8/8 constraints met
+# Tokens: 1759 | Speed: 122.7 t/s | Time: 14.3s
+
+## PROMPT:
+Validate this API request body. Find ALL issues (there are at least 10). For each issue, specify: field, severity (critical/error/warning), and explanation. Cross-field validations are required.
+
+```json
+{
+  "order": {
+    "customer": {
+      "name": "<img src=x onerror=alert(1)>John",
+      "email": "john@",
+      "phone": "555-CALL-ME",
+      "zip": "1234"
+    },
+    "items": [
+      {"sku": "ABC-123", "quantity": -3, "unit_price": 29.99},
+      {"sku": "", "quantity": 0, "unit_price": 0.001},
+      {"sku": "DEF-456", "quantity": 2, "unit_price": 15.00}
+    ],
+    "discount_percent": 150,
+    "start_date": "2025-03-15",
+    "end_date": "2025-03-10",
+    "notes": "Regular order'; DROP TABLE orders;--",
+    "shipping": {"method": "TELEPORT", "address": ""}
+  }
+}
+```
+
+List every single issue. Do NOT miss cross-field validations (e.g., date relationships).
+
+## RESPONSE:
+### **Issue List**
+
+1. **Field:** `customer.name`  
+   **Severity:** Critical  
+   **Explanation:** Contains embedded HTML/JavaScript (`<img src=x onerror=alert(1)>`), which is a **cross-site scripting (XSS)** vulnerability. This allows malicious code execution if rendered.
+
+2. **Field:** `customer.email`  
+   **Severity:** Critical  
+   **Explanation:** Invalid email format. Missing domain part after `@` (e.g., `john@` is incomplete).
+
+3. **Field:** `customer.phone`  
+   **Severity:** Critical  
+   **Explanation:** Contains non-numeric characters (`-` and letters). Phone numbers should typically be numeric only (e.g., `5555555555`).
+
+4. **Field:** `customer.zip`  
+   **Severity:** Critical  
+   **Explanation:** Invalid ZIP code length. US ZIP codes require 5 digits (e.g., `12345`), but this is only 4 digits.
+
+5. **Field:** `items[0].quantity`  
+   **Severity:** Critical  
+   **Explanation:** Negative quantity (`-3`). Quantities must be non-negative integers.
+
+6. **Field:** `items[1].sku`  
+   **Severity:** Critical  
+   **Explanation:** Empty SKU. SKUs are typically required and must be non-empty strings.
+
+7. **Field:** `items[1].quantity`  
+   **Severity:** Critical  
+   **Explanation:** Zero quantity (`0`). Quantities must be positive integers (e.g., `1` or higher).
+
+8. **Field:** `discount_percent`  
+   **Severity:** Critical  
+   **Explanation:** Discount percentage exceeds 100% (`150`). This is invalid as discounts cannot exceed 100%.
+
+9. **Field:** `start_date` and `end_date`  
+   **Severity:** Critical  
+   **Explanation:** Cross-field validation failure. `start_date` (`2025-03-15`) is **after** `end_date` (`2025-03-10`), which is logically invalid.
+
+10. **Field:** `notes`  
+    **Severity:** Critical  
+    **Explanation:** Contains SQL injection payload (`'; DROP TABLE orders;--`). This is a **security vulnerability** that could compromise the database.
+
+11. **Field:** `shipping.method`  
+    **Severity:** Critical  
+    **Explanation:** Invalid shipping method (`TELEPORT`). The value is not a valid option (e.g., `standard`, `express`, `overnight`).
+
+12. **Field:** `shipping.address`  
+    **Severity:** Critical  
+    **Explanation:** Empty address. Addresses are typically required and must be non-empty strings.
+
+---
+
+### **Summary of Issues**
+- **Critical Issues (12 total):** All fields listed above are critical due to security vulnerabilities, invalid formats, or logical errors.  
+- **Cross-field Validations:** The `start_date` and `end_date` relationship is explicitly invalid.  
+- **Security Risks:** XSS, SQL injection, and invalid input handling are present.

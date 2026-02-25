@@ -1,0 +1,123 @@
+# Phase D Hard Test — #32 Personal Finance Tracking
+# Tier: 2 | Score: 10/10 | 3/3 constraints met
+# Tokens: 4656 | Speed: 115.8 t/s | Time: 40.2s
+
+## PROMPT:
+Analyze 3 months of transactions. WARNING: There are 2 potentially fraudulent transactions hidden in the data. Find them.
+
+January:
+- Salary: +$5,000 (Jan 1). Rent: -$1,800 (Jan 1). Grocery Store: -$312 (Jan 5). Electric: -$95 (Jan 10). Netflix: -$15 (Jan 15). Gas: -$45 (Jan 18). Restaurant: -$85 (Jan 22). Gym: -$50 (Jan 28).
+
+February:
+- Salary: +$5,000 (Feb 1). Rent: -$1,800 (Feb 1). Grocery Store: -$287 (Feb 4). Electric: -$102 (Feb 10). Netflix: -$15 (Feb 15). Netflix: -$15 (Feb 15). Gas: -$52 (Feb 19). Restaurant: -$120 (Feb 23). Coffee: -$45 (Feb 25).
+
+March:
+- Salary: +$5,000 (Mar 1). Rent: -$1,800 (Mar 1). Grocery Store: -$345 (Mar 6). ATM Withdrawal Miami: -$400 (Mar 8). Local Gas Station: -$48 (Mar 8). Electric: -$98 (Mar 12). Netflix: -$15 (Mar 15). Restaurant: -$95 (Mar 20). Shopping: -$250 (Mar 25).
+
+Calculate exact monthly totals, savings rate, category trends, AND identify the suspicious transactions with explanation.
+
+## RESPONSE:
+### **Analysis of 3 Months of Transactions**
+
+---
+
+#### **Monthly Totals & Savings Rate**
+
+**January**  
+- **Income**: $5,000 (Salary)  
+- **Expenses**:  
+  - Rent: $1,800  
+  - Grocery Store: $312  
+  - Electric: $95  
+  - Netflix: $15  
+  - Gas: $45  
+  - Restaurant: $85  
+  - Gym: $50  
+  **Total Expenses**: $2,402  
+  **Net Savings**: $5,000 - $2,402 = **$2,598**  
+  **Savings Rate**: (2,598 / 5,000) × 100 = **51.96%**
+
+**February**  
+- **Income**: $5,000 (Salary)  
+- **Expenses**:  
+  - Rent: $1,800  
+  - Grocery Store: $287  
+  - Electric: $102  
+  - Netflix: $15 × 2 = $30  
+  - Gas: $52  
+  - Restaurant: $120  
+  - Coffee: $45  
+  **Total Expenses**: $2,436  
+  **Net Savings**: $5,000 - $2,436 = **$2,564**  
+  **Savings Rate**: (2,564 / 5,000) × 100 = **51.28%**
+
+**March**  
+- **Income**: $5,000 (Salary)  
+- **Expenses**:  
+  - Rent: $1,800  
+  - Grocery Store: $345  
+  - ATM Withdrawal Miami: $400  
+  - Local Gas Station: $48  
+  - Electric: $98  
+  - Netflix: $15  
+  - Restaurant: $95  
+  - Shopping: $250  
+  **Total Expenses**: $3,051  
+  **Net Savings**: $5,000 - $3,051 = **$1,949**  
+  **Savings Rate**: (1,949 / 5,000) × 100 = **38.98%**
+
+---
+
+#### **Category Trends**
+
+- **Rent**: Consistently $1,800/month.  
+- **Grocery Store**:  
+  - Jan: $312  
+  - Feb: $287  
+  - Mar: $345 (up 18% from Feb).  
+- **Electric**:  
+  - Jan: $95  
+  - Feb: $102  
+  - Mar: $98 (fluctuation within normal range).  
+- **Netflix**:  
+  - Jan: $15  
+  - Feb: $30 (two charges on Feb 15).  
+  - Mar: $15.  
+- **Gas**:  
+  - Jan: $45  
+  - Feb: $52  
+  - Mar: $48 (stable).  
+- **Restaurant**:  
+  - Jan: $85  
+  - Feb: $120  
+  - Mar: $95 (fluctuation).  
+- **Other Expenses**:  
+  - Feb: Coffee ($45).  
+  - Mar: ATM Withdrawal ($400), Shopping ($250), Local Gas Station ($48).  
+
+---
+
+#### **Suspicious Transactions**
+
+**1. February 15: Two Netflix Charges of $15 Each**  
+- **Why Suspicious**:  
+  - Two identical charges on the **same day** (Feb 15) for the same service (Netflix).  
+  - This could indicate a **duplicate transaction**, **fraudulent charge**, or **unauthorized subscription**.  
+  - Normal behavior would involve a single monthly charge, not two separate ones.  
+
+**2. March 8: ATM Withdrawal Miami of $400**  
+- **Why Suspicious**:  
+  - A **large cash withdrawal** ($400) on the same day as a gas station purchase ($48).  
+  - While not inherently fraudulent, the **timing and amount** could suggest **unauthorized access** or **cash laundering**.  
+  - No prior history of large withdrawals in the account (based on the data).  
+
+---
+
+### **Conclusion**
+
+- **Savings Rate Drop**: March’s savings rate dropped significantly (38.98%) due to increased expenses, including the ATM withdrawal and shopping.  
+- **Fraudulent Transactions**:  
+  - **February 15**: Duplicate Netflix charges.  
+  - **March 8**: Unusual ATM withdrawal.  
+
+These anomalies warrant further investigation to confirm fraud or errors.

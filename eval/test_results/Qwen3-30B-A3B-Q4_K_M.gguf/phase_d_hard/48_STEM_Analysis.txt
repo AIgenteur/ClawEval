@@ -1,0 +1,81 @@
+# Phase D Hard Test — #48 STEM Analysis
+# Tier: 4 | Score: 10/10 | 2/2 constraints met
+# Tokens: 2965 | Speed: 100.5 t/s | Time: 29.5s
+
+## PROMPT:
+Analyze this experimental data. There's a CONFOUNDING VARIABLE that invalidates the researcher's conclusion. Find it.
+
+Experiment: Testing whether a new fertilizer increases crop yield.
+
+Group A (fertilizer): 20 plots, avg yield 8.2 tons/hectare, std dev 1.1
+Group B (control): 20 plots, avg yield 6.4 tons/hectare, std dev 1.3
+
+Researcher's conclusion: "The fertilizer increased yield by 28% (p < 0.01). The fertilizer clearly works."
+
+Hidden data (not in the paper's abstract):
+- Group A plots: southern slope, clay soil, received 20% more sunlight in May
+- Group B plots: northern slope, sandy soil
+- The study was not randomized — farmers who CHOSE the fertilizer happened to own the better plots
+- 3 of the 20 control plots had a pest outbreak mid-season
+
+Questions:
+1. Is the p-value meaningful given the experimental design? Why or why not?
+2. List ALL confounding variables
+3. What type of bias is present? (selection bias, measurement bias, etc.)
+4. Design a proper experiment that would actually test the fertilizer
+5. Calculate: IF we remove the 3 pest-affected plots, what is the new control average? (remaining 17 plots had avg 7.1 tons) Does this change the conclusion?
+
+## RESPONSE:
+### **1. Is the p-value meaningful given the experimental design? Why or why not?**  
+**Answer:**  
+No, the p-value is **not meaningful** in this context. The study's lack of randomization and the presence of confounding variables (e.g., soil type, slope, sunlight, pest outbreaks) invalidate the statistical conclusion. The p-value assumes that the groups are comparable, but the observed difference in yield could be due to these uncontrolled variables rather than the fertilizer itself. The p-value only reflects the probability of the observed difference under the null hypothesis (no effect of fertilizer), but if the groups are not comparable, the p-value cannot reliably assess the fertilizer's true effect.  
+
+---
+
+### **2. List ALL confounding variables**  
+**Answer:**  
+The confounding variables are:  
+- **Soil type**: Group A (clay soil) vs. Group B (sandy soil). Clay soil retains more water and nutrients, potentially increasing yield.  
+- **Slope direction**: Group A (southern slope) received 20% more sunlight in May, which could enhance photosynthesis and growth.  
+- **Sunlight exposure**: Group A had significantly more sunlight, directly affecting plant productivity.  
+- **Pest outbreak**: 3 control plots (Group B) were affected by pests, lowering their yield.  
+- **Selection bias**: Farmers who chose the fertilizer were likely to own better plots (e.g., southern slopes, clay soil), leading to non-random group assignment.  
+
+---
+
+### **3. What type of bias is present? (selection bias, measurement bias, etc.)**  
+**Answer:**  
+The primary bias is **selection bias**. The study was not randomized, and farmers who chose the fertilizer were likely to have better plots (e.g., southern slopes, clay soil). This non-random assignment created systematic differences between groups, making it impossible to isolate the fertilizer's effect. Additionally, **confounding bias** is present due to the uncontrolled variables (soil, sunlight, pests).  
+
+---
+
+### **4. Design a proper experiment that would actually test the fertilizer**  
+**Answer:**  
+To properly test the fertilizer, the experiment should:  
+1. **Randomly assign** plots to Group A (fertilizer) and Group B (control) to ensure comparable groups.  
+2. **Control for confounding variables**:  
+   - Use plots with similar soil types, slopes, and sunlight exposure.  
+   - Ensure both groups receive identical pest management (e.g., same pesticide use).  
+3. **Blind the experiment**: If possible, blind farmers and researchers to group assignments to reduce bias.  
+4. **Replicate the study**: Use multiple plots and repeat the experiment to increase reliability.  
+5. **Use a larger sample size** to improve statistical power.  
+
+---
+
+### **5. Calculate: IF we remove the 3 pest-affected plots, what is the new control average? (remaining 17 plots had avg 7.1 tons) Does this change the conclusion?**  
+**Answer:**  
+- **New control average**: 7.1 tons/hectare (after removing 3 pest-affected plots).  
+- **Effect size**:  
+  - Original difference: 8.2 (Group A) – 6.4 (Group B) = **1.8 tons** (28% increase).  
+  - Adjusted difference: 8.2 (Group A) – 7.1 (Group B) = **1.1 tons** (15.5% increase).  
+
+**Does this change the conclusion?**  
+- **Yes, but not entirely**. The adjusted control average reduces the observed effect size, but the fertilizer still appears to increase yield. However, the **conclusion remains invalid** due to confounding variables (soil, slope, sunlight). Even with the adjusted average, the groups are not comparable, so the p-value and conclusion are still unreliable. The **real issue** is the flawed experimental design, not the adjusted average.  
+
+---
+
+### **Summary of Key Takeaways**  
+- The **p-value is meaningless** without proper randomization and control of confounders.  
+- **Confounding variables** (soil, slope, sunlight, pests) and **selection bias** invalidate the conclusion.  
+- A **randomized, controlled experiment** is necessary to isolate the fertilizer's true effect.  
+- Removing pest-affected plots **reduces the effect size** but does not address the underlying design flaws.

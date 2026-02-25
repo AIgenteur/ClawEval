@@ -1,0 +1,81 @@
+# Phase D Hard Test — #39 Task Planning / Decomposition
+# Tier: 3 | Score: 10/10 | 1/1 constraints met
+# Tokens: 3333 | Speed: 101.5 t/s | Time: 32.8s
+
+## PROMPT:
+Decompose this project into tasks with dependencies. WARNING: The requirements as stated contain a CIRCULAR DEPENDENCY. You must detect it and propose a resolution.
+
+Project: Build a real-time dashboard
+- Task A (Auth system): "Requires the notification service (Task C) to send verification emails"
+- Task B (Data pipeline): "Requires the auth system (Task A) to validate data sources"
+- Task C (Notification service): "Requires the data pipeline (Task B) to know what events to notify about"
+- Task D (Dashboard UI): "Requires A, B, and C to be complete"
+- Task E (Testing): "Requires D to be complete, plus access to A, B, C independently"
+- Task F (Deployment): "Requires E to pass, but also needs to deploy A, B, C as separate services"
+
+Team: 2 backend devs, 1 frontend dev, 1 QA. Timeline: 8 weeks.
+
+1. Draw the dependency graph (text format)
+2. Identify the circular dependency
+3. Propose how to break the cycle (e.g., mock service, interface-first approach)
+4. Create a realistic 8-week schedule with parallel work
+
+## RESPONSE:
+### 1. Dependency Graph (Text Format)  
+```
+A → C  
+B → A  
+C → B  
+D → A, B, C  
+E → D, A, B, C  
+F → E, A, B, C  
+```
+**Cycle**: A → C → B → A (circular dependency).  
+
+---
+
+### 2. Circular Dependency  
+The tasks **A (Auth system)**, **B (Data pipeline)**, and **C (Notification service)** form a cycle:  
+- **A depends on C** (needs notification service for emails).  
+- **B depends on A** (needs auth system to validate data sources).  
+- **C depends on B** (needs data pipeline to know what events to notify about).  
+
+This creates a deadlock: none can be completed without the others.  
+
+---
+
+### 3. Resolution: Mock Services  
+Break the cycle by introducing **mock services** for initial development:  
+- **A (Auth system)** uses a **mock notification service** (instead of real C).  
+- **B (Data pipeline)** uses a **mock auth system** (instead of real A).  
+- **C (Notification service)** uses a **mock data pipeline** (instead of real B).  
+
+This allows each task to proceed independently, with real integration handled later.  
+
+---
+
+### 4. 8-Week Schedule with Parallel Work  
+**Team Allocation**:  
+- **Backend Devs (2)**: A, B, C, F (deployment).  
+- **Frontend Dev (1)**: D (Dashboard UI).  
+- **QA (1)**: E (Testing).  
+
+**Week-by-Week Plan**:  
+
+| **Week** | **Tasks**                                                                 | **Team**               |  
+|----------|---------------------------------------------------------------------------|------------------------|  
+| **1**    | - Backend devs: Develop **mocks** for A (auth), B (data pipeline), and C (notification). | Backend (2 devs)       |  
+| **2**    | - Backend devs: Finalize mocks and begin **real development** of A, B, C (using mocks as dependencies). | Backend (2 devs)       |  
+| **3**    | - Backend devs: Continue real development of A, B, C.                    | Backend (2 devs)       |  
+| **4**    | - Backend devs: Complete A, B, C.                                         | Backend (2 devs)       |  
+| **5**    | - Frontend dev: Start **Dashboard UI (D)** using completed A, B, C.      | Frontend (1 dev)       |  
+| **6**    | - QA: Begin **Testing (E)** for D and validate A, B, C independently.    | QA (1 dev)             |  
+| **7**    | - Backend devs: Prepare **Deployment (F)** (integrate A, B, C as services). | Backend (2 devs)       |  
+| **8**    | - QA: Finalize Testing (E). Backend devs: Complete Deployment (F).       | QA + Backend (2 devs)  |  
+
+**Key Parallel Work**:  
+- Mock development (Week 1) and real development (Weeks 2–4) occur in parallel.  
+- Dashboard UI (D) and Testing (E) overlap in Weeks 5–6.  
+- Deployment (F) starts in Week 7, dependent on Testing (E) in Week 8.  
+
+**Outcome**: The circular dependency is resolved via mocks, enabling parallel development and a realistic 8-week timeline.

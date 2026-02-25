@@ -1,0 +1,96 @@
+# Phase D Hard Test — #23 Website Scraping / Understanding
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 1939 | Speed: 122.3 t/s | Time: 15.9s
+
+## PROMPT:
+Extract job information from this HTML AND identify ALL red flags. There are at least 6 problematic elements, some subtle.
+
+<div class='job-listing'>
+<h2>Full-Stack Ninja Rockstar Developer</h2>
+<p class='company'>Stealth Startup (unnamed)</p>
+<p class='location'>Remote* (*must be available 6am-midnight PT for "flexibility")</p>
+<p class='salary'>Competitive salary (equity-heavy compensation)</p>
+<p class='experience'>Entry level (5+ years experience required)</p>
+<p class='requirements'>Must know: React, Vue, Angular, Svelte, Python, Go, Rust, Java, C++, Kubernetes, Terraform, AWS, GCP, Azure, PostgreSQL, MongoDB, Redis, Elasticsearch, GraphQL, REST, gRPC, Docker, CircleCI, Jenkins</p>
+<p class='perks'>Unlimited PTO (average team usage: 5 days/year). Fast-paced environment (mandatory 60hr weeks during "crunch" — approximately 48 weeks/year). We're like a family!</p>
+<p class='equity'>0.001% equity vesting over 6 years with 2-year cliff</p>
+<p class='application'>Apply with cover letter, 3 references, coding challenge (estimated 40 hours), and personality assessment</p>
+</div>
+
+Extract structured data AND write a detailed red flag analysis. Flag every manipulative or unreasonable element.
+
+## RESPONSE:
+**Structured Job Data Extraction:**
+
+```json
+{
+  "job_title": "Full-Stack Ninja Rockstar Developer",
+  "company": "Stealth Startup (unnamed)",
+  "location": "Remote (must be available 6am-midnight PT for 'flexibility')",
+  "salary": "Competitive salary (equity-heavy compensation)",
+  "experience": "Entry level (5+ years experience required)",
+  "requirements": [
+    "React", "Vue", "Angular", "Svelte", "Python", "Go", "Rust", "Java", "C++", 
+    "Kubernetes", "Terraform", "AWS", "GCP", "Azure", "PostgreSQL", "MongoDB", 
+    "Redis", "Elasticsearch", "GraphQL", "REST", "gRPC", "Docker", "CircleCI", "Jenkins"
+  ],
+  "perks": [
+    "Unlimited PTO (average team usage: 5 days/year)",
+    "Fast-paced environment (mandatory 60hr weeks during 'crunch' — approximately 48 weeks/year)",
+    "We're like a family!"
+  ],
+  "equity": "0.001% equity vesting over 6 years with 2-year cliff",
+  "application": [
+    "Cover letter",
+    "3 references",
+    "Coding challenge (estimated 40 hours)",
+    "Personality assessment"
+  ]
+}
+```
+
+---
+
+### **Red Flag Analysis (6+ Problematic Elements):**
+
+1. **Buzzword-Heavy Job Title**  
+   - *"Full-Stack Ninja Rockstar Developer"*: Overused, hyperbolic language to attract attention but lacks professionalism. This may signal a lack of clarity about the role or an attempt to mask unappealing terms.
+
+2. **Stealth Startup with No Company Name**  
+   - The company is labeled as a "Stealth Startup (unnamed)"—a red flag for opacity. This could hide a lack of credibility, unproven business models, or even a scam. Candidates are left without basic information about the employer.
+
+3. **Mandatory Availability During Unusual Hours**  
+   - *"Remote* (*must be available 6am-midnight PT for 'flexibility')*": The "flexibility" is a misdirection. Requiring 12+ hours of availability (6am–midnight PT) is exploitative and unrealistic, suggesting a culture of overwork and poor work-life balance.
+
+4. **Contradictory "Entry Level" Requirement**  
+   - *"Entry level (5+ years experience required)"*: This is a direct contradiction. "Entry level" typically implies no experience, but the requirement for 5+ years is a red flag for misrepresentation or a way to filter out qualified candidates.
+
+5. **Excessive Technical Requirements**  
+   - The list of required technologies (e.g., React, Vue, Angular, Svelte, Kubernetes, etc.) is overly broad and unrealistic. This may be a tactic to deter qualified applicants or to create a false impression of the role's complexity.
+
+6. **"Unlimited" PTO with Hidden Restrictions**  
+   - *"Unlimited PTO (average team usage: 5 days/year)"*: This is a classic red flag. The low average usage implies that the company discourages taking time off, undermining the "unlimited" claim. It suggests a toxic, high-pressure environment.
+
+7. **Mandatory 60-Hour Weeks During "Crunch"**  
+   - *"Fast-paced environment (mandatory 60hr weeks during 'crunch' — approximately 48 weeks/year)"*: The term "crunch" is used to normalize overwork, which is a sign of a burnout culture. The 60-hour weeks are unsustainable and violate labor standards in many regions.
+
+8. **Minimal Equity Stake with Long Vesting**  
+   - *"0.001% equity vesting over 6 years with 2-year cliff"*: A 0.001% equity stake is negligible and unlikely to provide meaningful financial upside. The 2-year cliff (no vesting until year 2) and 6-year term make it a high-risk, low-reward proposition.
+
+9. **Excessive Application Requirements**  
+   - *"Coding challenge (estimated 40 hours)"*: A 40-hour coding challenge is unreasonable for a job application. It exploits candidates' time and may be a way to filter out qualified applicants or test their willingness to work for free.
+
+10. **Manipulative "Family" Culture Language**  
+    - *"We're like a family!"*: This phrase is often used to justify poor working conditions, lack of boundaries, or emotional labor. It can mask a lack of professionalism or support.
+
+---
+
+### **Subtle/Underlying Red Flags:**
+- **"Equity-heavy compensation"**: Implies the company is not financially stable, as they rely on equity instead of cash. This is risky for candidates.
+- **"Personality assessment"**: May be used to screen for "cultural fit" in a way that excludes diverse perspectives or enforces conformity.
+- **"Stealth Startup"**: While not inherently bad, it often correlates with unproven business models, lack of transparency, or even fraud.
+
+---
+
+### **Conclusion:**
+This job posting contains multiple red flags that suggest a toxic work culture, exploitative practices, and potential misrepresentation. Candidates should approach this opportunity with extreme caution and conduct thorough research on the company and role.

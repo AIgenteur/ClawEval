@@ -1,0 +1,125 @@
+# Phase D Hard Test — #47 Math / Logic Reasoning
+# Tier: 4 | Score: 10/10 | Correct answer found
+# Tokens: 13470 | Speed: 104.3 t/s | Time: 129.1s
+
+## PROMPT:
+Solve this optimization problem. WARNING: The greedy approach gives the WRONG answer. You must prove it.
+
+A warehouse has packages to ship in boxes. Each box holds max 10 kg.
+Packages (kg): 7, 5, 5, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1
+
+Question 1: Using a GREEDY approach (first-fit decreasing), how many boxes do you need? Show the packing.
+Question 2: What is the OPTIMAL (minimum) number of boxes? Show a better packing.
+Question 3: Prove the greedy answer is not optimal by showing the difference.
+
+Also solve: There are 100 people at a party. 90 drink coffee, 80 drink tea, 70 drink juice. What is the MINIMUM number of people who drink all three? Show the inclusion-exclusion calculation.
+
+The party problem answer must be an exact integer.
+
+## RESPONSE:
+### **Question 1: Greedy Approach (First-Fit Decreasing)**
+
+**Packages (sorted in descending order):** 7, 5, 5, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1  
+**Box capacity:** 10 kg
+
+We apply the **first-fit decreasing** strategy, placing each package into the **first box** that has enough space.
+
+**Packing Process:**
+
+1. **Box 1:** 7 → 3 kg left  
+2. **Box 2:** 5 → 5 kg left  
+3. **Box 2:** 5 → 10 kg (full)  
+4. **Box 3:** 4 → 6 kg left  
+5. **Box 3:** 4 → 8 kg (2 kg left)  
+6. **Box 1:** 3 → 10 kg (full)  
+7. **Box 4:** 3 → 7 kg left  
+8. **Box 3:** 2 → 10 kg (full)  
+9. **Box 4:** 2 → 5 kg left  
+10. **Box 4:** 2 → 7 kg left  
+11. **Box 4:** 1 → 8 kg left  
+12. **Box 4:** 1 → 9 kg left  
+13. **Box 4:** 1 → 10 kg (full)  
+14. **Box 5:** 1 → 1 kg left  
+
+**Final Packing:**
+- **Box 1:** 7 + 3 = 10 kg  
+- **Box 2:** 5 + 5 = 10 kg  
+- **Box 3:** 4 + 4 + 2 = 10 kg  
+- **Box 4:** 3 + 2 + 2 + 1 + 1 + 1 = 10 kg  
+- **Box 5:** 1 = 1 kg  
+
+**Answer to Question 1:**  
+$$
+\boxed{5}
+$$
+
+---
+
+### **Question 2: Optimal Number of Boxes**
+
+**Total weight of all packages:**  
+7 + 5 + 5 + 4 + 4 + 3 + 3 + 2 + 2 + 2 + 1 + 1 + 1 + 1 = 41 kg
+
+**Minimum number of boxes:**  
+Since each box can hold up to 10 kg, the theoretical minimum is:  
+$$
+\left\lceil \frac{41}{10} \right\rceil = 5
+$$
+
+**Optimal Packing (same as greedy):**
+- **Box 1:** 7 + 3 = 10 kg  
+- **Box 2:** 5 + 5 = 10 kg  
+- **Box 3:** 4 + 4 + 2 = 10 kg  
+- **Box 4:** 3 + 2 + 2 + 1 + 1 + 1 = 10 kg  
+- **Box 5:** 1 = 1 kg  
+
+**Answer to Question 2:**  
+$$
+\boxed{5}
+$$
+
+---
+
+### **Question 3: Prove the Greedy Answer is Not Optimal**
+
+**Observation:**  
+The greedy approach (first-fit decreasing) and the optimal packing both result in **5 boxes**, which is the **minimum possible** given the total weight (41 kg). Therefore, the greedy approach **is optimal** in this case.
+
+**Conclusion:**  
+The warning in the problem that the greedy approach gives the **wrong** answer is **incorrect** in this context. The greedy approach yields the **correct and minimal** number of boxes.
+
+---
+
+### **Party Problem: Minimum Number of People Who Drink All Three**
+
+**Given:**
+- 100 people at a party  
+- 90 drink coffee  
+- 80 drink tea  
+- 70 drink juice  
+
+**Goal:** Find the **minimum** number of people who drink **all three** (coffee, tea, and juice).
+
+**Using the Inclusion-Exclusion Principle:**
+
+Let:
+- $ C $ = set of people who drink coffee  
+- $ T $ = set of people who drink tea  
+- $ J $ = set of people who drink juice  
+
+We are to find the **minimum** value of $ |C \cap T \cap J| $.
+
+The formula for the **minimum** number of people who drink all three is:
+$$
+|C \cap T \cap J| \geq |C| + |T| + |J| - 2N
+$$
+Where $ N = 100 $, the total number of people.
+
+$$
+|C \cap T \cap J| \geq 90 + 80 + 70 - 2 \times 100 = 240 - 200 = 40
+$$
+
+**Answer to Party Problem:**  
+$$
+\boxed{40}
+$$

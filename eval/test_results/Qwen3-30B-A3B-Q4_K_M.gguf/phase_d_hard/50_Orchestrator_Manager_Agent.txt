@@ -1,0 +1,144 @@
+# Phase D Hard Test — #50 Orchestrator / Manager Agent
+# Tier: 5 | Score: 5/10 | No automated constraints to check
+# Tokens: 7551 | Speed: 100.2 t/s | Time: 75.4s
+
+## PROMPT:
+Design an orchestration plan for a complex multi-agent workflow. You MUST include failure handling, because Agent C is known to fail 20% of the time.
+
+Task: Generate a comprehensive quarterly business review (QBR) document.
+
+Available agents and their capabilities:
+- Agent A (Data): Pulls metrics from databases. Takes 2 min. Never fails.
+- Agent B (Finance): Analyzes financial data. Takes 3 min. Requires Agent A output. Fails 5% of time.
+- Agent C (Market): Researches market trends. Takes 8 min. Independent. Fails 20% of time.
+- Agent D (Writer): Writes document sections. Takes 5 min per section. Requires relevant agent output.
+- Agent E (Designer): Creates charts/visuals. Takes 3 min. Requires Agent A data.
+- Agent F (Reviewer): Reviews final document. Takes 4 min. Requires all sections.
+
+Constraints:
+- Total wall-clock time budget: 25 minutes
+- If Agent C fails, the QBR must still be produced (with a note about missing market data)
+- Agent D can write sections in parallel if given different inputs
+
+Design:
+1. Execution DAG with parallel groups and dependencies
+2. Critical path analysis (what's the minimum time?)
+3. Failure handling for each agent (retry? fallback? skip?)
+4. If Agent C fails twice, what's the Plan B?
+5. Show the timeline (Gantt-chart style) for both success and failure scenarios
+
+## RESPONSE:
+### **Orchestration Plan for Quarterly Business Review (QBR) Workflow**
+
+---
+
+#### **1. Execution DAG with Parallel Groups and Dependencies**
+
+**Nodes and Dependencies:**
+- **Agent A** (Data) → **Agent B** (Finance), **Agent C** (Market), **Agent E** (Designer)  
+- **Agent B** → **Agent D** (Writer) [Financial Section]  
+- **Agent C** → **Agent D** (Writer) [Market Section]  
+- **Agent E** → **Agent D** (Writer) [Visuals Section]  
+- **Agent D** → **Agent F** (Reviewer) [All Sections]  
+
+**Parallel Groups:**
+- **Group 1:** A (2 min) → B (3 min), C (8 min), E (3 min) [Parallel]  
+- **Group 2:** D (5 min per section) [Parallel: Financial, Market, Visuals]  
+- **Group 3:** F (4 min) [Dependent on D]  
+
+**DAG Structure:**
+```
+A
+├── B → D (Financial)
+├── C → D (Market)
+└── E → D (Visuals)
+    └── D → F
+```
+
+---
+
+#### **2. Critical Path Analysis**
+
+**Critical Path:**  
+`Agent A (2 min) → Agent C (8 min) → Agent D (5 min) → Agent F (4 min)`  
+**Total Critical Path Time:** 2 + 8 + 5 + 4 = **19 minutes**  
+
+**Slack Time:**  
+Total budget = 25 min → Slack = 25 - 19 = **6 minutes**  
+
+---
+
+#### **3. Failure Handling for Each Agent**
+
+| **Agent** | **Failure Rate** | **Failure Handling** | **Notes** |
+|-----------|------------------|----------------------|-----------|
+| **A**     | 0%               | No action            | Always reliable |
+| **B**     | 5%               | Retry once           | If fails again, skip and note missing financial data |
+| **C**     | 20%              | Retry once           | If fails again, skip and note missing market data |
+| **D**     | N/A              | No action            | No failure reported |
+| **E**     | N/A              | No action            | No failure reported |
+| **F**     | N/A              | No action            | No failure reported |
+
+**Key Logic:**  
+- **Agent C** is the only agent with mandatory failure handling. If it fails, retry once. If it fails again, proceed with a note about missing market data.  
+- **Agent B** is handled similarly, but the QBR can still be produced with a note if it fails.  
+- **Agent D** and **E** are not explicitly mentioned to fail, so no handling is required.  
+
+---
+
+#### **4. Plan B if Agent C Fails Twice**
+
+**Plan B:**  
+- **Skip Agent C** and proceed with the QBR.  
+- **Add a note** in the document: *"Market data was unavailable due to Agent C failure. This section is omitted."*  
+- **Proceed with sections from B (Financial) and E (Visuals)** via Agent D.  
+- **Total time remains within budget** (19 min).  
+
+---
+
+#### **5. Timeline (Gantt-Chart Style)**
+
+**Success Scenario (No Failures):**
+```
+Time (min) | Activity
+0-2        | Agent A (Data)
+2-5        | Agent B (Finance)
+2-10       | Agent C (Market)
+2-5        | Agent E (Designer)
+10-15      | Agent D (Writer: Financial, Market, Visuals)
+15-19      | Agent F (Reviewer)
+```
+
+**Failure Scenario (Agent C Fails):**
+```
+Time (min) | Activity
+0-2        | Agent A (Data)
+2-5        | Agent B (Finance)
+2-10       | Agent C (Market) [Fail]
+2-5        | Agent E (Designer)
+10-15      | Agent D (Writer: Financial, Visuals) [Market section omitted]
+15-19      | Agent F (Reviewer) [Note: "Market data missing"]
+```
+
+**Failure Scenario (Agent C Fails Twice):**
+```
+Time (min) | Activity
+0-2        | Agent A (Data)
+2-5        | Agent B (Finance)
+2-10       | Agent C (Market) [Fail]
+10-18      | Agent C (Market) [Retry] [Fail again]
+2-5        | Agent E (Designer)
+10-15      | Agent D (Writer: Financial, Visuals) [Market section omitted]
+15-19      | Agent F (Reviewer) [Note: "Market data missing"]
+```
+
+---
+
+### **Summary of Key Design Decisions**
+- **Parallelism:** B, C, and E run in parallel after A, maximizing efficiency.  
+- **Critical Path:** 19 minutes (within 25-minute budget).  
+- **Failure Handling:**  
+  - **Agent C** is retried once, but if it fails again, the QBR is produced with a note.  
+  - **Agent B** is retried once, but if it fails, the QBR is produced with a note.  
+- **Plan B:** Skip C and proceed with a note if it fails twice.  
+- **Timeline:** Both success and failure scenarios fit within the 25-minute budget.

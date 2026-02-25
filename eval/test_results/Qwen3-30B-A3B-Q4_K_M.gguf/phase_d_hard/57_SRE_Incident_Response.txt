@@ -1,0 +1,127 @@
+# Phase D Hard Test — #57 SRE / Incident Response
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 2217 | Speed: 104.1 t/s | Time: 21.3s
+
+## PROMPT:
+Write an incident postmortem. This incident had a CASCADE FAILURE — the initial issue triggered 3 secondary failures. Map the entire cascade.
+
+Timeline:
+- Mon 2:00 AM: Automated certificate rotation runs on the API gateway
+- Mon 2:01 AM: New certificate has wrong domain (*.example.com instead of *.api.example.com)
+- Mon 2:01 AM: All API requests start returning TLS errors
+- Mon 2:05 AM: Health check failures trigger auto-scaling — new instances spin up
+- Mon 2:06 AM: New instances also fail health checks (same cert), triggering MORE scaling
+- Mon 2:10 AM: Kubernetes cluster hits pod limit (500 pods). Cluster API becomes unresponsive.
+- Mon 2:11 AM: Monitoring system (also on same cluster) goes down. All alerts stop.
+- Mon 2:15 AM: Database connection pool exhausted from 500 pods trying to connect
+- Mon 2:20 AM: Database enters read-only mode to protect data
+- Mon 3:15 AM: On-call engineer wakes up from customer complaint on Twitter (no alert!)
+- Mon 3:45 AM: Root cause identified, correct certificate deployed manually
+- Mon 4:00 AM: Cluster stabilized, database connections draining
+- Mon 4:30 AM: Full service restored
+
+SLA: 99.95% monthly uptime = 21.9 minutes/month allowed downtime.
+This incident: ~2.5 hours downtime.
+
+Write: cascade map, root cause, 5 whys, SLA impact calculation, blameless action items.
+
+## RESPONSE:
+# Incident Postmortem: Cascade Failure in API Gateway Certificate Rotation  
+
+---
+
+## **Cascade Failure Map**  
+1. **Mon 2:00 AM**  
+   - Automated certificate rotation runs on the API gateway.  
+   - **Trigger**: Incorrect certificate (domain: `*.example.com` instead of `*.api.example.com`).  
+
+2. **Mon 2:01 AM**  
+   - **Primary Failure**: All API requests fail with TLS errors due to invalid certificate.  
+   - **Secondary Failure 1**: Health checks for API instances fail.  
+
+3. **Mon 2:05 AM**  
+   - **Secondary Failure 2**: Auto-scaling triggers new instances to replace failed ones.  
+
+4. **Mon 2:06 AM**  
+   - **Secondary Failure 3**: New instances also fail health checks (same certificate issue), triggering **more auto-scaling**.  
+
+5. **Mon 2:10 AM**  
+   - **Tertiary Failure**: Kubernetes cluster hits pod limit (500 pods), causing Cluster API to become unresponsive.  
+
+6. **Mon 2:11 AM**  
+   - **Tertiary Failure**: Monitoring system (hosted on the same cluster) goes down, stopping all alerts.  
+
+7. **Mon 2:15 AM**  
+   - **Tertiary Failure**: Database connection pool exhausted as 500 pods attempt to connect.  
+
+8. **Mon 2:20 AM**  
+   - **Tertiary Failure**: Database enters read-only mode to prevent data corruption.  
+
+9. **Mon 3:15 AM**  
+   - **Final Failure**: On-call engineer alerted via customer complaint on Twitter (no internal alerts).  
+
+10. **Mon 3:45 AM–4:30 AM**  
+    - **Resolution**: Manual deployment of correct certificate, cluster stabilization, and service restoration.  
+
+---
+
+## **Root Cause**  
+The **incorrect certificate** (`*.example.com` instead of `*.api.example.com`) was deployed during an automated rotation. This triggered a cascade of failures due to:  
+- Lack of validation in the certificate rotation process.  
+- Single point of failure in the Kubernetes cluster (monitoring and API hosted on the same cluster).  
+- Auto-scaling logic that did not account for certificate-related health check failures.  
+
+---
+
+## **5 Whys Analysis**  
+1. **Why did the certificate have the wrong domain?**  
+   The certificate rotation process used an incorrect template.  
+
+2. **Why was the wrong template used?**  
+   The template was not validated during the rotation workflow.  
+
+3. **Why wasn’t the template validated?**  
+   The validation step was skipped due to a misconfigured CI/CD pipeline.  
+
+4. **Why was the validation step skipped?**  
+   The team prioritized speed over safety during the rollout.  
+
+5. **Why was there no safety mechanism to prevent this?**  
+   There was no culture of enforcing certificate validation as part of the deployment process.  
+
+---
+
+## **SLA Impact Calculation**  
+- **SLA**: 99.95% monthly uptime = **21.9 minutes** of allowed downtime.  
+- **Incident Duration**: ~2.5 hours = **150 minutes**.  
+- **SLA Violation**: **150 – 21.9 = 128.1 minutes** of unplanned downtime.  
+
+---
+
+## **Blameless Action Items**  
+1. **Implement Certificate Validation**  
+   - Add automated validation steps to verify certificate domains and expiration during rotation.  
+
+2. **Decouple Monitoring and API Clusters**  
+   - Move monitoring systems to a separate, independent cluster to prevent cascading failures.  
+
+3. **Enhance Auto-Scaling Safeguards**  
+   - Introduce rate-limiting or manual approval for auto-scaling during critical failures.  
+
+4. **Improve CI/CD Pipeline**  
+   - Enforce mandatory validation steps for all deployments, including certificate checks.  
+
+5. **Strengthen Alerting Systems**  
+   - Implement redundant alerting mechanisms (e.g., external notification services) to ensure visibility during cluster outages.  
+
+6. **Review Pod Limits and Database Resilience**  
+   - Increase Kubernetes pod limits or implement dynamic scaling.  
+   - Configure database connection pools to handle bursts of traffic gracefully.  
+
+7. **Conduct Post-Incident Review**  
+   - Analyze the incident to identify systemic risks and update incident response protocols.  
+
+---
+
+## **Conclusion**  
+This incident underscores the importance of validation, redundancy, and proactive monitoring. By addressing the root causes and implementing safeguards, we aim to prevent similar cascading failures and ensure alignment with SLA commitments.

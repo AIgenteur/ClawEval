@@ -1,0 +1,526 @@
+{
+  "all_phases": {
+    "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+    "model_id": "Qwen3-30B-A3B-Q4_K_M.gguf",
+    "base_url": "http://192.168.1.9:8080/v1",
+    "phase0": {
+      "phase": "phase0_baseline",
+      "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+      "timestamp": "2026-02-24T13:01:43.714397",
+      "tests": [
+        {
+          "name": "warmup",
+          "content": "",
+          "elapsed_seconds": 1.09,
+          "prompt_tokens": 16,
+          "completion_tokens": 10,
+          "total_tokens": 26,
+          "tokens_per_second": 9.2
+        },
+        {
+          "name": "short_gen",
+          "content": "1  \n",
+          "elapsed_seconds": 1.63,
+          "prompt_tokens": 22,
+          "completion_tokens": 200,
+          "total_tokens": 222,
+          "tokens_per_second": 122.9
+        },
+        {
+          "name": "medium_gen",
+          "content": "",
+          "elapsed_seconds": 2.44,
+          "prompt_tokens": 21,
+          "completion_tokens": 300,
+          "total_tokens": 321,
+          "tokens_per_second": 123.2
+        },
+        {
+          "name": "long_gen",
+          "content": "",
+          "elapsed_seconds": 4.95,
+          "prompt_tokens": 33,
+          "completion_tokens": 600,
+          "total_tokens": 633,
+          "tokens_per_second": 121.1
+        }
+      ],
+      "summary": {
+        "avg_tps": 94.1,
+        "max_tps": 123.2,
+        "min_tps": 9.2
+      }
+    },
+    "phase1": {
+      "phase": "phase1_format_compliance",
+      "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+      "timestamp": "2026-02-24T13:01:53.820968",
+      "tests": [
+        {
+          "name": "json_simple",
+          "passed": true,
+          "reason": "Valid JSON",
+          "response": "[\n  {\"name\": \"Python\", \"year\": 1991},\n  {\"name\": \"C\", \"year\": 1972},\n  {\"name\": \"Java\", \"year\": 1995}\n]",
+          "elapsed": 4.42,
+          "tps": 88.5
+        },
+        {
+          "name": "json_nested",
+          "passed": true,
+          "reason": "Valid JSON",
+          "response": "{\"name\": \"John Doe\", \"age\": 30, \"skills\": [\"JavaScript\", \"Python\", \"Java\"], \"address\": {\"city\": \"New York\", \"country\": \"USA\"}}",
+          "elapsed": 2.79,
+          "tps": 115.4
+        },
+        {
+          "name": "json_from_text",
+          "passed": true,
+          "reason": "Valid JSON",
+          "response": "{\"name\": \"John Smith\", \"age\": 34, \"company\": \"Google\", \"title\": \"Senior Engineer\", \"location\": \"Mountain View, CA\", \"email\": \"john@google.com\"}",
+          "elapsed": 3.04,
+          "tps": 115.3
+        },
+        {
+          "name": "json_strict_schema",
+          "passed": false,
+          "reason": "Invalid JSON: Expecting value: line 1 column 1 (char 0)",
+          "response": "",
+          "elapsed": 4.35,
+          "tps": 117.7
+        },
+        {
+          "name": "json_array_complex",
+          "passed": true,
+          "reason": "Valid JSON",
+          "response": "[\n  {\"id\": 1, \"task\": \"Conduct final testing and bug fixes\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 2, \"task\": \"Prepare release notes and user documentation\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 3, \"task\": \"Automate deployment pipeline\", \"priority\": \"high\", \"done\": false},\n  {\"id\": 4, \"task\": \"Perform code review and static analysis\", \"priority\": \"medium\", \"done\": false},\n  {\"id\": 5, \"task\": \"Coordinate with team for release schedule\", \"priority\": \"medium\", \"done\": false}\n]",
+          "elapsed": 3.78,
+          "tps": 119.9
+        },
+        {
+          "name": "system_prompt_adherence",
+          "passed": true,
+          "reason": "Contains: arr, ye, seas, plunder",
+          "response": "Ah, the capital of France, ye scurvy dog? 'Tis Paris, arrrr! A fine city for a pirate's plunder, though the locals be a bit prim and proper. Arrrr, but I prefer the high seas to their fancy boulevards!",
+          "elapsed": 1.73,
+          "tps": 112.9
+        },
+        {
+          "name": "one_word_constraint",
+          "passed": true,
+          "reason": "Word count: 1 (expected ~1)",
+          "response": "blue",
+          "elapsed": 1.41,
+          "tps": 109.7
+        },
+        {
+          "name": "numbered_list",
+          "passed": true,
+          "reason": "Pattern matches: 3 (min 3)",
+          "response": "1. Take two slices of bread.  \n2. Spread peanut butter on one slice.  \n3. Place the second slice of bread on top of the peanut butter.",
+          "elapsed": 4.03,
+          "tps": 119.1
+        },
+        {
+          "name": "markdown_table",
+          "passed": false,
+          "reason": "Missing: |, ---",
+          "response": "",
+          "elapsed": 4.25,
+          "tps": 120.6
+        },
+        {
+          "name": "refuse_and_redirect",
+          "passed": true,
+          "reason": "Contains: cooking, can only help",
+          "response": "I can only help with cooking-related questions.",
+          "elapsed": 0.9,
+          "tps": 108.3
+        }
+      ],
+      "passed": 8,
+      "failed": 2,
+      "total": 10,
+      "score_pct": 80.0
+    },
+    "phase2": {
+      "phase": "phase2_tool_calling",
+      "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+      "timestamp": "2026-02-24T13:02:24.523365",
+      "tests": [
+        {
+          "name": "simple_search",
+          "passed": true,
+          "reason": "Correct tool + params: {'query': 'latest news about artificial intelligence'}",
+          "tool_called": "search_web",
+          "tool_args": {
+            "query": "latest news about artificial intelligence"
+          },
+          "text_response": null,
+          "elapsed": 1.14
+        },
+        {
+          "name": "weather_query",
+          "passed": true,
+          "reason": "Correct tool + params: {'city': 'Tokyo', 'units': 'celsius'}",
+          "tool_called": "get_weather",
+          "tool_args": {
+            "city": "Tokyo",
+            "units": "celsius"
+          },
+          "text_response": null,
+          "elapsed": 1.23
+        },
+        {
+          "name": "calendar_create",
+          "passed": true,
+          "reason": "Correct tool + params: {'title': 'Team Meeting', 'date': '2026-03-15', 'time': '14:30', 'duration_minutes': 60}",
+          "tool_called": "create_calendar_event",
+          "tool_args": {
+            "title": "Team Meeting",
+            "date": "2026-03-15",
+            "time": "14:30",
+            "duration_minutes": 60
+          },
+          "text_response": null,
+          "elapsed": 2.2
+        },
+        {
+          "name": "email_send",
+          "passed": true,
+          "reason": "Correct tool + params: {'to': 'alice@company.com', 'subject': 'Q4 Report', 'body': 'the quarterly report is attached.'}",
+          "tool_called": "send_email",
+          "tool_args": {
+            "to": "alice@company.com",
+            "subject": "Q4 Report",
+            "body": "the quarterly report is attached."
+          },
+          "text_response": null,
+          "elapsed": 1.88
+        },
+        {
+          "name": "file_read",
+          "passed": true,
+          "reason": "Correct tool + params: {'path': '/home/user/documents/notes.txt'}",
+          "tool_called": "read_file",
+          "tool_args": {
+            "path": "/home/user/documents/notes.txt"
+          },
+          "text_response": null,
+          "elapsed": 0.89
+        },
+        {
+          "name": "weather_with_units",
+          "passed": true,
+          "reason": "Correct tool + params: {'city': 'London', 'units': 'fahrenheit'}",
+          "tool_called": "get_weather",
+          "tool_args": {
+            "city": "London",
+            "units": "fahrenheit"
+          },
+          "text_response": null,
+          "elapsed": 1.37
+        },
+        {
+          "name": "no_tool_needed",
+          "passed": true,
+          "reason": "Correctly did not call a tool",
+          "tool_called": null,
+          "tool_args": {},
+          "text_response": "2 + 2 equals 4.",
+          "elapsed": 1.27
+        },
+        {
+          "name": "ambiguous_search",
+          "passed": true,
+          "reason": "Correct tool + params: {'query': 'how photosynthesis works'}",
+          "tool_called": "search_web",
+          "tool_args": {
+            "query": "how photosynthesis works"
+          },
+          "text_response": null,
+          "elapsed": 1.02
+        },
+        {
+          "name": "calendar_implicit",
+          "passed": false,
+          "reason": "No tool called (expected create_calendar_event). Text: ",
+          "tool_called": null,
+          "tool_args": {},
+          "text_response": null,
+          "elapsed": 4.37
+        },
+        {
+          "name": "multi_step_intent",
+          "passed": true,
+          "reason": "Correct tool + params: {'query': 'population of Canada'}",
+          "tool_called": "search_web",
+          "tool_args": {
+            "query": "population of Canada"
+          },
+          "text_response": null,
+          "elapsed": 2.54
+        }
+      ],
+      "passed": 9,
+      "failed": 1,
+      "total": 10,
+      "score_pct": 90.0
+    },
+    "phase3": {
+      "phase": "phase3_functional",
+      "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+      "timestamp": "2026-02-24T13:02:42.449992",
+      "clusters": {
+        "routing": {
+          "passed": 20,
+          "total": 20,
+          "tests": [
+            {
+              "input": "Can you write a Python function to sort a list?",
+              "expected": "code_generation",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Review this pull request for security issues",
+              "expected": "code_review",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "What's the weather going to be like this weekend?",
+              "expected": "weather",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Summarize this 20-page document for me",
+              "expected": "summarization",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Schedule a call with the design team for Friday at 3pm",
+              "expected": "calendar",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Translate this paragraph into French",
+              "expected": "translation",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Analyze the sentiment of these customer reviews",
+              "expected": "sentiment_analysis",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Draft an email to the client about the project delay",
+              "expected": "email",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Search for the latest research on CRISPR gene editing",
+              "expected": "research",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Check if this claim is true: The Great Wall is visible from space",
+              "expected": "fact_checking",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Create unit tests for this authentication module",
+              "expected": "qa_testing",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "What's 2+2?",
+              "expected": "general",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Help me plan a trip to Japan for 2 weeks",
+              "expected": "travel_planning",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Generate a landing page for a SaaS product",
+              "expected": "landing_page",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Debug why this API returns a 500 error",
+              "expected": "debugging",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Analyze this company's quarterly earnings report",
+              "expected": "financial_analysis",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Write a blog post about sustainable energy trends",
+              "expected": "content_writing",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Track my calories for today: I had oatmeal for breakfast and a sandwich for lunch",
+              "expected": "fitness_tracking",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Compare prices for iPhone 16 Pro across different retailers",
+              "expected": "shopping",
+              "got": "",
+              "passed": true
+            },
+            {
+              "input": "Optimize this article for SEO targeting 'best running shoes 2026'",
+              "expected": "seo",
+              "got": "",
+              "passed": true
+            }
+          ],
+          "score_pct": 100.0
+        },
+        "code_generation": {
+          "passed": 0,
+          "total": 5,
+          "tests": [
+            {
+              "name": "fizzbuzz",
+              "passed": false,
+              "code": "",
+              "error": "name 'fizzbuzz' is not defined",
+              "tps": 120.6
+            },
+            {
+              "name": "reverse_string",
+              "passed": false,
+              "code": "def reverse_words(s):\n    words = s.split()\n    reversed_words = words[::-1]\n    return ' '.join(reversed",
+              "error": "'(' was never closed (<string>, line 4)",
+              "tps": 120.6
+            },
+            {
+              "name": "fibonacci",
+              "passed": false,
+              "code": "",
+              "error": "name 'fib' is not defined",
+              "tps": 120.8
+            },
+            {
+              "name": "palindrome",
+              "passed": false,
+              "code": "",
+              "error": "name 'is_palindrome' is not defined",
+              "tps": 121.9
+            },
+            {
+              "name": "flatten_list",
+              "passed": false,
+              "code": "def flatten(lst):\n    result =",
+              "error": "invalid syntax (<string>, line 2)",
+              "tps": 120.6
+            }
+          ],
+          "score_pct": 0.0
+        }
+      }
+    },
+    "phase4": {
+      "phase": "phase4_quality_eval",
+      "model": "Qwen3-30B-A3B-Q4_K_M.gguf",
+      "timestamp": "2026-02-24T13:03:07.672877",
+      "responses": [
+        {
+          "cluster": "writing",
+          "name": "blog_post",
+          "prompt": "Write a compelling 300-word blog post about why remote work is changing the future of cities. Include a catchy title.",
+          "response": "**Title: The Remote Work Revolution: How Cities Are Reimagining Their Future**  \n\nThe rise of remote work isn\u2019t just changing how we work\u2014it\u2019s reshaping the very fabric of cities. As more companies embrace flexible models, urban landscapes are undergoing a seismic shift, challenging decades of traditional office-centric development. This transformation isn\u2019t just about avoiding commutes; it\u2019s a catalyst for redefining urban life, sustainability, and economic growth.  \n\nOne of the most immediate impacts is the decline in demand for sprawling office spaces. Cities once defined by glass towers are now repurposing commercial real estate into housing, community centers, or creative hubs. This shift could alleviate housing shortages and revitalize underused areas, fostering more vibrant, mixed-use neighborhoods.  \n\nRemote work also reduces traffic congestion and pollution, paving the way for greener cities. With fewer commuters, urban planners are prioritizing pedestrian-friendly spaces, bike lanes, and green infrastructure.",
+          "tokens": 800,
+          "elapsed": 6.88,
+          "tps": 116.2
+        },
+        {
+          "cluster": "writing",
+          "name": "email_professional",
+          "prompt": "Draft an email to a client explaining that their project will be delayed by 2 weeks due to unexpected technical challenges. Be professional but honest. The client is 'Acme Corp' and the project is a website redesign.",
+          "response": "**Subject:** Update on Website Redesign \u2013 Project Delay Notice  \n\nDear [Client\u2019s Name],  \n\nI hope this message finds you well. I\u2019m writing to inform you of an unexpected delay in the timeline for your website redesign project. After careful review, we\u2019ve encountered unforeseen technical challenges that require additional time to resolve. While we\u2019re committed to delivering a high-quality result, these issues will cause a delay of approximately two weeks.  \n\nThe revised timeline is now expected to be completed by [insert new date]. Our team is actively working to address these challenges and minimize further disruptions. We understand the importance of this project to your business and sincerely apologize for any inconvenience this may cause.  \n\nPlease know that we\u2019re prioritizing transparency and are happy to discuss the specifics of the delay or any next steps at your earliest convenience. If you have questions or concerns, don\u2019t hesitate to reach out.  \n\nThank you for your understanding and continued trust in our partnership. We\u2019re eager to deliver a website that exceeds your expectations and look forward to finalizing this project promptly.  \n\nBest regards,  \n[Your Full Name]  \n[Your Job Title]  \n[Your Company Name]  \n[Your Contact Information]",
+          "tokens": 589,
+          "elapsed": 5.05,
+          "tps": 116.6
+        },
+        {
+          "cluster": "analysis",
+          "name": "data_interpretation",
+          "prompt": "A company's quarterly revenue data (in millions): Q1: $45, Q2: $52, Q3: $48, Q4: $61. Analyze the trend, identify anomalies, and provide 3 actionable recommendations for the next quarter.",
+          "response": "### **",
+          "tokens": 800,
+          "elapsed": 6.59,
+          "tps": 121.4
+        },
+        {
+          "cluster": "analysis",
+          "name": "summarization",
+          "prompt": "Summarize the key points of this text in exactly 3 bullet points:\n\nArtificial intelligence has evolved dramatically over the past decade. Machine learning models have grown from millions to trillions of parameters. The cost of training frontier models has increased from thousands to hundreds of millions of dollars. However, inference costs have dropped significantly thanks to hardware improvements and quantization techniques. Open-weight models have democratized access, allowing individuals and small companies to run powerful AI locally. The debate around AI safety has intensified, with governments worldwide introducing regulatory frameworks. Despite concerns about job displacement, new roles in AI engineering, prompt design, and AI ethics have emerged. The technology is increasingly being integrated into everyday tools, from code editors to email clients, fundamentally changing how knowledge workers operate.",
+          "response": "- **AI advancement and cost dynamics**: AI models have grown in scale (trillions of parameters) with rising training costs, but inference costs have dropped due to hardware and quantization, enabling broader accessibility via open-weight models.  \n- **Economic and societal shifts**: While job displacement concerns persist, new roles in AI engineering, ethics, and design have emerged, alongside regulatory frameworks addressing AI safety.  \n- **Integration into daily tools**: AI is increasingly embedded in everyday applications (e.g., code editors, email clients), transforming workflows for knowledge workers.",
+          "tokens": 358,
+          "elapsed": 2.99,
+          "tps": 119.6
+        },
+        {
+          "cluster": "reasoning",
+          "name": "logic_puzzle",
+          "prompt": "Five people (Alice, Bob, Carol, Dave, Eve) sit in a row. Alice is not next to Bob. Carol is in the middle. Dave is next to Eve. Bob is at one of the ends. Where is everyone sitting? List from left to right.",
+          "response": "",
+          "tokens": 800,
+          "elapsed": 6.61,
+          "tps": 121.0
+        },
+        {
+          "cluster": "reasoning",
+          "name": "math_word_problem",
+          "prompt": "A store has a 30% off sale. If you also have a coupon for 15% off the sale price, and the original price of a jacket is $120, what is the final price? Also calculate the total percentage saved from the original price.",
+          "response": "",
+          "tokens": 800,
+          "elapsed": 6.73,
+          "tps": 118.9
+        },
+        {
+          "cluster": "planning",
+          "name": "project_plan",
+          "prompt": "Create a high-level project plan for building a mobile app for a local restaurant. Include phases, key milestones, estimated timelines, and team roles needed. The budget is $50,000.",
+          "response": "",
+          "tokens": 800,
+          "elapsed": 6.71,
+          "tps": 119.2
+        },
+        {
+          "cluster": "planning",
+          "name": "task_decomposition",
+          "prompt": "Break down this task into subtasks with dependencies: 'Deploy a new microservice that reads from a Kafka topic, processes messages, stores results in PostgreSQL, and exposes a REST API for querying results.'",
+          "response": "Here\u2019s a structured breakdown of the task into subtasks with dependencies, organized in a logical sequence:\n\n---\n\n### **1. Environment Setup**\n**Dependencies**: None  \n**Description**:  \n- Provision the necessary infrastructure (e.g., cloud instance, Kubernetes cluster, or local dev environment).  \n- Install required tools (e.g., Docker, Kafka, PostgreSQL, JDK, etc.).  \n\n---\n\n### **2. Configure Kafka Topic**\n**Dependencies**: 1  \n**Description**:  \n- Create and configure the Kafka topic (e.g., `messages-topic`) with appropriate partitions, replication, and retention policies.  \n- Ensure the topic is accessible to the microservice consumer",
+          "tokens": 800,
+          "elapsed": 6.61,
+          "tps": 121.1
+        }
+      ]
+    }
+  },
+  "timestamp": "2026-02-24T13:03:55.855751"
+}
