@@ -1,4 +1,4 @@
-# 🦞 ClawEval — Can Your LLM Actually Do the Job?
+# 🦞 ClawEval — Can Your Local or Cloud LLM Actually Do the Job?
 
 **The only deterministic benchmark that tests LLMs as real AI agents** — not trivia, not chat, not vibes. 59 specialized roles. Hard, verifiable tasks. Every score is reproducible.
 
