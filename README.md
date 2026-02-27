@@ -24,7 +24,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 | Provider | Models | Status |
 |---|---|---|
-| OpenRouter, Together, Fireworks | Open-source models via API | 🔜 Coming soon |
+| OpenRouter, Chutes, and other affordable providers | Open-source models via API | 🔜 Coming soon |
 
 
 
