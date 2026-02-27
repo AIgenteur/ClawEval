@@ -2,21 +2,31 @@
 
 **The only deterministic benchmark that tests LLMs as real AI agents** — not trivia, not chat, not vibes. 59 specialized roles. Hard, verifiable tasks. Every score is reproducible.
 
-> 🔥 **New models added regularly.** We test the latest open-source models you can actually run locally — and compare them against cloud-hosted open-source models. Star ⭐ this repo to get notified when new results drop.
+> 🔥 **New models added regularly.** Star ⭐ this repo to get notified when new results drop.
 
 ### Why ClawEval?
 
 Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do the work** — route tickets, review code, analyze financials, draft legal docs, plan sprints, and 54 more agent roles. Each test has an exact expected answer. No LLM-as-judge. No vibes.
 
-### 🖥️ LOCAL Models — What Can You Run at Home?
+### 🖥️ LOCAL Models — Run on YOUR Hardware
 
-| | 🟢 24GB VRAM (RTX 4090) | 🔵 96GB VRAM (2×48GB) | ☁️ CLOUD (open-source) |
-|---|---|---|---|
-| **Models** | Qwen3.5-35B-A3B Q4, Qwen3.5-27B Q4 | Qwen3.5-122B-A10B NVFP4 | More open-source models |
-| **Server** | llama.cpp | SGLang | API (OpenRouter, Together, etc.) |
-| **Status** | ✅ Tested | ✅ Tested | 🔜 Coming soon |
+We test quantized open-source models that fit on hardware you already own. Find out which model is best for each agent role **before you commit your VRAM.**
 
----
+| 🟢 24GB VRAM (single RTX 4090 / 3090) | 🔵 96GB VRAM (2×48GB / A6000s) |
+|---|---|
+| Qwen3.5-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
+| Qwen3.5-27B Q4_K_M | More models coming |
+| llama.cpp · SGLang · vLLM | SGLang · vLLM |
+
+### ☁️ CLOUD Models — Run via API
+
+Don't have a GPU? We also test open-source models hosted on cloud providers so you can compare **local vs cloud performance at every agent role.** Same tests, same scoring — find out if paying for cloud is worth it, or if your local setup already matches.
+
+| Provider | Models | Status |
+|---|---|---|
+| OpenRouter, Together, Fireworks | Open-source models via API | 🔜 Coming soon |
+
+
 
 ## 🏆 Per-Role Agent Scores (Phase F — 59 Roles)
 
