@@ -20,6 +20,8 @@ We test quantized open-source models that fit on hardware you already own. Find 
 | Mistral Small 24B, GPT-OSS-20B | Qwen3.5-27B Q4_K_M | More models coming |
 | Coming soon | llama.cpp · SGLang · vLLM | SGLang · vLLM |
 
+> 📖 **VRAM Guides:** [16GB](docs/OpenClaw%2016GB%20VRAM%20Local%20LLM%20Subagents.md) · [24GB](docs/The%2024GB%20VRAM%20Tier_%20Where%20Local%20AI%20Agents%20Get%20Serious.md) · [32GB](docs/openclaw-model-selection-32gb-tier.md) · [48GB](docs/openclaw-48gb-tier.md) · [64GB](docs/openclaw-64gb-tier.md) · [96GB](docs/openclaw-96gb-tier.md) — Which models fit, context limits, speed estimates
+
 ### ☁️ CLOUD Models — Run via API
 
 Don't have a GPU? We also test open-source models hosted on cloud providers so you can compare **local vs cloud performance at every agent role.** Same tests, same scoring — find out if paying for cloud is worth it, or if your local setup already matches.
@@ -224,6 +226,9 @@ ClawEval/
 │   ├── role_prompts.py         # 59 role system prompts
 │   ├── hard_prompts.py         # Phase D adversarial prompts
 │   └── test_results/           # All model evaluation results
+├── docs/                       # VRAM tier guides & model selection
+│   ├── 16GB, 24GB, 32GB, 48GB, 64GB, 96GB tier guides
+│   └── Subagent type reference
 ├── RESULTS.md                  # Detailed per-role score comparison
 └── README.md
 ```
