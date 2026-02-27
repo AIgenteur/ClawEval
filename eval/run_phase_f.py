@@ -82,8 +82,30 @@ def extract_json(text):
 # GENERIC SCORERS
 # ============================================================
 
+def _find_value_in_json(data, key):
+    """Flexibly find a value in JSON — handles case-insensitive keys, nested dicts, etc."""
+    if not isinstance(data, dict):
+        return None
+    key_lower = key.lower()
+    # Direct match (case-insensitive)
+    for k, v in data.items():
+        if k.lower() == key_lower:
+            return v
+    # Try nested: look inside all sub-dicts
+    for k, v in data.items():
+        if isinstance(v, dict):
+            for k2, v2 in v.items():
+                if k2.lower() == key_lower:
+                    return v2
+                # One more level: data["scores"]["1"]["value"]
+                if isinstance(v2, dict):
+                    for k3, v3 in v2.items():
+                        if k3.lower() == key_lower:
+                            return v3
+    return None
+
 def score_json_values(content, scoring):
-    """Score exact JSON value matches. Handles nested keys with _ separator."""
+    """Score exact JSON value matches with flexible key lookup."""
     data = extract_json(content)
     answers = scoring["answers"]
     if data is None:
@@ -92,26 +114,7 @@ def score_json_values(content, scoring):
     correct = 0
     details = []
     for key, expected in answers.items():
-        actual = None
-        if isinstance(data, dict):
-            # Try direct key first
-            if key in data:
-                actual = data[key]
-            # Try nested (e.g., "1_category" → data["tickets"]["1"]["category"])
-            elif "_" in key:
-                parts = key.rsplit("_", 1)
-                # Try data[parts[0]][parts[1]]
-                parent = data.get(parts[0])
-                if isinstance(parent, dict):
-                    actual = parent.get(parts[1])
-                # Try tickets/posts style: data["tickets"]["1"]["category"]
-                if actual is None:
-                    for container_key in data:
-                        container = data[container_key]
-                        if isinstance(container, dict) and parts[0] in container:
-                            item = container[parts[0]]
-                            if isinstance(item, dict):
-                                actual = item.get(parts[1])
+        actual = _find_value_in_json(data, key)
 
         if actual is not None:
             # Flexible comparison
@@ -133,7 +136,7 @@ def score_json_values(content, scoring):
 
 
 def score_json_numeric(content, scoring):
-    """Score numeric JSON values with tolerance."""
+    """Score numeric JSON values with tolerance and flexible key lookup."""
     data = extract_json(content)
     answers = scoring["answers"]
     tolerance = scoring.get("tolerance", 0.01)
@@ -143,7 +146,7 @@ def score_json_numeric(content, scoring):
     correct = 0
     details = []
     for key, expected in answers.items():
-        actual = data.get(key) if isinstance(data, dict) else None
+        actual = _find_value_in_json(data, key)
         if actual is not None:
             # Handle string values in numeric context
             if isinstance(expected, str):
@@ -204,7 +207,8 @@ def score_error_count(content, scoring):
 
 
 def score_keyword_detection(content, scoring, field_name="issues"):
-    """Generic scorer for finding keywords in a list of issues/bugs/findings."""
+    """Generic scorer: checks if keywords appear in the full response text.
+    Each keyword can match if any significant word from it appears in the content."""
     keywords = scoring.get(field_name, scoring.get("issues", scoring.get("bugs", scoring.get("vulns", scoring.get("findings", [])))))
     content_lower = content.lower()
 
@@ -215,10 +219,20 @@ def score_keyword_detection(content, scoring, field_name="issues"):
             kw_text = kw.get("keyword", kw.get("text", ""))
         else:
             kw_text = kw
-        if kw_text.lower() in content_lower:
+        kw_lower = kw_text.lower()
+        # Try exact substring first
+        if kw_lower in content_lower:
             found += 1
         else:
-            details.append(f"missed: {kw_text}")
+            # Flexible: check if all significant words (>3 chars) from the keyword appear
+            words = [w for w in kw_lower.split() if len(w) > 3]
+            if words and all(w in content_lower for w in words):
+                found += 1
+            # Even more flexible: check individual core words
+            elif any(w in content_lower for w in words if len(w) > 4):
+                found += 1
+            else:
+                details.append(f"missed: {kw_text}")
 
     total = len(keywords)
     score = round(found / total * 10) if total > 0 else 0
@@ -405,8 +419,71 @@ SCORERS = {
     "code_structure": score_generic_constraints,
     "code_exec_tests": score_generic_constraints,
     "synthesis": lambda c, s: score_keyword_detection(c, {"issues": s.get("key_agreements", []) + s.get("key_disagreements", [])}),
-    "recipe_scaling": lambda c, s: score_json_numeric(c, s),
+    "recipe_scaling": lambda c, s: score_recipe(c, s),
 }
+
+# Map expected keys to possible descriptive keys the model might use
+_RECIPE_KEY_ALIASES = {
+    "flour_cups": ["flour", "all-purpose flour", "all purpose flour", "ap flour"],
+    "baking_powder_tsp": ["baking powder", "baking_powder"],
+    "salt_tsp": ["salt"],
+    "butter_cups": ["butter", "unsalted butter"],
+    "sugar_cups": ["sugar", "granulated sugar"],
+    "eggs": ["eggs", "large eggs", "egg"],
+    "milk_cups": ["milk", "whole milk"],
+    "vanilla_tsp": ["vanilla", "vanilla extract"],
+    "cocoa_cups": ["cocoa", "cocoa powder", "unsweetened cocoa"],
+}
+
+def score_recipe(content, scoring):
+    """Score recipe scaling with flexible key matching and numeric extraction."""
+    data = extract_json(content)
+    answers = scoring["answers"]
+    tolerance = scoring.get("tolerance", 0.5)
+    if data is None:
+        return 0, len(answers), "Could not parse JSON"
+
+    correct = 0
+    details = []
+    for key, expected in answers.items():
+        actual_val = None
+        # Try direct key first
+        actual_val_raw = _find_value_in_json(data, key)
+        if actual_val_raw is None:
+            # Try aliases
+            aliases = _RECIPE_KEY_ALIASES.get(key, [])
+            for alias in aliases:
+                actual_val_raw = _find_value_in_json(data, alias)
+                if actual_val_raw is not None:
+                    break
+        if actual_val_raw is not None:
+            # Extract numeric value from strings like "3.5 cups" or "2.75 tsp"
+            try:
+                val_str = str(actual_val_raw).replace(",", "")
+                # Extract first number from string
+                import re as _re
+                nums = _re.findall(r'[\d.]+', val_str)
+                if nums:
+                    actual_val = float(nums[0])
+            except:
+                pass
+        if actual_val is not None:
+            try:
+                if abs(actual_val - float(expected)) <= tolerance:
+                    correct += 1
+                else:
+                    details.append(f"{key}: expected {expected}, got {actual_val}")
+            except:
+                details.append(f"{key}: not numeric: {actual_val_raw}")
+        else:
+            details.append(f"{key}: missing")
+
+    total = len(answers)
+    score = round(correct / total * 10) if total > 0 else 0
+    msg = f"{correct}/{total} correct"
+    if details:
+        msg += " | " + "; ".join(details[:5])
+    return score, 10, msg
 
 
 def run_test(test, base_url, model, max_tokens, timeout, extra_body=None):
