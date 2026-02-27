@@ -6,27 +6,36 @@ Unlike vibes-based benchmarks, ClawEval uses **deterministic, auto-scored tests*
 
 ## 🏆 Leaderboard
 
-### Phase E — 12 Killer Tests (Reasoning, Code, Structured Output, Multi-Turn)
+### Phase E — Per-Test Breakdown (all scores out of 10)
 
-| Model | VRAM | Think | Score | Code | Reasoning | Structured | Instruction | Multi-Turn |
-|---|---|---|---|---|---|---|---|---|
-| **Qwen3.5-122B-A10B NVFP4** | 96GB | 16K | **108/120 (90%)** | 100% | 82% | 100% | 100% | 85% |
-| Qwen3.5-35B-A3B Q4_K_M | 24GB | 32K | 102/120 (85%) | 100% | 70% | 95% | 100% | 90% |
-| Qwen3.5-27B Q4_K_M | 24GB | OFF | 83/120 (69%) | 100% | 46% | 70% | 20% | 100% |
-| Qwen3.5-122B-A10B NVFP4 | 96GB | OFF | 79/120 (66%) | 100% | 56% | 55% | 20% | 90% |
-| Qwen3.5-35B-A3B Q4_K_M | 24GB | OFF | 76/120 (63%) | 100% | 42% | 80% | 20% | 90% |
+| # | Test | 122B Think | 35B Think | 27B NoThink | 122B NoThink | 35B NoThink |
+|---|---|---|---|---|---|---|
+| 1 | Precise Counting | 🟢 8 | 🔴 4 | 🔴 4 | 🔴 0 | 🔴 4 |
+| 2 | Constrained JSON | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 | 🟢 9 |
+| 3 | Logic Grid Puzzle | 🟢 10 | 🟢 10 | 🟡 5 | 🟡 5 | 🟡 6 |
+| 4 | Multi-Step Math | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
+| 5 | Code Output Prediction | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
+| 6 | Contradiction Detection | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 |
+| 7 | Complex Multi-Key Sort | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🔴 3 |
+| 8 | Regex Construction | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟡 7 |
+| 9 | Data Transformation | 🟢 10 | 🟢 10 | 🔴 0 | 🔴 2 | 🔴 2 |
+| 10 | Instruction Following | 🟢 10 | 🟢 8 | 🔴 4 | 🔴 2 | 🔴 4 |
+| 11 | Multi-Turn Refinement | 🟡 7 | 🟢 8 | 🟢 10 | 🟢 8 | 🟢 9 |
+| 12 | Multi-Turn State Track | 🟢 10 | 🟢 9 | 🟡 7 | 🟢 10 | 🟡 7 |
+| | **TOTAL** | **108/120** | **102/120** | **83/120** | **79/120** | **76/120** |
 
 ### Phase F — 59-Role Deterministic Hard Tests
 
 | Model | Think | Score | T1 | T2 | T3 | T4 | T5 |
 |---|---|---|---|---|---|---|---|
-| **Qwen3.5-122B-A10B NVFP4** | 16K | **~443/590 (75.1%)** | 59% | 69% | 71% | 53% | 65% |
+| **Qwen3.5-122B-A10B NVFP4** | 16K | **~443/590 (75%)** | 59% | 69% | 71% | 53% | 65% |
 
-**Perfect 10/10 scores:** Router, Validator, Sentiment, Research, Content Planner, Web Scraping, Customer Support, Sprint Summarizer, Transaction, Home Automation, News Aggregation, Shopping, Code Gen, Code Review, Fact-Check, Algorithm, Legal, Software Architect, STEM Analysis
+> 📊 **[Full per-role breakdown →](RESULTS.md)** — All 59 roles scored individually with tier grouping
 
-> **Scorer fixes applied:** 6 tests originally scored 0/10 due to scorer bugs (case-sensitive keys, strict keyword matching, flat JSON assumptions). After fixing, they scored 8–10/10. See commit `362ee3a` for details.
+**Perfect 10/10:** Router, Validator, Sentiment, Research, Content Planner, Web Scraping, Customer Support, Sprint Summarizer, Transaction, Home Automation, News, Shopping, Code Gen, Code Review, Fact-Check, Algorithm, Legal, Architect, STEM, Debugger, Financial, Security
 
-> **64K re-run finding:** Tests #31 (Recipe) and #42 (Market Research) were re-tested with 64K max_tokens to rule out thinking overflow. Recipe scored 2/10 (model answered but miscalculated scaling math). Market Research timed out at 1200s with 0 tokens returned. Both are **genuine model limitations**, not scorer or truncation issues.
+> **64K re-run:** Recipe (#31) = genuine math error (2/10). Market Research (#42) = timeout. Both are model limitations.
+
 
 
 ## 📦 Evaluation Phases
