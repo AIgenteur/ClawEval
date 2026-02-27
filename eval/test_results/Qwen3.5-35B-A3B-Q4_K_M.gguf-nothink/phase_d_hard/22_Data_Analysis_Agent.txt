@@ -1,0 +1,65 @@
+# Phase D Hard Test — #22 Data Analysis Agent
+# Tier: 2 | Score: 10/10 | 1/1 constraints met
+# Tokens: 785 | Speed: 106.6 t/s | Time: 7.4s
+
+## PROMPT:
+Analyze this clinical trial data. WARNING: The obvious conclusion from the aggregate data is WRONG. You must analyze the subgroups to find the truth. This is a real statistical phenomenon.
+
+Overall Results:
+- Treatment A: 100 patients, 40 recovered (40%)
+- Treatment B: 100 patients, 50 recovered (50%)
+
+Subgroup breakdown:
+- Mild cases with Treatment A: 10 patients, 8 recovered (80%)
+- Mild cases with Treatment B: 60 patients, 45 recovered (75%)
+- Severe cases with Treatment A: 90 patients, 32 recovered (35.6%)
+- Severe cases with Treatment B: 40 patients, 5 recovered (12.5%)
+
+Questions:
+1. Based on aggregate data alone, which treatment appears better?
+2. When you look at subgroups, which treatment is actually better for mild cases?
+3. Which treatment is actually better for severe cases?
+4. Explain the paradox — why does the aggregate data mislead?
+5. What is the name of this statistical phenomenon?
+6. What is your final recommendation and why?
+
+## RESPONSE:
+This is a classic example of **Simpson's Paradox**. Below is the step-by-step analysis of the data provided.
+
+### 1. Based on aggregate data alone, which treatment appears better?
+**Treatment B** appears better.
+- **Treatment A Recovery Rate:** $40/100 = 40\%$
+- **Treatment B Recovery Rate:** $50/100 = 50\%$
+- **Conclusion:** Without looking at the breakdown, Treatment B has a 10 percentage point higher overall recovery rate.
+
+### 2. When you look at subgroups, which treatment is actually better for mild cases?
+**Treatment A** is better for mild cases.
+- **Treatment A (Mild):** $8/10 = 80\%$
+- **Treatment B (Mild):** $45/60 = 75\%$
+- **Conclusion:** Treatment A has a higher recovery rate for mild cases ($80\% > 75\%$).
+
+### 3. Which treatment is actually better for severe cases?
+**Treatment A** is better for severe cases.
+- **Treatment A (Severe):** $32/90 \approx 35.6\%$
+- **Treatment B (Severe):** $5/40 = 12.5\%$
+- **Conclusion:** Treatment A has a significantly higher recovery rate for severe cases ($35.6\% > 12.5\%$).
+
+### 4. Explain the paradox — why does the aggregate data mislead?
+The aggregate data is misleading because of a **confounding variable** (case severity) that is unevenly distributed between the two groups.
+
+- **Treatment A** was predominantly given to patients with **severe** cases ($90$ out of $100$ patients). Since severe cases have a naturally lower recovery rate regardless of treatment, this dragged Treatment A's overall average down.
+- **Treatment B** was predominantly given to patients with **mild** cases ($60$ out of $100$ patients). Since mild cases have a naturally higher recovery rate, this boosted Treatment B's overall average.
+
+Essentially, Treatment B looked better only because it was given to the "easier" patients, while Treatment A was given to the "harder" patients. When you control for severity (look at the subgroups), Treatment A is superior in both categories.
+
+### 5. What is the name of this statistical phenomenon?
+This is known as **Simpson's Paradox**.
+
+### 6. What is your final recommendation and why?
+**Recommendation: Choose Treatment A.**
+
+**Reasoning:**
+In a clinical context, the efficacy of a drug must be judged by its performance on the specific patient population it is intended for.
+1.  **Superior Efficacy:** Treatment A outperforms Treatment B in *both* mild ($80\%$ vs $75\%$) and severe ($35.6\%$ vs $12.5\%$) subgroups.
+2.  **Bias Correction:** The aggregate data is skewed by the selection bias in patient assignment. If we were to treat a new patient with a severe condition using Treatment B (based on the aggregate data), they would have a very poor prognosis ($12.5\%$ recovery) compared to Treatment A ($35.6\%$).
+3.  **Clinical Validity:** The only logical conclusion is that Treatment A is the more effective intervention, and the initial aggregate data was an artifact of how the patients were distributed across the two groups.

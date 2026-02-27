@@ -1,0 +1,71 @@
+=== TURN 1 ===
+```python
+def parse_duration(duration_str):
+    import re
+    if not duration_str:
+        return -1
+    
+    matches = re.findall(r'(\d+)([hms])', duration_str)
+    
+    if not matches:
+        return -1
+    
+    # Check if the string contains only valid duration patterns
+    if re.sub(r'\d+[hms]', '', duration_str):
+        return -1
+    
+    # Check for duplicate units
+    units = [m[1] for m in matches]
+    if len(units) != len(set(units)):
+        return -1
+    
+    total_seconds = 0
+    for num, unit in matches:
+        value = int(num)
+        if unit == 'h':
+            total_seconds += value * 3600
+        elif unit == 'm':
+            total_seconds += value * 60
+        elif unit == 's':
+            total_seconds += value
+            
+    return total_seconds
+```
+
+=== TURN 2 ===
+```python
+def parse_duration(duration_str):
+    import re
+    if not duration_str:
+        return -1
+    
+    matches = re.findall(r'(\d+)([hms])', duration_str)
+    
+    if not matches:
+        return -1
+    
+    # Check if the string contains only valid duration patterns
+    if re.sub(r'\d+[hms]', '', duration_str):
+        return -1
+    
+    # Check for duplicate units
+    units = [m[1] for m in matches]
+    if len(units) != len(set(units)):
+        return -1
+    
+    total_seconds = 0
+    for num, unit in matches:
+        value = int(num)
+        if unit == 'h':
+            total_seconds += value * 3600
+        elif unit == 'm':
+            total_seconds += value * 60
+        elif unit == 's':
+            total_seconds += value
+            
+    return total_seconds
+```
+
+=== TURN 3 ===
+ERROR: HTTPConnectionPool(host='192.168.1.7', port=8080): Read timed out. (read timeout=120)
+

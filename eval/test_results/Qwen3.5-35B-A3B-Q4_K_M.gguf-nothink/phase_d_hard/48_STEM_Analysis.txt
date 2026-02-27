@@ -1,0 +1,108 @@
+# Phase D Hard Test — #48 STEM Analysis
+# Tier: 4 | Score: 10/10 | 2/2 constraints met
+# Tokens: 1653 | Speed: 103.2 t/s | Time: 16.0s
+
+## PROMPT:
+Analyze this experimental data. There's a CONFOUNDING VARIABLE that invalidates the researcher's conclusion. Find it.
+
+Experiment: Testing whether a new fertilizer increases crop yield.
+
+Group A (fertilizer): 20 plots, avg yield 8.2 tons/hectare, std dev 1.1
+Group B (control): 20 plots, avg yield 6.4 tons/hectare, std dev 1.3
+
+Researcher's conclusion: "The fertilizer increased yield by 28% (p < 0.01). The fertilizer clearly works."
+
+Hidden data (not in the paper's abstract):
+- Group A plots: southern slope, clay soil, received 20% more sunlight in May
+- Group B plots: northern slope, sandy soil
+- The study was not randomized — farmers who CHOSE the fertilizer happened to own the better plots
+- 3 of the 20 control plots had a pest outbreak mid-season
+
+Questions:
+1. Is the p-value meaningful given the experimental design? Why or why not?
+2. List ALL confounding variables
+3. What type of bias is present? (selection bias, measurement bias, etc.)
+4. Design a proper experiment that would actually test the fertilizer
+5. Calculate: IF we remove the 3 pest-affected plots, what is the new control average? (remaining 17 plots had avg 7.1 tons) Does this change the conclusion?
+
+## RESPONSE:
+Here is the analysis of the experimental data, identifying the confounding variables and addressing the specific questions.
+
+### 1. Is the p-value meaningful given the experimental design? Why or why not?
+
+**No, the p-value is not meaningful.**
+
+The p-value ($p < 0.01$) indicates that the difference in means between Group A and Group B is statistically significant *assuming the null hypothesis is true and the data meets the assumptions of the test* (specifically, that the groups are independent and randomly sampled from the same population).
+
+In this experiment, the fundamental assumption of **random assignment** was violated. Because the groups were not randomized, the "difference" measured by the p-value is a mixture of the fertilizer's effect and the massive differences in environmental conditions (slope, soil type, sunlight) and external events (pests). The statistical test is comparing two fundamentally different populations, not the effect of a treatment on a single population. Therefore, the low p-value merely confirms that "Southern Clay Plots with more sun" yield differently than "Northern Sandy Plots," which is a trivial finding, not proof of the fertilizer's efficacy.
+
+### 2. List ALL confounding variables
+
+A confounding variable is an extraneous variable that correlates with both the dependent variable (yield) and the independent variable (fertilizer use). Based on the hidden data, the following variables are confounded:
+
+1.  **Geographic Orientation (Slope):** Group A was on a southern slope (more sun), while Group B was on a northern slope (less sun).
+2.  **Soil Composition:** Group A had clay soil, while Group B had sandy soil. (Clay often retains water and nutrients differently than sand).
+3.  **Sunlight Exposure:** Group A received 20% more sunlight in May, a critical growth period.
+4.  **Pest Infestation:** 3 plots in Group B suffered a pest outbreak, artificially depressing the control group's average.
+5.  **Farmer Selection Bias (Self-Selection):** The farmers who chose the fertilizer were not a random sample; they specifically chose plots they believed were better or more manageable.
+
+### 3. What type of bias is present?
+
+The primary bias present is **Selection Bias** (specifically, **Self-Selection Bias** or **Allocation Bias**).
+
+*   **Why:** The assignment to the treatment group (fertilizer) was not controlled by the researcher but was determined by the farmers' own choices. The farmers chose the "better" plots (southern slope, clay soil) for the fertilizer, while the "worse" plots (northern slope, sandy soil) were left as the control.
+*   **Secondary Bias:** There is also **Survivorship Bias** (or attrition bias) regarding the pest outbreak, as the control group suffered a specific event that the treatment group did not, skewing the results further.
+
+### 4. Design a proper experiment that would actually test the fertilizer
+
+To validly test the fertilizer, the experiment must isolate the variable of interest (fertilizer) from all other environmental factors.
+
+**Proposed Design: Randomized Controlled Trial (RCT) with Blocking**
+
+1.  **Site Selection:** Select a large field with uniform soil composition and topography (or select multiple fields with varying conditions to ensure generalizability).
+2.  **Blocking:** Divide the field into homogeneous blocks based on known confounders (e.g., slope direction, soil type, sunlight exposure).
+3.  **Randomization:** Within each block, randomly assign plots to either the **Treatment Group** (Fertilizer) or the **Control Group** (No Fertilizer). This ensures that soil type, slope, and sunlight are distributed equally between the two groups.
+4.  **Blinding:** If possible, use a double-blind approach where the farmers measuring the yield do not know which plots received the fertilizer (to prevent unconscious bias in measurement).
+5.  **Standardization:** Ensure all plots receive the exact same amount of water, pest control, and sunlight exposure (if possible, or statistically control for it).
+6.  **Replication:** Ensure a sufficient sample size (e.g., $n=50$ per group) to reduce the impact of random outliers like a localized pest outbreak.
+7.  **Data Collection:** Measure yield at harvest and compare the means using a t-test or ANOVA.
+
+### 5. Calculate: IF we remove the 3 pest-affected plots, what is the new control average? Does this change the conclusion?
+
+**Calculation:**
+
+*   **Original Control Data:**
+    *   $N_{old} = 20$
+    *   $Mean_{old} = 6.4$ tons
+    *   $Total_{old} = 20 \times 6.4 = 128$ tons
+
+*   **Pest-Affected Data:**
+    *   $N_{pest} = 3$
+    *   $Mean_{pest} = ?$ (We don't know the specific mean of the 3 plots, but we know the remaining 17 have a mean of 7.1).
+    *   Actually, the prompt gives us the data for the *remaining* 17 plots directly:
+    *   $N_{remaining} = 17$
+    *   $Mean_{remaining} = 7.1$ tons
+    *   $Total_{remaining} = 17 \times 7.1 = 120.7$ tons
+
+*   **Re-evaluating the "New Control Average":**
+    The question asks for the new average *if we remove the 3 pest-affected plots*. This is simply the average of the remaining 17 plots.
+    *   **New Control Average ($Mean_{new}$)** = **7.1 tons/hectare**.
+
+    *(Self-Correction/Verification: If the original average was 6.4 with 20 plots, and removing 3 bad plots raised the average to 7.1, the 3 pest plots must have had a very low yield, likely dragging the average down significantly.)*
+
+**Does this change the conclusion?**
+
+**Yes, it significantly weakens the conclusion.**
+
+*   **New Comparison:**
+    *   Treatment (Fertilizer): 8.2 tons
+    *   Control (Cleaned): 7.1 tons
+    *   **Difference:** $8.2 - 7.1 = 1.1$ tons.
+    *   **Percentage Increase:** $(1.1 / 7.1) \approx 15.5\%$.
+
+*   **Analysis:**
+    1.  **Magnitude:** The yield increase drops from the claimed **28%** to roughly **15.5%**. While still positive, it is less than half the magnitude originally claimed.
+    2.  **Confounding Remains:** Even with the pest data removed, the conclusion that "The fertilizer clearly works" is still invalid because **Group A still has the confounding advantages** (Southern slope, Clay soil, +20% Sunlight).
+    3.  **Final Verdict:** The removal of the pest data suggests the fertilizer *might* have a positive effect, but the **confounding variables (soil and sunlight)** mean we still cannot attribute the 1.1 ton difference to the fertilizer. It is highly probable that the southern clay soil and extra sunlight alone caused the higher yield, and the fertilizer contributed little to nothing.
+
+**Summary:** The original conclusion was a statistical artifact caused by a flawed design. Even after fixing the pest outlier, the study remains scientifically invalid due to the lack of randomization and the presence of strong environmental confounders.

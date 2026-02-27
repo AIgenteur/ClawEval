@@ -1,0 +1,218 @@
+# Phase D Hard Test — #56 Security Analyst Agent
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 2542 | Speed: 106.5 t/s | Time: 23.9s
+
+## PROMPT:
+Security audit this code. There are 7 vulnerabilities. Most are obvious, but ONE is subtle (prototype pollution). Find all 7.
+
+```javascript
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+// Utility: deep merge objects
+function merge(target, source) {
+  for (let key in source) {
+    if (typeof source[key] === 'object' && source[key] !== null) {
+      target[key] = target[key] || {};
+      merge(target[key], source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+const users = {};
+
+app.post('/register', (req, res) => {
+  const defaults = { role: 'user', active: true };
+  const userData = merge(defaults, req.body);
+  users[userData.email] = userData;
+  res.json({ message: `Welcome ${userData.name}!`, role: userData.role });
+});
+
+app.get('/user/:email', (req, res) => {
+  const user = users[req.params.email];
+  if (!user) return res.status(404).send('Not found');
+  res.json(user);
+});
+
+app.post('/admin/config', (req, res) => {
+  if (users[req.body.email]?.role !== 'admin') {
+    return res.status(403).send('Forbidden');
+  }
+  const config = require(req.body.configPath);
+  res.json(config);
+});
+
+app.listen(3000);
+```
+
+For each vulnerability:
+1. OWASP category
+2. Severity (Critical/High/Medium/Low)  
+3. Exploitation example (show the malicious request)
+4. Fix
+
+The SUBTLE one: How can an attacker make themselves admin using only the /register endpoint? (Hint: __proto__)
+
+## RESPONSE:
+Here is the security audit of the provided code, identifying all 7 vulnerabilities.
+
+### Vulnerability 1: Prototype Pollution (The Subtle One)
+*   **OWASP Category:** A07:2021-Identification and Authentication Failures / A03:2021-Injection
+*   **Severity:** Critical
+*   **Exploitation Example:**
+    The `merge` function recursively copies properties from `req.body` to `defaults` without checking for `__proto__`. An attacker can pollute the global `Object.prototype`.
+    ```http
+    POST /register
+    Content-Type: application/json
+    Body: {
+      "__proto__": { "role": "admin" },
+      "email": "victim@example.com",
+      "name": "Victim"
+    }
+    ```
+    *Result:* `users` object (and potentially all other objects in the runtime) now inherits `role: "admin"`. The attacker can then access `/user/:email` for any user and see them as admin, or bypass the admin check in `/admin/config` if they can trick the app into checking `req.body.email` against a polluted prototype.
+    *Note:* In this specific code, the `merge` function is called on `defaults`. If the attacker sends `__proto__`, it modifies the prototype of the `defaults` object. Since `defaults` is reused or the prototype is shared, subsequent checks like `users[req.body.email]?.role` might return "admin" if the prototype pollution affects the lookup chain.
+*   **Fix:**
+    Use `Object.create(null)` for the target object to avoid prototype inheritance, or strictly whitelist keys and block `__proto__`, `constructor`, and `prototype`.
+    ```javascript
+    function merge(target, source) {
+      for (let key in source) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+        // ... rest of logic
+      }
+    }
+    ```
+
+### Vulnerability 2: Path Traversal / Arbitrary File Read
+*   **OWASP Category:** A05:2021-Security Misconfiguration / A03:2021-Injection
+*   **Severity:** Critical
+*   **Exploitation Example:**
+    The `/admin/config` endpoint uses `require(req.body.configPath)` without sanitization. An attacker can read any file on the server.
+    ```http
+    POST /admin/config
+    Content-Type: application/json
+    Body: {
+      "email": "admin@example.com",
+      "configPath": "../../etc/passwd"
+    }
+    ```
+    *Result:* The server attempts to `require` the file. If the path resolves to a JS file, it executes code. If it resolves to a text file (depending on Node version/config), it may crash or leak content. More dangerously, if the attacker controls a `.js` file on the server (e.g., via a previous upload vulnerability or shared hosting), they can execute arbitrary code (RCE).
+*   **Fix:**
+    Validate `configPath` against a strict allowlist of absolute paths. Never use user input directly in `require()`.
+    ```javascript
+    const allowedPaths = ['/etc/config/app.js'];
+    if (!allowedPaths.includes(req.body.configPath)) {
+      return res.status(403).send('Invalid path');
+    }
+    ```
+
+### Vulnerability 3: Insecure Direct Object Reference (IDOR)
+*   **OWASP Category:** A01:2021-Broken Access Control
+*   **Severity:** High
+*   **Exploitation Example:**
+    The `/user/:email` endpoint retrieves data based solely on user input without verifying if the requester is authorized to view that specific user.
+    ```http
+    GET /user/admin@example.com
+    ```
+    *Result:* Any authenticated (or even unauthenticated, depending on middleware not shown) user can retrieve the data of any other user in the `users` object.
+*   **Fix:**
+    Implement authorization logic to ensure the requesting user is the owner of the requested resource or is an administrator.
+    ```javascript
+    if (req.user.email !== req.params.email && req.user.role !== 'admin') {
+      return res.status(403).send('Forbidden');
+    }
+    ```
+
+### Vulnerability 4: Missing Rate Limiting / Brute Force
+*   **OWASP Category:** A02:2021-Cryptographic Failures (often grouped with Account Takeover) / A07:2021-Identification and Authentication Failures
+*   **Severity:** High
+*   **Exploitation Example:**
+    The `/register` and `/user/:email` endpoints have no rate limiting. An attacker can script requests to enumerate valid emails or brute-force credentials (if a login endpoint existed).
+    ```http
+    # Script sending thousands of requests
+    for email in list_of_emails:
+       GET /user/{email}
+    ```
+    *Result:* Information disclosure (valid email enumeration) or Denial of Service (DoS) against the server.
+*   **Fix:**
+    Implement rate limiting using middleware like `express-rate-limit`.
+    ```javascript
+    const rateLimit = require('express-rate-limit');
+    const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+    app.use('/register', limiter);
+    ```
+
+### Vulnerability 5: Insecure Deserialization / Unvalidated Input
+*   **OWASP Category:** A03:2021-Injection
+*   **Severity:** Medium
+*   **Exploitation Example:**
+    The `merge` function blindly accepts `req.body`. If an attacker sends a deeply nested object or a specific structure, it could cause a **ReDoS (Regular Expression Denial of Service)** if the `merge` logic were more complex, or simply exhaust memory (Memory Exhaustion).
+    ```http
+    POST /register
+    Body: { "data": { "data": { ... } } } // Deep nesting
+    ```
+    *Result:* Stack overflow or memory exhaustion due to the recursive `merge` function processing a massive payload.
+*   **Fix:**
+    Implement a maximum depth limit for the `merge` function and validate the size of the incoming JSON payload (`express.json({ limit: '10kb' })`).
+
+### Vulnerability 6: Sensitive Data Exposure / Information Leakage
+*   **OWASP Category:** A03:2021-Injection / A06:2021-Vulnerable and Outdated Components
+*   **Severity:** Medium
+*   **Exploitation Example:**
+    The response in `/register` includes the user's role and name, and the `/user/:email` endpoint returns the entire user object.
+    ```http
+    GET /user/:email
+    Response: { "email": "a@b.com", "role": "user", "active": true, ... }
+    ```
+    *Result:* If the `users` object contains sensitive fields (like passwords, though not shown here, or internal IDs), they are exposed. Furthermore, the error message `Welcome ${userData.name}!` could be used for phishing if the name is controlled by the attacker (though less critical here).
+*   **Fix:**
+    Sanitize responses to only return necessary fields. Do not expose internal state like `active` or `role` unless strictly required by the client.
+
+### Vulnerability 7: Unrestricted File Upload / Execution (Implicit in `require`)
+*   **OWASP Category:** A03:2021-Injection
+*   **Severity:** Critical
+*   **Exploitation Example:**
+    While `require` is the main issue (Vuln 2), the specific pattern of `require(req.body.configPath)` is a direct code execution vector if the attacker can control the file content.
+    ```http
+    POST /admin/config
+    Body: { "email": "admin@...", "configPath": "./malicious.js" }
+    ```
+    *Result:* If `malicious.js` exists on the server (e.g., via a previous vulnerability or misconfiguration), it executes immediately. This is often a precursor to Remote Code Execution (RCE).
+*   **Fix:**
+    Do not use `require` with user input. Use a configuration management system or a strict allowlist of file paths.
+
+---
+
+### Summary of the Subtle Vulnerability (Prototype Pollution)
+**How the attacker makes themselves admin using only `/register`:**
+
+1.  **The Vector:** The `merge` function iterates over `req.body` and assigns properties to `target` (which is `defaults`).
+2.  **The Payload:** The attacker sends `{"__proto__": {"role": "admin"}}`.
+3.  **The Mechanism:** In JavaScript, `target["__proto__"]` is an alias for `Object.getPrototypeOf(target)`. When the loop hits `__proto__`, it doesn't just set a property on `defaults`; it modifies the prototype chain of the `defaults` object.
+4.  **The Consequence:** Since `defaults` is a plain object, its prototype is `Object.prototype`. By setting `defaults["__proto__"].role = "admin"`, the attacker effectively sets `Object.prototype.role = "admin"`.
+5.  **The Bypass:**
+    *   Later, the code checks `users[req.body.email]?.role`.
+    *   If the attacker registers a new user, `userData` is created from `merge`.
+    *   However, the real danger is in the **Admin Check** logic: `if (users[req.body.email]?.role !== 'admin')`.
+    *   If the attacker sends a request to `/admin/config` with an email that *doesn't* exist in `users`, the code checks `users[nonExistentEmail]`. This returns `undefined`. `undefined?.role` is `undefined`.
+    *   **Wait, let's refine the specific exploit for this code:**
+        The code does: `const userData = merge(defaults, req.body);`
+        If the attacker sends `{"__proto__": {"role": "admin"}}`, `defaults` gets polluted.
+        Then `users[userData.email] = userData`.
+        The `userData` object itself has `role: "admin"` because it was merged from the polluted `defaults` (or the prototype pollution makes `role` accessible on the prototype).
+        **Crucially:** If the attacker registers as `attacker@attacker.com`, `userData` gets `role: "admin"`.
+        Now, if the attacker tries to access `/admin/config` with `email: "attacker@attacker.com"`, the check `users[req.body.email]?.role` returns `"admin"`.
+        The attacker is now an admin.
+
+**Corrected Exploit Flow:**
+1.  `POST /register` with `{"__proto__": {"role": "admin"}, "email": "attacker@attacker.com", "name": "Attacker"}`.
+2.  `merge` sets `Object.prototype.role = "admin"`.
+3.  `userData` (the result of merge) now has `role: "admin"` (either directly on the object or inherited).
+4.  `users["attacker@attacker.com"] = userData`.
+5.  `POST /admin/config` with `email: "attacker@attacker.com"`.
+6.  Check `users["attacker@attacker.com"].role` returns `"admin"`.
+7.  Access granted.

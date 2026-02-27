@@ -1,0 +1,154 @@
+# Phase D Hard Test — #29 Home Automation Agent
+# Tier: 2 | Score: 10/10 | 4/4 constraints met
+# Tokens: 1913 | Speed: 108.3 t/s | Time: 17.7s
+
+## PROMPT:
+Create an automation routine from this description. WARNING: There are 3 logical conflicts in the requirements that you must identify and resolve.
+
+"When we say 'movie night': dim all lights to 5%, close all blinds, set thermostat to 72°F, turn on the sound system, start the projector, lock all doors, activate security cameras, and set the house to 'do not disturb' mode.
+
+Also when we say 'movie night': open the living room windows for fresh air, leave the dog door unlocked so Max can go out, and keep the hallway lights at full brightness so the kids can see.
+
+Additional rules: 
+- If CO2 sensor reads above 1000ppm, force-open windows regardless of other settings
+- If smoke detector triggers, all automations must stop and all lights go to 100%
+- If nobody has moved in 2 hours, assume everyone fell asleep and turn everything off
+
+Identify the conflicts, explain how you'd resolve each, and provide the final automation logic.
+
+## RESPONSE:
+Here is the analysis of the logical conflicts, the resolution strategy, and the final automation routine.
+
+### Part 1: Identification of Logical Conflicts
+
+The requirements contain three distinct logical contradictions that would cause the system to fail or behave dangerously if executed simultaneously:
+
+1.  **Thermal & Airflow Conflict (Blinds vs. Windows)**
+    *   **Conflict:** The primary command requires closing **all blinds** (implying a sealed, dark environment), while the secondary command requires **opening living room windows** for fresh air.
+    *   **Impact:** If the system executes both, the windows will open immediately after closing, or the blinds will block the airflow, defeating the purpose of "fresh air." Furthermore, opening windows while the thermostat is set to 72°F (potentially cooling/heating a sealed room) creates an energy inefficiency and comfort conflict.
+
+2.  **Security & Safety Conflict (Locking vs. Pet Access)**
+    *   **Conflict:** The primary command requires **locking all doors** and **activating security cameras** (implying a secure, closed perimeter), while the secondary command requires leaving the **dog door unlocked** for the dog (Max) to exit.
+    *   **Impact:** "Locking all doors" usually includes the dog door or the door leading to the dog door. If the system locks the perimeter, Max cannot exit. If the system leaves the dog door open, the "all doors locked" security state is compromised, potentially triggering a false alarm or leaving the house vulnerable.
+
+3.  **Lighting & Atmosphere Conflict (Darkness vs. Visibility)**
+    *   **Conflict:** The primary command requires **dimming all lights to 5%** (creating a cinema environment), while the secondary command requires keeping **hallway lights at full brightness** (for kids).
+    *   **Impact:** While technically possible to have different zones at different levels, the instruction "dim *all* lights" contradicts "keep hallway lights at full brightness." Additionally, full brightness in the hallway during a "movie night" (where the goal is usually immersion) creates a high-contrast glare that ruins the viewing experience, and the "do not disturb" mode usually implies silence and darkness throughout the house.
+
+---
+
+### Part 2: Resolution Strategy
+
+To resolve these conflicts, we must prioritize **Safety > Security > Comfort > Atmosphere**.
+
+1.  **Resolving Thermal/Airflow:**
+    *   **Resolution:** Prioritize the **CO2 Sensor** rule. If CO2 is low, the "fresh air" command is overridden by the "movie night" comfort setting (closed blinds/windows) to maintain the 72°F target and darkness. If CO2 is high, the "force-open" rule takes precedence.
+    *   *Refinement:* The "open windows" command is removed from the standard "movie night" routine unless the CO2 sensor triggers it.
+
+2.  **Resolving Security/Pet Access:**
+    *   **Resolution:** Define "All doors" to exclude the specific "Dog Door" entity. The security system will arm the perimeter, but the dog door will be explicitly excluded from the "lock all doors" command.
+    *   *Refinement:* The security cameras will monitor the dog door area, but the lock command will be conditional: `Lock(All_Excluding_Dog_Door)`.
+
+3.  **Resolving Lighting/Visibility:**
+    *   **Resolution:** Implement **Zoning**. The "dim all lights" command applies to the *Living Room* and *Cinema Zone*. The "hallway lights" are a separate zone.
+    *   *Refinement:* The "Movie Night" mode will dim the main room to 5% but explicitly set the Hallway to 100% *only* if the "Kids" presence is detected or if the "Hallway" is a specific exception in the code. However, to maintain the "Do Not Disturb" integrity, we will set the hallway to a low "safety" level (e.g., 20%) rather than full brightness, unless a motion sensor detects a child, at which point it briefly brightens. *Correction based on strict requirements:* We will honor the "full brightness" for the hallway but treat it as a specific exception to the "dim all" rule.
+
+---
+
+### Part 3: Final Automation Logic
+
+Below is the structured logic for the automation routine.
+
+#### **Trigger:** Voice Command "Movie Night"
+
+#### **Phase 1: Safety & Environment Check (Priority Layer)**
+*Before executing any comfort settings, check safety sensors.*
+
+1.  **Check Smoke Detector:**
+    *   **IF** `Smoke_Detector == TRIGGERED`:
+        *   **Action:** Abort "Movie Night" routine immediately.
+        *   **Action:** Set ALL lights to 100%.
+        *   **Action:** Open all blinds/windows (if motorized).
+        *   **Action:** Send emergency alert.
+        *   **END ROUTINE.**
+2.  **Check CO2 Sensor:**
+    *   **IF** `CO2_Sensor > 1000ppm`:
+        *   **Action:** Force-open Living Room windows (Override "Close Blinds").
+        *   **Action:** Set Thermostat to "Eco" (to handle outside temp).
+        *   **Note:** Proceed with other "Movie Night" settings, but windows remain open.
+    *   **ELSE:**
+        *   **Action:** Close all blinds.
+
+#### **Phase 2: Security & Perimeter**
+*   **Action:** Lock all doors.
+    *   *Exception:* Do **NOT** lock the "Dog Door" entity.
+*   **Action:** Activate Security Cameras (Arming mode).
+*   **Action:** Set House Mode to "Do Not Disturb" (Silence notifications, mute intercoms).
+
+#### **Phase 3: Atmosphere & Comfort**
+*   **Thermostat:** Set to 72°F.
+*   **Lighting (Zoned):**
+    *   **Living Room / Cinema Zone:** Dim to 5%.
+    *   **Hallway:** Set to 100% Brightness (Per specific requirement for kids).
+*   **Audio/Video:**
+    *   Turn on Sound System.
+    *   Start Projector.
+
+#### **Phase 4: The "Sleep" Watchdog (Background Process)**
+*This runs continuously while the house is active.*
+
+*   **Condition:** `Motion_Sensor == NO_MOTION` for 2 hours.
+*   **Action:**
+    1.  Assume "Everyone Asleep."
+    2.  **Turn Off:** Projector, Sound System, Hallway Lights (except maybe a nightlight).
+    3.  **Turn On:** Dog Door (if it was locked for security, though it was left open in Phase 2, ensure it is accessible).
+    4.  **Thermostat:** Adjust to "Sleep" mode (e.g., 68°F).
+    5.  **Security:** Keep cameras active, but switch to "Night Vision" mode.
+
+---
+
+### **Summary of Logic Flow (Pseudo-Code)**
+
+```python
+def on_movie_night_command():
+    # 1. SAFETY OVERRIDE (Highest Priority)
+    if smoke_detector.triggered:
+        execute_emergency_protocol() # Lights 100%, Stop all, Open windows
+        return
+
+    # 2. AIR QUALITY OVERRIDE
+    windows_open = False
+    if co2_sensor.reading > 1000:
+        open_living_room_windows()
+        windows_open = True
+        log("CO2 High: Windows forced open")
+    else:
+        close_all_blinds()
+        log("CO2 Normal: Blinds closed")
+
+    # 3. SECURITY & DOGS
+    if not windows_open: # Only lock doors if windows aren't forced open for safety
+        lock_all_doors(exclude=["dog_door"])
+    else:
+        log("Security bypassed due to CO2 safety override")
+        
+    activate_security_cameras()
+    set_house_mode("do_not_disturb")
+
+    # 4. ATMOSPHERE
+    set_thermostat(72)
+    turn_on_sound_system()
+    start_projector()
+    
+    # Lighting Logic
+    dim_lights("living_room", 5)
+    set_lights("hallway", 100) # Exception for kids
+    set_lights("other_rooms", 5)
+
+    # 5. SLEEP WATCHDOG (Background Task)
+    start_sleep_timer(timeout=2_hours)
+    if sleep_timer_expired:
+        turn_off("projector", "sound_system", "hallway_lights")
+        adjust_thermostat("sleep_mode")
+        log("House entered Sleep Mode")
+```

@@ -1,0 +1,464 @@
+# Phase D Hard Test — #34 Landing Page Generator
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 4000 | Speed: 106.3 t/s | Time: 37.6s
+
+## PROMPT:
+Generate a complete, VALID HTML landing page (under 8000 characters) that passes these checks:
+1. Valid HTML5 (proper doctype, meta viewport, lang attribute)
+2. Accessibility: all images have alt text, proper heading hierarchy, skip-to-content link, ARIA labels on interactive elements
+3. Responsive: must work on mobile (use relative units, not fixed px widths)
+4. Sections: hero with CTA, 3 features, pricing (2 tiers), testimonial, footer
+5. No external dependencies (inline CSS only, no CDN links)
+6. Color contrast: text colors must have at least 4.5:1 ratio against backgrounds
+
+Product: "CodeGuard" — AI security scanner for GitHub repos. Free tier: 5 repos. Pro: $29/mo unlimited repos.
+
+After the HTML, explain how you ensured each of the 6 requirements.
+
+## RESPONSE:
+Here is the complete, valid HTML landing page for "CodeGuard".
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CodeGuard - AI-powered security scanning for your GitHub repositories. Secure your code today.">
+    <title>CodeGuard | AI Security Scanner</title>
+    <style>
+        /* CSS Variables for Consistency and Contrast */
+        :root {
+            --primary-color: #2563EB; /* Blue */
+            --primary-dark: #1E40AF;
+            --secondary-color: #111827; /* Dark Gray */
+            --accent-color: #10B981; /* Green */
+            --bg-light: #F9FAFB;
+            --text-main: #1F2937;
+            --text-muted: #4B5563;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--white);
+        }
+
+        /* Accessibility: Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Typography & Responsive Units */
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; }
+        h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; }
+        h3 { font-size: 1.5rem; font-weight: 600; }
+        p { margin-bottom: 1.5rem; font-size: 1.125rem; color: var(--text-muted); }
+
+        /* Layout Utilities */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+        }
+
+        .text-center { text-align: center; }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-dark);
+            outline: 2px solid var(--primary-dark);
+            outline-offset: 2px;
+        }
+
+        /* Header / Nav */
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 5rem 0;
+            background-color: var(--bg-light);
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            max-width: 600px;
+        }
+
+        .hero-image {
+            background-color: #E0E7FF; /* Light blue placeholder */
+            border-radius: 12px;
+            height: 300px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--white);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: #DBEAFE;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .icon-box svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background-color: var(--bg-light);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .pricing-card.pro {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            margin: 1rem 0;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .features-list li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .check-icon {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Testimonial */
+        .testimonial-card {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            padding: 3rem;
+            border-radius: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial-card p {
+            color: #D1D5DB;
+            font-size: 1.25rem;
+            font-style: italic;
+        }
+
+        .author {
+            margin-top: 1.5rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            color: #9CA3AF;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: #9CA3AF;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        /* Mobile Adjustments */
+        @media (min-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr 1fr;
+            }
+            .nav-links {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header role="banner">
+        <div class="container">
+            <nav role="navigation" aria-label="Main Navigation">
+                <a href="#" class="logo" aria-label="CodeGuard Home">
+                    <!-- SVG Shield Icon -->
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                    </svg>
+                    CodeGuard
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                </ul>
+                <a href="#pricing" class="btn btn-primary" aria-label="Get started with CodeGuard">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 id="hero-heading">Secure your code with AI precision.</h1>
+                        <p>Automatically scan your GitHub repositories for vulnerabilities, secrets, and bad practices before they become problems. Trusted by 10,000+ developers.</p>
+                        <a href="#pricing" class="btn btn-primary">Start Scanning Free</a>
+                    </div>
+                    <div class="hero-image" role="img" aria-label="Dashboard screenshot showing security scan results">
+                        <!-- Placeholder for Dashboard Image -->
+                        <span>[ Dashboard UI Placeholder ]</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="section" aria-labelledby="features-heading">
+            <div class="container">
+                <h2 class="text-center" id="features-heading">Why choose CodeGuard?</h2>
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <article class="feature-card">
+                        <div class="icon-box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        </div>
+                        <h3>Real-time Scanning</h3>
+                        <p>Our AI monitors your repositories instantly. Get notified via Slack or Email the moment a vulnerability is detected.</p>
+                    </article>
+
+                    <!-- Feature 2 -->
+                    <article class="feature-card">
+                        <div class="icon-box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                        </div>
+                        <h3>Zero False Positives</h3>
+                        <p>Stop wasting time on noise. Our machine learning models are trained on millions of codebases to ensure accuracy.</p>
+                    </article>
+
+                    <!-- Feature 3 -->
+                    <article class="feature-card">
+                        <div class="icon-box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h2v5z"/></svg>
+                        </div>
+                        <h3>Secret Detection</h3>
+                        <p>Automatically detect exposed API keys, passwords, and tokens in your commit history and fix them immediately.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="section pricing" aria-labelledby="pricing-heading">
+            <div class="container">
+                <h2 class="text-center" id="pricing-heading">Simple, transparent pricing</h2>
+                <div class="pricing-grid">
+                    <!-- Free Tier -->
+                    <div class="pricing-card">
+                        <h3>Starter</h3>
+                        <div class="price">$0<span>/mo</span></div>
+                        <p>Perfect for hobbyists and side projects.</p>
+                        <ul class="features-list">
+                            <li><span class="check-icon">✓</span> 5 Repositories</li>
+                            <li><span class="check-icon">✓</span> Daily Scans</li>
+                            <li><span class="check-icon">✓</span> Community Support</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary" style="background-color: var(--text-main); width: 100%; text-align: center;">Sign Up Free</a>
+                    </div>
+
+                    <!-- Pro Tier -->
+                    <div class="pricing-card pro">
+                        <div class="badge">Most Popular</div>
+                        <h3>Pro</h3>
+                        <div class="price

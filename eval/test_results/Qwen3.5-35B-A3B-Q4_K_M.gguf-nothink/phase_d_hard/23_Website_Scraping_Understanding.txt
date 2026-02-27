@@ -1,0 +1,89 @@
+# Phase D Hard Test — #23 Website Scraping / Understanding
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 1463 | Speed: 109.3 t/s | Time: 13.4s
+
+## PROMPT:
+Extract job information from this HTML AND identify ALL red flags. There are at least 6 problematic elements, some subtle.
+
+<div class='job-listing'>
+<h2>Full-Stack Ninja Rockstar Developer</h2>
+<p class='company'>Stealth Startup (unnamed)</p>
+<p class='location'>Remote* (*must be available 6am-midnight PT for "flexibility")</p>
+<p class='salary'>Competitive salary (equity-heavy compensation)</p>
+<p class='experience'>Entry level (5+ years experience required)</p>
+<p class='requirements'>Must know: React, Vue, Angular, Svelte, Python, Go, Rust, Java, C++, Kubernetes, Terraform, AWS, GCP, Azure, PostgreSQL, MongoDB, Redis, Elasticsearch, GraphQL, REST, gRPC, Docker, CircleCI, Jenkins</p>
+<p class='perks'>Unlimited PTO (average team usage: 5 days/year). Fast-paced environment (mandatory 60hr weeks during "crunch" — approximately 48 weeks/year). We're like a family!</p>
+<p class='equity'>0.001% equity vesting over 6 years with 2-year cliff</p>
+<p class='application'>Apply with cover letter, 3 references, coding challenge (estimated 40 hours), and personality assessment</p>
+</div>
+
+Extract structured data AND write a detailed red flag analysis. Flag every manipulative or unreasonable element.
+
+## RESPONSE:
+Here is the structured extraction of the job information followed by a detailed analysis of the red flags.
+
+### 📋 Structured Job Data Extraction
+
+| Field | Extracted Value |
+| :--- | :--- |
+| **Job Title** | Full-Stack Ninja Rockstar Developer |
+| **Company Name** | Stealth Startup (unnamed) |
+| **Location** | Remote (with strict time zone constraints) |
+| **Salary** | Competitive (described as "equity-heavy") |
+| **Experience Level** | Entry Level (contradicted by requirements) |
+| **Required Stack** | React, Vue, Angular, Svelte, Python, Go, Rust, Java, C++, Kubernetes, Terraform, AWS, GCP, Azure, PostgreSQL, MongoDB, Redis, Elasticsearch, GraphQL, REST, gRPC, Docker, CircleCI, Jenkins |
+| **Work Hours** | 60 hours/week (48 weeks/year) |
+| **Availability** | 6:00 AM – 12:00 AM PT |
+| **PTO Policy** | Unlimited (average usage: 5 days/year) |
+| **Equity Offer** | 0.001% over 6 years (2-year cliff) |
+| **Application Process** | Cover letter, 3 references, 40-hour coding challenge, personality assessment |
+
+---
+
+### 🚩 Red Flag Analysis: 8 Critical Issues Identified
+
+This job posting is a textbook example of a toxic work environment disguised as an exciting startup opportunity. Below is the breakdown of the manipulative and unreasonable elements.
+
+#### 1. The "Ninja Rockstar" Title (Culture of Toxicity)
+*   **The Flag:** Using buzzwords like "Ninja," "Rockstar," or "Guru" is a major warning sign in the tech industry.
+*   **Why it's bad:** These terms are often used by companies to signal that they expect superhuman output without providing superhuman compensation. It implies that "average" developers are not welcome and that the company culture is likely ego-driven and intolerant of burnout.
+
+#### 2. The "Stealth Startup (Unnamed)" Anonymity
+*   **The Flag:** The company refuses to disclose its name.
+*   **Why it's bad:** Legitimate stealth startups usually have a website, a LinkedIn presence, or at least a known founding team. An unnamed company prevents you from researching their reputation, funding status, or legal standing. It is often a tactic to hide a history of lawsuits, bad reviews, or a complete lack of product-market fit.
+
+#### 3. The Impossible "Entry Level" Requirement
+*   **The Flag:** The listing asks for "Entry level" but requires 5+ years of experience and mastery of 20+ distinct technologies.
+*   **Why it's bad:** This is a lie designed to get you to apply. No single developer can be an expert in React, Vue, Angular, *and* Svelte simultaneously, let alone backend languages like Rust, Go, and C++, plus DevOps tools like Terraform and Kubernetes. They are looking for a "unicorn" who will do the work of a team of 5 for the price of one junior hire.
+
+#### 4. The "Equity-Heavy" Compensation Trap
+*   **The Flag:** "Competitive salary" paired with "equity-heavy" and a specific offer of **0.001%**.
+*   **Why it's bad:**
+    *   **0.001% is worthless:** On a $100M exit, this is $1,000. On a failed startup (the most likely outcome), it is $0.
+    *   **6-year vesting:** Standard equity is 4 years. A 6-year vesting schedule is predatory; it locks you in longer than necessary.
+    *   **2-year cliff:** If you are fired or quit before 24 months, you get **nothing**.
+    *   **Equity-heavy:** This usually means the base salary is below market rate, betting on a "lottery ticket" payout that rarely happens.
+
+#### 5. The 40-Hour Unpaid Coding Challenge
+*   **The Flag:** Requiring a "40-hour coding challenge" as part of the application.
+*   **Why it's bad:** This is a form of **free labor**. A standard take-home assignment is 2–4 hours. A 40-hour project is essentially asking you to build a significant portion of their product for free before they even hire you. If they liked your work, they would have hired you. If they don't, they have a free prototype.
+
+#### 6. The "Unlimited PTO" Reality
+*   **The Flag:** "Unlimited PTO" with a disclosed average usage of **5 days/year**.
+*   **Why it's bad:** "Unlimited PTO" is often a euphemism for "No PTO." The data provided (5 days/year) confirms this. In a high-pressure environment, employees rarely take time off for fear of being seen as "not a team player." A standard company offers 15–20 days; this company effectively offers 5.
+
+#### 7. Mandatory "Crunch" Culture
+*   **The Flag:** "Mandatory 60hr weeks... approximately 48 weeks/year."
+*   **Why it's bad:**
+    *   **60 hours/week** is 10 hours a day, 6 days a week.
+    *   **48 weeks/year** means you only get 4 weeks off in the entire year.
+    *   **Mandatory:** This is not a "busy season"; it is the permanent state of employment. This is a recipe for immediate burnout and health issues.
+
+#### 8. The "Family" Manipulation & Time Zone Slavery
+*   **The Flag:** "We're like a family!" combined with "6am-midnight PT availability."
+*   **Why it's bad:**
+    *   **"Family" rhetoric** is used to guilt-trip employees into working unpaid overtime and accepting poor treatment because "family doesn't count hours."
+    *   **6am-midnight PT** is a 18-hour window. If you are remote, this likely means you are expected to be on call or working during your evenings/weekends to accommodate the "flexibility" of the team. It destroys work-life balance.
+
+### ⚠️ Final Verdict
+**DO NOT APPLY.** This is a predatory job posting designed to exploit desperate developers. They are looking for a "full-stack" team of 10 people to do the work of a single person, paying them below market rate with worthless equity, while demanding 60-hour weeks for 48 weeks a year.

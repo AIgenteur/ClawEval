@@ -1,0 +1,97 @@
+# Phase D Hard Test — #53 Legal Document Review
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 1807 | Speed: 105.3 t/s | Time: 17.2s
+
+## PROMPT:
+Review this SaaS contract. There are 8 problematic clauses, but clause #6 has a HIDDEN sub-clause that's easy to miss and is potentially unconscionable.
+
+1. "Service Provider may modify pricing with 7 days email notice. Continued use constitutes acceptance."
+2. "Customer grants Provider a perpetual, irrevocable license to use all data uploaded for any purpose including training AI models."
+3. "Provider's total liability shall not exceed $100 regardless of the fees paid."
+4. "Customer may not make public statements about the Service without Provider's written approval."  
+5. "This agreement is governed by the laws of the Cayman Islands. All disputes must be resolved through arbitration in Singapore."
+6. "Initial term is 12 months. Agreement auto-renews for successive 12-month periods unless cancelled 90 days before renewal. Upon each renewal, pricing increases by the greater of: (a) 15%, or (b) the applicable rate increase as determined solely by Provider."
+7. "Provider may terminate for any reason with 30 days notice. Customer must provide 180 days written notice to terminate."
+8. "Provider may assign this agreement to any third party without Customer consent."
+9. "Customer waives right to participate in class action lawsuits against Provider."
+10. "All intellectual property created using the Service belongs to Provider, including Customer's proprietary workflows and configurations."
+
+For each: risk level, explanation, and suggested counter-language. Flag clause 6's hidden escalation.
+
+## RESPONSE:
+This is a highly predatory SaaS contract. It contains several "take-it-or-leave-it" terms that shift all risk to the Customer while granting the Provider near-total control over the business relationship, data, and pricing.
+
+Below is the review of the 10 clauses. Per your instructions, I have identified the **8 most problematic clauses** (focusing on the highest risks) and flagged the **hidden unconscionable sub-clause** within Clause #6.
+
+### **Clause #6: The Hidden Trap (Critical)**
+> **Original:** "Upon each renewal, pricing increases by the greater of: (a) 15%, or (b) the applicable rate increase as determined solely by Provider."
+
+*   **Risk Level:** 🔴 **CRITICAL / UNCONSCIONABLE**
+*   **The Hidden Sub-Clause:** The phrase **"as determined solely by Provider"** in subsection (b).
+    *   **Why it's unconscionable:** This creates a "blank check" pricing mechanism. There is no objective metric (like CPI, inflation, or market rates) defined. The Provider can arbitrarily decide the "applicable rate" is 500%, 1000%, or even 5000% for the next year. Because the clause uses the "greater of" logic, the Provider can simply declare a massive arbitrary number in (b) to override the 15% cap in (a). This effectively allows the Provider to terminate the contract by price-gouging the Customer into an unpayable state.
+*   **Explanation:** This clause removes all predictability from the budget. Combined with the 90-day cancellation window, the Provider can lock you in for a year, then suddenly demand an exorbitant fee that you cannot reasonably afford, forcing you to either pay or lose your data/workflow.
+*   **Suggested Counter-Language:**
+    > "Upon each renewal, pricing shall increase by no more than the Consumer Price Index (CPI) for the preceding 12 months, capped at a maximum of 5%. Any increase must be accompanied by a written notice detailing the calculation methodology."
+
+---
+
+### **Clause #1: Dynamic Pricing**
+*   **Risk Level:** 🟠 **HIGH**
+*   **Explanation:** A 7-day notice period is insufficient for a business to adjust budgets or migrate data. "Continued use constitutes acceptance" is a "browsewrap" tactic that binds you to price hikes you haven't had time to review.
+*   **Suggested Counter-Language:**
+    > "Provider must provide at least 60 days' written notice of any price increase. Customer may terminate this Agreement without penalty within 30 days of receiving such notice if they do not accept the new pricing."
+
+### **Clause #2: Data & AI License**
+*   **Risk Level:** 🔴 **CRITICAL**
+*   **Explanation:** You are granting the Provider a "perpetual, irrevocable" license to use *your* data for *any* purpose, including training their AI. If your data contains trade secrets, PII, or proprietary workflows, you are effectively giving them away for free to train a competitor's product.
+*   **Suggested Counter-Language:**
+    > "Customer retains all ownership of data uploaded. Provider is granted a limited, non-exclusive license to use Customer Data solely for the purpose of providing the Service. Provider is expressly prohibited from using Customer Data to train AI models or for any other commercial purpose without explicit, written consent."
+
+### **Clause #3: Liability Cap**
+*   **Risk Level:** 🔴 **CRITICAL**
+*   **Explanation:** Capping liability at $100 is absurd for a SaaS contract. If the Provider's negligence causes a data breach, ransomware attack, or system outage that costs your business $1M, you can only recover $100. This renders the contract legally unenforceable in many jurisdictions due to unconscionability.
+*   **Suggested Counter-Language:**
+    > "Provider's total liability shall not exceed the total fees paid by Customer in the 12 months preceding the claim, except in cases of gross negligence, willful misconduct, data breaches, or indemnification obligations, where liability shall be uncapped."
+
+### **Clause #4: NDA / Publicity**
+*   **Risk Level:** 🟡 **MEDIUM**
+*   **Explanation:** Requiring written approval for *any* public statement is a gag order. It prevents you from writing case studies, reviews, or even telling your board that you use the tool. It also stifles your ability to market your own success.
+*   **Suggested Counter-Language:**
+    > "Customer may make public statements regarding the Service, including case studies and testimonials, provided such statements do not disclose Provider's confidential information or trade secrets."
+
+### **Clause #5: Jurisdiction & Arbitration**
+*   **Risk Level:** 🟠 **HIGH**
+*   **Explanation:** Litigating in the Cayman Islands or arbitrating in Singapore is prohibitively expensive for most companies. This effectively forces you to drop any claim against them because the cost of travel and legal counsel in those jurisdictions exceeds the value of the dispute.
+*   **Suggested Counter-Language:**
+    > "This agreement shall be governed by the laws of [Customer's Home State/Country]. Any disputes shall be resolved in the courts of [Customer's Home Jurisdiction] or through binding arbitration in a neutral location mutually agreed upon by both parties, with costs split equally."
+
+### **Clause #7: Termination Asymmetry**
+*   **Risk Level:** 🔴 **CRITICAL**
+*   **Explanation:** The Provider can fire you anytime (for any reason) with 30 days notice. You, however, must give 180 days notice to leave. This is a "lock-in" mechanism designed to trap you. If the service goes bad, you are stuck for 6 months.
+*   **Suggested Counter-Language:**
+    > "Both parties shall have the right to terminate this Agreement with 30 days' written notice. Provider may terminate for cause immediately upon material breach by Customer."
+
+### **Clause #8: Assignment**
+*   **Risk Level:** 🟡 **MEDIUM**
+*   **Explanation:** The Provider can sell your account to a third party (perhaps a competitor or a less secure entity) without asking you. You lose control over who holds your data.
+*   **Suggested Counter-Language:**
+    > "Provider may not assign this Agreement to any third party without Customer's prior written consent, except in the event of a merger or acquisition where the successor assumes all obligations of this Agreement."
+
+### **Clause #9: Class Action Waiver**
+*   **Risk Level:** 🟡 **MEDIUM**
+*   **Explanation:** This prevents you from joining forces with other customers to sue the Provider. If the Provider has a systemic bug affecting 1,000 users, you are forced to sue alone, which is often too expensive to pursue.
+*   **Suggested Counter-Language:**
+    > "Customer reserves the right to participate in class action lawsuits or representative actions against Provider."
+
+### **Clause #10: IP Ownership**
+*   **Risk Level:** 🔴 **CRITICAL**
+*   **Explanation:** This clause claims ownership of "proprietary workflows and configurations" created *using* the Service. If you build a custom process or configure the software to fit your unique business logic, the contract says the Provider owns that intellectual property. You are renting their tool but they own your method.
+*   **Suggested Counter-Language:**
+    > "Customer retains all ownership of all data, workflows, configurations, and intellectual property created or derived using the Service. Provider retains ownership only of the underlying software code."
+
+---
+
+### **Summary of Action Items**
+1.  **Immediate Stop:** Do not sign. The combination of the **$100 liability cap**, the **unlimited AI data license**, and the **hidden price gouging clause** makes this contract legally and financially dangerous.
+2.  **Negotiation Focus:** The Provider will likely fight hardest on **Clause #2 (Data)** and **Clause #6 (Price)**. Be firm that data ownership and predictable pricing are non-negotiable.
+3.  **Hidden Clause Warning:** Specifically highlight the "determined solely by Provider" language in Clause #6. This is the "poison pill" that makes the renewal terms unconscionable.

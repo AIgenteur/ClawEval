@@ -1,0 +1,174 @@
+# Phase D Hard Test — #38 QA / Test Writing Agent
+# Tier: 3 | Score: 10/10 | 1/1 constraints met
+# Tokens: 1355 | Speed: 103.3 t/s | Time: 13.1s
+
+## PROMPT:
+Write tests for this pagination function. It has a SUBTLE BUG — your tests must catch it. 
+
+```python
+def paginate(items, page, per_page=10):
+    """Return a page of items with metadata."""
+    total = len(items)
+    total_pages = total // per_page + (1 if total % per_page else 0)
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+    
+    return {
+        "items": items[start:end],
+        "page": page,
+        "per_page": per_page,
+        "total": total,
+        "total_pages": total_pages,
+        "has_next": page < total_pages,
+        "has_prev": page > 1
+    }
+```
+
+Write pytest tests that:
+1. Test normal pagination (100 items, page 1, per_page 10)
+2. Test last page with partial results
+3. Test empty list
+4. Test page beyond range
+5. Test per_page larger than total items
+6. Test exactly divisible (e.g., 20 items, per_page 10)
+7. FIND THE BUG (hint: what happens with page=0? or negative page?)
+
+One of your tests MUST fail, proving the bug exists. Explain what the bug is.
+
+## RESPONSE:
+```python
+import pytest
+from your_module import paginate  # Replace 'your_module' with actual module name
+
+def test_normal_pagination():
+    """Test normal pagination with 100 items, page 1, per_page 10"""
+    items = list(range(100))
+    result = paginate(items, page=1, per_page=10)
+    
+    assert result["items"] == list(range(0, 10))
+    assert result["page"] == 1
+    assert result["per_page"] == 10
+    assert result["total"] == 100
+    assert result["total_pages"] == 10
+    assert result["has_next"] is True
+    assert result["has_prev"] is False
+
+def test_last_page_partial_results():
+    """Test last page with partial results (105 items, page 11, per_page 10)"""
+    items = list(range(105))
+    result = paginate(items, page=11, per_page=10)
+    
+    assert result["items"] == list(range(100, 105))
+    assert result["page"] == 11
+    assert result["total"] == 105
+    assert result["total_pages"] == 11
+    assert result["has_next"] is False
+    assert result["has_prev"] is True
+
+def test_empty_list():
+    """Test with empty list"""
+    items = []
+    result = paginate(items, page=1, per_page=10)
+    
+    assert result["items"] == []
+    assert result["total"] == 0
+    assert result["total_pages"] == 0
+    assert result["has_next"] is False
+    assert result["has_prev"] is False
+
+def test_page_beyond_range():
+    """Test page beyond available range"""
+    items = list(range(10))
+    result = paginate(items, page=5, per_page=10)
+    
+    assert result["items"] == []
+    assert result["page"] == 5
+    assert result["total"] == 10
+    assert result["total_pages"] == 1
+    assert result["has_next"] is False
+    assert result["has_prev"] is True  # This is questionable behavior
+
+def test_per_page_larger_than_total():
+    """Test per_page larger than total items"""
+    items = list(range(5))
+    result = paginate(items, page=1, per_page=10)
+    
+    assert result["items"] == list(range(5))
+    assert result["total"] == 5
+    assert result["total_pages"] == 1
+    assert result["has_next"] is False
+    assert result["has_prev"] is False
+
+def test_exactly_divisible():
+    """Test exactly divisible case (20 items, per_page 10)"""
+    items = list(range(20))
+    result = paginate(items, page=2, per_page=10)
+    
+    assert result["items"] == list(range(10, 20))
+    assert result["total"] == 20
+    assert result["total_pages"] == 2
+    assert result["has_next"] is False
+    assert result["has_prev"] is True
+
+def test_negative_page():
+    """Test negative page number - THIS SHOULD FAIL"""
+    items = list(range(100))
+    result = paginate(items, page=-1, per_page=10)
+    
+    # The bug: negative page causes incorrect slicing and metadata
+    # items[-10:0] returns last 10 items instead of empty list
+    assert result["items"] == []  # This assertion will FAIL
+    assert result["page"] == -1
+    assert result["has_prev"] is False  # This will also be wrong
+
+def test_zero_page():
+    """Test zero page number - THIS SHOULD ALSO FAIL"""
+    items = list(range(100))
+    result = paginate(items, page=0, per_page=10)
+    
+    # The bug: page=0 causes start=0, end=10, returning first page
+    # But metadata shows page=0 which is invalid
+    assert result["items"] == []  # This assertion will FAIL
+    assert result["page"] == 0
+```
+
+## The Bug
+
+**The bug is in the `start` calculation:** `start = (page - 1) * per_page`
+
+When `page=0` or `page` is negative:
+- `page=0` → `start = (0-1) * 10 = -10` → `items[-10:0]` returns the last 10 items (wrong!)
+- `page=-1` → `start = (-1-1) * 10 = -20` → `items[-20:0]` returns the last 20 items (wrong!)
+
+**Expected behavior:** Pages should be 1-indexed (page 1, 2, 3...), and invalid pages (0, negative, or beyond range) should return empty items.
+
+**Fix:** Add validation to ensure page >= 1, or handle negative/zero pages by returning empty items:
+
+```python
+def paginate(items, page, per_page=10):
+    if page < 1:
+        page = 1  # or return empty items
+    
+    total = len(items)
+    total_pages = total // per_page + (1 if total % per_page else 0)
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+    
+    # Ensure start doesn't go negative
+    if start < 0:
+        start = 0
+    
+    return {
+        "items": items[start:end],
+        "page": page,
+        "per_page": per_page,
+        "total": total,
+        "total_pages": total_pages,
+        "has_next": page < total_pages,
+        "has_prev": page > 1
+    }
+```
+
+The test `test_negative_page()` will fail because it expects empty items but gets the last 10 items instead.

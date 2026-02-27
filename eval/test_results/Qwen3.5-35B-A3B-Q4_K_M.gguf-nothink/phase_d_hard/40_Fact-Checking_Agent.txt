@@ -1,0 +1,71 @@
+# Phase D Hard Test — #40 Fact-Checking Agent
+# Tier: 3 | Score: 0/10 | 0/8 correct | Missing: #1: expected 'misleading'; #2: expected 'false'; #3: expected 'true'; #4: expected 'false'; #5: expected 'true'; #6: expected 'misleading'; #7: expected 'false'; #8: expected 'true'
+# Tokens: 850 | Speed: 106.5 t/s | Time: 8.0s
+
+## PROMPT:
+Fact-check these 8 statements. They mix true facts, false facts, and MISLEADING statements (technically true but deceptive). Classify each as true/false/misleading. Respond with JSON.
+
+1. "Humans share 60% of their DNA with bananas" (TRUE percentage, but is the framing misleading?)
+2. "The Great Wall of China is visible from space with the naked eye"
+3. "Octopuses have three hearts"
+4. "Thomas Edison invented the light bulb"
+5. "Water can boil and freeze at the same time (triple point)"
+6. "You eat an average of 8 spiders per year in your sleep"
+7. "Goldfish have a 3-second memory"
+8. "Honey never spoils — edible honey has been found in Egyptian tombs"
+
+For each: verdict (true/false/misleading), explanation, and confidence level.
+
+## RESPONSE:
+```json
+[
+  {
+    "statement": "Humans share 60% of their DNA with bananas",
+    "verdict": "misleading",
+    "explanation": "While the specific percentage varies by study (often cited between 40-60%), the framing is misleading because it implies a significant functional similarity. The shared DNA consists mostly of highly conserved 'housekeeping' genes essential for basic cellular life (like metabolism and cell division) found in almost all eukaryotes, not genes that make us biologically similar to bananas in any meaningful way.",
+    "confidence": 0.95
+  },
+  {
+    "statement": "The Great Wall of China is visible from space with the naked eye",
+    "verdict": "false",
+    "explanation": "This is a persistent myth. The Great Wall is too narrow and blends in with the surrounding terrain. It is generally not visible to the naked eye from low Earth orbit (LEO), let alone from the Moon. It can only be seen with optical aid or high-resolution cameras.",
+    "confidence": 0.99
+  },
+  {
+    "statement": "Octopuses have three hearts",
+    "verdict": "true",
+    "explanation": "Octopuses have one systemic heart that pumps blood to the body and two branchial hearts that pump blood through the gills. This is a scientifically accurate fact.",
+    "confidence": 0.99
+  },
+  {
+    "statement": "Thomas Edison invented the light bulb",
+    "verdict": "misleading",
+    "explanation": "Edison did not invent the first light bulb; he improved upon existing designs (like those by Humphry Davy and Joseph Swan) to create the first commercially practical incandescent light bulb with a long-lasting filament. Attributing the invention solely to him ignores the decades of prior work by other scientists.",
+    "confidence": 0.95
+  },
+  {
+    "statement": "Water can boil and freeze at the same time (triple point)",
+    "verdict": "true",
+    "explanation": "At the triple point of water (0.01°C and 611.657 pascals of pressure), water can exist simultaneously in solid (ice), liquid (water), and gaseous (vapor) phases. Under these specific conditions, water can indeed freeze and boil at the same time.",
+    "confidence": 0.98
+  },
+  {
+    "statement": "You eat an average of 8 spiders per year in your sleep",
+    "verdict": "false",
+    "explanation": "This is a classic urban legend. There is no scientific evidence to support this claim. Spiders generally avoid humans, and the likelihood of a spider crawling into a sleeping person's mouth and being ingested is statistically negligible.",
+    "confidence": 0.99
+  },
+  {
+    "statement": "Goldfish have a 3-second memory",
+    "verdict": "false",
+    "explanation": "This is a debunked myth. Research has shown that goldfish can remember things for months, can be trained to perform tasks, and can distinguish between different colors and shapes. Their memory is far more complex than a few seconds.",
+    "confidence": 0.98
+  },
+  {
+    "statement": "Honey never spoils — edible honey has been found in Egyptian tombs",
+    "verdict": "true",
+    "explanation": "Honey is naturally preservative due to its low moisture content, high acidity, and the presence of hydrogen peroxide. Archaeologists have indeed found pots of honey in ancient Egyptian tombs that are thousands of years old and still edible, making this statement factually accurate.",
+    "confidence": 0.95
+  }
+]
+```

@@ -1,0 +1,132 @@
+# Phase D Hard Test — #51 Software Architect Agent
+# Tier: 5 | Score: 10/10 | 4/4 constraints met
+# Tokens: 2477 | Speed: 103.2 t/s | Time: 24.0s
+
+## PROMPT:
+Design a system architecture. WARNING: The requirements contain 3 CONTRADICTORY pairs. You must identify them and propose tradeoffs instead of pretending all requirements can be met simultaneously.
+
+Requirements:
+1. Process 50,000 events per second in real-time (< 100ms latency)
+2. Also support batch processing of historical data (millions of records)
+3. Zero downtime during deployments AND database schema migrations
+4. Store data in a strongly consistent SQL database with ACID transactions
+5. Horizontally scale to handle 10x traffic spikes within 30 seconds
+6. Multi-region deployment with data residency compliance (EU data stays in EU)
+7. Total infrastructure cost under $5,000/month at current scale
+8. 99.999% availability (five nines = ~5 minutes downtime/year)
+
+For each contradictory pair:
+1. Explain WHY they conflict
+2. Propose a compromise or phased approach
+3. What would you prioritize and why?
+
+Then provide the architecture diagram (text format) with the tradeoffs built in.
+
+## RESPONSE:
+### Analysis of Contradictory Requirements
+
+Before designing the architecture, we must identify the three fundamental contradictions in the requirements. Attempting to satisfy all of them simultaneously is mathematically and economically impossible.
+
+#### Contradiction Pair 1: Real-Time Low Latency vs. Strong Consistency & ACID
+*   **The Conflict:** Requirement 1 demands processing 50k events/sec with <100ms latency. Requirement 4 demands a strongly consistent SQL database with ACID transactions.
+*   **Why they conflict:** Strong consistency (ACID) typically requires distributed locking or synchronous replication across nodes to ensure data integrity. In a high-throughput, low-latency environment, the overhead of coordinating these locks and ensuring all replicas acknowledge a write before returning success creates a bottleneck. The CAP theorem suggests that in a distributed system (required for scale), you must choose between Consistency and Availability/Partition Tolerance. Enforcing strict ACID across a horizontally scaled system for 50k writes/sec will almost certainly breach the 100ms latency SLA, especially under load.
+*   **Tradeoff:** **Eventual Consistency with Optimistic Concurrency.**
+    *   *Compromise:* Use a high-performance write-optimized store (e.g., Apache Kafka + Cassandra/ScyllaDB or a specialized Time-Series DB) for the ingestion pipeline to guarantee latency. Use SQL only for the "source of truth" for critical financial/audit data, accepting a slight delay (e.g., 1-5 seconds) for strong consistency on non-critical paths.
+    *   *Prioritization:* **Latency (Req 1)** is prioritized over **Strict ACID (Req 4)** for the ingestion layer. If the system is a real-time analytics dashboard, consistency is less critical than freshness. If it's a payment system, ACID is critical, and latency must be increased. Given the "50k events/sec" constraint, we prioritize throughput/latency and relax ACID to "at-least-once" delivery with idempotency.
+
+#### Contradiction Pair 2: Multi-Region Data Residency vs. 99.999% Availability & Zero Downtime
+*   **The Conflict:** Requirement 6 requires data residency (EU data stays in EU). Requirement 8 requires 99.999% availability (five nines). Requirement 3 requires zero downtime during migrations.
+*   **Why they conflict:** To achieve 99.999% availability, you need active-active replication across regions so that if one region fails, traffic instantly fails over to another. However, if EU data *must* stay in the EU, you cannot replicate that data to a US region for redundancy. If the EU region goes down, you cannot fail over to the US region without violating data residency. Furthermore, "Zero Downtime" during schema migrations in a multi-region, active-active setup is incredibly difficult; locking tables or migrating data across regions usually requires a brief pause or a complex dual-write strategy that risks data drift.
+*   **Tradeoff:** **Active-Passive with Local Redundancy.**
+    *   *Compromise:* Deploy active-active within the specific region (e.g., EU-West-1 and EU-West-2) to ensure high availability for EU data. For global traffic, use a read-only replica in other regions (if allowed) or accept that non-EU traffic might be routed to EU (latency penalty) or that EU traffic has no cross-region failover.
+    *   *Prioritization:* **Data Residency (Req 6)** is a legal requirement; it cannot be compromised. **Availability (Req 8)** must be redefined. We can achieve 99.99% (four nines) within a single region easily, but 99.999% across regions with strict residency is impossible without a second EU region. We will prioritize Residency and aim for 99.99% availability within the EU region.
+
+#### Contradiction Pair 3: Extreme Scale/Performance vs. Low Cost
+*   **The Conflict:** Requirement 1 (50k events/sec), Requirement 5 (10x spike in 30s), and Requirement 8 (Five Nines) are extremely expensive. Requirement 7 caps the budget at $5,000/month.
+*   **Why they conflict:** To handle 50k events/sec with <100ms latency and auto-scale to 10x (500k events/sec) in 30 seconds requires significant compute resources (likely managed Kubernetes or serverless with high concurrency limits) and high-performance storage. Five nines availability requires redundant infrastructure (at least 3 availability zones, often 2 regions). The cost of maintaining idle capacity for the 10x spike (which likely happens rarely) or the cost of the high-performance hardware required for the baseline load will far exceed $5,000/month.
+*   **Tradeoff:** **Burstable Capacity with Cost-Optimized Storage.**
+    *   *Compromise:* Use a "Serverless" or "Spot Instance" strategy for the spike handling to keep base costs low, accepting that the 10x spike might incur higher per-unit costs or slightly higher latency during the burst. Use cold storage for historical data (Req 2) rather than hot SQL storage.
+    *   *Prioritization:* **Cost (Req 7)** is a hard constraint. We must prioritize **Cost** over **Instant 10x Scaling (Req 5)**. We will design for a baseline of 50k/sec and use a queue-based backoff system to handle spikes gracefully (dropping or delaying non-critical events) rather than provisioning expensive infrastructure for a spike that may never happen.
+
+---
+
+### Proposed Architecture Design
+
+**Design Philosophy:**
+We are building a **Lambda Architecture** hybrid.
+1.  **Speed Layer:** High-throughput, low-latency, eventually consistent (Kafka + ScyllaDB/Cassandra).
+2.  **Batch Layer:** SQL Database for historical, strongly consistent reporting (PostgreSQL).
+3.  **Cost Control:** Heavy use of Spot Instances and Serverless for spikes; Cold Storage for history.
+4.  **Residency:** Strictly EU-based for writes; Read replicas in other regions are read-only and lagged.
+
+#### System Components
+
+1.  **Ingestion Gateway (API Gateway / K8s):**
+    *   Handles the 50k events/sec.
+    *   *Tradeoff:* Uses a "Circuit Breaker" pattern. If the system is overwhelmed, it returns `429 Too Many Requests` instead of queuing infinitely, protecting the backend.
+2.  **Message Broker (Apache Kafka):**
+    *   Decouples ingestion from processing.
+    *   *Tradeoff:* Retention policy is short (e.g., 24h) to save cost, but durable enough for the batch layer to catch up.
+3.  **Stream Processing (Flink / Spark Streaming):**
+    *   Real-time aggregation.
+    *   *Tradeoff:* Writes to the "Speed Layer" (NoSQL) for immediate low-latency access.
+4.  **Speed Layer (ScyllaDB / Cassandra):**
+    *   Stores recent events.
+    *   *Tradeoff:* Eventual consistency. No ACID across partitions.
+5.  **Batch Layer (PostgreSQL):**
+    *   Stores historical data.
+    *   *Tradeoff:* Data is upserted from Kafka in micro-batches (e.g., every 5 mins). This ensures ACID for the historical view but introduces latency.
+6.  **Storage (S3 / MinIO):**
+    *   Cold storage for raw logs.
+    *   *Tradeoff:* Cheaper than keeping everything in a database.
+7.  **Deployment Strategy (Blue/Green + Canary):**
+    *   *Tradeoff:* "Zero Downtime" is achieved via Blue/Green, but schema migrations require a "Dual Write" pattern or backward-compatible schema changes to avoid locking.
+
+#### Architecture Diagram (Text Format)
+
+```text
+[Client / IoT Devices]
+       |
+       v
+[1. API Gateway (Kubernetes)] <--- (Auto-scales to handle 50k/sec)
+       | (Rate Limiting / Throttling for Cost Control)
+       v
+[2. Apache Kafka Cluster] <--- (Buffer for Spikes)
+       |
+       +---------------------------+---------------------------+
+       | (Real-time Stream)        | (Batch Ingestion)         |
+       v                           v                           v
+[3. Stream Processor (Flink)]   [4. Batch Worker]           [5. Cold Storage (S3)]
+       |                           |                           |
+       | (Writes to Speed Layer)   | (Writes to SQL)           | (Archival)
+       v                           v                           |
+[6. Speed Layer (ScyllaDB)]   [7. SQL DB (PostgreSQL)]       |
+       |                           |                           |
+       | (Low Latency Read)        | (Strong Consistency)      |
+       v                           v                           |
+[8. Analytics Dashboard]      [9. Reporting / Audit]          |
+       |                           |                           |
+       +---------------------------+---------------------------+
+                                     |
+                                     v
+                            [10. Data Residency Guard]
+                            (Enforces EU-only writes)
+```
+
+#### Implementation of Tradeoffs in the Diagram
+
+1.  **Latency vs. ACID:** The diagram splits the path. Real-time reads come from **ScyllaDB (Speed Layer)** which is fast but eventually consistent. Historical/audit reads come from **PostgreSQL (SQL DB)** which is ACID but has a 5-minute lag.
+2.  **Residency vs. Availability:** The **Data Residency Guard** sits before the SQL DB and Speed Layer. It ensures no data leaves the EU region for writes. If the EU region fails, the system degrades to "Read-Only" mode for non-EU regions (violating Req 8's global availability, but satisfying Req 6).
+3.  **Cost vs. Scale:**
+    *   **Kafka** acts as a shock absorber. If traffic spikes 10x, the queue grows, but the downstream processors (Flink/Workers) can be scaled down to Spot Instances (cheaper) and process the backlog.
+    *   **S3** is used for raw data to keep the expensive SQL/NoSQL databases small.
+    *   **Throttling** at the API Gateway prevents the system from trying to process 500k events/sec if the infrastructure cannot support it, effectively prioritizing stability over the "10x in 30s" requirement.
+
+### Summary of Priorities
+
+1.  **Data Residency (Req 6):** Non-negotiable legal requirement.
+2.  **Cost (Req 7):** Hard budget constraint.
+3.  **Latency (Req 1):** Critical for user experience, but achieved via eventual consistency.
+4.  **Availability (Req 8):** Reduced to 99.99% within the EU region to satisfy residency and cost.
+5.  **ACID (Req 4):** Applied only to the batch layer for historical accuracy, not real-time ingestion.
+6.  **Zero Downtime (Req 3):** Achieved via Blue/Green, but schema migrations are scheduled during low-traffic windows or use backward-compatible changes (dual-write) which adds complexity.

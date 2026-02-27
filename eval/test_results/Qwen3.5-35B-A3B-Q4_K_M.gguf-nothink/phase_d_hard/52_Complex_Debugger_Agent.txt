@@ -1,0 +1,154 @@
+# Phase D Hard Test — #52 Complex Debugger Agent
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 1650 | Speed: 102.6 t/s | Time: 16.1s
+
+## PROMPT:
+Debug this distributed system issue. You must identify the EXACT thread interleaving that causes the bug.
+
+```python
+# Simplified payment processing service
+import threading
+import time
+
+class PaymentProcessor:
+    def __init__(self):
+        self.processed = set()
+        self.lock = threading.Lock()
+    
+    def process_payment(self, payment_id, amount):
+        # Step 1: Check if already processed (idempotency check)
+        if payment_id in self.processed:
+            return {"status": "duplicate", "charged": False}
+        
+        # Step 2: Charge the payment gateway (takes ~200ms)
+        result = self._charge_gateway(payment_id, amount)
+        
+        # Step 3: Mark as processed
+        with self.lock:
+            self.processed.add(payment_id)
+        
+        return {"status": "success", "charged": True}
+    
+    def _charge_gateway(self, payment_id, amount):
+        time.sleep(0.2)  # Simulates API call
+        return True
+```
+
+Scenario: Two webhook retries arrive 50ms apart for the same payment_id.
+
+Questions:
+1. Show the exact thread interleaving (T1 step X, T2 step Y...) that causes double charging
+2. Why doesn't the idempotency check prevent it?
+3. Why doesn't the lock prevent it?
+4. Provide 3 different fixes with tradeoffs (pessimistic lock, optimistic lock, idempotency key at gateway level)
+5. Which fix would you choose for a system processing $10M/day? Why?
+
+## RESPONSE:
+### 1. Exact Thread Interleaving Causing Double Charging
+
+The bug occurs because the idempotency check (`if payment_id in self.processed`) and the state update (`self.processed.add(payment_id)`) are **not atomic**. There is a "window of vulnerability" between checking the set and acquiring the lock to add the ID.
+
+Here is the exact interleaving where Thread 1 (T1) and Thread 2 (T2) both process the same `payment_id`:
+
+| Time | Thread | Action | State of `self.processed` |
+| :--- | :--- | :--- | :--- |
+| T0 | **T1** | Enters `process_payment` | `{}` |
+| T1 | **T1** | **Step 1:** Checks `if payment_id in self.processed` | **False** (ID not found) |
+| T2 | **T2** | Enters `process_payment` | `{}` |
+| T3 | **T2** | **Step 1:** Checks `if payment_id in self.processed` | **False** (ID not found) |
+| T4 | **T1** | **Step 2:** Calls `_charge_gateway` (Sleeps 200ms) | `{}` |
+| T5 | **T2** | **Step 2:** Calls `_charge_gateway` (Sleeps 200ms) | `{}` |
+| T6 | **T1** | **Step 3:** Acquires lock, adds ID to set | `{payment_id}` |
+| T7 | **T2** | **Step 3:** Acquires lock, adds ID to set (No-op) | `{payment_id}` |
+
+**Result:** Both threads passed the initial check (T1 and T2) before either could modify the set. Both threads proceeded to charge the gateway.
+
+---
+
+### 2. Why doesn't the idempotency check prevent it?
+
+The idempotency check (`if payment_id in self.processed`) is **non-atomic** relative to the state modification.
+*   **Race Condition:** Both threads read the shared state (`self.processed`) simultaneously while it is empty.
+*   **Visibility:** Since the check happens *outside* the lock, the second thread does not see the modification made by the first thread until the first thread finishes charging and acquires the lock.
+*   **Logic Flaw:** The system assumes that if the ID is not in the set *now*, it will never be in the set *during the charge*. This assumption fails in a concurrent environment.
+
+---
+
+### 3. Why doesn't the lock prevent it?
+
+The lock is placed **only around the state update** (`self.processed.add`), not around the **check-and-act** sequence.
+*   **Scope:** The lock protects the critical section where the set is modified. It does *not* protect the critical section where the decision to charge is made.
+*   **Execution Flow:**
+    1.  T1 checks (no lock).
+    2.  T2 checks (no lock).
+    3.  T1 charges (no lock).
+    4.  T2 charges (no lock).
+    5.  T1 locks and updates.
+    6.  T2 locks and updates.
+*   The lock ensures the *set* is consistent, but it does not ensure the *decision logic* is consistent.
+
+---
+
+### 4. Three Different Fixes
+
+#### Fix A: Pessimistic Locking (Move Lock to Check)
+Wrap the entire check-and-charge logic in a lock.
+```python
+def process_payment(self, payment_id, amount):
+    with self.lock:
+        if payment_id in self.processed:
+            return {"status": "duplicate", "charged": False}
+        
+        # Charge inside lock (blocks other threads during API call)
+        result = self._charge_gateway(payment_id, amount)
+        self.processed.add(payment_id)
+    
+    return {"status": "success", "charged": True}
+```
+*   **Tradeoff:** **High Safety, Low Performance.** The lock is held for ~200ms per request. If 1000 requests arrive simultaneously, they will serialize, causing massive latency spikes and potential timeouts.
+
+#### Fix B: Optimistic Locking (Check-Then-Act with CAS or DB)
+Use a database or distributed cache (like Redis) with atomic operations (e.g., `SETNX` or `Lua script`) to handle the check and add atomically.
+```python
+# Pseudo-code using Redis
+def process_payment(self, payment_id, amount):
+    # Atomic check-and-set
+    if not self.redis.setnx(f"idempotency:{payment_id}", "1"):
+        return {"status": "duplicate", "charged": False}
+    
+    # Charge outside lock (or with separate DB transaction)
+    result = self._charge_gateway(payment_id, amount)
+    
+    return {"status": "success", "charged": True}
+```
+*   **Tradeoff:** **High Performance, Moderate Complexity.** Requires external infrastructure (Redis/DB). If the gateway charge fails *after* the Redis set, you need a rollback mechanism (Saga pattern) to avoid losing the idempotency key while the money wasn't taken.
+
+#### Fix C: Idempotency Key at Gateway Level
+Rely on the Payment Gateway (Stripe, PayPal, etc.) to handle idempotency via an `Idempotency-Key` header.
+```python
+def process_payment(self, payment_id, amount):
+    # No local check needed
+    result = self._charge_gateway(payment_id, amount, idempotency_key=payment_id)
+    
+    # Mark as processed locally only after success
+    with self.lock:
+        self.processed.add(payment_id)
+    
+    return result
+```
+*   **Tradeoff:** **High Performance, Dependency on Gateway.** Shifts the safety burden to the external provider. If the gateway doesn't support idempotency keys or if the key is generated incorrectly, the bug returns. Also requires handling the "gateway success but local failure" scenario.
+
+---
+
+### 5. Recommendation for $10M/Day System
+
+**Choice:** **Fix B (Optimistic Locking with Distributed Cache/DB)**
+
+**Reasoning:**
+1.  **Throughput:** A system processing $10M/day likely handles thousands of transactions per second (TPS). Fix A (Pessimistic Lock) would serialize all concurrent requests, causing the API to become unresponsive during peak traffic. Fix B allows parallel processing of the expensive `_charge_gateway` call.
+2.  **Consistency:** Fix C relies entirely on the gateway. If the gateway is down, or if the local state (`self.processed`) is out of sync with the gateway's internal state, you might lose track of what you've processed. Fix B keeps the source of truth (the idempotency key) in your control.
+3.  **Scalability:** Distributed locks (Redis/DB) scale horizontally better than a single Python `threading.Lock`.
+
+**Implementation Nuance:**
+To make Fix B production-ready, you must implement a **Saga/Compensating Transaction**:
+*   If `setnx` succeeds but `_charge_gateway` fails, you must *not* remove the key immediately (to prevent double charging on retry), but you must mark the transaction as "failed" in your database so you don't retry indefinitely. Ideally, the gateway should return a specific error code that your system interprets as "already processed" even if the local DB says otherwise.

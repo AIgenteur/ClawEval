@@ -1,0 +1,173 @@
+# Phase D Hard Test — #12 Content Planner
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 4000 | Speed: 106.4 t/s | Time: 37.6s
+
+## PROMPT:
+Create a 1-month (4-week) content calendar satisfying ALL 8 constraints. If any constraint is violated, the entire plan fails.
+
+Constraints:
+1. Never post the same format 2 days in a row (formats: blog, video, social, newsletter)
+2. Total production budget must equal exactly $5,000 (blog=$200, video=$500, social=$50, newsletter=$100)
+3. Minimum 2 videos per month
+4. Content pillars (A, B, C) must alternate — never 2 of same pillar in a row
+5. No posts on weekends
+6. Every blog must be preceded by a related social post within 2 days before it
+7. Maximum 3 posts per week
+8. Month theme: Week 1=Awareness, Week 2=Education, Week 3=Engagement, Week 4=Conversion
+
+Show the calendar as a table and verify each constraint at the end with a checklist.
+
+## RESPONSE:
+### Content Calendar: 1-Month Strategy
+
+**Assumptions & Logic:**
+*   **Weeks:** 4 Weeks (20 working days, Mon-Fri).
+*   **Budget Allocation:** To hit exactly $5,000, we must solve the equation: $200B + 500V + 50S + 100N = 5000$.
+    *   Constraint 3 requires $V \ge 2$.
+    *   Constraint 1 requires alternating formats.
+    *   Constraint 6 requires a Social post before every Blog.
+    *   Constraint 4 requires alternating Pillars (A, B, C).
+    *   Constraint 8 assigns themes to weeks.
+*   **Pillar Mapping:**
+    *   Week 1 (Awareness): Pillar A
+    *   Week 2 (Education): Pillar B
+    *   Week 3 (Engagement): Pillar C
+    *   Week 4 (Conversion): Pillar A (Alternating back to A)
+*   **Budget Calculation Strategy:**
+    *   Let's aim for a mix that fits the 20-day schedule (approx 3 posts/week = 12-15 posts total).
+    *   Let's try: 2 Videos ($1,000), 10 Blogs ($2,000), 10 Socials ($500), 8 Newsletters ($800). Total = $4,300. Too low.
+    *   Let's try: 4 Videos ($2,000), 10 Blogs ($2,000), 10 Socials ($500), 8 Newsletters ($800). Total = $5,300. Too high.
+    *   Let's try: 2 Videos ($1,000), 12 Blogs ($2,400), 10 Socials ($500), 8 Newsletters ($800). Total = $4,700.
+    *   Let's try: 2 Videos ($1,000), 14 Blogs ($2,800), 10 Socials ($500), 8 Newsletters ($800). Total = $5,100.
+    *   Let's try: 2 Videos ($1,000), 13 Blogs ($2,600), 10 Socials ($500), 8 Newsletters ($800). Total = $4,900.
+    *   Let's try: 2 Videos ($1,000), 13 Blogs ($2,600), 12 Socials ($600), 8 Newsletters ($800). Total = $5,000.
+    *   **Selected Mix:** 2 Videos, 13 Blogs, 12 Socials, 8 Newsletters.
+    *   **Total Posts:** 35 posts.
+    *   **Days Available:** 20 days (4 weeks x 5 days).
+    *   **Constraint Check:** Max 3 posts per week. 35 posts / 4 weeks = 8.75 posts/week. **VIOLATION.**
+    *   *Correction:* We must reduce total posts to fit the "Max 3 posts per week" constraint (Max 12 posts total for the month).
+    *   **Revised Budget Math:**
+        *   Max posts = 12.
+        *   Let $V$ = Videos, $B$ = Blogs, $S$ = Social, $N$ = Newsletter.
+        *   $V + B + S + N = 12$ (Total posts)
+        *   $500V + 200B + 50S + 100N = 5000$
+        *   Constraint 3: $V \ge 2$.
+        *   Constraint 6: Every Blog needs a Social before it. So $S \ge B$.
+        *   Constraint 1: No same format 2 days in a row.
+        *   Let's try $V=2$ ($1,000). Remaining budget $4,000. Remaining posts 10.
+        *   $200B + 50S + 100N = 4000$.
+        *   $B + S + N = 10$.
+        *   If $B=5$ ($1,000), $S=5$ ($250), $N=0$. Total $1,250. Too low.
+        *   If $B=10$ ($2,000), $S=10$ ($500), $N=0$. Total $2,500. Too low.
+        *   We need higher cost items.
+        *   Let's try $V=4$ ($2,000). Remaining $3,000. Remaining posts 8.
+        *   $200B + 50S + 100N = 3000$.
+        *   $B + S + N = 8$.
+        *   If $B=8$ ($1,600), $S=8$ ($400), $N=0$. Total $2,000. Too low.
+        *   If $B=10$ ($2,000), $S=10$ ($500), $N=10$ ($1,000). Total $3,500. Too high.
+        *   Wait, the budget is $5,000. The costs are high relative to the post count limit.
+        *   Let's re-read Constraint 2: "Total production budget must equal exactly $5,000".
+        *   Let's re-read Constraint 8: "Month theme: Week 1=Awareness, Week 2=Education, Week 3=Engagement, Week 4=Conversion". This implies the *content* has a theme, not necessarily that every post is a different theme, but the week's focus is defined.
+        *   Let's try to maximize the high-cost items (Video/Blog) to hit $5,000 with few posts.
+        *   Equation: $500V + 200B + 50S + 100N = 5000$.
+        *   Max posts = 12 (3 per week * 4 weeks).
+        *   If $V=8$ ($4,000). Remaining $1,000. Posts left 4.
+            *   $200B + 50S + 100N = 1000$.
+            *   $B+S+N = 4$.
+            *   If $B=4$ ($800), $S=4$ ($200), $N=0$. Total $1,000.
+            *   Total Posts: 8 + 4 + 4 = 16. **VIOLATION** (Max 12).
+        *   If $V=10$ ($5,000). Posts left 2. $B=0, S=0, N=0$. Total Posts 10.
+            *   $500(10) = 5000$.
+            *   Posts: 10.
+            *   Constraint 3: Min 2 videos. (10 is ok).
+            *   Constraint 6: Every blog preceded by social. (0 blogs, so 0 socials needed).
+            *   Constraint 1: No same format 2 days in a row.
+            *   Constraint 4: Pillars alternate.
+            *   Constraint 8: Themes per week.
+            *   This works mathematically! 10 Videos.
+            *   But wait, Constraint 6 says "Every blog must be preceded...". If there are 0 blogs, the condition is vacuously true.
+            *   However, usually, a content calendar implies variety. Is there a solution with mixed formats?
+            *   Let's try $V=6$ ($3,000). Remaining $2,000. Posts left 6.
+                *   $200B + 50S + 100N = 2000$.
+                *   $B+S+N = 6$.
+                *   Max cost for 6 posts is $200*6 = 1200$. We need $2000$. Impossible.
+            *   Let's try $V=8$ ($4,000). Remaining $1,000. Posts left 4.
+                *   Max cost for 4 posts is $200*4 = 800$. We need $1,000$. Impossible.
+            *   Let's try $V=9$ ($4,500). Remaining $500. Posts left 3.
+                *   Max cost for 3 posts is $200*3 = 600$. We need $500$.
+                *   Possible: $B=2$ ($400), $S=2$ ($100). Total $500. Posts 4. Total posts 9+4=13. **VIOLATION** (Max 12).
+                *   Possible: $B=1$ ($200), $S=6$ ($300). Total $500. Posts 7. Total 16.
+                *   Possible: $N=5$ ($500). Posts 5. Total 14.
+            *   Let's try $V=10$ ($5,000). Posts 10.
+                *   $B=0, S=0, N=0$.
+                *   Total Posts: 10.
+                *   Max posts allowed: 12. (10 <= 12). OK.
+                *   Constraint 6: No blogs, so no social requirement. OK.
+                *   Constraint 1: No same format 2 days in a row. All videos. **VIOLATION**.
+                *   We cannot have 10 videos in a row or even close to it without violating Constraint 1 (No same format 2 days in a row).
+                *   We need to mix formats to satisfy Constraint 1.
+                *   This implies we need a mix of Blog, Video, Social, Newsletter.
+                *   Let's re-evaluate the budget math. Is it possible to hit $5,000 with mixed formats and max 12 posts?
+                *   Max average cost per post = $5000 / 12 = $416.
+                *   Video = $500. Blog = $200. Newsletter = $100. Social = $50.
+                *   To average $416, we need mostly Videos.
+                *   Let $V$ be videos, $O$ be others.
+                *   $500V + 200B + 100N + 50S = 5000$.
+                *   $V+B+N+S \le 12$.
+                *   If $V=8$ ($4000). Remaining $1000. Posts left 4.
+                    *   Max cost of 4 posts (all blogs) = $800.
+                    *   We need $1000. **Impossible**.
+                *   If $V=9$ ($4500). Remaining $500. Posts left 3.
+                    *   Max cost of 3 posts (all blogs) = $600.
+                    *   We need $500.
+                    *   Possible: 2 Blogs ($400) + 2 Socials ($100) = $500. Posts = 4. Total posts 13. **VIOLATION**.
+                    *   Possible: 1 Blog ($200) + 6 Socials ($300). Posts 7. Total 16.
+                    *   Possible: 5 Newsletters ($500). Posts 5. Total 14.
+                    *   Possible: 1 Blog ($200) + 1 Newsletter ($100) + 2 Socials ($100) = $400. Need $100 more.
+                    *   Possible: 2 Blogs ($400) + 2 Socials ($100) = $500. (4 posts). Total 13.
+                    *   Is there a combination for $500 with 3 posts?
+                        *   $200B + 100N + 50S = 500$.
+                        *   $B+N+S = 3$.
+                        *   If $B=2$ ($400), $S=2$ ($100). Total 4 posts.
+                        *   If $B=1$ ($200), $N=3$ ($300). Total 4 posts.
+                        *   If $B=0$, $N=5$ ($500). Total 5 posts.
+                        *   If $B=0$, $N=4$ ($400), $S=2$ ($100). Total 6 posts.
+                        *   It seems impossible to get exactly $500 with exactly 3 posts.
+                        *   Wait, $200(1) + 100(1) + 50(4) = 400$.
+                        *   $200(1) + 100(3) = 500$. Posts 4.
+                        *   $200(2) + 50(2) = 500$. Posts 4.
+                        *   $100(5) = 500$. Posts 5.
+                        *   $50(10) = 500$. Posts 10.
+                        *   So with $V=9$, we need at least 4 posts for the remaining $500. Total 13 posts. **VIOLATION**.
+                *   If $V=7$ ($3500). Remaining $1500. Posts left 5.
+                    *   Max cost of 5 posts (all blogs) = $1000.
+                    *   We need $1500. **Impossible**.
+                *   **Conclusion:** It is mathematically impossible to reach $5,000 with a maximum of 12 posts (3 per week * 4 weeks) given the cost structure ($500, $200, $100, $50).
+                *   **Re-evaluating Constraint 8:** "Month theme: Week 1=Awareness, Week 2=Education, Week 3=Engagement, Week 4=Conversion".
+                *   Does this mean the *entire* month is 4 weeks? Yes.
+                *   Does "Maximum 3 posts per week" mean 3 posts *total* per week? Yes.
+                *   Is it possible the user implies a 5-day work week but allows more posts? No, "Maximum 3 posts per week" is explicit.
+                *   Is it possible the budget is per month, but the calendar spans more than 4 weeks? "1-month (4-week)".
+                *   Is it possible I am misinterpreting the costs? "blog=$200, video=$500, social=$50, newsletter=$100".
+                *   Is it possible the budget is $5,000 *per week*? "Total production budget must equal exactly $5,000". Usually implies total.
+                *   **Hypothesis:** The constraints are designed to be impossible, OR I need to find a specific combination that works.
+                *   Let's check the math again.
+                *   Max posts = 12.
+                *   Max possible budget with 12 posts (all videos) = $6,000.
+                *   We need $5,000.
+                *   We need to reduce the budget by $1,000 from the max ($6,000).
+                *   Replacing a Video ($500) with a Blog ($200) saves $300.
+                *   Replacing a Video ($500) with a Newsletter ($100) saves $400.
+                *   Replacing a Video ($500) with a Social ($50) saves $450.
+                *   We need to save exactly $1,000.
+                *   Combinations to save $1,000:
+                    *   2 Videos -> 2 Blogs: Save $600. Need $400 more.
+                        *   1 Video -> 1 Newsletter: Save $400.
+                        *   Total savings: $1,000.
+                        *   Posts: 12 - 3 = 9 posts.
+                        *   Wait. Start with 12 Videos ($6,000).
+                        *   Replace 2 Videos with 2 Blogs: Cost $400. Savings $600. Total $5,400.
+                        *   Replace 1 Video with 1 Newsletter: Cost $100. Savings $400. Total $5,000.
+                        *   Total Posts: 12 - 3 = 9 posts.
+                        *   **This works!**
+                        *   **Mix:** 9 Videos, 2 Blogs,

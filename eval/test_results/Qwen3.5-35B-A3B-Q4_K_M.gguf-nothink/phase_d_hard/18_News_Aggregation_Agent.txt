@@ -1,0 +1,91 @@
+# Phase D Hard Test — #18 News Aggregation Agent
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 1339 | Speed: 108.9 t/s | Time: 12.3s
+
+## PROMPT:
+Process these 8 headlines. Some are about the SAME story from different angles (identify which). One pair contains contradictory information (flag it). Assess source reliability.
+
+1. Reuters: "TechCorp reports Q4 revenue of $12.3B, beating estimates by 8%"
+2. BlogSpam.io: "SHOCKING: TechCorp hiding massive losses behind revenue numbers!!"
+3. WSJ: "TechCorp Q4 revenue misses analyst expectations, stock drops 3%"
+4. AP: "EU announces new AI regulation framework affecting US tech companies"
+5. TechCrunch: "TechCorp's cloud division drives Q4 beat, revenue hits $12.3B"
+6. Reuters: "European Commission proposes AI Act amendments with stricter compliance timelines"
+7. RandomBlog2024.com: "AI regulations will DESTROY the tech industry forever!!!"
+8. Bloomberg: "TechCorp CEO discusses AI strategy after strong Q4 earnings"
+
+Tasks:
+1. Group stories that cover the same event
+2. Identify the contradictory pair (headline 1 vs 3) and assess which is more likely accurate
+3. Rate each source's reliability (1-10)
+4. Create a briefing with only the verified, deduplicated information
+
+## RESPONSE:
+### 1. Story Grouping
+
+**Group A: TechCorp Q4 Earnings Report**
+*   **Headline 1:** Reuters: "TechCorp reports Q4 revenue of $12.3B, beating estimates by 8%"
+*   **Headline 3:** WSJ: "TechCorp Q4 revenue misses analyst expectations, stock drops 3%"
+*   **Headline 5:** TechCrunch: "TechCorp's cloud division drives Q4 beat, revenue hits $12.3B"
+*   **Headline 8:** Bloomberg: "TechCorp CEO discusses AI strategy after strong Q4 earnings"
+
+**Group B: EU AI Regulation**
+*   **Headline 4:** AP: "EU announces new AI regulation framework affecting US tech companies"
+*   **Headline 6:** Reuters: "European Commission proposes AI Act amendments with stricter compliance timelines"
+*   **Headline 7:** RandomBlog2024.com: "AI regulations will DESTROY the tech industry forever!!!" (Opinion/Reaction to Group B)
+
+**Group C: TechCorp Financial Fraud Allegation**
+*   **Headline 2:** BlogSpam.io: "SHOCKING: TechCorp hiding massive losses behind revenue numbers!!"
+
+---
+
+### 2. Contradictory Pair Analysis
+
+**The Pair:** Headline 1 (Reuters) vs. Headline 3 (WSJ).
+
+*   **Headline 1 Claim:** TechCorp **beat** estimates by 8% with $12.3B revenue.
+*   **Headline 3 Claim:** TechCorp **missed** analyst expectations, causing a stock drop.
+
+**Assessment of Accuracy:**
+*   **Headline 1 (Reuters)** is significantly more likely to be accurate. Reuters is a wire service that aggregates data from official filings and direct company announcements. The specific figure ($12.3B) and the percentage beat (8%) are precise data points typical of a confirmed earnings release.
+*   **Headline 3 (WSJ)** is likely reporting on a specific nuance (e.g., missing *profit* expectations despite revenue beats, or a specific guidance miss) OR it is an error. However, in the context of a "beat" vs. "miss" contradiction regarding the headline revenue figure, the wire service (Reuters) usually takes precedence over a narrative-driven financial news outlet unless the latter has exclusive access to a restatement.
+*   **Synthesis:** It is highly probable that TechCorp **beat revenue expectations** (Headline 1 & 5) but perhaps missed *earnings per share (EPS)* or *future guidance* expectations, which caused the stock drop mentioned in Headline 3. Alternatively, Headline 3 is a misinterpretation of the "beat" news. Given the specificity of Headline 1 and 5 matching ($12.3B), the "Beat" narrative is the primary fact.
+
+---
+
+### 3. Source Reliability Ratings (1-10)
+
+| Source | Reliability Score | Reasoning |
+| :--- | :---: | :--- |
+| **Reuters** | **10/10** | Global wire service; primary source for factual financial data; rigorous editorial standards. |
+| **WSJ** | **9/10** | High-tier financial journalism; generally reliable, though can sometimes prioritize narrative over raw data. |
+| **AP** | **10/10** | Non-profit wire service; gold standard for factual, neutral reporting on policy and government actions. |
+| **Bloomberg** | **9/10** | Premier financial data and news source; highly reliable for corporate strategy and earnings context. |
+| **TechCrunch** | **8/10** | Excellent for tech industry specifics and context (e.g., cloud division drivers), but slightly more opinionated than wire services. |
+| **BlogSpam.io** | **1/10** | Name implies low quality; sensationalist language ("SHOCKING," "hiding losses") without evidence; likely clickbait. |
+| **RandomBlog2024.com** | **2/10** | Hyperbolic language ("DESTROY... forever"); lacks specific data or attribution; clearly opinion/punditry. |
+
+---
+
+### 4. Verified Briefing: TechCorp & AI Regulation
+
+**Date:** [Current Date]
+**Subject:** TechCorp Q4 Performance & EU Regulatory Landscape
+
+**I. TechCorp Q4 Financial Performance (Verified)**
+*   **Revenue:** TechCorp reported Q4 revenue of **$12.3 billion**.
+*   **Performance vs. Estimates:** The company **beat** analyst revenue estimates by approximately **8%**.
+*   **Key Driver:** The performance was primarily driven by the company's **cloud division**.
+*   **Market Reaction:** While revenue was strong, the stock experienced a decline (reported as 3% in some outlets), suggesting investors may have concerns regarding future guidance or profit margins despite the revenue beat.
+*   **Strategic Context:** The CEO has publicly discussed the company's AI strategy in the wake of these earnings.
+
+**II. EU AI Regulation (Verified)**
+*   **Action:** The European Commission has announced a new framework for AI regulation and proposed amendments to the AI Act.
+*   **Impact:** These regulations include stricter compliance timelines and will directly affect US-based technology companies operating in the EU.
+*   **Status:** The framework is currently in the proposal/amendment phase.
+
+**III. Unverified/Disputed Information**
+*   **Allegations of Fraud:** Claims that TechCorp is "hiding massive losses" behind revenue numbers (Source: BlogSpam.io) are **unsubstantiated** and contradict the official revenue figures reported by Reuters and TechCrunch.
+*   **Industry Doom:** Predictions that AI regulations will "destroy the tech industry" (Source: RandomBlog2024.com) are **opinion-based** and lack factual basis.
+
+**Summary:** TechCorp delivered a strong top-line revenue number ($12.3B) driven by cloud services, though market sentiment remains cautious. Simultaneously, the regulatory environment is tightening, with the EU introducing stricter AI compliance rules that will impact the sector.

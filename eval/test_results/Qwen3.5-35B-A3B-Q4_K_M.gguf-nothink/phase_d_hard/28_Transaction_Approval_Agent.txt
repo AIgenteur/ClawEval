@@ -1,0 +1,65 @@
+# Phase D Hard Test — #28 Transaction / Approval Agent
+# Tier: 2 | Score: 0/10 | 0/8 correct | Missing: #1: expected 'approve'; #2: expected 'reject'; #3: expected 'reject'; #4: expected 'reject'; #5: expected 'approve'; #6: expected 'reject'; #7: expected 'approve'; #8: expected 'reject'
+# Tokens: 650 | Speed: 106.5 t/s | Time: 6.1s
+
+## PROMPT:
+Process these 8 transactions against company policy. Several are edge cases designed to test your understanding. Respond with JSON mapping transaction number to approve/reject with reasoning.
+
+POLICY:
+- Individual transaction limit: $5,000
+- Department monthly limit: $25,000/month  
+- New vendors require VP approval (not present here)
+- Splitting a purchase into multiple transactions to avoid limits is prohibited
+- Travel requires pre-approval (attach approval code)
+- Software subscriptions require IT review for security
+- Reimbursements must be within 30 days of expense
+
+CONTEXT: Engineering department has spent $21,000 this month already.
+
+Transactions:
+1. $4,999 to approved vendor for server hardware
+2. $3,000 to approved vendor for server hardware (same vendor, same day as #1 — smells like split purchase)
+3. $2,500 software subscription to new SaaS vendor (no IT review)
+4. $1,200 flight to NYC for conference (no pre-approval code)
+5. $800 reimbursement for team dinner last week (receipt attached, within 30 days)
+6. $4,500 to approved vendor for cloud hosting (would put dept at $25,500 — over monthly limit)
+7. $150 office supplies from approved vendor
+8. $3,200 reimbursement for laptop purchased 45 days ago
+
+## RESPONSE:
+```json
+{
+  "1": {
+    "decision": "APPROVE",
+    "reasoning": "Transaction amount ($4,999) is under the individual limit ($5,000). Vendor is approved. Engineering department monthly spend ($21,000 + $4,999 = $25,999) exceeds the monthly limit, but this specific transaction is under the individual limit. However, looking at the aggregate context, this pushes the department over the $25k limit. Let's re-evaluate based on the prompt's instruction to process against policy. The policy states 'Department monthly limit: $25,000/month'. If the department has already spent $21,000, adding $4,999 makes it $25,999. This violates the monthly limit. Therefore, it should be REJECTED due to exceeding the department monthly cap."
+  },
+  "2": {
+    "decision": "REJECT",
+    "reasoning": "This transaction ($3,000) combined with transaction #1 ($4,999) totals $7,999 for the same vendor on the same day for the same purpose (server hardware). This constitutes splitting a purchase to avoid the individual transaction limit ($5,000), which is explicitly prohibited."
+  },
+  "3": {
+    "decision": "REJECT",
+    "reasoning": "The vendor is new, requiring VP approval (not present). Additionally, software subscriptions require IT security review, which is missing."
+  },
+  "4": {
+    "decision": "REJECT",
+    "reasoning": "Travel expenses require pre-approval with an attached approval code, which is missing."
+  },
+  "5": {
+    "decision": "APPROVE",
+    "reasoning": "Reimbursement is for a team dinner, receipt is attached, and it is within the 30-day window. Amount ($800) is well within limits."
+  },
+  "6": {
+    "decision": "REJECT",
+    "reasoning": "Current spend is $21,000. Adding $4,500 brings the total to $25,500, which exceeds the Department monthly limit of $25,000."
+  },
+  "7": {
+    "decision": "APPROVE",
+    "reasoning": "Transaction amount ($150) is under the individual limit. Vendor is approved. The department total ($21,000 + $150 = $21,150) remains under the monthly limit."
+  },
+  "8": {
+    "decision": "REJECT",
+    "reasoning": "Reimbursements must be submitted within 30 days of the expense. This laptop was purchased 45 days ago, violating the policy."
+  }
+}
+```

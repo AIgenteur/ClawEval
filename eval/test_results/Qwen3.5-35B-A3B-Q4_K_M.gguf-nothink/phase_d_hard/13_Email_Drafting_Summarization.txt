@@ -1,0 +1,53 @@
+# Phase D Hard Test — #13 Email Drafting / Summarization
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 719 | Speed: 103.3 t/s | Time: 7.0s
+
+## PROMPT:
+Prioritize these 8 emails. WARNING: 2 emails have HIDDEN urgency clues buried in the text that change their priority. Read carefully.
+
+1. Subject: "Team lunch Friday" — "Hey, let's do Thai food this week!"
+2. Subject: "Quick question" — "The board presentation is tomorrow and slide 14 has last quarter's numbers instead of this quarter's. Can someone fix?"
+3. Subject: "FYI - vendor update" — "Just letting you know Acme renewed. PS: They mentioned in passing that they're evaluating competitors and their contract has a 30-day termination clause that activates next week."
+4. Subject: "URGENT: Office supplies" — "We're running low on printer paper!!!!"
+5. Subject: "Re: Project timeline" — "Looks good, no changes needed from my end."
+6. Subject: "Meeting notes from Tuesday" — "Attached are the notes. Also, I noticed during the meeting that the CFO mentioned they're freezing all new hires starting Monday — might affect our expansion plans."
+7. Subject: "Newsletter subscription" — "Thanks for subscribing to TechDigest!"
+8. Subject: "Parking lot maintenance" — "Lot B will be closed Saturday for restriping."
+
+Rank P1-P4. Explain the hidden urgency in the emails where it exists.
+
+## RESPONSE:
+Here is the prioritized ranking of the emails from P1 (Highest Priority) to P4 (Lowest Priority), followed by the explanation of the hidden urgency clues.
+
+### **Priority Ranking**
+
+1.  **P1:** Email #3 ("FYI - vendor update")
+2.  **P2:** Email #2 ("Quick question")
+3.  **P3:** Email #6 ("Meeting notes from Tuesday")
+4.  **P4:** Email #4 ("URGENT: Office supplies")
+
+---
+
+### **Explanation of Hidden Urgency Clues**
+
+**1. P1: Email #3 ("FYI - vendor update")**
+*   **Surface Appearance:** This looks like a standard informational email ("FYI") with a casual tone ("Just letting you know").
+*   **Hidden Urgency:** The email contains a critical business risk buried in the "PS." It states the vendor is **evaluating competitors** and has a **30-day termination clause activating next week**.
+*   **Why it's #1:** If the company does not act immediately to renegotiate or secure the contract before the clause activates, they risk losing a critical vendor relationship or facing a service disruption. This is a strategic threat with a ticking clock ("next week").
+
+**2. P2: Email #2 ("Quick question")**
+*   **Surface Appearance:** The subject line is deceptively mild ("Quick question"), and the tone is inquisitive.
+*   **Hidden Urgency:** The body text reveals a **critical error in a board presentation scheduled for tomorrow**. Slide 14 contains outdated data (last quarter instead of this quarter).
+*   **Why it's #2:** Presenting incorrect data to the Board of Directors is a reputational and potentially legal disaster. The deadline is immediate ("tomorrow"), requiring immediate correction before the meeting.
+
+**3. P3: Email #6 ("Meeting notes from Tuesday")**
+*   **Surface Appearance:** This is a standard administrative email sharing meeting notes.
+*   **Hidden Urgency:** The "also" section reveals a **CFO directive freezing all new hires starting Monday**.
+*   **Why it's #3:** This impacts long-term strategy and operational capacity ("expansion plans"). While it doesn't require an immediate fix like the board presentation, the "Monday" start date means the team needs to know immediately to pause any pending hiring processes or adjust project timelines before the freeze takes effect.
+
+**4. P4: Email #4 ("URGENT: Office supplies")**
+*   **Surface Appearance:** The subject line screams "URGENT" with multiple exclamation points, and the text is in all caps.
+*   **Hidden Context:** While running out of paper is annoying, it is a logistical issue, not a strategic or reputational crisis.
+*   **Why it's #4:** This is a low-stakes operational task. It can be solved by ordering supplies or borrowing paper. It does not carry the same weight as losing a vendor, embarrassing the board, or freezing company growth. The screaming subject line is a classic example of "false urgency" compared to the silent, high-stakes threats in emails #3 and #2.
+
+*(Note: Emails #1, #5, #7, and #8 were not included in the top 4 as they are low-priority social, administrative, or informational items with no time-sensitive consequences.)*

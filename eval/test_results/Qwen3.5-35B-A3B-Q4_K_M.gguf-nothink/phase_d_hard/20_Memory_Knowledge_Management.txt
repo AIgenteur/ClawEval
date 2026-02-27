@@ -1,0 +1,50 @@
+# Phase D Hard Test — #20 Memory / Knowledge Management
+# Tier: 2 | Score: 5/10 | No automated constraints to check
+# Tokens: 477 | Speed: 104.6 t/s | Time: 4.6s
+
+## PROMPT:
+Extract and merge knowledge from these 5 conversation snippets. There are 3 contradictions — resolve each by using the MOST RECENT information and flag what changed.
+
+Jan 2: "I'm a senior developer at Acme Corp working on their Python backend."
+Jan 15: "We decided to migrate from PostgreSQL to MongoDB for the user service."
+Feb 1: "Got promoted to Tech Lead! Managing a team of 4 developers now."
+Feb 20: "After benchmarking, we're actually sticking with PostgreSQL — MongoDB wasn't right for our consistency requirements. Also, we hired 2 more people, team is now 6."
+Mar 5: "Acme Corp got acquired by MegaTech. I'm now technically a MegaTech employee but same role. Oh, and 1 person left, so team is 5. We're also evaluating MySQL as finance wants to standardize."
+
+Produce a final knowledge profile, clearly marking:
+1. What the CURRENT truth is for each fact
+2. What changed and when (changelog)
+3. What is UNCERTAIN (e.g., MySQL evaluation — in progress, not decided)
+
+## RESPONSE:
+Here is the consolidated knowledge profile based on the conversation snippets, with contradictions resolved by prioritizing the most recent information.
+
+### **Final Knowledge Profile**
+
+#### **1. Current Truth (As of Mar 5)**
+*   **Employer:** MegaTech (Acme Corp was acquired).
+*   **Role:** Tech Lead (formerly Senior Developer).
+*   **Team Size:** 5 developers (managed by the user).
+*   **Database Technology:** PostgreSQL (Primary).
+*   **Database Strategy:** MySQL is currently under evaluation for the finance department; no final decision has been made.
+*   **Location/Context:** Python backend development.
+
+---
+
+#### **2. Changelog (Contradictions Resolved)**
+
+| Fact Category | Original Claim (Older) | Contradicting Claim (Newer) | Resolution (Current Truth) | Date of Change |
+| :--- | :--- | :--- | :--- | :--- |
+| **Employer** | Acme Corp | Acquired by MegaTech | **MegaTech** (User is now a MegaTech employee). | Mar 5 |
+| **Database Choice** | Migrating to MongoDB | Sticking with PostgreSQL | **PostgreSQL** (MongoDB migration abandoned due to consistency requirements). | Feb 20 |
+| **Team Size** | 4 developers | 6 developers | **6 developers** (2 hired). | Feb 20 |
+| **Team Size** | 6 developers | 5 developers | **5 developers** (1 person left). | Mar 5 |
+| **Role** | Senior Developer | Tech Lead | **Tech Lead** (Promoted). | Feb 1 |
+
+---
+
+#### **3. Uncertain / In-Progress Items**
+*   **MySQL Adoption:** The user is "evaluating" MySQL for the finance department. There is **no confirmed decision** to migrate or standardize on MySQL yet.
+    *   *Status:* Pending evaluation.
+*   **Specific Responsibilities:** While the role is "Tech Lead," the specific scope of management (e.g., hiring authority, performance reviews) is not detailed beyond "managing a team."
+    *   *Status:* Assumed standard Tech Lead duties based on context.

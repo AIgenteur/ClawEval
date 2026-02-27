@@ -1,0 +1,124 @@
+# Phase D Hard Test — #57 SRE / Incident Response
+# Tier: 5 | Score: 10/10 | 1/1 constraints met
+# Tokens: 1684 | Speed: 105.9 t/s | Time: 15.9s
+
+## PROMPT:
+Write an incident postmortem. This incident had a CASCADE FAILURE — the initial issue triggered 3 secondary failures. Map the entire cascade.
+
+Timeline:
+- Mon 2:00 AM: Automated certificate rotation runs on the API gateway
+- Mon 2:01 AM: New certificate has wrong domain (*.example.com instead of *.api.example.com)
+- Mon 2:01 AM: All API requests start returning TLS errors
+- Mon 2:05 AM: Health check failures trigger auto-scaling — new instances spin up
+- Mon 2:06 AM: New instances also fail health checks (same cert), triggering MORE scaling
+- Mon 2:10 AM: Kubernetes cluster hits pod limit (500 pods). Cluster API becomes unresponsive.
+- Mon 2:11 AM: Monitoring system (also on same cluster) goes down. All alerts stop.
+- Mon 2:15 AM: Database connection pool exhausted from 500 pods trying to connect
+- Mon 2:20 AM: Database enters read-only mode to protect data
+- Mon 3:15 AM: On-call engineer wakes up from customer complaint on Twitter (no alert!)
+- Mon 3:45 AM: Root cause identified, correct certificate deployed manually
+- Mon 4:00 AM: Cluster stabilized, database connections draining
+- Mon 4:30 AM: Full service restored
+
+SLA: 99.95% monthly uptime = 21.9 minutes/month allowed downtime.
+This incident: ~2.5 hours downtime.
+
+Write: cascade map, root cause, 5 whys, SLA impact calculation, blameless action items.
+
+## RESPONSE:
+# Incident Postmortem: API Gateway Certificate Rotation Failure & Cascading Outage
+
+**Date:** Monday, [Current Date]
+**Severity:** SEV-1 (Critical)
+**Duration:** 2 hours 30 minutes (02:00 AM – 04:30 AM UTC)
+**Status:** Resolved
+
+---
+
+## 1. Executive Summary
+At 02:00 AM, an automated certificate rotation script deployed an incorrectly configured certificate to the API Gateway. This triggered a cascade of failures: immediate TLS errors, runaway auto-scaling due to health check failures, Kubernetes resource exhaustion, monitoring blackout, and finally, a database read-only lock. The service remained down for 2.5 hours, significantly exceeding the monthly SLA allowance. The root cause was a lack of validation in the certificate rotation pipeline and a lack of "circuit breakers" in the auto-scaling logic.
+
+---
+
+## 2. The Cascade Map
+The incident did not stem from a single point of failure but rather a chain reaction where the failure of one system exacerbated the next.
+
+| Stage | Time | Event | Impact |
+| :--- | :--- | :--- | : |
+| **1. Initial Trigger** | 02:00 AM | Automated cert rotation deploys `*.example.com` instead of `*.api.example.com`. | **TLS Handshake Failure.** All incoming API requests fail immediately. |
+| **2. Secondary Failure** | 02:05 AM | Health checks fail. Auto-scaler interprets this as "under-provisioning" and spins up new pods. | **Resource Inflation.** New pods inherit the bad cert and fail health checks immediately. |
+| **3. Tertiary Failure** | 02:06 AM | Auto-scaler detects failure, spins up *more* pods. | **Exponential Scaling.** Cluster rapidly approaches capacity limits. |
+| **4. Quaternary Failure** | 02:10 AM | Kubernetes cluster hits 500 pod limit. Control plane becomes unresponsive. | **Infrastructure Lockout.** No new deployments, no scaling down, no API access. |
+| **5. Quinary Failure** | 02:11 AM | Monitoring agents (running on the cluster) lose connectivity. | **Blind Spot.** No alerts sent to on-call. Incident goes undetected by the team. |
+| **6. Final Collapse** | 02:15 AM | 500+ pods attempt DB connections simultaneously. Connection pool exhausted. | **Data Layer Failure.** Database enters read-only mode to prevent corruption. |
+
+---
+
+## 3. Root Cause Analysis (RCA)
+
+### Primary Root Cause
+**Defective Automated Deployment Pipeline:** The certificate rotation script lacked a validation step to verify the Subject Alternative Name (SAN) matches the expected domain pattern (`*.api.example.com`) before applying the certificate to the production gateway.
+
+### Contributing Factors
+1.  **Aggressive Auto-Scaling Logic:** The auto-scaler was configured to scale up on *any* health check failure without a "cooldown" period or a check for systemic errors (like TLS failures vs. application errors).
+2.  **Single Point of Failure for Monitoring:** The monitoring stack was hosted on the same Kubernetes cluster as the application. When the cluster control plane died, the monitoring system died with it, creating a "silent failure" scenario.
+3.  **Database Connection Pooling:** The application pods did not implement exponential backoff or connection pooling limits, causing a "thundering herd" effect that overwhelmed the database immediately upon scaling.
+
+---
+
+## 4. The 5 Whys
+
+1.  **Why did the service go down?**
+    *   Because the API Gateway returned TLS errors, causing all requests to fail.
+2.  **Why did the API Gateway return TLS errors?**
+    *   Because the automated rotation script deployed a certificate with the wrong domain (`*.example.com`).
+3.  **Why did the script deploy the wrong certificate?**
+    *   Because the deployment pipeline did not validate the certificate's Subject Alternative Names (SANs) against the expected domain pattern.
+4.  **Why did the outage last 2.5 hours instead of minutes?**
+    *   Because the auto-scaler created more pods (making the problem worse), the monitoring system went down (hiding the issue), and the database locked (preventing recovery).
+5.  **Why was the on-call unaware until a customer complained?**
+    *   Because the monitoring system was hosted on the same failing cluster, resulting in a total blackout of alerting capabilities.
+
+---
+
+## 5. SLA Impact Calculation
+
+**Monthly SLA Target:** 99.95% Uptime
+**Allowed Downtime:** ~21.9 minutes per month.
+
+**Incident Duration:** 2 hours 30 minutes (150 minutes).
+
+| Metric | Calculation | Result |
+| :--- | :--- | :--- |
+| **Actual Downtime** | 150 minutes | 150 mins |
+| **Allowed Downtime** | 21.9 minutes | 21.9 mins |
+| **SLA Breach** | 150 - 21.9 | **128.1 minutes over limit** |
+| **Percentage Impact** | (150 / (30 * 24 * 60)) * 100 | **0.104% Uptime Loss** |
+| **Resulting Uptime** | 100% - 0.104% | **99.896%** |
+
+**Conclusion:** The service failed to meet the 99.95% SLA for this month. A financial penalty or service credit is likely required per the customer contract.
+
+---
+
+## 6. Action Items (Blameless)
+
+*Focus on fixing the system, not the person.*
+
+### Immediate Fixes (High Priority)
+- [ ] **Add Certificate Validation:** Implement a pre-flight check in the CI/CD pipeline to verify certificate SANs match the target domain before deployment. (Owner: Platform Team, Due: 48 hours)
+- [ ] **Implement Scaling Circuit Breakers:** Modify auto-scaling logic to detect "systemic" health check failures (e.g., 100% failure rate in 1 minute) and pause scaling to prevent runaway pods. (Owner: SRE Team, Due: 1 week)
+- [ ] **Decouple Monitoring:** Migrate the monitoring stack (Prometheus/Grafana/Alertmanager) to a separate, highly available infrastructure that does not rely on the application cluster's control plane. (Owner: Infrastructure Team, Due: 2 weeks)
+
+### Long-Term Improvements (Medium Priority)
+- [ ] **Database Connection Limits:** Enforce strict connection pool limits per pod and implement exponential backoff retry logic in the application code to prevent thundering herd scenarios. (Owner: App Development Team, Due: 1 month)
+- [ ] **Chaos Engineering:** Schedule a quarterly "Certificate Failure" drill to test the resilience of the auto-scaling and alerting systems. (Owner: SRE Team, Due: Quarterly)
+- [ ] **External Alerting:** Configure a secondary, independent alerting channel (e.g., SMS/SMS gateway via a different provider) that triggers even if the internal monitoring stack is down. (Owner: Security/Platform Team, Due: 1 month)
+
+### Process Improvements
+- [ ] **Review On-Call Escalation:** Update the on-call runbook to include a "Customer Complaint" escalation path for SEV-1 incidents when internal monitoring is silent. (Owner: Engineering Manager, Due: 1 week)
+
+---
+
+**Sign-off:**
+*Incident Commander: [Name]*
+*Date: [Current Date]*

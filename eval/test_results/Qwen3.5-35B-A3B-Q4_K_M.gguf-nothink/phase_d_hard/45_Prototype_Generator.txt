@@ -1,0 +1,178 @@
+# Phase D Hard Test — #45 Prototype Generator
+# Tier: 3 | Score: 5/10 | No test code provided
+# Tokens: 1278 | Speed: 106.2 t/s | Time: 12.0s
+
+## PROMPT:
+Write a COMPLETE, RUNNABLE Streamlit prototype that actually works when executed. I will run it with `streamlit run app.py`.
+
+Requirements:
+1. A form to input expense data (date, category dropdown, amount, description)
+2. Store entries in session state (persist within session)
+3. A pie chart showing spending by category (use st.pyplot or plotly)
+4. A date range filter that updates the chart
+5. Display total spending prominently
+6. An "Export CSV" button that generates and downloads data
+
+The code must be a SINGLE FILE with ALL imports. It must run without errors on a fresh Python environment with only streamlit, pandas, and matplotlib/plotly installed. No placeholder — working code only.
+
+## RESPONSE:
+Here is a complete, single-file Streamlit application that meets all your requirements.
+
+### Prerequisites
+To run this, ensure you have the necessary libraries installed:
+```bash
+pip install streamlit pandas plotly
+```
+
+### The Code (`app.py`)
+
+```python
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+from datetime import datetime
+import io
+
+# Page Configuration
+st.set_page_config(page_title="Expense Tracker", layout="wide")
+
+# Initialize Session State for Data
+if 'expenses' not in st.session_state:
+    st.session_state.expenses = []
+
+# --- Helper Functions ---
+
+def add_expense(date, category, amount, description):
+    """Adds a new expense to the session state."""
+    st.session_state.expenses.append({
+        "Date": date,
+        "Category": category,
+        "Amount": float(amount),
+        "Description": description
+    })
+
+def get_filtered_data():
+    """Returns the dataframe based on the date range filter."""
+    df = pd.DataFrame(st.session_state.expenses)
+    if df.empty:
+        return df
+    
+    # Ensure date column is datetime for filtering
+    df['Date'] = pd.to_datetime(df['Date'])
+    
+    # Apply filters
+    start_date = st.session_state.get('start_date', df['Date'].min())
+    end_date = st.session_state.get('end_date', df['Date'].max())
+    
+    filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+    return filtered_df
+
+def export_to_csv(df):
+    """Converts dataframe to CSV bytes for download."""
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False)
+    return csv_buffer.getvalue()
+
+# --- UI Layout ---
+
+st.title("💸 Personal Expense Tracker")
+
+# Sidebar for Input and Filters
+with st.sidebar:
+    st.header("Add New Expense")
+    
+    with st.form("expense_form", clear_on_submit=True):
+        date_input = st.date_input("Date", value=datetime.today())
+        
+        category_options = ["Food", "Transport", "Housing", "Utilities", "Entertainment", "Shopping", "Health", "Other"]
+        category_input = st.selectbox("Category", category_options)
+        
+        amount_input = st.number_input("Amount ($)", min_value=0.01, step=0.01)
+        
+        description_input = st.text_input("Description (Optional)")
+        
+        submitted = st.form_submit_button("Add Expense")
+        
+        if submitted:
+            if amount_input > 0:
+                add_expense(date_input, category_input, amount_input, description_input)
+                st.success("Expense added!")
+            else:
+                st.error("Amount must be greater than 0.")
+
+    st.markdown("---")
+    st.header("Filter Data")
+    
+    # Initialize filter dates based on data if available, else default
+    if st.session_state.expenses:
+        df_temp = pd.DataFrame(st.session_state.expenses)
+        df_temp['Date'] = pd.to_datetime(df_temp['Date'])
+        min_date = df_temp['Date'].min()
+        max_date = df_temp['Date'].max()
+    else:
+        today = datetime.today()
+        min_date = today.replace(day=1) # Start of current month
+        max_date = today
+
+    start_date = st.date_input("Start Date", value=min_date)
+    end_date = st.date_input("End Date", value=max_date)
+
+# Main Content Area
+st.header("Spending Overview")
+
+# Get Data
+df = get_filtered_data()
+
+# Calculate Metrics
+if not df.empty:
+    total_spending = df['Amount'].sum()
+    
+    # Display Total Spending Prominently
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col1:
+        st.metric(label="Total Spending", value=f"${total_spending:,.2f}")
+    
+    # Pie Chart
+    st.subheader("Spending by Category")
+    fig = px.pie(
+        df, 
+        values='Amount', 
+        names='Category', 
+        title='Distribution of Expenses',
+        color_discrete_sequence=px.colors.qualitative.Pastel
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Data Table
+    st.subheader("Transaction History")
+    st.dataframe(df, use_container_width=True)
+    
+    # Export Button
+    csv_data = export_to_csv(df)
+    st.download_button(
+        label="📥 Export to CSV",
+        data=csv_data,
+        file_name=f"expenses_{datetime.now().strftime('%Y%m%d')}.csv",
+        mime="text/csv",
+    )
+else:
+    st.info("No expenses found in the selected date range. Add some data in the sidebar!")
+```
+
+### How to Run
+1.  Save the code above into a file named `app.py`.
+2.  Open your terminal or command prompt.
+3.  Navigate to the folder containing `app.py`.
+4.  Run the command:
+    ```bash
+    streamlit run app.py
+    ```
+5.  The app will open in your default web browser.
+
+### Features Included
+1.  **Input Form**: Located in the sidebar, accepts Date, Category (dropdown), Amount, and Description.
+2.  **Session State**: Data persists as long as the browser tab is open.
+3.  **Visualization**: Uses Plotly for an interactive Pie Chart.
+4.  **Filtering**: Sidebar date pickers dynamically update the chart and table.
+5.  **Metrics**: Displays the total spending in a large metric card.
+6.  **Export**: A dedicated button downloads the currently filtered data as a CSV file.

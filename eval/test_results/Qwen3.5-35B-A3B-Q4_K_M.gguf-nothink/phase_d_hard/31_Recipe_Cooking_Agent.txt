@@ -1,0 +1,123 @@
+# Phase D Hard Test — #31 Recipe / Cooking Agent
+# Tier: 2 | Score: 10/10 | 1/1 constraints met
+# Tokens: 1908 | Speed: 107.4 t/s | Time: 17.8s
+
+## PROMPT:
+Create a 3-course dinner for 4 guests with these dietary restrictions. There is a TRAP ingredient that violates one restriction — don't fall for it.
+
+Restrictions:
+- Guest A: Vegan (no animal products AT ALL — including honey, gelatin, casein, whey)
+- Guest B: Celiac disease (strict gluten-free — not just "wheat-free," watch for hidden gluten in soy sauce, malt, etc.)
+- Guest C: Severe tree nut allergy (almonds, cashews, walnuts, pecans, pistachios — but peanuts are OK, they're legumes)
+- Guest D: Low-sodium diet (under 500mg sodium per serving)
+
+Create a 3-course menu. For EVERY ingredient in EVERY dish, verify it against ALL 4 restrictions. If an ingredient could cause confusion (e.g., "natural flavors" which might contain gluten), flag it. Show the verification matrix.
+
+## RESPONSE:
+Here is a safe, 3-course dinner menu designed for 4 guests, followed by a rigorous verification matrix.
+
+### **The Menu**
+
+**Appetizer:** Roasted Beet and Carrot Salad with Lemon-Herb Vinaigrette
+*   *Base:* Roasted baby beets, roasted baby carrots, fresh arugula.
+*   *Dressing:* Extra virgin olive oil, fresh lemon juice, fresh thyme, sea salt (low sodium), black pepper.
+*   *Garnish:* Fresh chives.
+
+**Main Course:** Herb-Crusted Salmon with Quinoa Pilaf and Steamed Broccoli
+*   *Protein:* Fresh Atlantic salmon fillets.
+*   *Crust:* Fresh dill, fresh parsley, lemon zest, gluten-free oats (crushed), olive oil.
+*   *Side:* Quinoa (rinsed), vegetable broth (certified gluten-free, low sodium), fresh dill, lemon juice.
+*   *Vegetable:* Fresh broccoli florets, steamed with olive oil and garlic.
+
+**Dessert:** Dark Chocolate Avocado Mousse with Fresh Berries
+*   *Base:* Ripe avocados, unsweetened cocoa powder, maple syrup (vegan sweetener), vanilla extract (alcohol-based, no added flavors).
+*   *Topping:* Fresh strawberries and raspberries.
+*   *Crunch:* Crushed gluten-free pretzels (specifically labeled GF and low sodium) or toasted pumpkin seeds.
+
+---
+
+### **The Trap Ingredient Analysis**
+*The prompt warns of a "TRAP ingredient." In many "healthy" or "vegan" menus, the trap is often **Soy Sauce** (contains wheat/gluten) or **Honey** (not vegan) or **Nut-Based Creams** (tree nuts). In this menu, I have strictly avoided soy sauce, honey, and tree nuts. The potential trap would be assuming "Vegetable Broth" is naturally low sodium or gluten-free; many are not. I have specified **Certified Gluten-Free, Low-Sodium** broth to avoid this.*
+
+---
+
+### **Verification Matrix**
+
+**Legend:**
+*   ✅ = Safe for all 4 restrictions.
+*   ⚠️ = Requires specific labeling/verification.
+*   ❌ = Violates restriction.
+
+| Ingredient | Guest A (Vegan) | Guest B (Celiac/GF) | Guest C (Tree Nut Allergy) | Guest D (Low Sodium <500mg) | Notes / Verification |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Appetizer** | | | | | |
+| Baby Beets | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Baby Carrots | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Arugula | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Olive Oil (EVOO) | ✅ | ✅ | ✅ | ✅ | Pure oil has 0 sodium. |
+| Lemon Juice | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Fresh Thyme | ✅ | ✅ | ✅ | ✅ | Herb, no sodium. |
+| Sea Salt | ⚠️ | ✅ | ✅ | ⚠️ | **Critical:** Must be used sparingly. 1/4 tsp total per dish keeps it under limit. |
+| Black Pepper | ✅ | ✅ | ✅ | ✅ | Pure spice, no sodium. |
+| Fresh Chives | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| **Main Course** | | | | | |
+| Salmon Fillet | ✅ | ✅ | ✅ | ✅ | Fresh fish has 0 sodium (unless brined). |
+| Fresh Dill/Parsley | ✅ | ✅ | ✅ | ✅ | Herbs are safe. |
+| Lemon Zest | ✅ | ✅ | ✅ | ✅ | Safe. |
+| **Gluten-Free Oats** | ✅ | ✅ | ✅ | ✅ | **Trap Check:** Must be certified GF (cross-contamination risk). |
+| **Quinoa** | ✅ | ✅ | ✅ | ✅ | Naturally GF and low sodium. |
+| **Veg Broth** | ✅ | ⚠️ | ✅ | ⚠️ | **Trap Check:** Must be labeled "Low Sodium" AND "Certified GF." Standard broth is high sodium and often contains wheat. |
+| Fresh Garlic | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Broccoli | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| **Dessert** | | | | | |
+| Avocados | ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| Unsweetened Cocoa | ✅ | ✅ | ✅ | ✅ | Pure powder, check label for added salt. |
+| Maple Syrup | ✅ | ✅ | ✅ | ✅ | Vegan alternative to honey (Honey is the Trap for A). |
+| Vanilla Extract | ✅ | ✅ | ✅ | ✅ | Must be pure extract, not "imitation" (often contains gluten). |
+| Strawberries/Raspberries| ✅ | ✅ | ✅ | ✅ | Naturally low sodium. |
+| **Pumpkin Seeds** | ✅ | ✅ | ✅ | ✅ | **Trap Check:** Peanuts are legumes (Safe for C), but seeds must be processed in a facility free of tree nuts. |
+| **GF Pretzels** | ✅ | ✅ | ✅ | ⚠️ | **Trap Check:** Must be "Low Sodium" specific. Standard GF pretzels are often high sodium. |
+
+---
+
+### **Critical "Trap" Avoidance Summary**
+
+1.  **The Vegan Trap (Guest A):**
+    *   *Avoided:* Honey. Used **Maple Syrup** instead.
+    *   *Avoided:* Gelatin. Used no gelatin.
+    *   *Avoided:* Dairy. Used avocado for creaminess.
+
+2.  **The Celiac Trap (Guest B):**
+    *   *Avoided:* Soy Sauce (common in Asian-inspired vegan dishes).
+    *   *Avoided:* Regular Oats. Used **Certified Gluten-Free Oats**.
+    *   *Avoided:* Standard Vegetable Broth. Used **Certified GF/Low Sodium Broth**.
+    *   *Avoided:* "Natural Flavors" in vanilla. Used **Pure Vanilla Extract**.
+
+3.  **The Tree Nut Trap (Guest C):**
+    *   *Avoided:* Almond flour, cashew cream, walnut garnish.
+    *   *Note:* Peanuts are legumes, but cross-contamination is possible. We used **Pumpkin Seeds** (pepitas) which are generally safer, but the GF pretzels must be certified nut-free.
+
+4.  **The Sodium Trap (Guest D):**
+    *   *Constraint:* <500mg per serving.
+    *   *Strategy:*
+        *   No added salt in the cooking water for quinoa (use low-sodium broth).
+        *   No soy sauce or teriyaki.
+        *   No canned vegetables (high sodium) — used fresh.
+        *   **Sea Salt:** Used minimally. 1/4 teaspoon of sea salt for the whole salad (4 servings) = ~575mg total salt / 4 = ~143mg per serving.
+        *   **Broth:** Must be specifically "Low Sodium" (usually <140mg per cup).
+        *   **Pretzels:** Standard pretzels have ~300mg per piece. We must use a specific "Low Sodium" brand or omit them. *Recommendation: Use toasted pumpkin seeds instead of pretzels to guarantee safety.*
+
+### **Final Adjusted Menu for Absolute Safety**
+*To ensure Guest D is strictly under 500mg, I recommend replacing the GF Pretzels in the dessert with **Toasted Pumpkin Seeds** (Pepitas), as even "low sodium" pretzels can vary wildly in sodium content.*
+
+**Revised Dessert Topping:** Toasted Pumpkin Seeds (Certified GF & Nut-Free facility).
+
+**Final Sodium Check (Estimate):**
+*   **Salmon:** ~50mg (natural)
+*   **Quinoa:** ~10mg (natural) + ~50mg (from low-sodium broth) = 60mg
+*   **Broccoli:** ~30mg (natural)
+*   **Salad:** ~150mg (from minimal sea salt)
+*   **Dessert:** ~10mg (natural)
+*   **Total per serving:** Well under 500mg.
+
+This menu is 100% compliant with all four restrictions.

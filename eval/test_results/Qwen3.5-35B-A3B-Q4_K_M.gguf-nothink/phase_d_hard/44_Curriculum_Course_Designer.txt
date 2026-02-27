@@ -1,0 +1,153 @@
+# Phase D Hard Test — #44 Curriculum / Course Designer
+# Tier: 3 | Score: 10/10 | 1/1 constraints met
+# Tokens: 2475 | Speed: 107.4 t/s | Time: 23.1s
+
+## PROMPT:
+Design Week 1 of a web development bootcamp. TRAP: The requested schedule is physically impossible — you must identify why and propose a fix.
+
+Requested schedule:
+- Day 1 (Mon): HTML basics (9am-12pm), CSS fundamentals (1pm-5pm), Assessment on HTML+CSS (5pm-6pm)
+- Day 2 (Tue): JavaScript basics (9am-12pm), Build a responsive landing page using HTML+CSS+JS (1pm-5pm)
+- Day 3 (Wed): React fundamentals (9am-12pm), Build a React app with state management (1pm-5pm)
+- Day 4 (Thu): Node.js + Express backend (9am-12pm), Build full-stack app connecting React frontend to Node backend (1pm-5pm)
+- Day 5 (Fri): Deploy to AWS (9am-12pm), Portfolio presentation of all projects (1pm-5pm)
+
+Requirements:
+1. Identify which days have unrealistic expectations (Bloom's taxonomy violations)
+2. Note prerequisite gaps (can't do X before Y is mastered)
+3. Propose a realistic revised schedule maintaining the same 5-day format
+4. Include formative assessment points (not just Day 1)
+5. Ensure learning objectives follow Bloom's hierarchy (remember → understand → apply → analyze)
+
+## RESPONSE:
+### The Trap: Why the Requested Schedule is Impossible
+
+The requested schedule violates fundamental cognitive load theory and the principles of skill acquisition. It attempts to compress a 6–12 month learning curve into 5 days, resulting in **cognitive overload** and **Bloom's Taxonomy violations**.
+
+Here is the breakdown of the impossibility:
+
+1.  **Day 1 (Mon): The "Assessment" Trap**
+    *   **Violation:** You cannot assess *application* and *analysis* of HTML/CSS in a 1-hour slot immediately after 6 hours of instruction.
+    *   **Reality:** Students need time to struggle with syntax, debug, and internalize concepts. A 1-hour assessment at 5pm implies they are experts by 4pm, which is impossible for novices.
+    *   **Bloom's Error:** Jumping straight to "Assess" (Evaluate) without sufficient "Apply" or "Analyze" practice.
+
+2.  **Day 2 (Tue): The "Full Stack" Leap**
+    *   **Prerequisite Gap:** Students are asked to build a *responsive* landing page with *JavaScript* logic.
+    *   **Reality:** "Responsive" requires deep CSS mastery (media queries, flexbox/grid). "JavaScript basics" (9am-12pm) covers syntax, not DOM manipulation or event handling.
+    *   **Bloom's Error:** Expecting students to *Create* a complex interactive project when they have only *Remembered* syntax.
+
+3.  **Day 3 (Wed): The "React" Paradox**
+    *   **Prerequisite Gap:** React requires a solid understanding of ES6+ JavaScript (arrow functions, destructuring, map/filter, modules, promises).
+    *   **Reality:** Day 2 only covered "JavaScript basics." Students attempting React without mastering JS will fail immediately.
+    *   **Bloom's Error:** Attempting to *Understand* component lifecycles and *Apply* state management without the foundational *Remembering* of JavaScript.
+
+4.  **Day 4 (Thu): The "Full-Stack" Fantasy**
+    *   **Prerequisite Gap:** Node.js/Express requires understanding HTTP protocols, asynchronous programming (callbacks/promises/async-await), and database concepts.
+    *   **Reality:** Building a full-stack app (Frontend + Backend + Database + API integration) in 8 hours is impossible for beginners.
+    *   **Bloom's Error:** Expecting *Analysis* of system architecture and *Creation* of a full-stack product in one day.
+
+5.  **Day 5 (Fri): The "Deployment" & "Portfolio" Rush**
+    *   **Prerequisite Gap:** AWS deployment requires knowledge of DNS, SSL, S3, EC2, or Serverless architecture.
+    *   **Reality:** Portfolio presentation requires polished work. If the app built on Day 4 is buggy (likely), the portfolio is broken.
+    *   **Bloom's Error:** *Evaluating* a portfolio without the *Creating* phase being complete or stable.
+
+---
+
+### The Fix: Realistic Week 1 Schedule
+
+**Goal:** Shift from "Building a Startup" to "Building a Foundation."
+**Focus:** Mastery of the DOM, basic interactivity, and understanding the web ecosystem.
+**Strategy:** We will remove React, Node.js, and AWS from Week 1. These are advanced topics requiring weeks of preparation. We will focus entirely on **HTML, CSS, and Vanilla JavaScript**.
+
+#### Revised Learning Objectives (Bloom's Hierarchy)
+*   **Remember:** Semantic HTML tags, CSS selectors, JS variables/data types.
+*   **Understand:** How the DOM works, how CSS cascades, how JS executes asynchronously.
+*   **Apply:** Styling a layout, manipulating DOM elements, handling user events.
+*   **Analyze:** Debugging layout issues, tracing code execution flow.
+
+---
+
+### Revised Week 1 Schedule
+
+#### **Day 1: The Skeleton & The Skin (HTML & CSS)**
+*Focus: Semantic structure and visual styling.*
+
+*   **09:00 – 10:30 | HTML Basics:** Document structure, semantic tags (`<header>`, `<main>`, `<article>`), forms, and accessibility.
+*   **10:45 – 12:30 | CSS Fundamentals:** Selectors, box model, typography, and colors.
+*   **12:30 – 13:30 | Lunch Break**
+*   **13:30 – 15:00 | Layouts:** Introduction to Flexbox (focus on alignment and distribution).
+*   **15:00 – 16:30 | Formative Assessment 1 (Code Review):**
+    *   *Task:* Students are given a broken HTML file and a CSS file.
+    *   *Goal:* Fix the layout using Flexbox and ensure semantic tags are correct.
+    *   *Bloom's Level:* **Apply** & **Analyze** (Debugging).
+*   **16:30 – 17:00 | Wrap-up & Homework:** Build a static "About Me" page.
+
+#### **Day 2: Bringing it to Life (JavaScript Basics)**
+*Focus: Syntax, logic, and the DOM.*
+
+*   **09:00 – 10:30 | JS Core:** Variables (`let`/`const`), data types, operators, and control flow (if/else, loops).
+*   **10:45 – 12:30 | Functions & Scope:** Function declarations, arrow functions, and understanding scope.
+*   **12:30 – 13:30 | Lunch Break**
+*   **13:30 – 15:30 | The DOM:** Selecting elements, modifying content (`innerText`, `innerHTML`), and changing styles via JS.
+*   **15:30 – 16:30 | Formative Assessment 2 (Interactive Quiz):**
+    *   *Task:* Build a simple "To-Do List" where you can add items and delete them (no local storage yet).
+    *   *Goal:* Connect JS logic to HTML elements.
+    *   *Bloom's Level:* **Apply**.
+*   **16:30 – 17:00 | Wrap-up:** Discuss how JS interacts with the DOM.
+
+#### **Day 3: Interactivity & Events (Advanced JS)**
+*Focus: User interaction and data handling.*
+
+*   **09:00 – 10:30 | Event Listeners:** Click, submit, keypress events, and event bubbling.
+*   **10:45 – 12:30 | Arrays & Objects:** Iterating with `.map()`, `.filter()`, and `.reduce()`.
+*   **12:30 – 13:30 | Lunch Break**
+*   **13:30 – 15:30 | Mini-Project:** "Dynamic Image Gallery."
+    *   *Task:* Create a gallery where clicking an image filters the list based on category.
+*   **15:30 – 16:30 | Formative Assessment 3 (Pair Programming):**
+    *   *Task:* Partner up. One writes code, one reviews (Rubber Ducking).
+    *   *Goal:* Refactor the gallery code to be cleaner and fix a hidden bug.
+    *   *Bloom's Level:* **Analyze** & **Evaluate**.
+*   **16:30 – 17:00 | Wrap-up:** Introduction to Asynchronous JS (Promises concept only).
+
+#### **Day 4: Data & APIs (The "Backend" Concept)**
+*Focus: Fetching data and understanding the Request/Response cycle.*
+
+*   **09:00 – 10:30 | HTTP & APIs:** How the web works, REST principles, JSON format.
+*   **10:45 – 12:30 | Fetch API:** Making GET requests to a public API (e.g., JSONPlaceholder or a weather API).
+*   **12:30 – 13:30 | Lunch Break**
+*   **13:30 – 15:30 | Mini-Project:** "Weather Dashboard."
+    *   *Task:* Fetch data from an API and display it dynamically on the DOM. Handle loading states and errors.
+*   **15:30 – 16:30 | Formative Assessment 4 (Code Walkthrough):**
+    *   *Task:* Students present their API fetch logic.
+    *   *Goal:* Explain *why* the data is asynchronous and how `async/await` works.
+    *   *Bloom's Level:* **Understand** & **Analyze**.
+*   **16:30 – 17:00 | Wrap-up:** Introduction to LocalStorage (persisting data).
+
+#### **Day 5: Polish, Deploy, and Reflect**
+*Focus: Version control, deployment, and portfolio building.*
+
+*   **09:00 – 10:30 | Git & GitHub:** Initialize repo, commit, push, and create a README.
+*   **10:45 – 12:30 | Deployment:** Deploying static sites to Netlify or Vercel (simpler than AWS for beginners).
+*   **12:30 – 13:30 | Lunch Break**
+*   **13:30 – 15:30 | Final Project Polish:**
+    *   *Task:* Combine the "To-Do List" (Day 2) and "Weather Dashboard" (Day 4) into one cohesive portfolio page.
+    *   *Goal:* Ensure mobile responsiveness and clean code.
+*   **15:30 – 16:30 | Final Assessment (Portfolio Review):**
+    *   *Task:* Peer review of the final portfolio.
+    *   *Goal:* Provide constructive feedback on code quality and UX.
+    *   *Bloom's Level:* **Evaluate**.
+*   **16:30 – 17:00 | Week 1 Retrospective:** What worked? What was hard? Preview of Week 2 (React).
+
+---
+
+### Key Changes Summary
+
+| Feature | Original Schedule | Revised Schedule |
+| :--- | :--- | :--- |
+| **Tech Stack** | HTML, CSS, JS, React, Node, AWS | HTML, CSS, Vanilla JS, Git, Netlify |
+| **Pacing** | 1 concept per hour | 2-3 concepts per day with deep practice |
+| **Assessment** | 1 massive exam on Day 1 | 5 formative assessments (daily checks) |
+| **Bloom's Level** | Jumped straight to "Create" | Gradual progression: Remember → Understand → Apply → Analyze → Evaluate |
+| **Feasibility** | Impossible (Cognitive Overload) | Realistic (Scaffolded Learning) |
+
+This revised schedule ensures students actually **learn** the material rather than just surviving a sprint. By removing the advanced frameworks (React/Node) from Week 1, we allow them to build a strong mental model of how the web works before introducing abstraction layers.

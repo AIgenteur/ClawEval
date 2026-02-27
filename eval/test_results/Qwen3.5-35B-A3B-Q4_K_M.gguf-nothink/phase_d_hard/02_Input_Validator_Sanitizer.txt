@@ -1,0 +1,93 @@
+# Phase D Hard Test — #2 Input Validator / Sanitizer
+# Tier: 1 | Score: 9/10 | 7/8 constraints met | Missing: zip code wrong length
+# Tokens: 1151 | Speed: 111.4 t/s | Time: 10.3s
+
+## PROMPT:
+Validate this API request body. Find ALL issues (there are at least 10). For each issue, specify: field, severity (critical/error/warning), and explanation. Cross-field validations are required.
+
+```json
+{
+  "order": {
+    "customer": {
+      "name": "<img src=x onerror=alert(1)>John",
+      "email": "john@",
+      "phone": "555-CALL-ME",
+      "zip": "1234"
+    },
+    "items": [
+      {"sku": "ABC-123", "quantity": -3, "unit_price": 29.99},
+      {"sku": "", "quantity": 0, "unit_price": 0.001},
+      {"sku": "DEF-456", "quantity": 2, "unit_price": 15.00}
+    ],
+    "discount_percent": 150,
+    "start_date": "2025-03-15",
+    "end_date": "2025-03-10",
+    "notes": "Regular order'; DROP TABLE orders;--",
+    "shipping": {"method": "TELEPORT", "address": ""}
+  }
+}
+```
+
+List every single issue. Do NOT miss cross-field validations (e.g., date relationships).
+
+## RESPONSE:
+Here is the validation report for the provided API request body. There are **13 distinct issues** identified, ranging from critical security vulnerabilities to data integrity and business logic errors.
+
+### 1. Field: `customer.name`
+*   **Severity:** **Critical**
+*   **Explanation:** **Cross-Site Scripting (XSS) Vulnerability**. The value contains an HTML/JavaScript payload (`<img src=x onerror=alert(1)>`). If this data is rendered in a browser without sanitization, it will execute arbitrary code. Additionally, the name contains non-standard characters that may break downstream parsing.
+
+### 2. Field: `customer.email`
+*   **Severity:** **Error**
+*   **Explanation:** **Invalid Email Format**. The value `john@` is incomplete and does not match standard email regex patterns (missing domain and TLD). This will cause delivery failures and database integrity issues.
+
+### 3. Field: `customer.phone`
+*   **Severity:** **Error**
+*   **Explanation:** **Invalid Phone Format**. The value `555-CALL-ME` contains alphabetic characters and letters that do not conform to standard E.164 or North American Numbering Plan (NANP) formats. This prevents SMS notifications and automated dialing.
+
+### 4. Field: `items[0].quantity`
+*   **Severity:** **Error**
+*   **Explanation:** **Negative Quantity**. The quantity is `-3`. Inventory systems and order processing logic generally do not support negative quantities for line items, as this implies a return or credit rather than a sale, which requires a different workflow.
+
+### 5. Field: `items[1].sku`
+*   **Severity:** **Error**
+*   **Explanation:** **Missing Required Field**. The SKU is an empty string `""`. SKUs are typically the primary key for product lookup; an empty value makes it impossible to identify the product, calculate taxes, or manage inventory.
+
+### 6. Field: `items[1].unit_price`
+*   **Severity:** **Warning**
+*   **Explanation:** **Suspicious Precision**. The value `0.001` represents a fraction of a cent. While technically valid in some financial systems, it is highly unusual for consumer goods and may indicate a data entry error or a "zero-value" bypass attempt.
+
+### 7. Field: `discount_percent`
+*   **Severity:** **Critical**
+*   **Explanation:** **Business Logic Violation / Negative Price**. A discount of `150%` results in a negative final price for the order. This violates standard e-commerce rules where discounts are capped at 100%. It could allow users to generate revenue from the merchant.
+
+### 8. Field: `notes`
+*   **Severity:** **Critical**
+*   **Explanation:** **SQL Injection (SQLi)**. The value contains a classic SQL injection payload (`'; DROP TABLE orders;--`). If this string is concatenated directly into a database query without parameterization, it will delete the entire `orders` table.
+
+### 9. Field: `shipping.method`
+*   **Severity:** **Error**
+*   **Explanation:** **Invalid Enum Value**. The value `TELEPORT` is not a recognized shipping method (e.g., "Standard", "Express", "Overnight"). This will cause the fulfillment system to fail to route the order.
+
+### 10. Field: `shipping.address`
+*   **Severity:** **Error**
+*   **Explanation:** **Missing Required Field**. The address is an empty string. An order cannot be shipped without a destination address.
+
+### 11. Field: `start_date` vs `end_date` (Cross-Field)
+*   **Severity:** **Error**
+*   **Explanation:** **Invalid Date Range Logic**. The `start_date` (`2025-03-15`) is chronologically **after** the `end_date` (`2025-03-10`). A valid date range requires the start date to be less than or equal to the end date.
+
+### 12. Field: `order.start_date` (Temporal Validation)
+*   **Severity:** **Warning**
+*   **Explanation:** **Future Date Validation**. The date `2025-03-15` is in the future relative to the current real-world date (assuming the current date is before March 2025). Unless the API explicitly supports pre-ordering, this should be rejected or flagged as a warning.
+
+### 13. Field: `items` (Cross-Field Aggregation)
+*   **Severity:** **Warning**
+*   **Explanation:** **Zero-Value Line Item**. The second item has a quantity of `0` and a price of `0.001`. While the quantity is 0, the presence of a line item with a non-zero unit price but zero quantity is logically inconsistent and suggests a data entry error (e.g., intended to be a free sample or a placeholder).
+
+---
+
+### Summary of Severity
+*   **Critical:** 3 (XSS, SQLi, Negative Price Logic)
+*   **Error:** 7 (Email, Phone, Negative Qty, Empty SKU, Invalid Method, Empty Address, Date Logic)
+*   **Warning:** 3 (Price Precision, Future Date, Zero-Value Item)

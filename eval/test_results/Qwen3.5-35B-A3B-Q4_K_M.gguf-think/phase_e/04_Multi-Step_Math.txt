@@ -1,0 +1,41 @@
+1.  **Calculate Discounted Price Per Widget:**
+    *   Base Price: $24.99
+    *   Quantity: 7 widgets (qualifies for 6+ discount)
+    *   Discount Rate: 25%
+    *   Discounted Price = $24.99 * (1 - 0.25) = $24.99 * 0.75 = $18.7425
+    *   Rounding to 2 decimal places: **$18.74**
+
+2.  **Calculate Subtotal Before Coupon:**
+    *   Subtotal = Quantity * Discounted Price Per Widget
+    *   Subtotal = 7 * $18.74 = $131.18
+    *   (Note: Using the rounded unit price ensures consistency with the `price_per_widget` field).
+
+3.  **Calculate Subtotal After Coupon:**
+    *   Coupon Value: $10.00
+    *   Subtotal After Coupon = $131.18 - $10.00 = **$121.18**
+    *   (Check: $121.18 >= $0, so no clamping needed).
+
+4.  **Calculate Sales Tax:**
+    *   Tax Rate: 8.25% (0.0825)
+    *   Tax = $121.18 * 0.0825 = $9.99735
+    *   Rounding to 2 decimal places: **$10.00**
+
+5.  **Determine Shipping Cost:**
+    *   Quantity: 7 widgets
+    *   Shipping Rule: 5-8 items = $3.99
+    *   Shipping Cost: **$3.99**
+
+6.  **Calculate Total:**
+    *   Total = Subtotal After Coupon + Tax + Shipping
+    *   Total = $121.18 + $10.00 + $3.99 = **$135.17**
+
+```json
+{
+  "price_per_widget": 18.74,
+  "subtotal_before_coupon": 131.18,
+  "subtotal_after_coupon": 121.18,
+  "tax": 10.00,
+  "shipping": 3.99,
+  "total": 135.17
+}
+```

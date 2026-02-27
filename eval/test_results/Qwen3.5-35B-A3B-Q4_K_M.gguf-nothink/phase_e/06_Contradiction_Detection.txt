@@ -1,0 +1,79 @@
+```json
+[
+  {
+    "contradiction": "Operating margin calculation vs. Revenue and Expenses",
+    "fact_1": "Revenue is $42.3 million and operating expenses are $28.1 million.",
+    "fact_2": "The report states the operating margin is 33.6%.",
+    "explanation": "Operating margin is calculated as (Revenue - Operating Expenses) / Revenue. Using the provided numbers: ($42.3m - $28.1m) / $42.3m = $14.2m / $42.3m ≈ 33.57%. While this is close, the contradiction lies in the precision or the implied exactness of the 33.6% figure against the rounded inputs, but a more direct contradiction exists elsewhere. Let's re-evaluate the R&D percentage."
+  },
+  {
+    "contradiction": "R&D spending percentage vs. Revenue and R&D amount",
+    "fact_1": "Revenue is $42.3 million and R&D spending is $8.2 million.",
+    "fact_2": "The report states R&D represents 22.1% of revenue.",
+    "explanation": "Calculating the percentage: ($8.2 million / $42.3 million) * 100 ≈ 19.39%. This conflicts directly with the stated 22.1%."
+  },
+  {
+    "contradiction": "Customer retention numbers vs. Churn rate",
+    "fact_1": "The company retained 1,850 of 1,900 customers.",
+    "fact_2": "The report states customer churn decreased to 3.2%.",
+    "explanation": "If 1,850 out of 1,900 customers were retained, then 50 customers were lost (1,900 - 1,850). The churn rate is calculated as 50 / 1,900 ≈ 2.63%. This conflicts with the stated 3.2% churn rate."
+  }
+]
+```
+
+Wait, I need to check the first contradiction I drafted. The prompt asks for EXACTLY 3. Let's look at the employee count contradiction.
+
+**Contradiction 1: Employee Count**
+- Fact 1: Engineering has 110, Sales has 120. Total = 230.
+- Fact 2: "Together, these two departments represent 195 of our total 280 employees."
+- Explanation: 110 + 120 = 230, not 195. This is a clear arithmetic contradiction.
+
+**Contradiction 2: R&D Percentage**
+- Fact 1: Revenue $42.3m, R&D $8.2m.
+- Fact 2: R&D is 22.1% of revenue.
+- Explanation: 8.2 / 42.3 = 19.4%, not 22.1%.
+
+**Contradiction 3: Churn Rate**
+- Fact 1: Retained 1,850 of 1,900.
+- Fact 2: Churn is 3.2%.
+- Explanation: Lost = 50. 50/1900 = 2.63%, not 3.2%.
+
+**Contradiction 4: Sales Rep Revenue (Optional check)**
+- Fact 1: 120 reps, $352,500 avg sales.
+- Fact 2: Total Revenue $42.3 million.
+- Explanation: 120 * 352,500 = $42,300,000 ($42.3m). This matches perfectly. So this is NOT a contradiction.
+
+**Contradiction 5: Operating Margin (Re-check)**
+- Fact 1: Rev $42.3m, OpEx $28.1m.
+- Fact 2: Margin 33.6%.
+- Explanation: (42.3 - 28.1) / 42.3 = 14.2 / 42.3 = 0.33569... which rounds to 33.6%. This is actually consistent if rounded to one decimal place. So this is likely NOT a contradiction intended by the puzzle, or it's a very weak one compared to the others.
+
+So the three clear contradictions are:
+1. Employee counts (110+120 != 195).
+2. R&D percentage (8.2/42.3 != 22.1%).
+3. Churn rate (50/1900 != 3.2%).
+
+I will formulate the JSON based on these three.
+
+```json
+[
+  {
+    "contradiction": "Employee department totals do not match the sum of individual departments",
+    "fact_1": "The engineering department has 110 employees and the sales team has 120 employees.",
+    "fact_2": "Together, these two departments represent 195 of our total 280 employees.",
+    "explanation": "Adding the individual department counts (110 + 120) equals 230 employees, which conflicts with the stated total of 195 employees for these two departments."
+  },
+  {
+    "contradiction": "R&D spending percentage does not match the calculated value",
+    "fact_1": "R&D spending was $8.2 million and total revenue was $42.3 million.",
+    "fact_2": "R&D spending represents 22.1% of revenue.",
+    "explanation": "Dividing the R&D spending by the revenue ($8.2m / $42.3m) results in approximately 19.4%, which contradicts the stated 22.1%."
+  },
+  {
+    "contradiction": "Customer churn rate does not match the retention numbers",
+    "fact_1": "The company retained 1,850 of its 1,900 customers.",
+    "fact_2": "Customer churn decreased to 3.2%.",
+    "explanation": "If 1,850 customers were retained out of 1,900, then 50 customers were lost. The churn rate is 50 divided by 1,900, which equals approximately 2.63%, not the stated 3.2%."
+  }
+]
+```

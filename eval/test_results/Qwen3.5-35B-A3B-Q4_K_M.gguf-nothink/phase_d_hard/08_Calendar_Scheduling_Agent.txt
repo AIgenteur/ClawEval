@@ -1,0 +1,219 @@
+# Phase D Hard Test — #8 Calendar / Scheduling Agent
+# Tier: 1 | Score: 10/10 | Correct answer found
+# Tokens: 4000 | Speed: 109.2 t/s | Time: 36.6s
+
+## PROMPT:
+Find the ONLY valid 30-minute meeting slot for all 4 participants on Monday. Show your work.
+
+Participant calendars (all times in their LOCAL timezone):
+
+Alice (UTC-5, New York):
+- 8:00-9:30 AM: Team standup
+- 10:00-11:00 AM: Client call  
+- 12:00-1:00 PM: Lunch (blocked)
+- 2:00-4:00 PM: Sprint planning
+- Available: 9:30-10:00, 11:00-12:00, 1:00-2:00
+
+Bob (UTC+0, London):
+- 9:00-10:30 AM: Architecture review
+- 11:30 AM-12:30 PM: Lunch
+- 1:00-2:30 PM: Design sync
+- 3:00-5:00 PM: Deep work (blocked)
+- Available: 10:30-11:30, 12:30-1:00, 2:30-3:00
+
+Carol (UTC+1, Berlin):
+- 9:00-10:00 AM: Morning standup
+- 11:00 AM-12:00 PM: 1:1 with manager
+- 1:00-2:00 PM: Lunch
+- 3:30-5:00 PM: Workshop
+- Available: 10:00-11:00, 12:00-1:00, 2:00-3:30
+
+Dave (UTC+5:30, Mumbai):
+- 10:00 AM-12:00 PM: Client workshops
+- 1:00-2:00 PM: Lunch
+- 3:00-4:00 PM: Code review
+- 5:00-7:00 PM: Evening meetings
+- Available: 12:00-1:00, 2:00-3:00, 4:00-5:00, 7:00+
+
+Convert ALL times to UTC first, then find the overlapping 30-minute window. State the answer in UTC.
+
+## RESPONSE:
+To find the only valid 30-minute meeting slot, we must first convert all participant schedules into a single common timezone (UTC) to identify overlaps.
+
+### Step 1: Convert Timezones to UTC Offsets
+*   **Alice (New York):** UTC-5
+*   **Bob (London):** UTC+0
+*   **Carol (Berlin):** UTC+1
+*   **Dave (Mumbai):** UTC+5:30
+
+### Step 2: Convert All Schedules to UTC
+
+**Alice (UTC-5)**
+*   *Offset:* Add 5 hours to local time to get UTC.
+*   8:00-9:30 AM Local $\rightarrow$ **13:00-14:30 UTC** (Team standup)
+*   10:00-11:00 AM Local $\rightarrow$ **15:00-16:00 UTC** (Client call)
+*   12:00-1:00 PM Local $\rightarrow$ **17:00-18:00 UTC** (Lunch)
+*   2:00-4:00 PM Local $\rightarrow$ **19:00-21:00 UTC** (Sprint planning)
+*   **Available Slots (UTC):**
+    *   09:30-10:00
+    *   11:00-12:00
+    *   13:00-14:00 (Wait, 1:00 PM local is 18:00 UTC. 1:00-2:00 PM local is 18:00-19:00 UTC. Let's re-calculate Alice's available times based on the gaps.)
+    *   *Correction on Alice's Available:*
+        *   8:00-9:30 busy $\rightarrow$ Free starts 09:30.
+        *   10:00 busy $\rightarrow$ Free 09:30-10:00.
+        *   11:00 busy $\rightarrow$ Free 11:00-12:00.
+        *   12:00-1:00 busy $\rightarrow$ Free 13:00-14:00 (1:00 PM local = 18:00 UTC, 2:00 PM local = 19:00 UTC).
+        *   Wait, let's re-calculate the specific available windows provided in the prompt for Alice:
+            *   "Available: 9:30-10:00, 11:00-12:00, 1:00-2:00" (Local)
+            *   9:30-10:00 Local $\rightarrow$ **14:30-15:00 UTC**
+            *   11:00-12:00 Local $\rightarrow$ **16:00-17:00 UTC**
+            *   1:00-2:00 Local $\rightarrow$ **18:00-19:00 UTC**
+
+**Bob (UTC+0)**
+*   *Offset:* No change.
+*   9:00-10:30 AM Local $\rightarrow$ **09:00-10:30 UTC** (Architecture review)
+*   11:30 AM-12:30 PM Local $\rightarrow$ **11:30-12:30 UTC** (Lunch)
+*   1:00-2:30 PM Local $\rightarrow$ **13:00-14:30 UTC** (Design sync)
+*   3:00-5:00 PM Local $\rightarrow$ **15:00-17:00 UTC** (Deep work)
+*   **Available Slots (UTC):**
+    *   10:30-11:30
+    *   12:30-13:00
+    *   14:30-15:00
+
+**Carol (UTC+1)**
+*   *Offset:* Subtract 1 hour from local time to get UTC.
+*   9:00-10:00 AM Local $\rightarrow$ **08:00-09:00 UTC** (Morning standup)
+*   11:00 AM-12:00 PM Local $\rightarrow$ **10:00-11:00 UTC** (1:1)
+*   1:00-2:00 PM Local $\rightarrow$ **12:00-13:00 UTC** (Lunch)
+*   3:30-5:00 PM Local $\rightarrow$ **14:30-16:00 UTC** (Workshop)
+*   **Available Slots (UTC):**
+    *   10:00-11:00
+    *   12:00-13:00
+    *   13:00-14:30 (Wait, 2:00-3:30 PM local is 13:00-14:30 UTC).
+
+**Dave (UTC+5:30)**
+*   *Offset:* Subtract 5.5 hours from local time to get UTC.
+*   10:00 AM-12:00 PM Local $\rightarrow$ **04:30-06:30 UTC** (Client workshops)
+*   1:00-2:00 PM Local $\rightarrow$ **07:30-08:30 UTC** (Lunch)
+*   3:00-4:00 PM Local $\rightarrow$ **09:30-10:30 UTC** (Code review)
+*   5:00-7:00 PM Local $\rightarrow$ **11:30-13:30 UTC** (Evening meetings)
+*   **Available Slots (UTC):**
+    *   12:00-1:00 Local $\rightarrow$ **06:30-07:30 UTC**
+    *   2:00-3:00 Local $\rightarrow$ **08:30-09:30 UTC**
+    *   4:00-5:00 Local $\rightarrow$ **10:30-11:30 UTC**
+    *   7:00+ Local $\rightarrow$ **13:30+ UTC**
+
+### Step 3: Find the Overlap
+
+Let's list the **Available UTC Windows** for each person and find the intersection.
+
+**Alice Available (UTC):**
+1.  14:30 - 15:00
+2.  16:00 - 17:00
+3.  18:00 - 19:00
+
+**Bob Available (UTC):**
+1.  10:30 - 11:30
+2.  12:30 - 13:00
+3.  14:30 - 15:00
+
+**Carol Available (UTC):**
+1.  10:00 - 11:00
+2.  12:00 - 13:00
+3.  13:00 - 14:30 (Derived from 2:00-3:30 PM Local)
+
+**Dave Available (UTC):**
+1.  06:30 - 07:30
+2.  08:30 - 09:30
+3.  10:30 - 11:30
+4.  13:30 - 14:30 (Wait, 4:00-5:00 PM Local is 10:30-11:30 UTC. 7:00+ PM Local is 13:30+ UTC).
+    *   Let's re-verify Dave's "Available" list from the prompt:
+    *   "Available: 12:00-1:00, 2:00-3:00, 4:00-5:00, 7:00+" (Local)
+    *   12:00-13:00 Local $\rightarrow$ 06:30-07:30 UTC
+    *   14:00-15:00 Local $\rightarrow$ 08:30-09:30 UTC
+    *   16:00-17:00 Local $\rightarrow$ 10:30-11:30 UTC
+    *   19:00+ Local $\rightarrow$ 13:30+ UTC
+
+**Intersection Analysis:**
+
+Let's check the specific time windows where everyone might be free.
+
+*   **Window A: Around 10:30 - 11:30 UTC**
+    *   **Bob:** Available (10:30-11:30).
+    *   **Dave:** Available (10:30-11:30).
+    *   **Carol:** Available (10:00-11:00). Overlap with Bob/Dave is **10:30-11:00**.
+    *   **Alice:** Available? Alice's slots are 14:30, 16:00, 18:00 UTC. **Alice is NOT available.**
+    *   *Result:* No overlap.
+
+*   **Window B: Around 14:30 - 15:00 UTC**
+    *   **Alice:** Available (14:30-15:00).
+    *   **Bob:** Available (14:30-15:00).
+    *   **Carol:** Available? Carol's available slots are 10:00-11:00, 12:00-13:00, and 13:00-14:30 (from 2:00-3:30 PM Berlin time).
+        *   Carol's workshop starts at 3:30 PM Berlin (14:30 UTC).
+        *   So Carol is available **until** 14:30 UTC.
+    *   *Result:* No overlap (Carol becomes busy exactly when Alice and Bob become available).
+
+*   **Window C: Around 13:30 - 14:30 UTC**
+    *   **Alice:** No (Available 14:30+).
+    *   *Result:* No overlap.
+
+*   **Window D: Around 16:00 - 17:00 UTC**
+    *   **Alice:** Available (16:00-17:00).
+    *   **Bob:** No (Available 14:30-15:00, then busy 15:00-17:00).
+    *   *Result:* No overlap.
+
+*   **Window E: Around 18:00 - 19:00 UTC**
+    *   **Alice:** Available (18:00-19:00).
+    *   **Bob:** No (Busy 15:00-17:00, then free? Bob's schedule ends at 5:00 PM local (17:00 UTC). The prompt says "Available: ... 2:30-3:00". Wait, let's re-read Bob's availability carefully).
+    *   Bob's Available: 10:30-11:30, 12:30-13:00, 2:30-3:00 (Local).
+    *   Bob's 2:30-3:00 PM Local = **14:30-15:00 UTC**.
+    *   Bob has **no availability** after 15:00 UTC.
+    *   *Result:* No overlap.
+
+**Re-evaluating the "Available" lists vs "Busy" lists.**
+Did I miss a slot? Let's re-calculate the "Available" lists provided in the prompt against the "Busy" lists to ensure I didn't miss a gap.
+
+**Alice (UTC-5)**
+*   Busy: 08:00-09:30, 10:00-11:00, 12:00-13:00, 14:00-16:00.
+*   Available: 09:30-10:00, 11:00-12:00, 13:00-14:00.
+*   **UTC Conversion:**
+    *   09:30-10:00 Local $\rightarrow$ **14:30-15:00 UTC**
+    *   11:00-12:00 Local $\rightarrow$ **16:00-17:00 UTC**
+    *   13:00-14:00 Local $\rightarrow$ **18:00-19:00 UTC**
+
+**Bob (UTC+0)**
+*   Busy: 09:00-10:30, 11:30-12:30, 13:00-14:30, 15:00-17:00.
+*   Available: 10:30-11:30, 12:30-13:00, 14:30-15:00.
+*   **UTC Conversion:** Same as Local.
+
+**Carol (UTC+1)**
+*   Busy: 09:00-10:00, 11:00-12:00, 13:00-14:00, 15:30-17:00.
+*   Available: 10:00-11:00, 12:00-13:00, 14:00-15:30.
+*   **UTC Conversion:**
+    *   10:00-11:00 Local $\rightarrow$ **09:00-10:00 UTC**
+    *   12:00-13:00 Local $\rightarrow$ **11:00-12:00 UTC**
+    *   14:00-15:30 Local $\rightarrow$ **13:00-14:30 UTC**
+
+**Dave (UTC+5:30)**
+*   Busy: 10:00-12:00, 13:00-14:00, 15:00-16:00, 17:00-19:00.
+*   Available: 12:00-13:00, 14:00-15:00, 16:00-17:00, 19:00+.
+*   **UTC Conversion:**
+    *   12:00-13:00 Local $\rightarrow$ **06:30-07:30 UTC**
+    *   14:00-15:00 Local $\rightarrow$ **08:30-09:30 UTC**
+    *   16:00-17:00 Local $\rightarrow$ **10:30-11:30 UTC**
+    *   19:00+ Local $\rightarrow$ **13:30+ UTC**
+
+**Let's check the intersection again with these corrected UTC lists:**
+
+1.  **Alice:** 14:30-15:00, 16:00-17:00, 18:00-19:00
+2.  **Bob:** 10:30-11:30, 12:30-13:00, 14:30-15:00
+3.  **Carol:** 09:00-10:00, 11:00-12:00, 13:00-14:30
+4.  **Dave:** 06:30-07:30, 08:30-09:30, 10:30-11:30, 13:30+
+
+**Intersection Check:**
+
+*   **Slot 1: 14:30 - 15:00 UTC**
+    *   Alice: **Yes** (14:30-15:00)
+    *   Bob: **Yes** (14:30-15:00)
+    *   Carol: **No**. Carol is available 13:00-14:30. At 14:30 she starts her workshop (15:30 local = 14:30 UTC). Wait, let's re-read Carol's workshop time.
+        *   Carol: "3:30-

@@ -1,0 +1,182 @@
+# Phase D Hard Test — #50 Orchestrator / Manager Agent
+# Tier: 5 | Score: 5/10 | No automated constraints to check
+# Tokens: 2134 | Speed: 102.8 t/s | Time: 20.8s
+
+## PROMPT:
+Design an orchestration plan for a complex multi-agent workflow. You MUST include failure handling, because Agent C is known to fail 20% of the time.
+
+Task: Generate a comprehensive quarterly business review (QBR) document.
+
+Available agents and their capabilities:
+- Agent A (Data): Pulls metrics from databases. Takes 2 min. Never fails.
+- Agent B (Finance): Analyzes financial data. Takes 3 min. Requires Agent A output. Fails 5% of time.
+- Agent C (Market): Researches market trends. Takes 8 min. Independent. Fails 20% of time.
+- Agent D (Writer): Writes document sections. Takes 5 min per section. Requires relevant agent output.
+- Agent E (Designer): Creates charts/visuals. Takes 3 min. Requires Agent A data.
+- Agent F (Reviewer): Reviews final document. Takes 4 min. Requires all sections.
+
+Constraints:
+- Total wall-clock time budget: 25 minutes
+- If Agent C fails, the QBR must still be produced (with a note about missing market data)
+- Agent D can write sections in parallel if given different inputs
+
+Design:
+1. Execution DAG with parallel groups and dependencies
+2. Critical path analysis (what's the minimum time?)
+3. Failure handling for each agent (retry? fallback? skip?)
+4. If Agent C fails twice, what's the Plan B?
+5. Show the timeline (Gantt-chart style) for both success and failure scenarios
+
+## RESPONSE:
+# Orchestration Plan: Quarterly Business Review (QBR) Workflow
+
+## 1. Execution DAG (Directed Acyclic Graph)
+
+To maximize efficiency within the 25-minute budget, we must parallelize independent tasks. The workflow is structured as follows:
+
+**Phase 1: Data Ingestion (Parallel Start)**
+*   **Agent A (Data)**: Starts immediately ($t=0$).
+    *   *Dependency*: None.
+    *   *Output*: Raw Metrics.
+*   **Agent C (Market)**: Starts immediately ($t=0$).
+    *   *Dependency*: None.
+    *   *Output*: Market Trends.
+    *   *Risk*: 20% failure rate.
+
+**Phase 2: Analysis & Visualization (Dependent on Phase 1)**
+*   **Agent B (Finance)**: Starts after Agent A completes ($t=2$).
+    *   *Dependency*: Agent A.
+    *   *Output*: Financial Analysis.
+    *   *Risk*: 5% failure rate.
+*   **Agent E (Designer)**: Starts after Agent A completes ($t=2$).
+    *   *Dependency*: Agent A.
+    *   *Output*: Charts/Visuals.
+    *   *Risk*: None (Assumed stable based on prompt).
+
+**Phase 3: Drafting (Dependent on Phase 2)**
+*   **Agent D (Writer)**: Operates in parallel streams based on available inputs.
+    *   *Stream 1 (Financial Section)*: Starts after Agent B completes ($t=5$).
+    *   *Stream 2 (Market Section)*: Starts after Agent C completes ($t=8$). *If C fails, this stream is skipped/modified.*
+    *   *Stream 3 (Executive Summary)*: Can start after Agent A completes ($t=2$) using raw metrics.
+
+**Phase 4: Finalization**
+*   **Agent F (Reviewer)**: Starts after all required sections (Financial, Market, Summary) and Visuals are ready.
+    *   *Dependency*: Agent D (all sections), Agent E (visuals).
+
+---
+
+## 2. Critical Path Analysis
+
+**Scenario A: All Agents Succeed (Best Case)**
+1.  **A** runs (0-2 min).
+2.  **B** runs (2-5 min).
+3.  **C** runs (0-8 min).
+4.  **E** runs (2-5 min).
+5.  **D** runs:
+    *   Financial Section: Starts at 5 min (waits for B), takes 5 min $\to$ Ends at 10 min.
+    *   Market Section: Starts at 8 min (waits for C), takes 5 min $\to$ Ends at 13 min.
+    *   *Note: D can write Executive Summary earlier, but the critical path is the Market Section.*
+6.  **F** runs: Starts at 13 min (waits for D Market Section), takes 4 min $\to$ Ends at 17 min.
+
+**Minimum Time (Success):** 17 Minutes.
+*   **Slack:** 8 minutes available within the 25-minute budget. This slack is crucial for retries.
+
+**Scenario B: Agent C Fails (The Constraint)**
+1.  **A** runs (0-2 min).
+2.  **B** runs (2-5 min).
+3.  **C** Fails at $t=8$.
+4.  **D** skips Market Section. Writes Financial (10 min) and Summary.
+5.  **F** runs: Starts at 10 min (waits for Financial), takes 4 min $\to$ Ends at 14 min.
+
+**Minimum Time (C Fails):** 14 Minutes.
+*   *Result:* The workflow is actually *faster* if C fails because the long 8-minute dependency is removed, provided we handle the missing data gracefully.
+
+---
+
+## 3. Failure Handling Strategy
+
+| Agent | Failure Rate | Strategy | Logic |
+| :--- | :--- | :--- | : |
+| **Agent B** | 5% | **Retry (Max 1)** | If B fails, wait 30s, retry once. If it fails again, flag "Financial Data Unavailable" and proceed with Agent D using raw data from A (if possible) or skip the financial section. |
+| **Agent C** | 20% | **Retry (Max 1) + Fallback** | If C fails, wait 30s, retry once. If it fails again, **do not block the workflow**. Trigger "Market Data Missing" flag. Agent D writes the Market Section with a disclaimer: *"Market trends unavailable due to data source error."* |
+| **Agent D** | N/A | **Parallel Execution** | If a specific input (e.g., Market) is missing, D continues writing other sections (Financial, Summary) immediately. |
+| **Agent F** | N/A | **Validation Gate** | If F detects missing sections, it generates a "Draft with Gaps" report rather than failing. |
+
+**Retry Logic:**
+*   **Timeout:** 30 seconds.
+*   **Max Retries:** 1.
+*   **Total Retry Time Cost:** ~1 min (negligible against 25 min budget).
+
+---
+
+## 4. Plan B: If Agent C Fails Twice
+
+If Agent C fails the initial attempt and the retry attempt (Total 2 failures):
+
+1.  **Trigger:** The Orchestrator marks the "Market Data" node as `FAILED_PERMANENTLY`.
+2.  **Data Substitution:**
+    *   Agent D is instructed to generate the Market Section using **Historical Baseline Data** (pre-loaded static data) rather than real-time research.
+    *   *Text Injection:* "Market analysis based on historical averages; real-time data unavailable."
+3.  **Stakeholder Notification:**
+    *   Agent F (Reviewer) adds a specific "Risk Note" to the QBR header: *"Warning: Q3 Market Data was unavailable. Analysis relies on historical baselines."*
+4.  **Workflow Continuation:** The rest of the workflow (B, D, E, F) proceeds exactly as the "Success" path, ensuring the 25-minute deadline is met.
+
+---
+
+## 5. Timeline Visualization (Gantt-Style)
+
+### Scenario 1: Success (All Agents Work)
+*Total Time: 17 Minutes*
+
+```text
+Time (min)   0    2    5    8   10   13   17   25
+             |----|----|----|----|----|----|----|
+Agent A      [====]
+Agent C      [====================]
+Agent B             [=======]
+Agent E             [=======]
+Agent D (Fin)            [========]
+Agent D (Mkt)                   [========]
+Agent F (Rev)                            [====]
+```
+*Note: Agent D (Mkt) waits for Agent C. Agent F waits for the last section of D.*
+
+### Scenario 2: Agent C Fails (Retry Succeeds)
+*Total Time: 17 Minutes (Same as success)*
+*Agent C takes 8 mins, but includes a 1 min retry delay if the first attempt failed.*
+
+### Scenario 3: Agent C Fails (Retry Fails - Plan B)
+*Total Time: 14 Minutes (Faster due to no Market wait)*
+
+```text
+Time (min)   0    2    5    8   10   14   25
+             |----|----|----|----|----|----|----|
+Agent A      [====]
+Agent C      [====] (Fail) -> [==] (Retry Fail) -> SKIP
+Agent B             [=======]
+Agent E             [=======]
+Agent D (Fin)            [========]
+Agent D (Mkt)            [========] (Uses Plan B Static Data)
+Agent F (Rev)                            [====]
+```
+*Note: In this scenario, Agent D (Mkt) does not wait for Agent C. It starts immediately with static data at $t=2$ (after A) or $t=5$ (after B). Let's assume it starts at $t=5$ to align with other sections.*
+
+**Revised Plan B Timeline:**
+1.  **0-2**: A runs.
+2.  **2-5**: B runs.
+3.  **2-5**: E runs.
+4.  **2-5**: C runs (Fail).
+5.  **5-6**: C Retry (Fail).
+6.  **5**: D starts Financial Section (waits for B).
+7.  **5**: D starts Market Section (Plan B: Static Data).
+8.  **10**: D finishes Financial.
+9.  **10**: D finishes Market (Static).
+10. **10**: F starts Review.
+11. **14**: F finishes.
+
+**Total Time:** 14 Minutes.
+**Status:** Well within the 25-minute budget.
+
+### Summary of Robustness
+*   **Budget Safety:** Even with retries and Plan B, the workflow finishes in **17 minutes max** (Success) or **14 minutes** (C Fails).
+*   **Risk Mitigation:** The 20% failure rate of Agent C is absorbed by the parallel execution of Agent B and the "Plan B" static data fallback, ensuring the QBR is delivered on time regardless of Agent C's performance.

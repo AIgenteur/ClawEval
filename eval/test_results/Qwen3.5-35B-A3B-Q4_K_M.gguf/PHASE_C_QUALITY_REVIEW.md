@@ -216,3 +216,32 @@
 > matching the Qwen3.5-27B's 9.2/10 while being **3.5x faster** (~112 vs ~32 t/s).
 > The model needs a larger token budget than 16K for thinking — Calendar #8 used 6.4K
 > tokens just for reasoning. With adequate budget, no tests fail.
+
+---
+
+## Phase E: Killer Evaluation (32K Budget, Thinking ON)
+
+**Overall: 102/120 = 85.0%** (vs 63.3% nothink)
+
+| # | Test | Score | Detail |
+|---|------|:-----:|--------|
+| 1 | Precise Counting | **4/10** | Still struggles with counting even with thinking |
+| 2 | Constrained JSON | **10/10** | Perfect (thinking fixed payment matching) |
+| 3 | Logic Grid Puzzle | **10/10** | Perfect (thinking +4 vs nothink) |
+| 4 | Multi-Step Math | **10/10** | Perfect |
+| 5 | Code Output Prediction | **10/10** | Perfect |
+| 6 | Contradiction Detection | **5/10** | Fallback scoring |
+| 7 | Complex Sorting | **8/10** | Near-perfect (thinking +5 vs nothink) |
+| 8 | Regex Construction | **10/10** | Perfect (thinking +3 vs nothink) |
+| 9 | Data Transformation | **10/10** | Perfect (thinking **+8** vs nothink) |
+| 10 | Instruction Chain | **8/10** | Strong (thinking +4 vs nothink) |
+| 11 | Multi-Turn Refinement | **8/10** | Missed assertion count (nothink was 9) |
+| 12 | Multi-Turn State Tracking | **9/10** | Strong (thinking +2 vs nothink) |
+
+| Category | Score |
+|----------|:-----:|
+| Code | **100%** |
+| Structured Output | **100%** |
+| Multi-Turn (Agentic) | **85%** |
+| Instruction Following | **80%** |
+| Reasoning | **74%** |

@@ -1,0 +1,76 @@
+# Phase D Hard Test — #4 Notification / Alert Agent
+# Tier: 1 | Score: 10/10 | 2/2 constraints met
+# Tokens: 1056 | Speed: 108.4 t/s | Time: 9.7s
+
+## PROMPT:
+Process these 7 events into alerts. WATCH OUT: 2 events are duplicates (merge them), 1 is a false positive that should NOT generate an alert. Assign correct priorities.
+
+Events (timestamps in UTC):
+1. 14:00 — "Disk /data at 94% capacity" (source: monitoring)
+2. 14:01 — "SSL certificate for api.example.com expired 2 hours ago" (source: cert-manager)
+3. 14:02 — "CPU spike to 98% on worker-3" (source: monitoring)
+4. 14:02 — "CPU on worker-3 returned to 12% after scheduled batch job completed" (source: monitoring)
+5. 14:03 — "SSL certificate for api.example.com expires in -2 hours" (source: different cert checker)
+6. 14:05 — "New deployment v2.4.1 rolled out successfully" (source: CI/CD)
+7. 14:06 — "Disk /data at 94% — approaching critical threshold" (source: secondary monitoring)
+
+For each alert: priority (P1/P2/P3), channel, message, and reasoning. Explain which events you merged and which you filtered as false positives.
+
+## RESPONSE:
+Here is the processed alert list based on the 7 input events.
+
+### Processing Logic Summary
+*   **Merged Events:** Event #1 and Event #7 were merged. Both report the exact same issue (`Disk /data at 94%`) from different sources within 6 minutes. This is a single incident requiring a single alert.
+*   **Filtered (False Positive):** Event #4 was filtered. It reports a CPU spike that has already resolved ("returned to 12%") and explicitly attributes it to a "scheduled batch job." This is expected behavior, not an anomaly requiring immediate intervention.
+*   **Duplicate Detection:** Event #2 and Event #5 describe the same SSL expiration issue. However, since Event #2 provides the specific context ("expired 2 hours ago") and Event #5 is a redundant check from a different source, we will prioritize Event #2 and treat Event #5 as a confirmation/secondary data point rather than a separate alert to avoid alert fatigue.
+
+---
+
+### Generated Alerts
+
+#### Alert 1: Critical Disk Capacity
+*   **Priority:** **P1** (Critical)
+*   **Channel:** `#incidents-critical` (PagerDuty/Slack)
+*   **Message:** `[CRITICAL] Disk /data at 94% capacity on production nodes. Approaching critical threshold.`
+*   **Reasoning:**
+    *   **Source:** Merged Event #1 and Event #7.
+    *   **Logic:** Disk usage at 94% is a critical infrastructure risk. If the disk fills completely, services will crash or become read-only. The fact that two different monitoring sources reported this confirms the severity.
+    *   **Action Required:** Immediate investigation to clear space or expand storage.
+
+#### Alert 2: Expired SSL Certificate
+*   **Priority:** **P2** (High)
+*   **Channel:** `#security-alerts` (Slack/Email)
+*   **Message:** `[HIGH] SSL certificate for api.example.com has expired (expired 2 hours ago).`
+*   **Reasoning:**
+    *   **Source:** Event #2 (Event #5 is a duplicate confirmation).
+    *   **Logic:** An expired certificate causes immediate service disruption (502/503 errors) and security warnings for users. While not a system crash like a full disk, it breaks external trust and connectivity.
+    *   **Action Required:** Immediate certificate renewal and deployment.
+
+#### Alert 3: CPU Spike on Worker Node
+*   **Priority:** **P3** (Medium)
+*   **Channel:** `#ops-monitoring` (Slack)
+*   **Message:** `[MEDIUM] CPU spike detected on worker-3 (98%) triggered by scheduled batch job.`
+*   **Reasoning:**
+    *   **Source:** Event #3 (Event #4 was filtered as it indicated resolution).
+    *   **Logic:** Event #3 shows a spike, but Event #4 confirms it was a "scheduled batch job" and has resolved. This is not an anomaly but a known load event. However, it is worth logging as an informational alert to verify that the batch job is running as expected and not causing unexpected latency.
+    *   **Action Required:** No immediate intervention needed, but review batch job scheduling to ensure it doesn't impact other services in the future.
+
+#### Alert 4: Deployment Status (Informational)
+*   **Priority:** **P4** (Low/Info)
+*   **Channel:** `#deployments` (Slack)
+*   **Message:** `[INFO] New deployment v2.4.1 rolled out successfully.`
+*   **Reasoning:**
+    *   **Source:** Event #6.
+    *   **Logic:** This is a success message, not an error. It does not require an "alert" in the traditional sense of incident response, but it should be posted to the deployment channel for visibility.
+    *   **Action Required:** None (Acknowledgment only).
+
+---
+
+### Summary of Filtering & Merging
+| Event ID | Action | Reason |
+| :--- | :--- | :--- |
+| **1 & 7** | **Merged** | Same resource (`/data`), same metric (`94%`), different sources. Combined into one P1 alert. |
+| **2 & 5** | **Consolidated** | Same domain (`api.example.com`), same issue (expired). Event #2 is more descriptive; Event #5 is redundant noise. |
+| **4** | **Filtered** | **False Positive.** Indicates a resolved state caused by a known scheduled task. No action needed. |
+| **3** | **Retained** | The root cause of the spike. Included as a P3 informational alert to track the event. |
+| **6** | **Info Only** | Successful deployment. Not an incident, but logged for audit. |
