@@ -224,7 +224,7 @@ ClawEval/
 │   ├── role_prompts.py         # 59 role system prompts
 │   ├── hard_prompts.py         # Phase D adversarial prompts
 │   └── test_results/           # All model evaluation results
-├── docs/                       # Model selection & VRAM guides
+├── RESULTS.md                  # Detailed per-role score comparison
 └── README.md
 ```
 
