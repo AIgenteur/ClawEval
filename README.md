@@ -1,8 +1,20 @@
-# 🦞 ClawEval
+# 🦞 ClawEval — Can Your LLM Actually Do the Job?
 
-**Deterministic LLM evaluation for agentic AI roles.** ClawEval tests how well language models perform as specialized AI agents — from routers and validators to code reviewers and financial analysts.
+**The only deterministic benchmark that tests LLMs as real AI agents** — not trivia, not chat, not vibes. 59 specialized roles. Hard, verifiable tasks. Every score is reproducible.
 
-Unlike vibes-based benchmarks, ClawEval uses **deterministic, auto-scored tests** with exact JSON matching, code execution, constraint checking, and numeric tolerance. Every score is reproducible.
+> 🔥 **New models added regularly.** We test the latest open-weight models you can actually run — on a single 24GB GPU, on a 96GB local rig, and soon cloud models like Claude, GPT-4o, Gemini, and DeepSeek. Star ⭐ this repo to get notified when we add new results.
+
+### Why ClawEval?
+
+Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do the work** — route tickets, review code, analyze financials, draft legal docs, plan sprints, and 54 more agent roles. Each test has an exact expected answer. No LLM-as-judge. No vibes.
+
+| | 24GB VRAM | 96GB VRAM | Cloud (coming) |
+|---|---|---|---|
+| **Models** | Qwen3.5-35B-A3B, 27B | Qwen3.5-122B-A10B | Claude, GPT-4o, Gemini, DeepSeek |
+| **Server** | llama.cpp | SGLang | API |
+| **Status** | ✅ Tested | ✅ Tested | 🔜 Next |
+
+---
 
 ## 🏆 Per-Role Agent Scores (Phase F — 59 Roles)
 
