@@ -10,8 +10,9 @@ Unlike vibes-based benchmarks, ClawEval uses **deterministic, auto-scored tests*
 
 All scores out of 10. Models: **122B** = Qwen3.5-122B-A10B NVFP4 (think 16K, SGLang) · **35B-T** = Qwen3.5-35B-A3B Q4_K_M (think ∞, llama.cpp) · **35B-N** = same, nothink
 
-| # | Agent Role | 122B | 35B-T | 35B-N |
+| # | Agent Role | Qwen3.5-122B-A10B | Qwen3.5-35B-A3B | Qwen3.5-35B-A3B |
 |---|---|---|---|---|
+| | | Think 16K · SGLang | Think ∞ · llama.cpp | NoThink · llama.cpp |
 | | **Tier 1 — Utility** | | | |
 | 1 | Router / Triage | 🟢 10 | 🟢 10 | 🟢 10 |
 | 2 | Input Validator | 🟢 10 | 🟢 10 | 🟢 10 |
