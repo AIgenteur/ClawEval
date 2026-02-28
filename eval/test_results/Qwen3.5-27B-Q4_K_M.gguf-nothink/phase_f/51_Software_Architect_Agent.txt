@@ -1,0 +1,90 @@
+```json
+{
+  "components": [
+    {
+      "name": "Client SDK",
+      "technology": "React Native / Flutter / WebSockets",
+      "purpose": "Handle user interface, local caching, and secure WebSocket connections with E2E encryption keys.",
+      "scaling_strategy": "Stateless client logic; scales with user base without server-side changes."
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong or AWS API Gateway",
+      "purpose": "Route HTTP/REST requests, handle authentication, rate limiting, and SSL termination.",
+      "scaling_strategy": "Auto-scaling groups behind a global load balancer."
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Go (Gorilla WebSocket) or Node.js (Socket.io)",
+      "purpose": "Manage persistent connections, broadcast messages, and handle presence status.",
+      "scaling_strategy": "Horizontal scaling with sticky sessions; use Redis Pub/Sub for cross-instance messaging."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka or RabbitMQ",
+      "purpose": "Decouple message ingestion from processing; ensure durability and ordering.",
+      "scaling_strategy": "Partitioned topics based on user ID or group ID for parallel processing."
+    },
+    {
+      "name": "Message Processor",
+      "technology": "Go or Java (Spring Boot)",
+      "purpose": "Decrypt/encrypt messages, validate content, and persist to storage.",
+      "scaling_strategy": "Stateless workers consuming from Kafka; auto-scale based on queue depth."
+    },
+    {
+      "name": "Primary Database",
+      "technology": "Cassandra or ScyllaDB",
+      "purpose": "Store message history with high write throughput and horizontal scalability.",
+      "scaling_strategy": "Sharding by user/group ID; add nodes to increase capacity."
+    },
+    {
+      "name": "Cache Layer",
+      "technology": "Redis Cluster",
+      "purpose": "Store online status, recent messages, and session tokens for low-latency access.",
+      "scaling_strategy": "Sharded Redis cluster with automatic failover."
+    },
+    {
+      "name": "Object Storage",
+      "technology": "AWS S3 or MinIO",
+      "purpose": "Store file attachments (up to 50MB) with CDN integration.",
+      "scaling_strategy": "Infinite scalability; use lifecycle policies for cost optimization."
+    },
+    {
+      "name": "CDN",
+      "technology": "CloudFront or Cloudflare",
+      "purpose": "Cache static assets and serve file attachments globally with low latency.",
+      "scaling_strategy": "Edge caching; scales automatically with traffic."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "Hashicorp Vault or AWS KMS",
+      "purpose": "Manage E2E encryption keys and secure key exchange protocols.",
+      "scaling_strategy": "High-availability deployment with multi-region replication."
+    },
+    {
+      "name": "Monitoring & Alerting",
+      "technology": "Prometheus + Grafana + ELK Stack",
+      "purpose": "Track system health, latency, and error rates; trigger alerts for SLA breaches.",
+      "scaling_strategy": "Centralized logging with distributed tracing (Jaeger)."
+    }
+  ],
+  "data_flow": "Client -> API Gateway (Auth) -> WebSocket Gateway (Persistent Connection) -> Kafka (Message Queue) -> Message Processor (E2E Encryption/Validation) -> Cassandra (Persistence) + Redis (Cache/Status) -> WebSocket Gateway (Broadcast to Recipients). Files: Client -> API Gateway -> S3 (Upload) -> CDN (Delivery).",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$45,000 - $60,000 (excluding development and maintenance)",
+  "bottlenecks": [
+    "WebSocket connection limits per server instance",
+    "Database write throughput during peak traffic",
+    "Network latency in cross-region data replication",
+    "File upload/download bandwidth costs"
+  ],
+  "tradeoffs": [
+    "E2E encryption prevents server-side message scanning (security vs. moderation)",
+    "High availability requires multi-region replication (cost vs. latency)",
+    "Message ordering guarantees may be relaxed for extreme scalability (consistency vs. availability)",
+    "GDPR compliance requires data localization (complexity vs. regulatory adherence)"
+  ]
+}
+```

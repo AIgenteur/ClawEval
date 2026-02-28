@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Weak Secret Key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a cryptographically secure random string for the secret key, e.g., os.urandom(32).hex()"
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Avoid passing user input directly into render_template_string; use proper templating with escaped variables or sanitize input."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries, e.g., db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Avoid using pickle for untrusted data; use safer formats like JSON with validation."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid shell=True; pass command as a list and validate/sanitize input strictly."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "open(path).read()",
+      "fix": "Validate and sanitize the path; restrict access to a specific directory and prevent traversal sequences like '..'."
+    },
+    {
+      "id": 7,
+      "type": "Hardcoded Credentials / Weak Authentication",
+      "severity": "high",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Use secure password hashing (e.g., bcrypt) and avoid default fallback passwords; store secrets securely."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Remove debug endpoints in production; never expose environment variables to clients."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "No HTTPS enforcement in Flask app",
+      "fix": "Enforce HTTPS using middleware or reverse proxy; set SECURE_COOKIES and use SSL/TLS."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "No rate limiting implemented",
+      "fix": "Implement rate limiting using libraries like Flask-Limiter to prevent brute-force and DoS attacks."
+    }
+  ],
+  "count": 10
+}
+```

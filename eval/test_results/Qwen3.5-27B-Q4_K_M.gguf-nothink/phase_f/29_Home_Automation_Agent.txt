@@ -1,0 +1,408 @@
+```json
+[
+  {
+    "id": "rule_01_morning_routine",
+    "name": "Morning Wake-Up Lights",
+    "trigger": {
+      "type": "time",
+      "value": "06:30",
+      "days": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    },
+    "conditions": [
+      {
+        "type": "sensor",
+        "entity": "binary_sensor.alice_home",
+        "state": "off"
+      },
+      {
+        "type": "sensor",
+        "entity": "binary_sensor.bob_home",
+        "state": "on"
+      }
+    ],
+    "actions": [
+      {
+        "type": "scene",
+        "entity": "scene.morning_gradual",
+        "duration": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_02_morning_routine_weekend",
+    "name": "Weekend Morning Wake-Up Lights",
+    "trigger": {
+      "type": "time",
+      "value": "08:00",
+      "days": ["saturday", "sunday"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "scene",
+        "entity": "scene.morning_gradual",
+        "duration": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_03_thermostat_occupied",
+    "name": "Thermostat Occupied Mode",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.house_occupied",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [
+      {
+        "type": "time",
+        "before": "23:00",
+        "after": "06:00"
+      }
+    ],
+    "actions": [
+      {
+        "type": "climate",
+        "entity": "climate.main_thermostat",
+        "temperature": 72,
+        "mode": "cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_04_thermostat_empty",
+    "name": "Thermostat Away Mode",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.house_occupied",
+      "from": "on",
+      "to": "off"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "climate",
+        "entity": "climate.main_thermostat",
+        "temperature": 65,
+        "mode": "cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_05_thermostat_sleep",
+    "name": "Thermostat Sleep Mode",
+    "trigger": {
+      "type": "time",
+      "value": "23:00"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "binary_sensor.house_occupied",
+        "state": "on"
+      }
+    ],
+    "actions": [
+      {
+        "type": "climate",
+        "entity": "climate.main_thermostat",
+        "temperature": 68,
+        "mode": "cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_06_security_arm",
+    "name": "Security Arm When Away",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.alice_home",
+      "from": "on",
+      "to": "off"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "binary_sensor.bob_home",
+        "state": "off"
+      }
+    ],
+    "actions": [
+      {
+        "type": "alarm",
+        "entity": "alarm_control_panel.home_security",
+        "state": "armed_away"
+      }
+    ]
+  },
+  {
+    "id": "rule_07_security_disarm",
+    "name": "Security Disarm When Home",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.alice_home",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "alarm",
+        "entity": "alarm_control_panel.home_security",
+        "state": "disarmed"
+      }
+    ]
+  },
+  {
+    "id": "rule_08_pet_feeder",
+    "name": "Auto Pet Feeder",
+    "trigger": {
+      "type": "time",
+      "value": "07:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "switch",
+        "entity": "switch.cat_feeder",
+        "state": "on",
+        "duration": 30
+      }
+    ]
+  },
+  {
+    "id": "rule_09_pet_feeder_evening",
+    "name": "Evening Auto Pet Feeder",
+    "trigger": {
+      "type": "time",
+      "value": "18:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "switch",
+        "entity": "switch.cat_feeder",
+        "state": "on",
+        "duration": 30
+      }
+    ]
+  },
+  {
+    "id": "rule_10_pet_camera",
+    "name": "Cat Camera When Away",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.house_occupied",
+      "from": "on",
+      "to": "off"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "switch",
+        "entity": "switch.cat_camera",
+        "state": "on"
+      }
+    ]
+  },
+  {
+    "id": "rule_11_energy_solar",
+    "name": "Solar Priority Peak Hours",
+    "trigger": {
+      "type": "time",
+      "value": "14:00"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "sensor.solar_production",
+        "state": "high"
+      }
+    ],
+    "actions": [
+      {
+        "type": "select",
+        "entity": "select.energy_mode",
+        "option": "solar_priority"
+      }
+    ]
+  },
+  {
+    "id": "rule_12_energy_battery",
+    "name": "Battery Backup Evening",
+    "trigger": {
+      "type": "time",
+      "value": "19:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "select",
+        "entity": "select.energy_mode",
+        "option": "battery_backup"
+      }
+    ]
+  },
+  {
+    "id": "rule_13_hallway_motion",
+    "name": "Hallway Motion Night Lights",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.hallway_motion",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [
+      {
+        "type": "time",
+        "before": "06:00",
+        "after": "22:00"
+      }
+    ],
+    "actions": [
+      {
+        "type": "light",
+        "entity": "light.hallway",
+        "brightness": 20,
+        "transition": 1
+      },
+      {
+        "type": "delay",
+        "duration": 300
+      },
+      {
+        "type": "light",
+        "entity": "light.hallway",
+        "state": "off"
+      }
+    ]
+  },
+  {
+    "id": "rule_14_bob_office",
+    "name": "Bob's Office Activation",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.bob_computer",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "light",
+        "entity": "light.bob_desk_lamp",
+        "state": "on"
+      },
+      {
+        "type": "climate",
+        "entity": "climate.office_ac",
+        "temperature": 70,
+        "mode": "cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_15_laundry_notify",
+    "name": "Laundry Cycle Complete Notification",
+    "trigger": {
+      "type": "state",
+      "entity": "sensor.washer_state",
+      "from": "running",
+      "to": "idle"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_alice",
+        "message": "Washer cycle complete."
+      },
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_bob",
+        "message": "Washer cycle complete."
+      }
+    ]
+  },
+  {
+    "id": "rule_16_laundry_dryer_notify",
+    "name": "Dryer Cycle Complete Notification",
+    "trigger": {
+      "type": "state",
+      "entity": "sensor.dryer_state",
+      "from": "running",
+      "to": "idle"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_alice",
+        "message": "Dryer cycle complete."
+      },
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_bob",
+        "message": "Dryer cycle complete."
+      }
+    ]
+  },
+  {
+    "id": "rule_17_water_leak",
+    "name": "Water Leak Emergency Response",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.water_leak_detector",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "switch",
+        "entity": "switch.main_water_valve",
+        "state": "off"
+      },
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_alice",
+        "message": "URGENT: Water leak detected! Main valve shut off."
+      },
+      {
+        "type": "notify",
+        "entity": "notify.mobile_app_bob",
+        "message": "URGENT: Water leak detected! Main valve shut off."
+      }
+    ]
+  },
+  {
+    "id": "rule_18_guest_mode_activate",
+    "name": "Activate Guest Mode",
+    "trigger": {
+      "type": "button",
+      "entity": "button.activate_guest_mode"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "code",
+        "entity": "lock.front_door",
+        "code": "1234",
+        "type": "temporary"
+      },
+      {
+        "type": "climate",
+        "entity": "climate.main_thermostat",
+        "temperature": 72,
+        "mode": "cool"
+      },
+      {
+        "type": "switch",
+        "entity": "switch.guest_wifi",
+        "state": "on"
+      }
+    ]
+  }
+]
+```

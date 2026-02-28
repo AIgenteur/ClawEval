@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version '2' is outdated and lacks modern features",
+      "fix": "Update to version '3.8' or higher (e.g., '3.9') for better compatibility and features"
+    },
+    {
+      "line": "4",
+      "problem": "'latest' tag is non-deterministic and can break builds unexpectedly",
+      "fix": "Use a specific version tag like 'node:18-alpine' for reproducibility"
+    },
+    {
+      "line": "8",
+      "problem": "DB_PASSWORD stored in plaintext environment variable",
+      "fix": "Use Docker secrets or external secret management (e.g., .env file with .gitignore, or vault)"
+    },
+    {
+      "line": "9",
+      "problem": "NODE_ENV set to 'development' in production context",
+      "fix": "Change NODE_ENV to 'production' for security and performance optimizations"
+    },
+    {
+      "line": "11",
+      "problem": "Source volume mount (.:/app) exposes local codebase in production",
+      "fix": "Build a custom image with code baked in or use named volumes for production"
+    },
+    {
+      "line": "13",
+      "problem": "restart: no prevents automatic recovery from crashes",
+      "fix": "Set restart policy to 'unless-stopped' or 'always' for production resilience"
+    },
+    {
+      "line": "17",
+      "problem": "MySQL 5.6 is End-of-Life (EOL) and unsupported",
+      "fix": "Upgrade to MySQL 8.0 or MariaDB 10.6+ for security patches and support"
+    },
+    {
+      "line": "19",
+      "problem": "DB port 3306 exposed publicly to host network",
+      "fix": "Remove port mapping or bind to 127.0.0.1:3306:3306 to restrict access"
+    },
+    {
+      "line": "22",
+      "problem": "/tmp used for persistent data will be lost on container restart",
+      "fix": "Use a named volume (e.g., 'mysql-data:/var/lib/mysql') for persistence"
+    },
+    {
+      "line": "26",
+      "problem": "Redis port exposed publicly without authentication",
+      "fix": "Remove port mapping or bind to localhost, and add requirepass in redis.conf"
+    }
+  ],
+  "count": 10
+}
+```

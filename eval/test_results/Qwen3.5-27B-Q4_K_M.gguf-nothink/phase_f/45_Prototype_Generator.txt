@@ -1,0 +1,125 @@
+```python
+from flask import Flask, request, jsonify, abort
+from dataclasses import dataclass, asdict
+from typing import List, Optional
+from http import HTTPStatus
+
+app = Flask(__name__)
+
+# In-memory "database"
+books_db: List[dict] = []
+
+@dataclass
+class Book:
+    id: int
+    title: str
+    author: str
+    isbn: str
+    price: float
+
+    def to_dict(self):
+        return asdict(self)
+
+def generate_id():
+    if not books_db:
+        return 1
+    return max(book['id'] for book in books_db) + 1
+
+def validate_book_data(data):
+    required_fields = ['title', 'author', 'isbn', 'price']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return False, f"Missing required fields: {', '.join(missing_fields)}"
+    
+    if not isinstance(data['title'], str) or not data['title'].strip():
+        return False, "Title must be a non-empty string"
+    if not isinstance(data['author'], str) or not data['author'].strip():
+        return False, "Author must be a non-empty string"
+    if not isinstance(data['isbn'], str) or not data['isbn'].strip():
+        return False, "ISBN must be a non-empty string"
+    if not isinstance(data['price'], (int, float)) or data['price'] < 0:
+        return False, "Price must be a non-negative number"
+    
+    return True, None
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    if page < 1 or per_page < 1:
+        return jsonify({"error": "Invalid pagination parameters"}), HTTPStatus.BAD_REQUEST
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_books = books_db[start:end]
+    
+    return jsonify({
+        "books": paginated_books,
+        "page": page,
+        "per_page": per_page,
+        "total": len(books_db)
+    }), HTTPStatus.OK
+
+@app.route('/books/<int:id>', methods=['GET'])
+def get_book(id):
+    book = next((b for b in books_db if b['id'] == id), None)
+    if not book:
+        return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
+    return jsonify(book), HTTPStatus.OK
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), HTTPStatus.BAD_REQUEST
+
+    is_valid, error_msg = validate_book_data(data)
+    if not is_valid:
+        return jsonify({"error": error_msg}), HTTPStatus.UNPROCESSABLE_ENTITY
+
+    new_id = generate_id()
+    new_book = {
+        "id": new_id,
+        "title": data['title'],
+        "author": data['author'],
+        "isbn": data['isbn'],
+        "price": float(data['price'])
+    }
+    books_db.append(new_book)
+    return jsonify(new_book), HTTPStatus.CREATED
+
+@app.route('/books/<int:id>', methods=['PUT'])
+def update_book(id):
+    book = next((b for b in books_db if b['id'] == id), None)
+    if not book:
+        return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), HTTPStatus.BAD_REQUEST
+
+    is_valid, error_msg = validate_book_data(data)
+    if not is_valid:
+        return jsonify({"error": error_msg}), HTTPStatus.UNPROCESSABLE_ENTITY
+
+    book['title'] = data['title']
+    book['author'] = data['author']
+    book['isbn'] = data['isbn']
+    book['price'] = float(data['price'])
+    
+    return jsonify(book), HTTPStatus.OK
+
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    global books_db
+    book = next((b for b in books_db if b['id'] == id), None)
+    if not book:
+        return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
+
+    books_db = [b for b in books_db if b['id'] != id]
+    return jsonify({"message": "Book deleted successfully"}), HTTPStatus.OK
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

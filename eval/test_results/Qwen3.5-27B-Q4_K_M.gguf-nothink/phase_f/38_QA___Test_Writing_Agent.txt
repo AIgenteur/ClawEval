@@ -1,0 +1,73 @@
+```python
+import pytest
+from your_module import calculate_tax  # Replace 'your_module' with the actual module name
+
+def test_zero_income():
+    """Test calculation with zero income."""
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0.0
+    assert rate == 0
+
+def test_typical_single_income():
+    """Test typical income for single filer."""
+    tax, rate = calculate_tax(50000, 'single')
+    assert tax == 5958.00
+    assert rate == 11.92
+
+def test_typical_married_income():
+    """Test typical income for married filer."""
+    tax, rate = calculate_tax(100000, 'married')
+    assert tax == 11220.00
+    assert rate == 11.22
+
+def test_high_income_single():
+    """Test high income for single filer."""
+    tax, rate = calculate_tax(1000000, 'single')
+    assert tax == 318667.50
+    assert rate == 31.87
+
+def test_high_income_married():
+    """Test high income for married filer."""
+    tax, rate = calculate_tax(1000000, 'married')
+    assert tax == 309667.50
+    assert rate == 30.97
+
+def test_bracket_boundary_single():
+    """Test income exactly at a bracket boundary for single filer."""
+    tax, rate = calculate_tax(11600, 'single')
+    assert tax == 1160.00
+    assert rate == 10.00
+
+def test_bracket_boundary_married():
+    """Test income exactly at a bracket boundary for married filer."""
+    tax, rate = calculate_tax(23200, 'married')
+    assert tax == 2320.00
+    assert rate == 10.00
+
+def test_invalid_income_negative():
+    """Test invalid negative income."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-100, 'single')
+
+def test_invalid_income_string():
+    """Test invalid string income."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("1000", 'single')
+
+def test_invalid_filing_status():
+    """Test invalid filing status."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'divorced')
+
+def test_float_income():
+    """Test income as a float."""
+    tax, rate = calculate_tax(50000.75, 'single')
+    assert tax == 5958.09
+    assert rate == 11.92
+
+def test_very_high_income():
+    """Test income exceeding highest bracket."""
+    tax, rate = calculate_tax(10000000, 'single')
+    assert tax == 3695667.50
+    assert rate == 36.96
+```

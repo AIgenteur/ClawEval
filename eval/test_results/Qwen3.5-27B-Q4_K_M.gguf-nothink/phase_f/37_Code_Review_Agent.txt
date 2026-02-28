@@ -1,0 +1,37 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "Discount can exceed 100%, resulting in negative price before clamping",
+      "fix": "Add validation: discount = min(discount, 100)"
+    },
+    {
+      "line": 10,
+      "issue": "Price clamping to 0 happens after calculation, but negative prices could still occur if discount > 100%",
+      "fix": "Ensure discount is capped at 100% before calculation"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when no orders are processed (len(processed) == 0)",
+      "fix": "Add check: if processed: avg = total / len(processed) else: avg = 0"
+    },
+    {
+      "line": 23,
+      "issue": "Returns total order count instead of processed order count",
+      "fix": "Change to 'count': len(processed)"
+    },
+    {
+      "line": 5,
+      "issue": "Mutates input order dictionaries (side effect)",
+      "fix": "Create a copy of each order before modifying: order_copy = order.copy()"
+    },
+    {
+      "line": 7,
+      "issue": "No type checking on price/quantity; could be None or non-numeric",
+      "fix": "Add validation: if not isinstance(price, (int, float)) or not isinstance(quantity, (int, float)): skip or raise error"
+    }
+  ],
+  "count": 6
+}
+```
