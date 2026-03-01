@@ -1,0 +1,40 @@
+{
+  "bugs": [
+    {
+      "line": 9,
+      "issue": "Discount is not validated. A discount greater than 100% will produce a negative price before it is clamped to zero, which is logically incorrect.",
+      "fix": "Clamp the discount to the range 0‑100 (or raise a ValueError). Example:\n```python\ndiscount = max(0, min(discount, 100))\n```"
+    },
+    {
+      "line": 19,
+      "issue": "ZeroDivisionError when there are no pending orders because len(processed) can be zero.",
+      "fix": "Guard against division by zero, e.g.:\n```python\navg = total / len(processed) if processed else 0\n```"
+    },
+    {
+      "line": 25,
+      "issue": "The returned 'count' field reports the total number of input orders instead of the number of processed orders.",
+      "fix": "Return the length of the processed list:\n```python\n'count': len(processed)\n```"
+    },
+    {
+      "line": 6,
+      "issue": "Direct indexing order['status'] may raise a KeyError if the key is missing.",
+      "fix": "Use .get with a default or check for the key:\n```python\nif order.get('status') == 'pending':\n```"
+    },
+    {
+      "line": 8,
+      "issue": "Multiplying order['price'] * order['quantity'] assumes both keys exist and are numeric; missing keys or non‑numeric values raise KeyError or TypeError.",
+      "fix": "Validate presence and type before calculation:\n```python\nprice_val = order.get('price')\nqty_val = order.get('quantity')\nif not isinstance(price_val, (int, float)) or not isinstance(qty_val, (int, float)):\n    raise ValueError('price and quantity must be numbers')\nprice = price_val * qty_val\n```"
+    },
+    {
+      "line": 14,
+      "issue": "The function mutates the original order dictionaries (adds 'final_price' and changes 'status'), causing side‑effects for the caller.",
+      "fix": "Work on a shallow copy of each order:\n```python\nnew_order = order.copy()\nnew_order['final_price'] = round(price, 2)\nnew_order['status'] = 'processed'\nprocessed.append(new_order)\n```"
+    },
+    {
+      "line": 11,
+      "issue": "The check `if price < 0` is a safety net for invalid discounts, but after fixing discount validation it becomes redundant and could mask other logic errors.",
+      "fix": "After clamping the discount (see line 9), the price cannot be negative, so the block can be removed or kept as a defensive guard with a comment."
+    }
+  ],
+  "count": 7
+}

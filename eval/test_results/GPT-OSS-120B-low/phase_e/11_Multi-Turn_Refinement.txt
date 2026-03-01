@@ -1,0 +1,70 @@
+=== TURN 1 ===
+```python
+import re
+
+def parse_duration(s: str) -> int:
+    if not s:
+        return -1
+    pattern = re.compile(r'(?P<value>\d+)(?P<unit>[hms])')
+    total = 0
+    pos = 0
+    for m in pattern.finditer(s):
+        if m.start() != pos:  # gap or unexpected character
+            return -1
+        val = int(m.group('value'))
+        unit = m.group('unit')
+        if unit == 'h':
+            total += val * 3600
+        elif unit == 'm':
+            total += val * 60
+        elif unit == 's':
+            total += val
+        else:
+            return -1
+        pos = m.end()
+    if pos != len(s):  # leftover characters
+        return -1
+    return total
+```
+
+=== TURN 2 ===
+```python
+import re
+
+def parse_duration(s: str) -> int:
+    if not s:
+        return -1
+    pattern = re.compile(r'(?P<value>\d+)(?P<unit>[hms])')
+    total = 0
+    pos = 0
+    seen_units = set()
+    for m in pattern.finditer(s):
+        if m.start() != pos:  # gap or unexpected character
+            return -1
+        val = int(m.group('value'))
+        unit = m.group('unit')
+        if unit in seen_units:      # duplicate unit
+            return -1
+        seen_units.add(unit)
+        if unit == 'h':
+            total += val * 3600
+        elif unit == 'm':
+            total += val * 60
+        elif unit == 's':
+            total += val
+        else:
+            return -1
+        pos = m.end()
+    if pos != len(s):  # leftover characters
+        return -1
+    return total
+```
+
+=== TURN 3 ===
+assert parse_duration("45m") == 2700
+assert parse_duration("2h30m15s") == 9015
+assert parse_duration("1h1h") == -1
+assert parse_duration("") == -1
+assert parse_duration("5x") == -1
+assert parse_duration("0s") == 0
+

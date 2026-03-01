@@ -25,6 +25,7 @@ DEFAULT_BASE_URL = "http://192.168.1.9:8080/v1"
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "test_results")
 NOTHINK = False  # Global flag for /nothink mode
 MAX_TOKENS_OVERRIDE = 0  # Global override for max_tokens (0 = no override)
+REASONING_PREFIX = None  # Global reasoning prefix for GPT-OSS-120B
 
 def get_client(base_url=DEFAULT_BASE_URL):
     return OpenAI(base_url=base_url, api_key="not-needed")
@@ -40,6 +41,9 @@ def timed_completion(client, model, messages, max_tokens=512, temperature=0.7):
     # Apply global token override (ensures thinking models have enough budget)
     if MAX_TOKENS_OVERRIDE > 0:
         max_tokens = max(max_tokens, MAX_TOKENS_OVERRIDE)
+    # Prepend reasoning prefix as system message if set
+    if REASONING_PREFIX:
+        messages = [{"role": "system", "content": REASONING_PREFIX}] + messages
     start = time.time()
     response = client.chat.completions.create(
         model=model,
@@ -824,21 +828,25 @@ def run_phase4(client, model):
 # ============================================================
 # MAIN
 # ============================================================
-def run_all(base_url=DEFAULT_BASE_URL, phases=None, nothink=False, max_tokens=0, model_override=None):
-    global NOTHINK, MAX_TOKENS_OVERRIDE
+def run_all(base_url=DEFAULT_BASE_URL, phases=None, nothink=False, max_tokens=0, model_override=None, reasoning=None, api_model=None):
+    global NOTHINK, MAX_TOKENS_OVERRIDE, REASONING_PREFIX
     NOTHINK = nothink
     MAX_TOKENS_OVERRIDE = max_tokens
+    REASONING_PREFIX = f"Reasoning: {reasoning}" if reasoning else None
     client = get_client(base_url)
-    model = model_override if model_override else get_model_name(client)
+    # api_model = what we send to the API, model = what we use for directory naming
+    model = api_model if api_model else (model_override if model_override else get_model_name(client))
+    display_model = model_override if model_override else model
     
-    # Sanitize model name for directory
-    model_id = model.replace("/", "_").replace("\\", "_").replace(" ", "_")
+    # Sanitize model name for directory — use display_model (the --model override) for naming
+    model_id = (model_override if model_override else model).replace("/", "_").replace("\\", "_").replace(" ", "_")
     if nothink:
         model_id += "-nothink"
     
     print(f"\n{'#'*60}")
     print(f"# OpenClaw Model Evaluation")
-    print(f"# Model: {model}")
+    print(f"# Model: {display_model}")
+    print(f"# API Model: {model}")
     print(f"# Server: {base_url}")
     print(f"# Time: {datetime.now().isoformat()}")
     print(f"{'#'*60}")
@@ -897,9 +905,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OpenClaw Model Evaluation")
     parser.add_argument("--url", default=DEFAULT_BASE_URL, help="API base URL")
     parser.add_argument("--model", help="Override model name for directory output")
+    parser.add_argument("--api-model", help="Model name to send in API requests (defaults to --model or auto-detected)")
     parser.add_argument("--phases", nargs="+", type=int, help="Specific phases to run (0-4)")
     parser.add_argument("--nothink", action="store_true", help="Disable thinking with /nothink system message")
     parser.add_argument("--max-tokens", type=int, default=0, help="Override min max_tokens for all phases (e.g. 16000 for thinking models)")
+    parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
     args = parser.parse_args()
     
-    run_all(base_url=args.url, phases=args.phases, nothink=args.nothink, max_tokens=args.max_tokens, model_override=args.model)
+    run_all(base_url=args.url, phases=args.phases, nothink=args.nothink, max_tokens=args.max_tokens, model_override=args.model, reasoning=args.reasoning, api_model=args.api_model)

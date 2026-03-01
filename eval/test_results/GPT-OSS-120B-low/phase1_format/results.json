@@ -1,0 +1,91 @@
+{
+  "phase": "phase1_format_compliance",
+  "model": "openai/gpt-oss-120b",
+  "timestamp": "2026-03-01T09:52:47.491064",
+  "tests": [
+    {
+      "name": "json_simple",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\n    \"language\": \"Python\",\n    \"year\": 1991\n  },\n  {\n    \"language\": \"Java\",\n    \"year\": 1995\n  },\n  {\n    \"language\": \"C++\",\n    \"year\": 1985\n  }\n]",
+      "elapsed": 1.18,
+      "tps": 127.5
+    },
+    {
+      "name": "json_nested",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\n  \"name\": \"John Doe\",\n  \"age\": 30,\n  \"skills\": [\n    \"JavaScript\",\n    \"Python\",\n    \"SQL\"\n  ],\n  \"address\": {\n    \"city\": \"New York\",\n    \"country\": \"USA\"\n  }\n}",
+      "elapsed": 1.39,
+      "tps": 127.7
+    },
+    {
+      "name": "json_from_text",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\n  \"name\": \"John Smith\",\n  \"age\": 34,\n  \"company\": \"Google\",\n  \"title\": \"Senior Engineer\",\n  \"location\": \"Mountain View, CA\",\n  \"email\": \"john@google.com\"\n}",
+      "elapsed": 0.96,
+      "tps": 125.4
+    },
+    {
+      "name": "json_strict_schema",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\"action\":\"schedule_meeting\",\"target\":\"Bob\",\"confidence\":0.99}",
+      "elapsed": 0.63,
+      "tps": 122.9
+    },
+    {
+      "name": "json_array_complex",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\n    \"id\": 1,\n    \"task\": \"Finalize release notes and version documentation\",\n    \"priority\": \"high\",\n    \"done\": false\n  },\n  {\n    \"id\": 2,\n    \"task\": \"Run full regression test suite on staging environment\",\n    \"priority\": \"high\",\n    \"done\": false\n  },\n  {\n    \"id\": 3,\n    \"task\": \"Update deployment scripts and rollback procedures\",\n    \"priority\": \"medium\",\n    \"done\": false\n  },\n  {\n    \"id\": 4,\n    \"task\": \"Conduct security audit and address any critical findings\",\n    \"priority\": \"medium\",\n    \"done\": false\n  },\n  {\n    \"id\": 5,\n    \"task\": \"Communicate release schedule to stakeholders and support team\",\n    \"priority\": \"low\",\n    \"done\": false\n  }\n]",
+      "elapsed": 2.32,
+      "tps": 128.5
+    },
+    {
+      "name": "system_prompt_adherence",
+      "passed": true,
+      "reason": "Contains: arr",
+      "response": "Arr, the grand city o' France be Paris, me hearty! \ud83c\udff4\u200d\u2620\ufe0f",
+      "elapsed": 0.67,
+      "tps": 123.1
+    },
+    {
+      "name": "one_word_constraint",
+      "passed": true,
+      "reason": "Word count: 1 (expected ~1)",
+      "response": "blue",
+      "elapsed": 0.61,
+      "tps": 121.7
+    },
+    {
+      "name": "numbered_list",
+      "passed": true,
+      "reason": "Pattern matches: 7 (min 3)",
+      "response": "1. Gather your ingredients: bread (two slices), peanut butter, and any optional add\u2011ins like jelly, honey, or banana.  \n2. Place the two slices of bread on a clean cutting board or plate.  \n3. Open the peanut butter jar and use a butter knife or spreader.  \n4. Scoop a generous amount of peanut butter onto the knife.  \n5. Spread the peanut butter evenly over one side of one bread slice, covering the entire surface.  \n6. If desired, add any extra toppings (e.g., jelly, honey, sliced banana) on top of the peanut butter.  \n7. Place the second slice of bread on top, press gently, cut the sandwich in half if preferred, and serve.",
+      "elapsed": 2.35,
+      "tps": 127.4
+    },
+    {
+      "name": "markdown_table",
+      "passed": true,
+      "reason": "Contains all expected elements",
+      "response": "| Planet | Distance from Sun (million km) | Number of Moons |\n|--------|-------------------------------|-----------------|\n| Mercury | 57.9 | 0 |\n| Venus   | 108.2 | 0 |\n| Earth   | 149.6 | 1 |\n| Mars    | 227.9 | 2 |",
+      "elapsed": 1.14,
+      "tps": 126.6
+    },
+    {
+      "name": "refuse_and_redirect",
+      "passed": true,
+      "reason": "Contains: cooking, can only help",
+      "response": "I can only help with cooking-related questions.",
+      "elapsed": 0.37,
+      "tps": 116.7
+    }
+  ],
+  "passed": 10,
+  "failed": 0,
+  "total": 10,
+  "score_pct": 100.0
+}

@@ -1,0 +1,115 @@
+```python
+import pytest
+from tax import calculate_tax  # the module that contains the function
+
+
+def test_zero_income_returns_zero_tax_and_rate():
+    tax, rate = calculate_tax(0, "single")
+    assert tax == 0
+    assert rate == 0
+
+
+@pytest.mark.parametrize(
+    "bad_income",
+    [
+        -1,                     # negative integer
+        -0.01,                  # negative float
+        "10000",                # string
+        None,                   # NoneType
+        [50000],                # list
+    ],
+)
+def test_invalid_income_raises_value_error(bad_income):
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(bad_income, "single")
+
+
+@pytest.mark.parametrize(
+    "bad_status",
+    [
+        "head_of_household",
+        "SINGLE",
+        "",
+        123,
+        None,
+    ],
+)
+def test_invalid_filing_status_raises_value_error(bad_status):
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, bad_status)
+
+
+def test_single_bracket_boundary_exact():
+    # Income exactly at the first single‑filing bracket limit (10 % bracket)
+    tax, rate = calculate_tax(11_600, "single")
+    assert tax == 1_160.00               # 10 % of 11 600
+    assert rate == 10.0                   # effective rate = 10 %
+
+
+def test_single_bracket_boundary_just_above():
+    # Income just one dollar above the first bracket limit
+    tax, rate = calculate_tax(11_601, "single")
+    # 11 600 @10 % = 1 160.00
+    #   1   @12 % =   0.12
+    assert tax == pytest.approx(1_160.12, rel=1e-9)
+    # effective rate = 1_160.12 / 11_601 * 100 ≈ 10.000086%
+    assert rate == pytest.approx(10.0, rel=1e-6)
+
+
+def test_typical_income_single_vs_married():
+    # 50 000 USD – a typical middle‑class income
+    tax_single, rate_single = calculate_tax(50_000, "single")
+    tax_married, rate_married = calculate_tax(50_000, "married")
+
+    # Manual calculation for single:
+    # 0‑11 600 @10 %  = 1 160.00
+    # 11 600‑47 150 @12 % = 4 266.00
+    # 47 150‑50 000 @22 % =   627.00
+    # Total = 6 053.00
+    assert tax_single == 6_053.00
+    assert rate_single == pytest.approx(12.11, rel=1e-2)
+
+    # Manual calculation for married:
+    # 0‑23 200 @10 % = 2 320.00
+    # 23 200‑50 000 @12 % = 3 216.00
+    # Total = 5 536.00
+    assert tax_married == 5_536.00
+    assert rate_married == pytest.approx(11.07, rel=1e-2)
+
+
+def test_high_income_top_bracket():
+    # Income well above the top bracket to exercise the 37 % rate
+    tax, rate = calculate_tax(2_000_000, "single")
+    # Expected tax (rounded to 2 dp) = 698 009.75
+    assert tax == 698_009.75
+    # Effective rate = 698 009.75 / 2 000 000 * 100 = 34.9004875 → 34.90
+    assert rate == 34.9
+
+
+def test_income_as_float_and_rounding():
+    # Use a float income that triggers rounding in both tax and effective rate
+    income = 45_123.45
+    tax, rate = calculate_tax(income, "single")
+    # Compute expected tax using the same bracket logic
+    # 0‑11 600 @10 % = 1 160.00
+    # 11 600‑47 150 @12 % = (45 123.45‑11 600) * 0.12 = 4 018.814
+    expected_tax = round(1_160.00 + 4_018.814, 2)
+    expected_rate = round(expected_tax / income * 100, 2)
+    assert tax == expected_tax
+    assert rate == expected_rate
+
+
+def test_bracket_boundary_multiple_limits():
+    # Income exactly at several bracket limits for single filing
+    income = 191_950  # top of the 24 % bracket
+    tax, rate = calculate_tax(income, "single")
+    # Manual sum:
+    # 0‑11 600 @10 %  =   1 160.00
+    # 11 600‑47 150 @12 % = 4 266.00
+    # 47 150‑100 525 @22 % = 11 764.50
+    # 100 525‑191 950 @24 % = 21 942.00
+    expected_tax = round(1_160.00 + 4_266.00 + 11_764.50 + 21_942.00, 2)
+    expected_rate = round(expected_tax / income * 100, 2)
+    assert tax == expected_tax
+    assert rate == expected_rate
+```

@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hard‑coded secret key",
+      "severity": "high",
+      "location": "app.py:5 (app.secret_key = \"password123\")",
+      "fix": "Generate a strong random secret at deployment time and load it from a protected environment variable or secret manager; never commit it to source."
+    },
+    {
+      "id": 2,
+      "type": "Reflected Cross‑Site Scripting (XSS)",
+      "severity": "high",
+      "location": "app.py:9‑10 (render_template_string(f\"Results for: {q}\"))",
+      "fix": "Escape user input or, better, use a regular template file with Jinja2 auto‑escaping: return render_template('results.html', q=q)."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "app.py:14‑15 (db.execute(f\"SELECT * FROM users WHERE id = {id}\") )",
+      "fix": "Use parameterised queries: db.execute('SELECT * FROM users WHERE id = ?', (id,))"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization (pickle)",
+      "severity": "critical",
+      "location": "app.py:20‑21 (pickle.loads(data))",
+      "fix": "Never unpickle data from untrusted sources. Replace with a safe format such as JSON or a custom validator."
+    },
+    {
+      "id": 5,
+      "type": "OS Command Injection",
+      "severity": "critical",
+      "location": "app.py:26‑27 (subprocess.check_output(cmd, shell=True))",
+      "fix": "Validate/whitelist allowed commands and avoid shell=True. Use subprocess.run([...], check=True) with a list of arguments."
+    },
+    {
+      "id": 6,
+      "type": "Arbitrary File Read / Path Traversal",
+      "severity": "high",
+      "location": "app.py:31‑32 (open(path).read())",
+      "fix": "Validate the supplied path against an allow‑list or a fixed directory (e.g., using pathlib.Path.resolve() and checking the prefix)."
+    },
+    {
+      "id": 7,
+      "type": "Insecure Authentication Logic",
+      "severity": "high",
+      "location": "app.py:36‑38 (pw == os.environ.get(\"ADMIN_PW\", \"admin\"))",
+      "fix": "Store hashed passwords (e.g., bcrypt) and compare using a constant‑time function. Remove the default fallback and enforce proper login flow."
+    },
+    {
+      "id": 8,
+      "type": "Sensitive Information Disclosure",
+      "severity": "medium",
+      "location": "app.py:41‑42 (return str(os.environ))",
+      "fix": "Remove the endpoint or restrict it to trusted internal users; never expose environment variables in responses."
+    },
+    {
+      "id": 9,
+      "type": "Missing Transport Layer Security (HTTPS)",
+      "severity": "medium",
+      "location": "Application configuration – no enforcement of HTTPS (comment V9)",
+      "fix": "Serve the app behind TLS (e.g., using gunicorn + nginx with SSL) and set `SESSION_COOKIE_SECURE = True` and `PREFERRED_URL_SCHEME = 'https'`."
+    },
+    {
+      "id": 10,
+      "type": "No Rate Limiting / Brute‑Force Protection",
+      "severity": "low",
+      "location": "Application – no rate‑limit middleware (comment V10)",
+      "fix": "Add a rate‑limiting extension such as Flask‑Limiter or implement per‑IP request counters to throttle abusive clients."
+    }
+  ],
+  "count": 10
+}
+```

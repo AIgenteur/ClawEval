@@ -1,0 +1,90 @@
+{
+  "components": [
+    {
+      "name": "Edge Load Balancer & CDN",
+      "technology": "AWS CloudFront + AWS Global Accelerator (or Cloudflare Load Balancer)",
+      "purpose": "Terminate TLS, route traffic to the nearest region, provide DDoS protection and low‑latency static asset delivery (JS, CSS, attachment thumbnails).",
+      "scaling_strategy": "Globally distributed edge nodes auto‑scale with traffic; no capacity planning required."
+    },
+    {
+      "name": "API Gateway",
+      "technology": "AWS API Gateway (HTTP) or Kong (self‑hosted)",
+      "purpose": "Expose REST/GraphQL endpoints for auth, user profile, attachment metadata, and health checks.",
+      "scaling_strategy": "Stateless, auto‑scales per request volume; can be deployed in multiple AZs."
+    },
+    {
+      "name": "Auth Service",
+      "technology": "Go microservice using OAuth2 / OpenID Connect with JWTs signed by AWS Cognito or Keycloak",
+      "purpose": "User authentication, token issuance, token revocation, and session management.",
+      "scaling_strategy": "Stateless; horizontally scaled behind the API Gateway; uses read‑replicated PostgreSQL for user data."
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Elixir Phoenix Channels (or Node.js with uWebSockets.js) behind Envoy proxy",
+      "purpose": "Maintain persistent bi‑directional connections for real‑time messaging, presence, typing indicators, read receipts.",
+      "scaling_strategy": "Stateless connection broker; each instance handles ~10k concurrent sockets; auto‑scale groups with CPU‑based metrics; connections are sticky‑routed via consistent hashing on user ID."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka (3‑zone replicated cluster) + NATS Streaming for low‑latency fan‑out",
+      "purpose": "Durable, ordered delivery of chat events (messages, receipts, presence updates) across services and regions.",
+      "scaling_strategy": "Topic partitioning by chat‑room ID; each partition handled by a broker node; can add partitions to increase throughput."
+    },
+    {
+      "name": "Message Persistence Store",
+      "technology": "Cassandra (or ScyllaDB) for chat history + PostgreSQL (Citus) for relational metadata (users, groups, ACLs)",
+      "purpose": "Store immutable chat messages, attachments metadata, and support fast range queries for history retrieval.",
+      "scaling_strategy": "Cassandra cluster sharded by chat‑room ID; add nodes to increase IOPS and storage; Citus scales PostgreSQL horizontally for metadata."
+    },
+    {
+      "name": "Presence & Cache Layer",
+      "technology": "Redis Cluster (cluster mode enabled) with TTL keys",
+      "purpose": "Track online/offline status, typing indicators, unread counters, and cache recent messages for quick access.",
+      "scaling_strategy": "Horizontal sharding via hash slots; each shard can be scaled independently."
+    },
+    {
+      "name": "Attachment Service",
+      "technology": "AWS S3 (or GCP Cloud Storage) + Lambda for virus scanning & thumbnail generation",
+      "purpose": "Store files up to 50 MB, generate pre‑signed URLs for direct client upload/download, enforce encryption at rest.",
+      "scaling_strategy": "Object storage is virtually unlimited; Lambda scales per request; can add edge caching via CloudFront."
+    },
+    {
+      "name": "End‑to‑End Encryption Engine",
+      "technology": "Libsodium + Double Ratchet (Signal Protocol) implemented in client SDKs; server stores only encrypted blobs and encrypted session keys (sealed boxes).",
+      "purpose": "Guarantee that only participants can read messages and attachments; server never sees plaintext.",
+      "scaling_strategy": "Stateless; encryption/decryption performed on client side; server only routes encrypted payloads."
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Grafana, OpenTelemetry, ELK stack (ElasticSearch, Logstash, Kibana)",
+      "purpose": "Collect metrics, traces, logs; alert on latency > 100 ms, error rates, node health.",
+      "scaling_strategy": "Scrape targets via service discovery; horizontally scale Prometheus federation and Elasticsearch clusters."
+    },
+    {
+      "name": "Compliance & Data Governance",
+      "technology": "AWS Config, CloudTrail, GDPR‑ready data‑subject request tooling (e.g., custom Lambda workflows)",
+      "purpose": "Audit logs, data residency enforcement, right‑to‑be‑forgotten deletions.",
+      "scaling_strategy": "Serverless components auto‑scale; data retention policies enforced via lifecycle rules."
+    }
+  ],
+  "data_flow": "1. Mobile/web client initiates a TLS connection to the Edge Load Balancer → routed to the nearest region. 2. Client authenticates via the Auth Service (OAuth2) and receives a signed JWT. 3. Client opens a WebSocket connection to the WebSocket Gateway, presenting the JWT for authorization. 4. For a new message, the client encrypts the payload with the Signal double‑ratchet keys, attaches any encrypted attachment reference, and sends the encrypted blob over the WebSocket. 5. WebSocket Gateway validates the token, writes a lightweight event to the Kafka topic `chat-events` (partitioned by chat‑room ID) and also publishes a receipt event to the NATS fan‑out channel for immediate delivery. 6. Kafka consumers (Message Persistence Service) store the encrypted message in Cassandra and update the unread counter in Redis. 7. The same event is pushed by the WebSocket Gateway to all online participants via their open sockets (read receipt, typing, presence). 8. Offline users receive a push notification (via Amazon SNS) containing a reference to the encrypted message; when they reconnect, the client fetches recent messages from Cassandra (range query) and updates read status. 9. Attachments: client requests a pre‑signed S3 URL from the Attachment Service, uploads directly to S3 (encrypted with SSE‑KMS). The service returns the object key, which the client encrypts and includes in the chat message. 10. Read receipts are sent as separate encrypted events through the same pipeline, updating Redis counters and persisting in Cassandra for audit. 11. All services emit OpenTelemetry traces and Prometheus metrics; alerts trigger auto‑scaling actions if latency approaches 100 ms.",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$850,000 – $1,200,000 (includes compute auto‑scaling groups, 9×m5.4xlarge for WebSocket nodes, 6×kafka broker m5.2xlarge, 12×cassandra nodes i3.4xlarge, Redis cluster, S3 storage ~30 TB, data transfer, monitoring stack, and 99.99% SLA support).",
+  "bottlenecks": [
+    "WebSocket connection count per instance (CPU & socket limits).",
+    "Kafka partition hot‑spots for very large group chats.",
+    "Cassandra write amplification during peak message bursts.",
+    "Attachment upload bandwidth and S3 request rate limits for large files.",
+    "Cross‑region replication latency for presence data."
+  ],
+  "tradeoffs": [
+    "Choosing Cassandra gives high write throughput and linear scalability but sacrifices strong consistency; eventual consistency is acceptable for chat history but not for read receipts, which are stored in Redis with strong consistency.",
+    "End‑to‑end encryption offloads cryptographic work to clients, reducing server CPU, but limits server‑side content moderation and search capabilities.",
+    "Using a single global Kafka cluster simplifies ordering but adds inter‑AZ latency; alternative is per‑region clusters with cross‑region mirroring, increasing cost.",
+    "Higher redundancy (3‑zone replication) improves SLA to 99.99% but raises storage and network costs.",
+    "Direct S3 uploads reduce server load but require careful client‑side validation to avoid abuse."
+  ]
+}

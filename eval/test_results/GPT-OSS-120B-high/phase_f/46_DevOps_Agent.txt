@@ -1,0 +1,75 @@
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "Compose file uses version '2', which is outdated and lacks newer features such as secrets and healthchecks.",
+      "fix": "Upgrade to a supported version, e.g., `version: '3.8'`."
+    },
+    {
+      "line": "4",
+      "problem": "The `node:latest` image tag is non‑deterministic; builds may change when the upstream image is updated.",
+      "fix": "Pin to a specific, immutable tag such as `node:18-alpine`."
+    },
+    {
+      "line": "8",
+      "problem": "Database password (`DB_PASSWORD`) is stored in plain text in the compose file.",
+      "fix": "Move the secret to Docker secrets or an external env‑file and reference it with `secrets:`."
+    },
+    {
+      "line": "9",
+      "problem": "`NODE_ENV` is set to `development`, which is inappropriate for a production deployment.",
+      "fix": "Change the value to `production` or make it configurable via an external environment file."
+    },
+    {
+      "line": "11",
+      "problem": "Bind‑mounting the source directory (`.:/app`) couples the container to the host filesystem, which is unsafe for production and prevents reproducible builds.",
+      "fix": "Remove the bind mount and copy the application code into the image via a Dockerfile (`COPY . /app`)."
+    },
+    {
+      "line": "12",
+      "problem": "`restart: no` disables automatic container restarts, reducing resilience.",
+      "fix": "Use a restart policy such as `restart: unless-stopped` or `restart: always`."
+    },
+    {
+      "line": "15",
+      "problem": "`mysql:5.6` is end‑of‑life and receives no security updates.",
+      "fix": "Upgrade to a supported version, e.g., `mysql:8.0`."
+    },
+    {
+      "line": "17",
+      "problem": "Port 3306 is published to the host, exposing the database publicly.",
+      "fix": "Remove the `ports` mapping and let services communicate over the internal Docker network, or bind to `127.0.0.1:3306` if host access is required."
+    },
+    {
+      "line": "19",
+      "problem": "`MYSQL_ROOT_PASSWORD` is stored in plain text.",
+      "fix": "Store the root password in a Docker secret and reference it with `secrets:`; preferably create a non‑root user for applications."
+    },
+    {
+      "line": "21",
+      "problem": "The MySQL data directory is mounted to `/tmp/mysql-data` on the host, which is volatile and may be cleared on reboot.",
+      "fix": "Use a named volume, e.g., `volumes: - mysql-data:/var/lib/mysql`, and declare the volume under `volumes:` at the bottom of the file."
+    },
+    {
+      "line": "24",
+      "problem": "The `redis` service uses the implicit `latest` tag, which is non‑deterministic.",
+      "fix": "Pin to a specific version, such as `redis:7-alpine`."
+    },
+    {
+      "line": "26",
+      "problem": "Redis port 6379 is exposed publicly without authentication, allowing unrestricted access.",
+      "fix": "Remove the `ports` mapping if external access is not required, or configure a password (`requirepass`) and limit exposure to trusted hosts."
+    },
+    {
+      "line": "5-6",
+      "problem": "Web service publishes port 80 to the host, exposing the container directly to the internet without TLS termination or a reverse proxy.",
+      "fix": "Place a reverse proxy (e.g., Nginx, Traefik) in front of the service, terminate TLS there, and map only the proxy port to the host."
+    },
+    {
+      "line": "4, 24",
+      "problem": "Both `node` and `redis` images use the default `latest` tag (node explicitly, redis implicitly), leading to non‑reproducible builds.",
+      "fix": "Specify exact, immutable tags for all images (e.g., `node:18-alpine`, `redis:7-alpine`)."
+    }
+  ],
+  "count": 14
+}

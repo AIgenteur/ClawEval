@@ -1,0 +1,40 @@
+{
+  "bugs": [
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when there are no pending orders because len(processed) can be 0.",
+      "fix": "Compute average safely, e.g.:\n```python\navg = total / len(processed) if processed else 0.0\n```"
+    },
+    {
+      "line": 23,
+      "issue": "The function returns the total number of input orders instead of the number of processed orders.",
+      "fix": "Return the length of the processed list:\n```python\n'count': len(processed)\n```"
+    },
+    {
+      "line": 8,
+      "issue": "Discount values are not validated; a discount > 100 (or negative) can produce incorrect pricing.",
+      "fix": "Validate discount before applying it:\n```python\ndiscount = order.get('discount', 0)\nif not isinstance(discount, (int, float)):\n    raise TypeError('discount must be numeric')\nif discount < 0:\n    discount = 0\nif discount > 100:\n    discount = 100\n```"
+    },
+    {
+      "line": 14,
+      "issue": "The function mutates the original order dictionaries (adds 'final_price' and changes 'status'), causing side‑effects for callers.",
+      "fix": "Work on a shallow copy of each order before mutating:\n```python\norder_copy = order.copy()\norder_copy['final_price'] = round(price, 2)\norder_copy['status'] = 'processed'\nprocessed.append(order_copy)\n```"
+    },
+    {
+      "line": 8,
+      "issue": "No type checking for 'price' and 'quantity'; if they are None or non‑numeric a TypeError will be raised at runtime.",
+      "fix": "Validate the fields before calculation:\n```python\nprice_val = order.get('price')\nqty_val = order.get('quantity')\nif not isinstance(price_val, (int, float)) or not isinstance(qty_val, (int, float)):\n    raise TypeError('price and quantity must be numeric')\nprice = price_val * qty_val\n```"
+    },
+    {
+      "line": 5,
+      "issue": "Accessing order['status'] (and later order['price'], order['quantity']) without checking key existence can raise KeyError for malformed orders.",
+      "fix": "Use .get() with a default or raise a clear error:\n```python\nstatus = order.get('status')\nif status != 'pending':\n    continue\n```"
+    },
+    {
+      "line": 10,
+      "issue": "Negative discounts are allowed, which would increase the price instead of decreasing it.",
+      "fix": "Clamp discount to a non‑negative range (handled together with the discount validation above)."
+    }
+  ],
+  "count": 7
+}

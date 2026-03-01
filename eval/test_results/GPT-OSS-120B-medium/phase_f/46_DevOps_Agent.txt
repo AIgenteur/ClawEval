@@ -1,0 +1,60 @@
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Compose file uses version '2', which is outdated and lacks features of newer versions.",
+      "fix": "Upgrade to a newer schema version, e.g., `version: '3.8'`."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using the `latest` tag makes the build non‑deterministic; the image may change unexpectedly.",
+      "fix": "Pin to a specific, stable tag such as `node:18-alpine`."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password is stored in plaintext in the compose file.",
+      "fix": "Move the password to a Docker secret or an external secret manager and reference it via `secrets`."
+    },
+    {
+      "line": "MYSQL_ROOT_PASSWORD: supersecret123",
+      "problem": "MySQL root password is stored in plaintext in the compose file.",
+      "fix": "Store the password in a Docker secret or environment file that is not committed to source control."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "The `NODE_ENV` variable is set to `development` which is unsuitable for production deployments.",
+      "fix": "Change the value to `production` (or make it configurable via an external env file)."
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Mounting the host source directory into the container (`.:/app`) is unsafe for production and can cause permission issues.",
+      "fix": "Remove the bind mount for production or replace it with a read‑only volume containing only the needed assets."
+    },
+    {
+      "line": "restart: no",
+      "problem": "The restart policy is set to `no`, so the container will not be automatically restarted on failure.",
+      "fix": "Use a proper restart policy such as `restart: unless-stopped` or `restart: always`."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is end‑of‑life and no longer receives security updates.",
+      "fix": "Upgrade to a supported version, e.g., `mysql:8.0`."
+    },
+    {
+      "line": "- \"3306:3306\"",
+      "problem": "MySQL port 3306 is exposed to the host network, making it reachable from outside the host.",
+      "fix": "Remove the port mapping or bind it to `127.0.0.1:3306` if only local access is required."
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "Persisting MySQL data in `/tmp` is unreliable because the directory may be cleared on reboot.",
+      "fix": "Mount a dedicated persistent volume, e.g., `mysql-data:/var/lib/mysql` and define it under `volumes:`."
+    },
+    {
+      "line": "- \"6379:6379\"",
+      "problem": "Redis port 6379 is exposed publicly and no authentication is configured, increasing attack surface.",
+      "fix": "Restrict the binding to localhost (`127.0.0.1:6379`) or use a Docker network without publishing the port, and enable Redis authentication."
+    }
+  ],
+  "count": 11
+}

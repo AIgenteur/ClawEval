@@ -1,0 +1,312 @@
+```json
+[
+  {
+    "id": "rule_01",
+    "name": "Morning routine – gradual lights",
+    "trigger": {
+      "type": "schedule",
+      "times": [
+        { "day": ["mon","tue","wed","thu","fri"], "time": "06:30" },
+        { "day": ["sat","sun"], "time": "08:00" }
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "light.living_room",
+        "action": "fade_on",
+        "params": { "duration_sec": 600, "brightness": 100 }
+      },
+      {
+        "device": "light.kitchen",
+        "action": "fade_on",
+        "params": { "duration_sec": 600, "brightness": 100 }
+      },
+      {
+        "device": "light.master_bedroom",
+        "action": "fade_on",
+        "params": { "duration_sec": 600, "brightness": 80 }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_02",
+    "name": "Thermostat setpoints",
+    "trigger": {
+      "type": "or",
+      "events": [
+        { "type": "occupancy_change", "entity": "sensor.house_occupancy" },
+        { "type": "time_change", "time": "00:00", "repeat": "daily" }
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "if": {
+          "all": [
+            { "entity": "sensor.house_occupancy", "state": "occupied" },
+            { "entity": "sensor.time", "not_between": ["23:00","06:00"] }
+          ]
+        },
+        "then": { "device": "climate.main_thermostat", "action": "set_temperature", "params": { "temp_f": 72 } }
+      },
+      {
+        "if": {
+          "all": [
+            { "entity": "sensor.house_occupancy", "state": "empty" }
+          ]
+        },
+        "then": { "device": "climate.main_thermostat", "action": "set_temperature", "params": { "temp_f": 65 } }
+      },
+      {
+        "if": {
+          "all": [
+            { "entity": "sensor.time", "between": ["23:00","06:00"] }
+          ]
+        },
+        "then": { "device": "climate.main_thermostat", "action": "set_temperature", "params": { "temp_f": 68 } }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_03",
+    "name": "Security – arm/disarm by geofence",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "if": {
+          "all": [
+            { "entity": "device_tracker.alice_phone", "state": "away" },
+            { "entity": "device_tracker.bob_phone", "state": "away" }
+          ]
+        },
+        "then": { "device": "alarm_control_panel.home", "action": "arm_away" }
+      },
+      {
+        "if": {
+          "any": [
+            { "entity": "device_tracker.alice_phone", "state": "home" },
+            { "entity": "device_tracker.bob_phone", "state": "home" }
+          ]
+        },
+        "then": { "device": "alarm_control_panel.home", "action": "disarm" }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_04",
+    "name": "Pet care – feeder & cat camera",
+    "trigger": [
+      {
+        "type": "schedule",
+        "times": [
+          { "time": "07:00" },
+          { "time": "18:00" }
+        ]
+      },
+      {
+        "type": "geofence",
+        "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"]
+      }
+    ],
+    "conditions": [
+      {
+        "type": "or",
+        "conditions": [
+          { "entity": "trigger.time", "value": "07:00" },
+          { "entity": "trigger.time", "value": "18:00" }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "if": {
+          "any": [
+            { "entity": "trigger.time", "value": "07:00" },
+            { "entity": "trigger.time", "value": "18:00" }
+          ]
+        },
+        "then": { "device": "switch.cat_feeder", "action": "turn_on", "params": { "duration_sec": 30 } }
+      },
+      {
+        "if": {
+          "all": [
+            { "entity": "device_tracker.alice_phone", "state": "away" },
+            { "entity": "device_tracker.bob_phone", "state": "away" }
+          ]
+        },
+        "then": { "device": "camera.cat_cam", "action": "turn_on" }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_05",
+    "name": "Energy management – solar priority & battery backup",
+    "trigger": {
+      "type": "or",
+      "events": [
+        { "type": "schedule", "time": "14:00", "repeat": "daily" },
+        { "type": "schedule", "time": "19:00", "repeat": "daily" },
+        { "type": "sensor", "entity": "sensor.solar_power", "change": "any" }
+      ]
+    },
+    "conditions": [
+      {
+        "type": "or",
+        "conditions": [
+          { "entity": "sensor.time", "between": ["14:00","19:00"] },
+          { "entity": "sensor.grid_status", "state": "outage" }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "if": {
+          "all": [
+            { "entity": "sensor.time", "between": ["14:00","19:00"] },
+            { "entity": "sensor.solar_power", "greater_than": "sensor.house_load" }
+          ]
+        },
+        "then": [
+          { "device": "switch.solar_to_grid", "action": "disable" },
+          { "device": "switch.solar_to_load", "action": "enable" },
+          { "device": "switch.solar_to_battery", "action": "charge" }
+        ]
+      },
+      {
+        "if": {
+          "all": [
+            { "entity": "sensor.time", "after": "19:00" },
+            { "entity": "sensor.grid_status", "state": "outage" }
+          ]
+        },
+        "then": [
+          { "device": "switch.battery_backup", "action": "enable" },
+          { "device": "switch.grid_supply", "action": "disable" }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "rule_06",
+    "name": "Hallway motion lights (night mode)",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.hallway_motion",
+      "to": "on"
+    },
+    "conditions": [
+      { "entity": "sensor.time", "between": ["22:00","06:00"] }
+    ],
+    "actions": [
+      {
+        "device": "light.hallway",
+        "action": "turn_on",
+        "params": { "brightness_pct": 20 }
+      },
+      {
+        "device": "light.hallway",
+        "action": "auto_off",
+        "params": { "delay_sec": 300 }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_07",
+    "name": "Bob's office – computer on",
+    "trigger": {
+      "type": "state_change",
+      "entity": "switch.bob_computer",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      { "device": "light.bob_desk_lamp", "action": "turn_on" },
+      { "device": "climate.bob_office_ac", "action": "set_temperature", "params": { "temp_f": 70 } }
+    ]
+  },
+
+  {
+    "id": "rule_08",
+    "name": "Laundry cycle complete notification",
+    "trigger": {
+      "type": "state_change",
+      "entity": "sensor.washer_status",
+      "to": "complete"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "notify.mobile_app_alice_phone",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Washer cycle finished." }
+      },
+      {
+        "device": "notify.mobile_app_bob_phone",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Washer cycle finished." }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_09",
+    "name": "Water leak – shut off valve & alert",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.water_leak",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      { "device": "valve.main_water", "action": "close" },
+      {
+        "device": "notify.mobile_app_alice_phone",
+        "action": "send",
+        "params": { "title": "Water Leak", "message": "Leak detected! Main valve closed." }
+      },
+      {
+        "device": "notify.mobile_app_bob_phone",
+        "action": "send",
+        "params": { "title": "Water Leak", "message": "Leak detected! Main valve closed." }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_10",
+    "name": "Guest mode activation",
+    "trigger": {
+      "type": "event",
+      "event_type": "guest_mode_enabled"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "lock.front_door",
+        "action": "set_temporary_code",
+        "params": { "code": "1234", "expires_in_minutes": 1440 }
+      },
+      {
+        "device": "climate.main_thermostat",
+        "action": "set_temperature",
+        "params": { "temp_f": 72 }
+      },
+      {
+        "device": "wifi.guest_network",
+        "action": "enable"
+      }
+    ]
+  }
+]
+```

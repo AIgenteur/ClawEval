@@ -1,0 +1,409 @@
+```json
+[
+  {
+    "id": "rule_01",
+    "name": "Morning Routine – Gradual Lights",
+    "trigger": {
+      "type": "time",
+      "schedule": [
+        { "time": "06:30", "days": ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+        { "time": "08:00", "days": ["Sat", "Sun"] }
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "light.living_room",
+        "action": "fade_in",
+        "params": { "duration_minutes": 10, "target_brightness": 80 }
+      },
+      {
+        "device": "light.kitchen",
+        "action": "fade_in",
+        "params": { "duration_minutes": 10, "target_brightness": 80 }
+      },
+      {
+        "device": "light.bathroom",
+        "action": "fade_in",
+        "params": { "duration_minutes": 10, "target_brightness": 80 }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_02",
+    "name": "Thermostat – Occupancy & Sleep Settings",
+    "trigger": {
+      "type": "state",
+      "entities": [
+        "binary_sensor.home_occupied",
+        "sensor.time"
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "condition": {
+          "type": "time_range",
+          "start": "23:00",
+          "end": "06:00"
+        },
+        "action": {
+          "device": "climate.home",
+          "service": "set_temperature",
+          "params": { "temperature": 68 }
+        }
+      },
+      {
+        "condition": {
+          "type": "state",
+          "entity": "binary_sensor.home_occupied",
+          "state": "on"
+        },
+        "action": {
+          "device": "climate.home",
+          "service": "set_temperature",
+          "params": { "temperature": 72 }
+        }
+      },
+      {
+        "condition": {
+          "type": "state",
+          "entity": "binary_sensor.home_occupied",
+          "state": "off"
+        },
+        "action": {
+          "device": "climate.home",
+          "service": "set_temperature",
+          "params": { "temperature": 65 }
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_03",
+    "name": "Security – Arm When Everyone Is Away",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"],
+      "event": "leave"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "device_tracker.alice_phone",
+        "state": "away"
+      },
+      {
+        "type": "state",
+        "entity": "device_tracker.bob_phone",
+        "state": "away"
+      }
+    ],
+    "actions": [
+      {
+        "device": "alarm_control_panel.home",
+        "action": "arm_away"
+      }
+    ]
+  },
+
+  {
+    "id": "rule_04",
+    "name": "Security – Disarm When Anyone Returns",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"],
+      "event": "enter"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "alarm_control_panel.home",
+        "action": "disarm"
+      }
+    ]
+  },
+
+  {
+    "id": "rule_05",
+    "name": "Pet Care – Automatic Feeder",
+    "trigger": {
+      "type": "time",
+      "schedule": [
+        { "time": "07:00", "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] },
+        { "time": "18:00", "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] }
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "switch.cat_feeder",
+        "action": "turn_on",
+        "params": { "duration_seconds": 30 }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_06",
+    "name": "Pet Care – Cat Camera When Home Is Empty",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"],
+      "event": "leave"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "device_tracker.alice_phone",
+        "state": "away"
+      },
+      {
+        "type": "state",
+        "entity": "device_tracker.bob_phone",
+        "state": "away"
+      }
+    ],
+    "actions": [
+      {
+        "device": "camera.cat",
+        "action": "turn_on"
+      }
+    ]
+  },
+
+  {
+    "id": "rule_07",
+    "name": "Energy – Solar Priority & Evening Battery Backup",
+    "trigger": {
+      "type": "time",
+      "schedule": [
+        { "time": "14:00", "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] },
+        { "time": "19:00", "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] }
+      ]
+    },
+    "conditions": [
+      {
+        "type": "numeric_state",
+        "entity": "sensor.solar_power",
+        "above": 0
+      }
+    ],
+    "actions": [
+      {
+        "condition": {
+          "type": "time_range",
+          "start": "14:00",
+          "end": "19:00"
+        },
+        "action": {
+          "device": "switch.solar_priority",
+          "service": "enable"
+        }
+      },
+      {
+        "condition": {
+          "type": "time_range",
+          "start": "19:00",
+          "end": "23:00"
+        },
+        "action": {
+          "device": "switch.battery_backup",
+          "service": "enable"
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_08",
+    "name": "Hallway Motion Lights (Night)",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.hallway_motion",
+      "to": "on"
+    },
+    "conditions": [
+      {
+        "type": "time_range",
+        "start": "22:00",
+        "end": "06:00"
+      }
+    ],
+    "actions": [
+      {
+        "device": "light.hallway",
+        "action": "turn_on",
+        "params": { "brightness_pct": 20 }
+      },
+      {
+        "device": "light.hallway",
+        "action": "turn_off",
+        "delay_seconds": 300,
+        "condition": {
+          "type": "state",
+          "entity": "binary_sensor.hallway_motion",
+          "to": "off",
+          "for_seconds": 300
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_09",
+    "name": "Bob’s Office – Desk Lamp & A/C on Computer Power‑On",
+    "trigger": {
+      "type": "state",
+      "entity": "switch.bob_computer",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "light.bob_desk_lamp",
+        "action": "turn_on"
+      },
+      {
+        "device": "climate.home",
+        "action": "set_temperature",
+        "params": { "temperature": 70 }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_10",
+    "name": "Laundry – Cycle‑Complete Notification",
+    "trigger": {
+      "type": "state",
+      "entity": "sensor.washer_status",
+      "to": "idle"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "sensor.washer_last_state",
+        "state": "running"
+      }
+    ],
+    "actions": [
+      {
+        "device": "notify.mobile_alice",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Washer cycle complete." }
+      },
+      {
+        "device": "notify.mobile_bob",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Washer cycle complete." }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_11",
+    "name": "Laundry – Dryer Completion Notification",
+    "trigger": {
+      "type": "state",
+      "entity": "sensor.dryer_status",
+      "to": "idle"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "sensor.dryer_last_state",
+        "state": "running"
+      }
+    ],
+    "actions": [
+      {
+        "device": "notify.mobile_alice",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Dryer cycle complete." }
+      },
+      {
+        "device": "notify.mobile_bob",
+        "action": "send",
+        "params": { "title": "Laundry", "message": "Dryer cycle complete." }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_12",
+    "name": "Water Leak – Shut Off Valve & Immediate Alerts",
+    "trigger": {
+      "type": "state",
+      "entity": "binary_sensor.water_leak",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "switch.main_water_valve",
+        "action": "turn_off"
+      },
+      {
+        "device": "notify.mobile_alice",
+        "action": "send",
+        "params": { "title": "Water Leak", "message": "Leak detected! Main valve closed." }
+      },
+      {
+        "device": "notify.mobile_bob",
+        "action": "send",
+        "params": { "title": "Water Leak", "message": "Leak detected! Main valve closed." }
+      }
+    ]
+  },
+
+  {
+    "id": "rule_13",
+    "name": "Guest Mode – Activate Temporary Access & Comfort",
+    "trigger": {
+      "type": "state",
+      "entity": "input_boolean.guest_mode",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "script.generate_temp_door_code",
+        "action": "run"
+      },
+      {
+        "device": "climate.home",
+        "action": "set_temperature",
+        "params": { "temperature": 72 }
+      },
+      {
+        "device": "switch.guest_wifi",
+        "action": "turn_on"
+      }
+    ]
+  },
+
+  {
+    "id": "rule_14",
+    "name": "Guest Mode – Deactivate",
+    "trigger": {
+      "type": "state",
+      "entity": "input_boolean.guest_mode",
+      "to": "off"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "script.revoke_temp_door_code",
+        "action": "run"
+      },
+      {
+        "device": "switch.guest_wifi",
+        "action": "turn_off"
+      }
+    ]
+  }
+]
+```

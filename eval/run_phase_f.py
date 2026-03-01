@@ -503,9 +503,12 @@ def score_recipe(content, scoring):
     return score, 10, msg
 
 
-def run_test(test, base_url, model, max_tokens, timeout, extra_body=None):
+def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, reasoning_prefix=None):
     """Run a single test and score it."""
-    messages = [{"role": "user", "content": test["prompt"]}]
+    messages = []
+    if reasoning_prefix:
+        messages.append({"role": "system", "content": reasoning_prefix})
+    messages.append({"role": "user", "content": test["prompt"]})
     content, tokens, tps, elapsed = call_llm(messages, base_url, model, max_tokens, timeout=timeout, extra_body=extra_body)
 
     scoring = test["scoring"]
@@ -537,11 +540,13 @@ def main():
     parser.add_argument("--timeout", type=int, default=300, help="Request timeout in seconds")
     parser.add_argument("--thinking-budget", type=int, help="SGLang thinking token budget")
     parser.add_argument("--nothink", action="store_true", help="SGLang: disable thinking (enable_thinking=false)")
+    parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     parser.add_argument("--tier", type=int, help="Run only this tier")
     args = parser.parse_args()
 
     api_model = args.api_model or args.model
+    reasoning_prefix = f"Reasoning: {args.reasoning}" if args.reasoning else None
     extra_body = None
     if args.nothink:
         extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
@@ -581,7 +586,7 @@ def main():
 
         print(f"[{i+1}/{len(tests)}] #{tid} T{tier}: {role}{manual_tag}")
 
-        result = run_test(test, args.base_url, api_model, args.max_tokens, args.timeout, extra_body=extra_body)
+        result = run_test(test, args.base_url, api_model, args.max_tokens, args.timeout, extra_body=extra_body, reasoning_prefix=reasoning_prefix)
 
         score = result["score"]
         max_score = result["max_score"]

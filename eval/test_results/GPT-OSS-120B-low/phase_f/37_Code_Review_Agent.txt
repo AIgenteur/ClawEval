@@ -1,0 +1,40 @@
+{
+  "bugs": [
+    {
+      "line": 6,
+      "issue": "Accesses order['status'] directly; raises KeyError if the key is missing.",
+      "fix": "Use order.get('status') and handle the case where it returns None, e.g., `if order.get('status') == 'pending':`."
+    },
+    {
+      "line": 8,
+      "issue": "Accesses order['price'] and order['quantity'] without checking existence or type; can raise KeyError or TypeError if values are missing or not numeric.",
+      "fix": "Validate presence and numeric type before calculation, e.g.,\n```python\nprice_val = order.get('price')\nqty_val = order.get('quantity')\nif not isinstance(price_val, (int, float)) or not isinstance(qty_val, (int, float)):\n    raise TypeError('price and quantity must be numbers')\nprice = price_val * qty_val\n```"
+    },
+    {
+      "line": 9,
+      "issue": "Discount is taken from the order without validation; a discount > 100% (or negative) can produce an invalid price.",
+      "fix": "Validate discount range before applying it, e.g.,\n```python\ndiscount = order.get('discount', 0)\nif not (0 <= discount <= 100):\n    raise ValueError('discount must be between 0 and 100')\n```"
+    },
+    {
+      "line": 14,
+      "issue": "The function mutates the original order dictionaries (adds 'final_price' and changes 'status'), causing side‑effects for the caller.",
+      "fix": "Work on a shallow copy of each order:\n```python\norder_copy = order.copy()\norder_copy['final_price'] = round(price, 2)\norder_copy['status'] = 'processed'\nprocessed.append(order_copy)\n```"
+    },
+    {
+      "line": 19,
+      "issue": "Division by zero when no orders are processed (processed list is empty) – raises ZeroDivisionError.",
+      "fix": "Guard against an empty processed list:\n```python\navg = total / len(processed) if processed else 0.0\n```"
+    },
+    {
+      "line": 25,
+      "issue": "Returns the total number of input orders (`len(orders)`) instead of the number of processed orders.",
+      "fix": "Return the length of the processed list:\n```python\n'count': len(processed)\n```"
+    },
+    {
+      "line": 5,
+      "issue": "If `orders` is None or not iterable, the `for` loop raises a TypeError.",
+      "fix": "Validate the argument at the start of the function:\n```python\nif not isinstance(orders, (list, tuple)):\n    raise TypeError('orders must be a list or tuple')\n```"
+    }
+  ],
+  "count": 7
+}

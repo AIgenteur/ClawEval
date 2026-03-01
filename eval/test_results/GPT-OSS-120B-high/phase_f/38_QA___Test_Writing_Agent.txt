@@ -1,0 +1,80 @@
+```python
+import pytest
+from tax import calculate_tax  # replace `tax` with the actual module name where the function lives
+
+
+def test_zero_income_single():
+    tax, rate = calculate_tax(0, "single")
+    assert tax == 0
+    assert rate == 0
+
+
+def test_typical_income_single():
+    tax, rate = calculate_tax(50_000, "single")
+    # 10% of 11 600 = 1 160
+    # 12% of (47 150‑11 600) = 4 266
+    # 22% of (50 000‑47 150) = 627
+    # total = 6 053
+    assert tax == 6_053.00
+    assert rate == pytest.approx(12.11, rel=1e-3)  # 6 053 / 50 000 * 100 = 12.106 → 12.11
+
+
+def test_typical_income_married():
+    tax, rate = calculate_tax(80_000, "married")
+    # 10% of 23 200 = 2 320
+    # 12% of (80 000‑23 200) = 6 816
+    # total = 9 136
+    assert tax == 9_136.00
+    assert rate == pytest.approx(11.42, rel=1e-3)  # 9 136 / 80 000 * 100 = 11.42
+
+
+def test_high_income_single():
+    tax, rate = calculate_tax(1_000_000, "single")
+    # Tax computed across all brackets (rounded to 2 dp)
+    # 1 160 + 4 266 + 11 764.5 + 21 942 + 16 568 + 127 968.75 + 144 540.5 = 328 209.75
+    assert tax == 328_209.75
+    assert rate == pytest.approx(32.82, rel=1e-3)  # 328 209.75 / 1 000 000 * 100
+
+
+def test_bracket_boundary_single_exact():
+    tax, rate = calculate_tax(11_600, "single")
+    assert tax == 1_160.00
+    assert rate == 10.0
+
+
+def test_bracket_boundary_single_just_below():
+    tax, rate = calculate_tax(11_599.99, "single")
+    # 10% of 11 599.99 = 1 159.999 → rounded to 1 160.00
+    assert tax == 1_160.00
+    assert rate == pytest.approx(10.0, rel=1e-3)
+
+
+def test_bracket_boundary_married_exact():
+    tax, rate = calculate_tax(23_200, "married")
+    assert tax == 2_320.00
+    assert rate == 10.0
+
+
+def test_bracket_boundary_married_just_above():
+    tax, rate = calculate_tax(23_201, "married")
+    # 10% of 23 200 = 2 320
+    # 12% of 1 = 0.12 → total 2 320.12
+    assert tax == 2_320.12
+    assert rate == pytest.approx(10.0, rel=1e-3)  # effectively still 10 % when rounded to 2 dp
+
+
+def test_invalid_negative_income():
+    with pytest.raises(ValueError, match="Income must be non-negative"):
+        calculate_tax(-100, "single")
+
+
+def test_invalid_filing_status():
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50_000, "head_of_household")
+
+
+def test_invalid_non_numeric_income():
+    with pytest.raises(ValueError, match="Income must be non-negative"):
+        calculate_tax("50000", "single")
+```
+*All tests use `pytest` and cover zero income, typical and high incomes, single vs. married filing statuses, exact and near‑boundary bracket values, and the various invalid‑input scenarios.*

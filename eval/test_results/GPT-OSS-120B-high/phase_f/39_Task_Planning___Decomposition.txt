@@ -1,0 +1,107 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project kickoff & requirements gathering",
+      "depends_on": [],
+      "estimated_hours": 4,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T1",
+      "name": "Design & create PostgreSQL schema (users, todos, categories, tags, reminders)",
+      "depends_on": ["T0"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Implement user registration & login with JWT authentication",
+      "depends_on": ["T1"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Develop CRUD endpoints for todos (protected by JWT)",
+      "depends_on": ["T2"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Add categories / tags support for todos",
+      "depends_on": ["T3"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Implement due‑date reminder logic (scheduler & notification endpoint)",
+      "depends_on": ["T3"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Add rate‑limiting middleware (per‑IP / per‑user)",
+      "depends_on": ["T2"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Write OpenAPI (Swagger) specification for all endpoints",
+      "depends_on": ["T3"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Unit tests for authentication flow",
+      "depends_on": ["T2"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Unit tests for todo CRUD operations",
+      "depends_on": ["T3"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Unit tests for categories/tags feature",
+      "depends_on": ["T4"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Unit tests for due‑date reminder logic",
+      "depends_on": ["T5"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "Create Dockerfile & docker‑compose (app + PostgreSQL)",
+      "depends_on": ["T5"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T13",
+      "name": "Configure CI/CD pipeline (run tests, build Docker image, push, deploy)",
+      "depends_on": ["T8", "T9", "T10", "T11", "T12"],
+      "estimated_hours": 10,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": ["T0", "T1", "T2", "T3", "T5", "T12", "T13"],
+  "total_hours": 124,
+  "parallel_tracks": 5
+}
+```

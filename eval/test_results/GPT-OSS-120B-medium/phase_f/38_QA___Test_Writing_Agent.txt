@@ -1,0 +1,99 @@
+```python
+import pytest
+
+# Adjust the import path to where `calculate_tax` is defined.
+# For example, if the function lives in a file named `tax.py`,
+# use: from tax import calculate_tax
+from your_module import calculate_tax  # <-- replace `your_module` with the actual module name
+
+
+def test_zero_income_returns_zero_tax_and_rate():
+    tax, rate = calculate_tax(0, "single")
+    assert tax == 0
+    assert rate == 0
+
+
+def test_negative_income_raises_value_error():
+    with pytest.raises(ValueError, match="Income must be non-negative"):
+        calculate_tax(-1, "single")
+
+
+def test_invalid_filing_status_raises_value_error():
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(10_000, "head_of_household")
+
+
+def test_non_numeric_income_raises_value_error():
+    with pytest.raises(ValueError, match="Income must be non-negative"):
+        calculate_tax("not-a-number", "single")
+
+
+@pytest.mark.parametrize(
+    "income, filing_status, expected_tax, expected_rate",
+    [
+        # Exact single‑filing first‑bracket boundary
+        (11_600, "single", 1_160.00, 10.00),
+        # Just above the first‑bracket boundary (single)
+        (11_601, "single", 1_160.12, 10.00),
+        # Just below the first‑bracket boundary (single)
+        (11_599.99, "single", 1_160.00, 10.00),
+        # Exact married‑filing first‑bracket boundary
+        (23_200, "married", 2_320.00, 10.00),
+    ],
+)
+def test_bracket_boundaries(income, filing_status, expected_tax, expected_rate):
+    tax, rate = calculate_tax(income, filing_status)
+    assert tax == pytest.approx(expected_tax, rel=1e-9)
+    assert rate == pytest.approx(expected_rate, rel=1e-9)
+
+
+def test_single_vs_married_same_income():
+    income = 30_000
+    tax_single, rate_single = calculate_tax(income, "single")
+    tax_married, rate_married = calculate_tax(income, "married")
+
+    # Expected values calculated manually
+    assert tax_single == pytest.approx(3_368.00, rel=1e-9)
+    assert rate_single == pytest.approx(11.23, rel=1e-9)
+
+    assert tax_married == pytest.approx(3_136.00, rel=1e-9)
+    assert rate_married == pytest.approx(10.45, rel=1e-9)
+
+
+@pytest.mark.parametrize(
+    "income, filing_status, expected_tax, expected_rate",
+    [
+        # High income (single)
+        (
+            1_000_000,
+            "single",
+            328_209.75,
+            32.82,
+        ),
+        # High income (married)
+        (
+            1_000_000,
+            "married",
+            296_125.50,
+            29.61,
+        ),
+    ],
+)
+def test_high_income(income, filing_status, expected_tax, expected_rate):
+    tax, rate = calculate_tax(income, filing_status)
+    assert tax == pytest.approx(expected_tax, rel=1e-9)
+    assert rate == pytest.approx(expected_rate, rel=1e-9)
+
+
+def test_effective_rate_rounding():
+    # Income that yields a non‑integer effective rate before rounding
+    income = 45_000  # falls in the 12% bracket for single filers
+    tax, rate = calculate_tax(income, "single")
+    # Manual calculation:
+    # 0‑11,600 @10% = 1,160
+    # 11,600‑45,000 @12% = (45,000‑11,600) * .12 = 33,400 * .12 = 4,008
+    # Total tax = 5,168
+    # Effective rate = 5,168 / 45,000 * 100 = 11.4844… → rounded to 11.48
+    assert tax == pytest.approx(5_168.00, rel=1e-9)
+    assert rate == pytest.approx(11.48, rel=1e-9)
+```

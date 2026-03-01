@@ -1,0 +1,75 @@
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hard‑coded secret key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\" (line 5)",
+      "fix": "Generate a strong random secret key and load it from a protected environment variable or a secrets manager; never commit it to source control."
+    },
+    {
+      "id": 2,
+      "type": "Reflected Cross‑Site Scripting (XSS)",
+      "severity": "high",
+      "location": "render_template_string(f\"Results for: {q}\") in /search route (line 9‑11)",
+      "fix": "Escape user input or use a proper template with auto‑escaping, e.g., `render_template('search.html', q=q)`; avoid `render_template_string` with unsanitized data."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\") in /user/<id> route (line 14‑16)",
+      "fix": "Use parameterised queries: `db.execute('SELECT * FROM users WHERE id = ?', (id,))` and validate that `id` is an integer."
+    },
+    {
+      "id": 4,
+      "type": "Unsafe pickle deserialization (Remote Code Execution)",
+      "severity": "critical",
+      "location": "pickle.loads(data) in /upload route (line 20‑22)",
+      "fix": "Never unpickle data from untrusted sources. Use a safe serialization format such as JSON, or validate and restrict the classes that can be loaded."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True) in /run route (line 25‑27)",
+      "fix": "Do not pass user‑controlled input to the shell. Use a whitelist of allowed commands and invoke `subprocess.check_output` with `shell=False` and a list of arguments."
+    },
+    {
+      "id": 6,
+      "type": "Arbitrary File Read / Path Traversal",
+      "severity": "high",
+      "location": "open(path).read() in /file route (line 30‑32)",
+      "fix": "Validate the supplied path against an allow‑list or restrict it to a specific directory using `os.path.abspath` and `os.path.commonpath`. Serve files via a safe static file handler instead."
+    },
+    {
+      "id": 7,
+      "type": "Insecure authentication logic (hard‑coded fallback password)",
+      "severity": "medium",
+      "location": "pw == os.environ.get(\"ADMIN_PW\", \"admin\") in /login route (line 35‑38)",
+      "fix": "Remove the default password fallback. Store hashed passwords (e.g., bcrypt) and compare using a constant‑time function. Require the admin password to be set via a secure secret store."
+    },
+    {
+      "id": 8,
+      "type": "Information leakage (environment variables)",
+      "severity": "medium",
+      "location": "return str(os.environ) in /debug route (line 41‑43)",
+      "fix": "Disable the debug endpoint in production or protect it with authentication/authorization. Never expose raw environment data."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS enforcement",
+      "severity": "high",
+      "location": "Application runs without TLS (comment V9)",
+      "fix": "Terminate TLS at a reverse proxy (e.g., Nginx) or enable Flask’s `SSLContext` in production. Set `SESSION_COOKIE_SECURE=True` and `SESSION_COOKIE_HTTPONLY=True`."
+    },
+    {
+      "id": 10,
+      "type": "No rate limiting / brute‑force protection",
+      "severity": "medium",
+      "location": "All endpoints lack request throttling (comment V10)",
+      "fix": "Integrate a rate‑limiting solution such as Flask‑Limiter, configure per‑IP limits for sensitive routes (e.g., /login, /run), and consider CAPTCHA for abusive patterns."
+    }
+  ],
+  "count": 10
+}

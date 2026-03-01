@@ -1,0 +1,107 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project kickoff & repository initialization",
+      "depends_on": [],
+      "estimated_hours": 2,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T1",
+      "name": "Design PostgreSQL schema and provision the database",
+      "depends_on": ["T0"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Implement user registration & login with JWT",
+      "depends_on": ["T1"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Create CRUD endpoints for todos (protected)",
+      "depends_on": ["T3", "T1"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Add categories/tags support to todo model and endpoints",
+      "depends_on": ["T4"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Implement due‑date reminder logic (e.g., scheduled jobs)",
+      "depends_on": ["T5"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Add rate‑limiting middleware",
+      "depends_on": ["T3"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Write unit tests for authentication (≥80% coverage)",
+      "depends_on": ["T3"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Write unit tests for todo CRUD endpoints",
+      "depends_on": ["T4"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Write unit tests for categories/tags feature",
+      "depends_on": ["T5"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Write unit tests for due‑date reminder logic",
+      "depends_on": ["T6"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "Create OpenAPI (Swagger) documentation for all endpoints",
+      "depends_on": ["T4", "T5", "T6"],
+      "estimated_hours": 8,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T13",
+      "name": "Dockerize the application (Dockerfile, docker‑compose with DB)",
+      "depends_on": ["T4", "T5", "T6"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T14",
+      "name": "Set up CI/CD pipeline (run tests, build Docker image, push, deploy)",
+      "depends_on": ["T8", "T9", "T10", "T11", "T13"],
+      "estimated_hours": 6,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": ["T0", "T1", "T3", "T4", "T5", "T6", "T13", "T14"],
+  "total_hours": 114,
+  "parallel_tracks": 4
+}
+```

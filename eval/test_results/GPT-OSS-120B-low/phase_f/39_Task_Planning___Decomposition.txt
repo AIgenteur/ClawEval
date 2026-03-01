@@ -1,0 +1,114 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project kickoff – repo init, basic folder structure",
+      "depends_on": [],
+      "estimated_hours": 2,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T1",
+      "name": "Database design & schema creation (PostgreSQL)",
+      "depends_on": ["T0"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "User authentication – registration, login, JWT issuance",
+      "depends_on": ["T0", "T1"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Todo CRUD endpoints (protected)",
+      "depends_on": ["T1", "T3"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Todo categories / tags support",
+      "depends_on": ["T4"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Due‑date reminder logic (e.g., scheduled jobs)",
+      "depends_on": ["T5"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Rate‑limiting middleware",
+      "depends_on": ["T3"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Unit tests for authentication",
+      "depends_on": ["T3"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Unit tests for Todo CRUD",
+      "depends_on": ["T4"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Unit tests for categories/tags",
+      "depends_on": ["T5"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Unit tests for due‑date reminders",
+      "depends_on": ["T6"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T15",
+      "name": "Unit tests for rate limiting",
+      "depends_on": ["T7"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "API documentation (OpenAPI/Swagger)",
+      "depends_on": ["T4", "T5", "T6"],
+      "estimated_hours": 8,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T13",
+      "name": "Dockerize application – Dockerfile, docker‑compose (app + DB)",
+      "depends_on": ["T1", "T4", "T5", "T6"],
+      "estimated_hours": 10,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T14",
+      "name": "CI/CD pipeline – run tests, build Docker image, deploy",
+      "depends_on": ["T8", "T9", "T10", "T11", "T15", "T13"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": ["T0", "T1", "T3", "T4", "T5", "T6", "T13", "T14"],
+  "total_hours": 124,
+  "parallel_tracks": 4
+}
+```

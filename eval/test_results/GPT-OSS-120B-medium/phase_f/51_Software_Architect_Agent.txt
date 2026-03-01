@@ -1,0 +1,96 @@
+```json
+{
+  "components": [
+    {
+      "name": "API Gateway",
+      "technology": "AWS API Gateway (REST + WebSocket) / Kong (self‑hosted)",
+      "purpose": "Entry point for all client traffic, TLS termination, request routing, rate limiting, and auth token validation.",
+      "scaling_strategy": "Managed service auto‑scales per request volume; for self‑hosted Kong use Kubernetes Horizontal Pod Autoscaler (HPA)."
+    },
+    {
+      "name": "Auth Service",
+      "technology": "OAuth2 / OpenID Connect (Keycloak) + JWT",
+      "purpose": "User authentication, token issuance, refresh, and revocation. Stores minimal user profile metadata.",
+      "scaling_strategy": "Stateless; run in multiple replicas behind a load balancer with HPA. Session data stored in Redis."
+    },
+    {
+      "name": "WebSocket Edge Servers",
+      "technology": "Node.js (Socket.io) or Go (gobwas/ws) running in containers",
+      "purpose": "Maintain persistent bi‑directional connections, handle real‑time events (message send, typing, read receipts).",
+      "scaling_strategy": "Stateless; scale horizontally behind a TCP/UDP load balancer (AWS NLB). Each instance handles ~10k concurrent sockets; auto‑scale based on CPU/network metrics."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka (3‑zone replicated cluster) + KRaft controller",
+      "purpose": "Durable, ordered event streaming for chat messages, presence updates, and read receipts. Guarantees <100 ms end‑to‑end latency when combined with in‑memory consumers.",
+      "scaling_strategy": "Topic partitioning per chat (hash of chat‑id). Add partitions and brokers as user count grows; use tiered storage for older segments."
+    },
+    {
+      "name": "Real‑time Processor",
+      "technology": "Kafka Streams / Flink",
+      "purpose": "Consume messages, apply business logic (e.g., push to online users, update unread counters), write to persistence layers, emit notifications.",
+      "scaling_strategy": "Stateless stream tasks; scale by increasing number of stream threads and task slots. Partition‑aware scaling ensures load balance."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster (in‑memory) with Pub/Sub",
+      "purpose": "Track online/offline status, typing indicators, and last‑seen timestamps. Fast read/write for 1 M concurrent users.",
+      "scaling_strategy": "Sharded Redis Cluster (minimum 6 master nodes, each with replicas). Auto‑scale shards based on memory and QPS."
+    },
+    {
+      "name": "Message Store",
+      "technology": "Cassandra (or DynamoDB) with Time‑Series table design",
+      "purpose": "Persist chat history, support range queries for conversation replay, and guarantee high write throughput.",
+      "scaling_strategy": "Add nodes to the ring; data automatically re‑balanced. Use tunable consistency (QUORUM) for durability while keeping latency low."
+    },
+    {
+      "name": "Attachment Service",
+      "technology": "AWS S3 (or GCS) + CloudFront CDN + multipart upload API",
+      "purpose": "Store binary files up to 50 MB, generate pre‑signed URLs for direct client upload/download, and trigger virus‑scan Lambda.",
+      "scaling_strategy": "Object storage is virtually unlimited; scale CDN edge locations automatically."
+    },
+    {
+      "name": "Search & Index",
+      "technology": "Elasticsearch Service (managed) ",
+      "purpose": "Full‑text search across messages, filter by user, date, or attachment metadata.",
+      "scaling_strategy": "Add data nodes and ingest nodes as query volume grows; use hot‑warm node tiers for recent vs older data."
+    },
+    {
+      "name": "E2EE SDK",
+      "technology": "Client‑side libs (libsodium, Signal Protocol) + Key Management Service (AWS KMS) for backup keys",
+      "purpose": "Generate per‑conversation key pairs, encrypt payloads before they hit the network, decrypt only on authorized clients.",
+      "scaling_strategy": "Stateless; no server resources needed beyond key‑wrap operations via KMS (rate‑limited, auto‑scaled)."
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Grafana + Loki (logs) + OpenTelemetry",
+      "purpose": "Collect latency, error rates, resource utilization; alert on SLA breaches.",
+      "scaling_strategy": "Scrape targets via service discovery; scale Prometheus federation for high cardinality metrics."
+    },
+    {
+      "name": "Compliance & Data‑Governance",
+      "technology": "AWS Config, CloudTrail, GDPR‑ready data‑retention policies, encryption‑at‑rest (SSE‑S3, CMEK for RDS/Cassandra)",
+      "purpose": "Audit trails, data residency, right‑to‑be‑forgotten workflows.",
+      "scaling_strategy": "Managed services; scale automatically with usage."
+    }
+  ],
+  "data_flow": "1. Mobile/web client authenticates via Auth Service → receives JWT. 2. Client opens a WebSocket connection through API Gateway to a WebSocket Edge Server, presenting the JWT. 3. Edge Server validates token, registers the socket ID in Presence Service (Redis). 4. When a user sends a message, the client encrypts the payload with the per‑conversation E2EE key, then sends the ciphertext over the WebSocket. 5. Edge Server publishes the encrypted message to Kafka topic `chat-{conversationId}`. 6. Real‑time Processor consumes the event, writes the ciphertext + metadata (senderId, timestamp, attachment‑URL if any) to Message Store (Cassandra) and updates unread counters in Redis. 7. Processor also pushes the message to all online participants by publishing to Redis Pub/Sub channels; each Edge Server subscribed to those channels forwards the ciphertext to the respective sockets. 8. Recipients acknowledge receipt; Edge Server records a read receipt event back to Kafka (`receipt-{conversationId}`) which the Processor persists and updates read‑status in Redis for UI badge counts. 9. For file attachments, client obtains a pre‑signed S3 URL from Attachment Service, uploads directly to S3 (multipart), then sends the attachment metadata (URL, hash) as part of the encrypted message. 10. Search queries hit Elasticsearch, which indexes message metadata (non‑encrypted fields like timestamps, senderId) for fast retrieval. 11. All operations are instrumented; latency metrics are aggregated to ensure <100 ms end‑to‑end for online users.",
+  "infrastructure": {
+    "cloud": "AWS (multi‑region, active‑active)",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$260,000 – $340,000 (includes compute, managed Kafka, Cassandra nodes, Redis Cluster, S3 storage, CloudFront, Elasticsearch, monitoring, and data‑transfer).",
+  "bottlenecks": [
+    "Network bandwidth & socket concurrency on WebSocket Edge Servers – mitigated by aggressive horizontal scaling and TCP keep‑alive tuning.",
+    "End‑to‑end encryption CPU overhead on client devices – mitigated by using libsodium which is optimized for modern CPUs; server side is unaffected.",
+    "Large file upload latency – mitigated by direct‑to‑S3 multipart upload and CDN edge caching.",
+    "Hot partitions in Kafka or Cassandra when a few mega‑groups dominate traffic – mitigated by hash‑based sharding and dynamic partition rebalancing."
+  ],
+  "tradeoffs": [
+    "Choosing Cassandra over a relational DB gives write scalability and low latency but sacrifices strong transactional guarantees; eventual consistency is acceptable for chat history.",
+    "Managed Kafka adds operational simplicity and durability but incurs higher cost compared to a self‑hosted solution.",
+    "End‑to‑end encryption ensures privacy but prevents server‑side content moderation; we rely on client‑side metadata (e.g., hash of prohibited content) for limited moderation.",
+    "Storing messages encrypted at rest limits the ability to run full‑text search on message bodies; we index only non‑sensitive metadata to keep search performant while respecting GDPR."
+  ]
+}
+```

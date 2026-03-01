@@ -643,9 +643,12 @@ SCORERS = {
 }
 
 
-def run_single_turn(test, base_url, model, max_tokens, timeout=120, extra_body=None):
+def run_single_turn(test, base_url, model, max_tokens, timeout=120, extra_body=None, reasoning_prefix=None):
     """Run a single-turn test."""
-    messages = [{"role": "user", "content": test["prompt"]}]
+    messages = []
+    if reasoning_prefix:
+        messages.append({"role": "system", "content": reasoning_prefix})
+    messages.append({"role": "user", "content": test["prompt"]})
     content, tokens, tps, elapsed = call_llm(messages, base_url, model, max_tokens, timeout=timeout, extra_body=extra_body)
 
     scoring = test["scoring"]
@@ -666,10 +669,12 @@ def run_single_turn(test, base_url, model, max_tokens, timeout=120, extra_body=N
     }
 
 
-def run_multi_turn(test, base_url, model, max_tokens, timeout=120, extra_body=None):
+def run_multi_turn(test, base_url, model, max_tokens, timeout=120, extra_body=None, reasoning_prefix=None):
     """Run a multi-turn test, accumulating conversation history."""
     turns = test["turns"]
     messages = []
+    if reasoning_prefix:
+        messages.append({"role": "system", "content": reasoning_prefix})
     responses = []
     total_tokens = 0
     total_elapsed = 0
@@ -716,10 +721,12 @@ def main():
     parser.add_argument("--timeout", type=int, default=120, help="Request timeout in seconds")
     parser.add_argument("--thinking-budget", type=int, help="SGLang thinking token budget (enables thinking with limit)")
     parser.add_argument("--nothink", action="store_true", help="SGLang: disable thinking (enable_thinking=false)")
+    parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     args = parser.parse_args()
 
     api_model = args.api_model or args.model
+    reasoning_prefix = f"Reasoning: {args.reasoning}" if args.reasoning else None
     extra_body = None
     if args.nothink:
         extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
@@ -754,9 +761,9 @@ def main():
         print(f"[{i+1}/{len(tests)}] Test {tid}: {name}{turns_label}")
 
         if is_multi:
-            result = run_multi_turn(test, args.base_url, api_model, args.max_tokens, timeout=args.timeout, extra_body=extra_body)
+            result = run_multi_turn(test, args.base_url, api_model, args.max_tokens, timeout=args.timeout, extra_body=extra_body, reasoning_prefix=reasoning_prefix)
         else:
-            result = run_single_turn(test, args.base_url, api_model, args.max_tokens, timeout=args.timeout, extra_body=extra_body)
+            result = run_single_turn(test, args.base_url, api_model, args.max_tokens, timeout=args.timeout, extra_body=extra_body, reasoning_prefix=reasoning_prefix)
 
         score = result["score"]
         max_score = result["max_score"]

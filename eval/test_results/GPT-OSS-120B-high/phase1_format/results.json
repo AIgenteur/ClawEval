@@ -1,0 +1,91 @@
+{
+  "phase": "phase1_format_compliance",
+  "model": "openai/gpt-oss-120b",
+  "timestamp": "2026-03-01T09:55:55.585260",
+  "tests": [
+    {
+      "name": "json_simple",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\n    \"language\": \"Python\",\n    \"year\": 1991\n  },\n  {\n    \"language\": \"Java\",\n    \"year\": 1995\n  },\n  {\n    \"language\": \"C++\",\n    \"year\": 1985\n  }\n]",
+      "elapsed": 1.19,
+      "tps": 128.1
+    },
+    {
+      "name": "json_nested",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\n  \"name\": \"John Doe\",\n  \"age\": 30,\n  \"skills\": [\n    \"JavaScript\",\n    \"Python\",\n    \"SQL\"\n  ],\n  \"address\": {\n    \"city\": \"New York\",\n    \"country\": \"USA\"\n  }\n}",
+      "elapsed": 1.47,
+      "tps": 126.0
+    },
+    {
+      "name": "json_from_text",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\n  \"name\": \"John Smith\",\n  \"age\": 34,\n  \"company\": \"Google\",\n  \"title\": \"Senior Engineer\",\n  \"location\": \"Mountain View, CA\",\n  \"email\": \"john@google.com\"\n}",
+      "elapsed": 1.0,
+      "tps": 127.9
+    },
+    {
+      "name": "json_strict_schema",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "{\"action\":\"schedule_meeting\",\"target\":\"Bob\",\"confidence\":0.99}",
+      "elapsed": 0.61,
+      "tps": 122.9
+    },
+    {
+      "name": "json_array_complex",
+      "passed": true,
+      "reason": "Valid JSON",
+      "response": "[\n  {\n    \"id\": 1,\n    \"task\": \"Finalize release notes and version documentation\",\n    \"priority\": \"high\",\n    \"done\": false\n  },\n  {\n    \"id\": 2,\n    \"task\": \"Perform regression testing on all critical modules\",\n    \"priority\": \"high\",\n    \"done\": false\n  },\n  {\n    \"id\": 3,\n    \"task\": \"Merge feature branches and resolve any integration conflicts\",\n    \"priority\": \"medium\",\n    \"done\": false\n  },\n  {\n    \"id\": 4,\n    \"task\": \"Update deployment scripts and verify production environment readiness\",\n    \"priority\": \"medium\",\n    \"done\": false\n  },\n  {\n    \"id\": 5,\n    \"task\": \"Communicate release schedule to stakeholders and schedule post\u2011release monitoring\",\n    \"priority\": \"low\",\n    \"done\": false\n  }\n]",
+      "elapsed": 2.35,
+      "tps": 130.2
+    },
+    {
+      "name": "system_prompt_adherence",
+      "passed": true,
+      "reason": "Contains: arr, matey",
+      "response": "Arr, the grand city o' France be Paris, matey! \ud83c\udff4\u200d\u2620\ufe0f",
+      "elapsed": 1.22,
+      "tps": 127.6
+    },
+    {
+      "name": "one_word_constraint",
+      "passed": true,
+      "reason": "Word count: 1 (expected ~1)",
+      "response": "blue",
+      "elapsed": 0.6,
+      "tps": 123.5
+    },
+    {
+      "name": "numbered_list",
+      "passed": true,
+      "reason": "Pattern matches: 8 (min 3)",
+      "response": "1. Gather all necessary ingredients and tools: two slices of bread, peanut butter, a butter knife or spreader, and a plate.  \n2. Lay the two slices of bread flat on the plate, side\u2011up.  \n3. Open the peanut butter jar and use the knife to scoop out a generous amount of peanut butter.  \n4. Spread the peanut butter evenly over one side of the first slice of bread, covering the entire surface.  \n5. If desired, add any optional toppings (e.g., honey, jam, banana slices) on top of the peanut butter.  \n6. Place the second slice of bread on top of the first slice, with the plain side facing up, aligning the edges.  \n7. Press the sandwich gently to help the slices stick together.  \n8. Cut the sandwich in half (diagonally or straight across) if desired, and serve.",
+      "elapsed": 2.25,
+      "tps": 128.4
+    },
+    {
+      "name": "markdown_table",
+      "passed": true,
+      "reason": "Contains all expected elements",
+      "response": "| Planet | Distance from the Sun (million km) | Number of Moons |\n|--------|------------------------------------|-----------------|\n| Mercury | 57.9 | 0 |\n| Venus   | 108.2 | 0 |\n| Earth   | 149.6 | 1 |\n| Mars    | 227.9 | 2 |",
+      "elapsed": 1.15,
+      "tps": 129.0
+    },
+    {
+      "name": "refuse_and_redirect",
+      "passed": true,
+      "reason": "Contains: cooking, can only help",
+      "response": "I can only help with cooking-related questions.",
+      "elapsed": 0.4,
+      "tps": 120.9
+    }
+  ],
+  "passed": 10,
+  "failed": 0,
+  "total": 10,
+  "score_pct": 100.0
+}

@@ -1,0 +1,55 @@
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Compose file version '2' is outdated and lacks features of newer versions.",
+      "fix": "Upgrade to a current version such as '3.9' (or omit the version key for the latest schema)."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using the 'latest' tag makes the build non‑deterministic because the image can change over time.",
+      "fix": "Pin the image to a specific version, e.g. `node:18-alpine` or another known tag."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password is stored in plain text in the compose file, exposing credentials.",
+      "fix": "Store the password in a Docker secret or an external env‑file that is not committed to source control."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "The container is configured for a development environment while the compose appears to be for production.",
+      "fix": "Set `NODE_ENV` to `production` (or make it configurable via an external env‑file)."
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Binding the host source directory into the container is unsuitable for production and can cause permission and performance issues.",
+      "fix": "Build the application into the image and use a read‑only volume or remove the bind mount entirely."
+    },
+    {
+      "line": "restart: no",
+      "problem": "The restart policy disables automatic restarts, which is undesirable for production services.",
+      "fix": "Use a proper restart policy such as `restart: unless-stopped` or `restart: always`."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 has reached end‑of‑life and no longer receives security updates.",
+      "fix": "Upgrade to a supported version, e.g. `mysql:8.0` or use MariaDB as an alternative."
+    },
+    {
+      "line": "- \"3306:3306\"",
+      "problem": "The MySQL port is exposed to the host, making the database reachable from outside the Docker network.",
+      "fix": "Remove the ports mapping (or bind to localhost only) and let other services connect via the internal Docker network."
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "Storing persistent MySQL data under `/tmp` risks data loss because the directory can be cleared on reboot.",
+      "fix": "Use a dedicated host path (e.g. `./mysql-data`) or a named volume (`mysql-data:/var/lib/mysql`)."
+    },
+    {
+      "line": "- \"6379:6379\"",
+      "problem": "Redis is exposed publicly without authentication, which is a security risk.",
+      "fix": "Remove the public port mapping (or bind to localhost) and configure a password for Redis if external access is required."
+    }
+  ],
+  "count": 10
+}

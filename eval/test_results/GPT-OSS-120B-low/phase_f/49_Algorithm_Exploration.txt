@@ -1,0 +1,45 @@
+```python
+from collections import OrderedDict
+from typing import Any
+
+def lru_cache(capacity: int):
+    """
+    Returns an LRU cache object with O(1) get and put operations.
+
+    Methods
+    -------
+    get(key) -> Any
+        Return the value associated with *key* if present, otherwise -1.
+    put(key, value) -> None
+        Insert or update the *key* with *value*. If the cache exceeds
+        *capacity*, the least‑recently used item is evicted.
+    """
+    class _LRUCache:
+        __slots__ = ("_cap", "_map")
+
+        def __init__(self, cap: int):
+            self._cap = cap
+            self._map = OrderedDict()          # key -> value
+
+        def get(self, key: Any) -> Any:
+            if key not in self._map:
+                return -1
+            # Move the accessed item to the end (most recent)
+            self._map.move_to_end(key)
+            return self._map[key]
+
+        def put(self, key: Any, value: Any) -> None:
+            if key in self._map:
+                # Update existing entry and mark as most recent
+                self._map.move_to_end(key)
+            self._map[key] = value
+            # Evict least-recently used if over capacity
+            if len(self._map) > self._cap:
+                self._map.popitem(last=False)   # pop LRU (first item)
+
+        # Optional: nice string representation for debugging
+        def __repr__(self):
+            return f"<LRUCache capacity={self._cap} items={list(self._map.items())}>"
+
+    return _LRUCache(capacity)
+```

@@ -1,0 +1,109 @@
+```json
+{
+  "components": [
+    {
+      "name": "Global Load Balancer",
+      "technology": "AWS Elastic Load Balancing (Application Load Balancer) + Anycast DNS (Route 53)",
+      "purpose": "Distribute inbound traffic across edge locations, terminate TLS, provide DDoS protection and health‑checking of downstream services.",
+      "scaling_strategy": "Fully managed, auto‑scales with traffic; anycast routing adds capacity without configuration changes."
+    },
+    {
+      "name": "Edge CDN & WAF",
+      "technology": "AWS CloudFront + AWS WAF",
+      "purpose": "Cache static assets (JS, CSS, icons) and serve small attachment thumbnails; block malicious requests before they hit origin.",
+      "scaling_strategy": "Globally distributed edge nodes automatically scale to millions of requests per second."
+    },
+    {
+      "name": "API Gateway",
+      "technology": "AWS API Gateway (REST + WebSocket)",
+      "purpose": "Expose HTTP endpoints for auth, user profile, group management and a WebSocket endpoint for real‑time messaging.",
+      "scaling_strategy": "Serverless; scales per‑connection and per‑request without capacity planning."
+    },
+    {
+      "name": "Auth & Identity Service",
+      "technology": "Auth0 (or AWS Cognito) + OAuth 2.0 / OpenID Connect",
+      "purpose": "User registration, login, token issuance, MFA, token revocation, and integration with GDPR‑compliant data‑subject‑access‑request (DSAR) workflows.",
+      "scaling_strategy": "Managed SaaS; horizontal scaling handled by provider."
+    },
+    {
+      "name": "Real‑Time Messaging Service",
+      "technology": "Custom stateless service built on Go + Gorilla WebSocket, deployed in Kubernetes (EKS)",
+      "purpose": "Maintain WebSocket connections, route messages to appropriate chat partitions, enforce per‑user rate limits, and emit read‑receipt events.",
+      "scaling_strategy": "Stateless pods behind a Service Mesh (Istio) – scale horizontally based on CPU/connection count; sticky sessions avoided by using a connection‑ID routing layer."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka (AWS MSK) with 3‑zone replication",
+      "purpose": "Durable, ordered event stream for chat messages, presence updates, typing indicators, and read receipts.",
+      "scaling_strategy": "Topic partitioning (e.g., 10 000 partitions) based on chat‑room ID; each partition handled by a single consumer thread for ordering guarantees."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster (AWS ElastiCache) with TTL‑based heartbeats",
+      "purpose": "Track online/offline status, last‑seen timestamps, and per‑device presence for up to 1 M concurrent users.",
+      "scaling_strategy": "Sharded Redis nodes; auto‑scale shards based on key‑space size and memory usage."
+    },
+    {
+      "name": "Chat Business Logic Service",
+      "technology": "Go microservice (Kubernetes) – handles group membership, ACLs, message validation, and read‑receipt aggregation.",
+      "purpose": "Encapsulate domain rules, enforce end‑to‑end encryption policies, and emit events to Kafka.",
+      "scaling_strategy": "Stateless pods; horizontal pod autoscaler (HPA) based on request latency and queue depth."
+    },
+    {
+      "name": "Message Persistence Store",
+      "technology": "ScyllaDB (Cassandra‑compatible) – wide‑column table for messages",
+      "purpose": "Store immutable chat messages with TTL for expiring old data; supports fast range scans for history retrieval.",
+      "scaling_strategy": "Linear horizontal scaling by adding nodes; data automatically re‑balanced via token ring."
+    },
+    {
+      "name": "Metadata Store",
+      "technology": "Amazon Aurora PostgreSQL (serverless v2)",
+      "purpose": "User profiles, group definitions, ACLs, read‑receipt aggregates, and GDPR‑related audit logs.",
+      "scaling_strategy": "Serverless compute auto‑scales; storage auto‑grows; read replicas for reporting."
+    },
+    {
+      "name": "Attachment Service",
+      "technology": "AWS S3 (Standard) + S3 Transfer Acceleration + Lambda for virus scanning",
+      "purpose": "Store files up to 50 MB, generate pre‑signed URLs, run AV scan, and trigger thumbnail generation.",
+      "scaling_strategy": "Object storage is virtually unlimited; Lambda scales per‑invocation; Transfer Acceleration adds edge capacity."
+    },
+    {
+      "name": "Key Management & Encryption Service",
+      "technology": "AWS KMS + client‑side libs (libsodium) for E2E encryption",
+      "purpose": "Generate per‑conversation symmetric keys, rotate keys, store encrypted keys, and provide key‑wrapping for device provisioning.",
+      "scaling_strategy": "Managed KMS scales automatically; client‑side encryption keeps CPU load off the backend."
+    },
+    {
+      "name": "Monitoring, Logging & Alerting",
+      "technology": "Prometheus + Grafana (EKS), Loki for logs, AWS CloudWatch Alarms, OpenTelemetry tracing",
+      "purpose": "Collect latency metrics, error rates, connection counts; trigger alerts for SLA breaches.",
+      "scaling_strategy": "Prometheus federation across regions; Loki sharding for high‑volume logs."
+    },
+    {
+      "name": "Compliance & Data‑Subject Access Service",
+      "technology": "Custom GDPR microservice (Go) + AWS Glue Data Catalog",
+      "purpose": "Export, delete, or anonymize user data on request; maintain audit trail for compliance audits.",
+      "scaling_strategy": "Stateless, runs on demand in Fargate; scales with request volume."
+    }
+  ],
+  "data_flow": "1. Mobile/web client authenticates via Auth Service and receives a JWT + an E2E session key (generated client‑side). 2. Client opens a WebSocket connection through the API Gateway; TLS termination occurs at the edge LB. 3. The Real‑Time Messaging Service validates the JWT, registers the connection ID in the Presence Service (heartbeat every 15 s). 4. When a user sends a message, the client encrypts the payload with the conversation’s symmetric key, attaches a MAC, and sends the ciphertext over the WebSocket. 5. The Messaging Service publishes the encrypted payload to a Kafka topic partitioned by chat‑room ID. 6. A consumer in the Chat Business Logic Service writes the message to ScyllaDB (for history) and forwards the event to the Presence Service (for unread‑count) and to the recipient’s active WebSocket connections (if online). 7. If the recipient is offline, the message stays in Kafka and ScyllaDB; when they reconnect, the client fetches the last N messages via a paginated HTTP endpoint (served by the Chat Service, reading from ScyllaDB). 8. Read receipts are sent as lightweight encrypted events, processed similarly, and stored in Aurora for aggregation. 9. File attachments are uploaded via a pre‑signed S3 URL; after upload, a Lambda scans the file, stores metadata in Aurora, and sends a message event containing the S3 object key (encrypted). 10. All services emit metrics and traces to Prometheus/Grafana; alerts fire if latency > 100 ms or error rate > 0.1 %.",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3,
+    "description": "Primary deployment in us-east-1, eu-central-1, and ap-southeast-2 with multi‑AZ redundancy in each region. Data residency for GDPR users is forced to EU region via routing rules."
+  },
+  "estimated_monthly_cost": "$210,000 – $260,000 (breakdown: Load Balancers $12k, API GW $8k, EKS compute $70k, Kafka MSK $30k, ScyllaDB nodes $45k, Aurora Serverless $15k, S3 storage & transfer $12k, Redis Cluster $10k, KMS & Lambda $5k, Monitoring & logging $8k, miscellaneous CDN/WAF $5k). Costs assume 1 M concurrent connections, 10 TB of stored messages, 5 TB of attachments, and 2 B messages per month.",
+  "bottlenecks": [
+    "WebSocket connection handling at peak concurrency – requires careful tuning of kernel socket buffers and load‑balancer idle‑timeout.",
+    "Kafka partition hot‑spots for very large groups (500 members) – mitigated by sub‑partitioning per‑member offset.",
+    "End‑to‑end encryption CPU on low‑end mobile devices – mitigated by using libsodium’s fast X25519/XChaCha20‑Poly1305.",
+    "Large attachment upload latency – mitigated by S3 Transfer Acceleration and multipart upload."
+  ],
+  "tradeoffs": [
+    "Choosing ScyllaDB (wide‑column) over a relational DB gives write scalability and low‑latency reads for chat history, but sacrifices strong ACID guarantees for per‑message consistency (acceptable for immutable chat logs).",
+    "Serverless Auth (Auth0/Cognito) reduces ops burden but adds vendor lock‑in and per‑auth request cost.",
+    "Full end‑to‑end encryption limits server‑side content moderation; we accept reduced moderation capability for privacy compliance.",
+    "Using Kafka for ordering adds operational complexity; alternative could be a managed pub/sub (e.g., Pulsar) but Kafka offers tighter control over retention and replay for audit purposes."
+  ]
+}
+```

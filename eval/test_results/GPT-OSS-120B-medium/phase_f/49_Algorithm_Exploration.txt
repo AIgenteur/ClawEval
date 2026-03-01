@@ -1,0 +1,72 @@
+```python
+def lru_cache(capacity: int):
+    """Return an LRU cache object with O(1) get/put.
+
+    The returned object has two methods:
+        - get(key) -> value or -1
+        - put(key, value) -> None
+    """
+    class _Node:
+        __slots__ = ("key", "val", "prev", "next")
+        def __init__(self, key=None, val=None):
+            self.key = key
+            self.val = val
+            self.prev = self.next = None
+
+    class _LRU:
+        __slots__ = ("_cap", "_map", "_head", "_tail")
+        def __init__(self, cap):
+            self._cap = cap
+            self._map = {}                     # key -> node
+            # dummy head & tail to avoid edge checks
+            self._head = _Node()
+            self._tail = _Node()
+            self._head.next = self._tail
+            self._tail.prev = self._head
+
+        # ----- internal helpers -----
+        def _remove(self, node: _Node):
+            """Unlink node from list."""
+            prev, nxt = node.prev, node.next
+            prev.next, nxt.prev = nxt, prev
+
+        def _add_to_front(self, node: _Node):
+            """Insert node right after head (most‑recent position)."""
+            node.prev = self._head
+            node.next = self._head.next
+            self._head.next.prev = node
+            self._head.next = node
+
+        def _move_to_front(self, node: _Node):
+            """Mark node as most recently used."""
+            self._remove(node)
+            self._add_to_front(node)
+
+        # ----- public API -----
+        def get(self, key):
+            node = self._map.get(key)
+            if not node:
+                return -1
+            self._move_to_front(node)
+            return node.val
+
+        def put(self, key, value):
+            if key in self._map:
+                node = self._map[key]
+                node.val = value
+                self._move_to_front(node)
+                return
+
+            # new entry
+            if len(self._map) >= self._cap:
+                # evict LRU (node before dummy tail)
+                lru = self._tail.prev
+                self._remove(lru)
+                del self._map[lru.key]
+
+            new_node = _Node(key, value)
+            self._map[key] = new_node
+            self._add_to_front(new_node)
+
+    return _LRU(capacity)
+```

@@ -27,6 +27,7 @@ DEFAULT_BASE_URL = "http://192.168.1.9:8080/v1"
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_results")
 NOTHINK = False  # Global flag for /nothink mode
 MAX_TOKENS_OVERRIDE = 0  # Global override for max_tokens (0 = no override)
+REASONING_PREFIX = None  # Global reasoning prefix for GPT-OSS-120B
 
 
 def get_client(base_url):
@@ -44,6 +45,9 @@ def timed_completion(client, model, messages, max_tokens=512, temperature=0):
     # Apply global token override
     if MAX_TOKENS_OVERRIDE > 0:
         max_tokens = max(max_tokens, MAX_TOKENS_OVERRIDE)
+    # Prepend reasoning prefix as system message if set
+    if REASONING_PREFIX:
+        messages = [{"role": "system", "content": REASONING_PREFIX}] + messages
     start = time.time()
     response = client.chat.completions.create(
         model=model, messages=messages,
@@ -364,21 +368,26 @@ def main():
     parser = argparse.ArgumentParser(description="OpenClaw 59-Role Evaluation")
     parser.add_argument("--url", default=DEFAULT_BASE_URL)
     parser.add_argument("--model", help="Override model name for directory output")
+    parser.add_argument("--api-model", help="Model name to send in API requests (defaults to --model or auto-detected)")
     parser.add_argument("--auto-only", action="store_true", help="Run only automated tests")
     parser.add_argument("--quality-only", action="store_true", help="Run only quality prompts")
     parser.add_argument("--roles", nargs="+", type=int, help="Test specific role IDs only")
     parser.add_argument("--tier", type=int, help="Test only roles from this tier (1-5)")
     parser.add_argument("--nothink", action="store_true", help="Disable thinking with /nothink system message")
     parser.add_argument("--max-tokens", type=int, default=0, help="Override min max_tokens (e.g. 16000 for thinking models)")
+    parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
     args = parser.parse_args()
 
-    global NOTHINK, MAX_TOKENS_OVERRIDE
+    global NOTHINK, MAX_TOKENS_OVERRIDE, REASONING_PREFIX
     NOTHINK = args.nothink
     MAX_TOKENS_OVERRIDE = args.max_tokens
+    REASONING_PREFIX = f"Reasoning: {args.reasoning}" if args.reasoning else None
 
     client = get_client(args.url)
-    model = args.model if args.model else get_model_name(client)
-    model_id = model.replace("/", "_").replace("\\", "_").replace(" ", "_")
+    # api_model = what we send to the API, model = what we use for directory naming
+    model = args.api_model if args.api_model else (args.model if args.model else get_model_name(client))
+    display_model = args.model if args.model else model
+    model_id = display_model.replace("/", "_").replace("\\", "_").replace(" ", "_")
     if args.nothink:
         model_id += "-nothink"
     

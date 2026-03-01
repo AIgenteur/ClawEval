@@ -1,0 +1,321 @@
+```json
+[
+  {
+    "id": "rule_01",
+    "name": "Morning routine – gradual lights",
+    "trigger": [
+      {
+        "type": "time",
+        "at": "06:30",
+        "days": ["mon","tue","wed","thu","fri"]
+      },
+      {
+        "type": "time",
+        "at": "08:00",
+        "days": ["sat","sun"]
+      }
+    ],
+    "conditions": [],
+    "actions": [
+      {
+        "device": "light.living_room",
+        "action": "fade_in",
+        "duration_minutes": 15,
+        "brightness": 100
+      },
+      {
+        "device": "light.kitchen",
+        "action": "fade_in",
+        "duration_minutes": 15,
+        "brightness": 100
+      },
+      {
+        "device": "light.master_bedroom",
+        "action": "fade_in",
+        "duration_minutes": 15,
+        "brightness": 80
+      }
+    ]
+  },
+  {
+    "id": "rule_02",
+    "name": "Thermostat setpoints",
+    "trigger": [
+      { "type": "occupancy_change" },
+      { "type": "time", "at": "23:00" },
+      { "type": "time", "at": "06:00" }
+    ],
+    "conditions": [
+      {
+        "type": "or",
+        "rules": [
+          {
+            "type": "and",
+            "rules": [
+              { "type": "state", "entity": "sensor.home_occupancy", "value": "occupied" },
+              { "type": "time_range", "after": "06:00", "before": "23:00" }
+            ],
+            "setpoint": 72
+          },
+          {
+            "type": "and",
+            "rules": [
+              { "type": "state", "entity": "sensor.home_occupancy", "value": "empty" }
+            ],
+            "setpoint": 65
+          },
+          {
+            "type": "and",
+            "rules": [
+              { "type": "time_range", "after": "23:00", "before": "06:00" }
+            ],
+            "setpoint": 68
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "device": "climate.home_thermostat",
+        "action": "set_temperature",
+        "value_from_condition": "setpoint"
+      }
+    ]
+  },
+  {
+    "id": "rule_03",
+    "name": "Security arm/disarm via geofencing",
+    "trigger": [
+      { "type": "geofence", "entity": "device_tracker.alice_phone", "event": "enter_leave" },
+      { "type": "geofence", "entity": "device_tracker.bob_phone", "event": "enter_leave" }
+    ],
+    "conditions": [
+      {
+        "type": "and",
+        "rules": [
+          { "type": "state", "entity": "device_tracker.alice_phone", "value": "away" },
+          { "type": "state", "entity": "device_tracker.bob_phone", "value": "away" }
+        ],
+        "action": "arm"
+      },
+      {
+        "type": "or",
+        "rules": [
+          { "type": "state", "entity": "device_tracker.alice_phone", "value": "home" },
+          { "type": "state", "entity": "device_tracker.bob_phone", "value": "home" }
+        ],
+        "action": "disarm"
+      }
+    ],
+    "actions": [
+      {
+        "device": "alarm_control_panel.home_security",
+        "action": "set_mode",
+        "mode_from_condition": "action"
+      }
+    ]
+  },
+  {
+    "id": "rule_04",
+    "name": "Pet feeding & cat camera",
+    "trigger": [
+      { "type": "time", "at": "07:00" },
+      { "type": "time", "at": "18:00" },
+      { "type": "state_change", "entity": "sensor.home_occupancy", "to": "empty" }
+    ],
+    "conditions": [
+      {
+        "type": "or",
+        "rules": [
+          { "type": "time_match", "at": "07:00" },
+          { "type": "time_match", "at": "18:00" }
+        ],
+        "action": "feed"
+      },
+      {
+        "type": "and",
+        "rules": [
+          { "type": "state", "entity": "sensor.home_occupancy", "value": "empty" }
+        ],
+        "action": "camera_on"
+      }
+    ],
+    "actions": [
+      {
+        "device": "switch.feeder",
+        "action": "activate",
+        "duration_seconds": 30,
+        "action_from_condition": "feed"
+      },
+      {
+        "device": "camera.cat_cam",
+        "action": "turn_on",
+        "action_from_condition": "camera_on"
+      }
+    ]
+  },
+  {
+    "id": "rule_05",
+    "name": "Energy management – solar priority & battery backup",
+    "trigger": [
+      { "type": "time_range", "after": "14:00", "before": "19:00" },
+      { "type": "time", "at": "19:00" }
+    ],
+    "conditions": [
+      {
+        "type": "and",
+        "rules": [
+          { "type": "state", "entity": "sensor.solar_power", "operator": ">", "value": "sensor.home_load" }
+        ],
+        "action": "use_solar"
+      },
+      {
+        "type": "time_match",
+        "at": "19:00",
+        "action": "use_battery"
+      }
+    ],
+    "actions": [
+      {
+        "device": "switch.main_loads",
+        "action": "source",
+        "source_from_condition": "action"
+      },
+      {
+        "device": "battery.home_battery",
+        "action": "set_mode",
+        "mode_from_condition": "action"
+      }
+    ]
+  },
+  {
+    "id": "rule_06",
+    "name": "Hallway motion‑activated night lighting",
+    "trigger": [
+      { "type": "motion", "entity": "binary_sensor.hallway_motion", "event": "detected" }
+    ],
+    "conditions": [
+      {
+        "type": "time_range",
+        "after": "22:00",
+        "before": "06:00"
+      },
+      {
+        "type": "state",
+        "entity": "sensor.hallway_illuminance",
+        "operator": "<",
+        "value": 30
+      }
+    ],
+    "actions": [
+      {
+        "device": "light.hallway",
+        "action": "turn_on",
+        "brightness_percent": 20
+      },
+      {
+        "device": "light.hallway",
+        "action": "auto_off",
+        "delay_minutes": 5
+      }
+    ]
+  },
+  {
+    "id": "rule_07",
+    "name": "Bob's office – computer on",
+    "trigger": [
+      { "type": "state_change", "entity": "switch.bob_computer", "to": "on" }
+    ],
+    "conditions": [],
+    "actions": [
+      {
+        "device": "light.bob_desk_lamp",
+        "action": "turn_on"
+      },
+      {
+        "device": "climate.bob_office_ac",
+        "action": "set_temperature",
+        "value": 70
+      }
+    ]
+  },
+  {
+    "id": "rule_08",
+    "name": "Laundry cycle complete notification",
+    "trigger": [
+      { "type": "state_change", "entity": "sensor.washer_status", "to": "idle" },
+      { "type": "state_change", "entity": "sensor.dryer_status", "to": "idle" }
+    ],
+    "conditions": [
+      {
+        "type": "and",
+        "rules": [
+          { "type": "state", "entity": "sensor.washer_status", "value": "idle" },
+          { "type": "state", "entity": "sensor.dryer_status", "value": "idle" }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "device": "notify.mobile_app_alice",
+        "action": "send",
+        "message": "Laundry cycle complete."
+      },
+      {
+        "device": "notify.mobile_app_bob",
+        "action": "send",
+        "message": "Laundry cycle complete."
+      }
+    ]
+  },
+  {
+    "id": "rule_09",
+    "name": "Water leak – shut off & alert",
+    "trigger": [
+      { "type": "state_change", "entity": "binary_sensor.water_leak", "to": "on" }
+    ],
+    "conditions": [],
+    "actions": [
+      {
+        "device": "valve.main_water",
+        "action": "close"
+      },
+      {
+        "device": "notify.mobile_app_alice",
+        "action": "send",
+        "message": "Water leak detected! Main valve closed."
+      },
+      {
+        "device": "notify.mobile_app_bob",
+        "action": "send",
+        "message": "Water leak detected! Main valve closed."
+      }
+    ]
+  },
+  {
+    "id": "rule_10",
+    "name": "Guest mode activation",
+    "trigger": [
+      { "type": "input_boolean", "entity": "input_boolean.guest_mode", "to": "on" }
+    ],
+    "conditions": [],
+    "actions": [
+      {
+        "device": "lock.front_door",
+        "action": "set_temporary_code",
+        "code_length": 6,
+        "valid_for_hours": 24
+      },
+      {
+        "device": "climate.home_thermostat",
+        "action": "set_temperature",
+        "value": 72
+      },
+      {
+        "device": "wifi.guest_network",
+        "action": "enable"
+      }
+    ]
+  }
+]
+```

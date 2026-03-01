@@ -1,0 +1,176 @@
+{
+  "phase": "phase3_functional",
+  "model": "openai/gpt-oss-120b",
+  "timestamp": "2026-03-01T09:54:44.898653",
+  "clusters": {
+    "routing": {
+      "passed": 20,
+      "total": 20,
+      "tests": [
+        {
+          "input": "Can you write a Python function to sort a list?",
+          "expected": "code_generation",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Review this pull request for security issues",
+          "expected": "code_review",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "What's the weather going to be like this weekend?",
+          "expected": "weather",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Summarize this 20-page document for me",
+          "expected": "summarization",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Schedule a call with the design team for Friday at 3pm",
+          "expected": "calendar",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Translate this paragraph into French",
+          "expected": "translation",
+          "got": "translation",
+          "passed": true
+        },
+        {
+          "input": "Analyze the sentiment of these customer reviews",
+          "expected": "sentiment_analysis",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Draft an email to the client about the project delay",
+          "expected": "email",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Search for the latest research on CRISPR gene editing",
+          "expected": "research",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Check if this claim is true: The Great Wall is visible from space",
+          "expected": "fact_checking",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Create unit tests for this authentication module",
+          "expected": "qa_testing",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "What's 2+2?",
+          "expected": "general",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Help me plan a trip to Japan for 2 weeks",
+          "expected": "travel_planning",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Generate a landing page for a SaaS product",
+          "expected": "landing_page",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Debug why this API returns a 500 error",
+          "expected": "debugging",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Analyze this company's quarterly earnings report",
+          "expected": "financial_analysis",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Write a blog post about sustainable energy trends",
+          "expected": "content_writing",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Track my calories for today: I had oatmeal for breakfast and a sandwich for lunch",
+          "expected": "fitness_tracking",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Compare prices for iPhone 16 Pro across different retailers",
+          "expected": "shopping",
+          "got": "",
+          "passed": true
+        },
+        {
+          "input": "Optimize this article for SEO targeting 'best running shoes 2026'",
+          "expected": "seo",
+          "got": "",
+          "passed": true
+        }
+      ],
+      "score_pct": 100.0
+    },
+    "code_generation": {
+      "passed": 5,
+      "total": 5,
+      "tests": [
+        {
+          "name": "fizzbuzz",
+          "passed": true,
+          "code": "def fizzbuzz(n):\n    result = []\n    for i in range(1, n + 1):\n        if i % 15 == 0:\n            result.append('FizzBuzz')\n        elif i % 3 == 0:\n            result.append('Fizz')\n        elif i % 5 == 0:\n            result.append('Buzz')\n        else:\n            result.append(str(i))\n    return result",
+          "error": "",
+          "tps": 125.0
+        },
+        {
+          "name": "reverse_string",
+          "passed": true,
+          "code": "def reverse_words(s):\n    return ' '.join(s.split()[::-1])",
+          "error": "",
+          "tps": 124.8
+        },
+        {
+          "name": "fibonacci",
+          "passed": true,
+          "code": "def fib(n):\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a",
+          "error": "",
+          "tps": 125.5
+        },
+        {
+          "name": "palindrome",
+          "passed": true,
+          "code": "def is_palindrome(s):\n    filtered = [c.lower() for c in s if c.isalnum()]\n    return filtered == filtered[::-1]",
+          "error": "",
+          "tps": 125.5
+        },
+        {
+          "name": "flatten_list",
+          "passed": true,
+          "code": "def flatten(lst):\n    result = []\n    stack = [iter(lst)]\n    while stack:\n        try:\n            item = next(stack[-1])\n            if isinstance(item, list):\n                stack.append(iter(item))\n            else:\n                result.append(item)\n        except StopIteration:\n            stack.pop()\n    return result",
+          "error": "",
+          "tps": 125.6
+        }
+      ],
+      "score_pct": 100.0
+    }
+  }
+}
