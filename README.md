@@ -35,254 +35,88 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | OpenRouter, Chutes, and other affordable providers | Open-source models via API | 🔜 Coming soon |
 
 
-## 🏆 Per-Role Agent Scores (Phase F — 59 Roles)
+## 🏆 Best Model Per Role — Which One Should You Run?
 
-🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual (5) &nbsp; ⬛ = Thinking overflow
+🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
 
-Best config per model. All scores out of 10. For think/nothink comparisons, see the VRAM tier tables below.
+**The only table you need.** Best-scoring model for each agent role at each VRAM tier. All scores out of 10.
 
-> 📊 **[Full detailed results with all configs →](RESULTS.md)**
-
-| # | Agent Role | GPT-OSS-120B (64GB) | 122B (96GB) | 35B MoE (24GB) | 27B Dense (24GB) |
+| # | Agent Role | 🟢 Best 24GB | | 🔵 Best 64–96GB | |
 |---|---|---|---|---|---|
-| | | GPT-OSS-120B | Qwen3.5-122B-A10B | Qwen3.5-35B-A3B | Qwen3.5-27B |
-| | | GGUF · Med Reasoning · llama.cpp | NVFP4 · Think 16K · SGLang | Q4_K_M · NoThink · llama.cpp | Q4_K_M · NoThink · llama.cpp |
+| | | **Model** | **Score** | **Model** | **Score** |
 | | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | 🟢 9 | 🟢 10 | 🟢 10 | 🟢 9 |
-| 2 | Input Validator | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 3 | Health Monitor | 🟢 8 | 🔴 3 | 🔴 3 | 🔴 3 |
-| 4 | Notification | 🟢 9 | 🟢 8 | 🟢 8 | 🟢 8 |
-| 5 | Sentiment | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 6 | FAQ Generation | 🟡 5 | 🟡 5 | 🟡 6 | 🟡 6 |
-| 7 | Translation | 🟢 9 | 🟢 10 | 🟢 9 | 🟢 10 |
-| 8 | Calendar | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 |
+| 1 | Router / Triage | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 2 | Input Validator | Any | 🟢 10 | Any | 🟢 10 |
+| 3 | Health Monitor | 27B / 35B NoThink | 🔴 3 | GPT-OSS-120B | 🟢 8 |
+| 4 | Notification | 27B Think | 🟢 9 | GPT-OSS-120B | 🟢 9 |
+| 5 | Sentiment | Any | 🟢 10 | Any | 🟢 10 |
+| 6 | FAQ Generation | 27B Think | 🟢 8 | Both | 🟡 5 |
+| 7 | Translation | 27B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 8 | Calendar | — | 🔴 0 | — | 🔴 0 |
 | | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | 🟢 9 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 10 | Content Writer | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 11 | Editor | 🟢 9 | 🟡 7 | 🟢 10 | 🟢 10 |
-| 12 | Content Planner | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 13 | Email Drafting | 🟢 9 | 🟢 8 | 🟢 10 | 🟢 10 |
-| 14 | Doc Summary | 🟢 10 | 🟢 8 | 🟢 10 | 🟢 10 |
-| 15 | Meeting Notes | 🟢 8 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 16 | Social Scouting | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 17 | Social Content | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 18 | News Aggregation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 19 | Shopping | 🟢 8 | 🟢 10 | 🔴 4 | 🔴 4 |
-| 20 | Memory Mgmt | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 21 | RAG / Retrieval | 🟡 6 | 🟡 6 | 🔴 4 | 🟡 6 |
-| 22 | Data Analysis | 🔴 2 | 🔴 2 | 🔴 3 | 🔴 3 |
-| 23 | Web Scraping | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 24 | Image Description | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 25 | Customer Support | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 |
-| 26 | Lead Scoring | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 10 |
-| 27 | Sprint Summary | 🟢 9 | 🟢 10 | 🟡 5 | 🟡 7 |
-| 28 | Transaction | 🟢 10 | 🟢 10 | 🟢 9 | 🟢 8 |
-| 29 | Home Automation | 🟢 9 | 🟢 10 | 🟢 9 | 🟢 9 |
-| 30 | Fitness Tracking | 🟢 9 | 🟢 9 | 🟡 7 | 🟢 9 |
-| 31 | Recipe / Cooking | 🟢 9 | 🔴 2 | 🟢 9 | 🔴 2 |
-| 32 | Personal Finance | 🟡 5 | 🟡 7 | 🔴 4 | 🔴 4 |
-| 33 | SEO Optimization | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 34 | Landing Page | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 35 | Travel Planning | 🟡 7 | 🟢 8 | 🟡 7 | 🟡 7 |
+| 9 | Research Agent | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 10 | Content Writer | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 11 | Editor | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 12 | Content Planner | Any | 🟢 10 | Any | 🟢 10 |
+| 13 | Email Drafting | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 14 | Doc Summary | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 15 | Meeting Notes | Any | 🟢 9 | 122B Think | 🟢 9 |
+| 16 | Social Scouting | Any | 🟢 10 | Any | 🟢 10 |
+| 17 | Social Content | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 18 | News Aggregation | Any | 🟢 10 | Any | 🟢 10 |
+| 19 | Shopping | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 20 | Memory Mgmt | Any | 🟢 9 | Any | 🟢 9 |
+| 21 | RAG / Retrieval | 27B NoThink | 🟡 6 | Both | 🟡 6 |
+| 22 | Data Analysis | 27B / 35B NoThink | 🔴 3 | Both | 🔴 2 |
+| 23 | Web Scraping | Any | 🟢 10 | Any | 🟢 10 |
+| 24 | Image Description | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 25 | Customer Support | 27B / 35B Think | 🟢 10 | Any | 🟢 10 |
+| 26 | Lead Scoring | 27B NoThink | 🟢 10 | Both | 🟢 8 |
+| 27 | Sprint Summary | 27B NoThink | 🟡 7 | 122B Think | 🟢 10 |
+| 28 | Transaction | 35B NoThink | 🟢 9 | Any | 🟢 10 |
+| 29 | Home Automation | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 30 | Fitness Tracking | 27B NoThink / Think | 🟢 9 | Any | 🟢 9 |
+| 31 | Recipe / Cooking | 35B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 9 |
+| 32 | Personal Finance | 27B Think | 🟡 7 | 122B Think | 🟡 7 |
+| 33 | SEO Optimization | Any | 🟢 9 | Any | 🟢 9 |
+| 34 | Landing Page | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 35 | Travel Planning | 27B / 35B NoThink | 🟡 7 | 122B Think | 🟢 8 |
 | | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 37 | Code Review | 🟢 8 | 🟢 10 | 🟢 10 | 🟢 8 |
-| 38 | QA / Test Writing | 🟢 8 | 🟢 8 | 🟢 10 | 🟢 8 |
-| 39 | Task Planning | 🟢 9 | 🟢 9 | 🟢 10 | 🟢 9 |
-| 40 | Fact-Checking | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 41 | Critic / Review | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 42 | Market Research | 🔴 4 | 🔴 0 | 🟡 7 | 🟢 8 |
-| 43 | Synthesizer | 🟢 10 | 🟡 7 | 🟢 9 | 🟡 7 |
-| 44 | Curriculum Design | 🟡 7 | 🟡 6 | 🟡 6 | 🟡 5 |
-| 45 | Prototype Gen | 🟡 5 | 🟡 6 | 🟡 6 | 🟡 6 |
-| 46 | DevOps | 🟢 10 | 🟡 7 | 🟢 9 | 🟢 10 |
+| 36 | Code Generation | Any | 🟢 10 | Any | 🟢 10 |
+| 37 | Code Review | 35B NoThink / 27B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 38 | QA / Test Writing | 35B NoThink | 🟢 10 | Both | 🟢 8 |
+| 39 | Task Planning | 35B NoThink | 🟢 10 | Both | 🟢 9 |
+| 40 | Fact-Checking | Any | 🟢 10 | Any | 🟢 10 |
+| 41 | Critic / Review | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 42 | Market Research | 27B NoThink | 🟢 8 | GPT-OSS-120B | 🔴 4 |
+| 43 | Synthesizer | 27B / 35B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
+| 44 | Curriculum Design | Any Think/NoThink | 🟡 6 | GPT-OSS-120B | 🟡 7 |
+| 45 | Prototype Gen | 27B / 35B Think/NoThink | 🟡 6 | 122B Think | 🟡 6 |
+| 46 | DevOps | 27B NoThink / 35B Think | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | 🟢 8 | 🟡 6 | 🔴 4 | 🔴 4 |
-| 48 | STEM Analysis | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 49 | Algorithm | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
+| 47 | Math / Logic | 27B / 35B Think | 🟡 6 | GPT-OSS-120B | 🟢 8 |
+| 48 | STEM Analysis | Any | 🟢 10 | Any | 🟢 10 |
+| 49 | Algorithm | Any | 🟢 10 | Any | 🟢 10 |
 | | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 |
-| 51 | Architect | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 52 | Debugger | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 8 |
-| 53 | Legal Review | 🟢 9 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 54 | Medical | 🟢 9 | 🟡 7 | 🟢 10 | 🟢 10 |
-| 55 | Financial | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 56 | Security | 🟢 10 | 🟡 6 | 🟢 10 | 🟢 10 |
-| 57 | SRE / Incident | 🟡 6 | 🟡 6 | 🔴 3 | 🟡 6 |
-| 58 | Book Writing | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 59 | Compliance | 🟢 8 | 🟡 7 | 🟢 8 | 🟢 9 |
+| 50 | Orchestrator | Any | 🟢 8 | Any | 🟢 8 |
+| 51 | Architect | Any | 🟢 10 | Any | 🟢 10 |
+| 52 | Debugger | 35B NoThink | 🟢 10 | Any | 🟢 10 |
+| 53 | Legal Review | Any | 🟢 10 | 122B Think | 🟢 10 |
+| 54 | Medical | Any (24GB) | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 55 | Financial | 27B / 35B NoThink | 🟢 10 | Any | 🟢 10 |
+| 56 | Security | Any | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 57 | SRE / Incident | 27B NoThink | 🟡 6 | Both | 🟡 6 |
+| 58 | Book Writing | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 59 | Compliance | 27B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 8 |
+
+> 📊 **Detailed per-model comparisons:**
+> - [🟢 24GB VRAM — Think vs NoThink (4 models)](docs/results-24gb-vram.md)
+> - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
+> - [Phase E — 12 Killer Tests (all models)](docs/results-phase-e.md)
+> - [Full detailed results with all configs →](RESULTS.md)
 
 ---
 
-### 🟢 24GB VRAM — Think vs NoThink (RTX 3090)
-
-All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp.
-
-| # | Agent Role | 35B-A3B Think | 35B-A3B NoThink | 27B Think | 27B NoThink |
-|---|---|---|---|---|---|
-| | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 |
-| 2 | Input Validator | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 3 | Health Monitor | ⬛ 0 | 🔴 3 | ⬛ 0 | 🔴 3 |
-| 4 | Notification | 🟢 8 | 🟢 8 | 🟢 9 | 🟢 8 |
-| 5 | Sentiment | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 6 | FAQ Generation | 🟡 6 | 🟡 6 | 🟢 8 | 🟡 6 |
-| 7 | Translation | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 10 |
-| 8 | Calendar | 🔴 0 | 🔴 0 | ⬛ 0 | 🔴 0 |
-| | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | ⬛ 0 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 10 | Content Writer | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 11 | Editor | 🟢 9 | 🟢 10 | 🟢 9 | 🟢 10 |
-| 12 | Content Planner | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 13 | Email Drafting | ⬛ 0 | 🟢 10 | 🟢 9 | 🟢 10 |
-| 14 | Doc Summary | 🟢 8 | 🟢 10 | 🟢 8 | 🟢 10 |
-| 15 | Meeting Notes | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 16 | Social Scouting | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 17 | Social Content | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 18 | News Aggregation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 19 | Shopping | 🟢 10 | 🔴 4 | 🟢 10 | 🔴 4 |
-| 20 | Memory Mgmt | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 21 | RAG / Retrieval | 🟡 6 | 🔴 4 | 🟡 6 | 🟡 6 |
-| 22 | Data Analysis | ⬛ 0 | 🔴 3 | ⬛ 0 | 🔴 3 |
-| 23 | Web Scraping | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 24 | Image Description | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 25 | Customer Support | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 |
-| 26 | Lead Scoring | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 10 |
-| 27 | Sprint Summary | ⬛ 0 | 🟡 5 | ⬛ 0 | 🟡 7 |
-| 28 | Transaction | ⬛ 0 | 🟢 9 | ⬛ 0 | 🟢 8 |
-| 29 | Home Automation | 🟢 10 | 🟢 9 | 🟢 10 | 🟢 9 |
-| 30 | Fitness Tracking | 🟢 9 | 🟡 7 | 🟢 9 | 🟢 9 |
-| 31 | Recipe / Cooking | ⬛ 0 | 🟢 9 | 🔴 2 | 🔴 2 |
-| 32 | Personal Finance | ⬛ 0 | 🔴 4 | 🟡 7 | 🔴 4 |
-| 33 | SEO Optimization | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 34 | Landing Page | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 35 | Travel Planning | 🔴 0 | 🟡 7 | ⬛ 0 | 🟡 7 |
-| | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 37 | Code Review | 🟢 8 | 🟢 10 | 🟢 10 | 🟢 8 |
-| 38 | QA / Test Writing | 🟢 8 | 🟢 10 | 🟢 8 | 🟢 8 |
-| 39 | Task Planning | 🟢 9 | 🟢 10 | 🟢 9 | 🟢 9 |
-| 40 | Fact-Checking | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 41 | Critic / Review | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 42 | Market Research | ⬛ 0 | 🟡 7 | 🟡 6 | 🟢 8 |
-| 43 | Synthesizer | 🟢 9 | 🟢 9 | 🟢 9 | 🟡 7 |
-| 44 | Curriculum Design | 🟡 6 | 🟡 6 | 🟡 6 | 🟡 5 |
-| 45 | Prototype Gen | 🟡 6 | 🟡 6 | 🟡 5 | 🟡 6 |
-| 46 | DevOps | 🟢 10 | 🟢 9 | 🟢 9 | 🟢 10 |
-| | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | 🟡 6 | 🔴 4 | 🟡 6 | 🔴 4 |
-| 48 | STEM Analysis | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 49 | Algorithm | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 |
-| 51 | Architect | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 52 | Debugger | 🟢 8 | 🟢 10 | ⬛ 0 | 🟢 8 |
-| 53 | Legal Review | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 54 | Medical | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 55 | Financial | 🟢 10 | 🟢 10 | ⬛ 0 | 🟢 10 |
-| 56 | Security | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 57 | SRE / Incident | ⬛ 0 | 🔴 3 | 🔴 3 | 🟡 6 |
-| 58 | Book Writing | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 59 | Compliance | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 9 |
-
-> ⬛ **Thinking overflow:** llama.cpp has no `thinking_budget`, so thinking models can consume all tokens on reasoning before outputting an answer. 35B-Think: 10 overflows, 27B-Think: 9 overflows. These scores would be higher on vLLM/SGLang with proper budget control.
-
----
-
-### 🔵 64–96GB VRAM
-
-| # | Agent Role | GPT-OSS-120B Med | 122B Think 16K |
-|---|---|---|---|
-| | | GPT-OSS-120B · GGUF · llama.cpp | Qwen3.5-122B-A10B · NVFP4 · SGLang |
-| | **Tier 1 — Utility** | | |
-| 1 | Router / Triage | 🟢 9 | 🟢 10 |
-| 2 | Input Validator | 🟢 10 | 🟢 10 |
-| 3 | Health Monitor | 🟢 8 | 🔴 3 |
-| 4 | Notification | 🟢 9 | 🟢 8 |
-| 5 | Sentiment | 🟢 10 | 🟢 10 |
-| 6 | FAQ Generation | 🟡 5 | 🟡 5 |
-| 7 | Translation | 🟢 9 | 🟢 10 |
-| 8 | Calendar | 🔴 0 | 🔴 0 |
-| | **Tier 2 — Moderate** | | |
-| 9 | Research Agent | 🟢 9 | 🟢 10 |
-| 10 | Content Writer | 📝 5 | 📝 5 |
-| 11 | Editor | 🟢 9 | 🟡 7 |
-| 12 | Content Planner | 🟢 10 | 🟢 10 |
-| 13 | Email Drafting | 🟢 9 | 🟢 8 |
-| 14 | Doc Summary | 🟢 10 | 🟢 8 |
-| 15 | Meeting Notes | 🟢 8 | 🟢 9 |
-| 16 | Social Scouting | 🟢 10 | 🟢 10 |
-| 17 | Social Content | 📝 5 | 📝 5 |
-| 18 | News Aggregation | 🟢 10 | 🟢 10 |
-| 19 | Shopping | 🟢 8 | 🟢 10 |
-| 20 | Memory Mgmt | 🟢 9 | 🟢 9 |
-| 21 | RAG / Retrieval | 🟡 6 | 🟡 6 |
-| 22 | Data Analysis | 🔴 2 | 🔴 2 |
-| 23 | Web Scraping | 🟢 10 | 🟢 10 |
-| 24 | Image Description | 📝 5 | 📝 5 |
-| 25 | Customer Support | 🟢 10 | 🟢 10 |
-| 26 | Lead Scoring | 🟢 8 | 🟢 8 |
-| 27 | Sprint Summary | 🟢 9 | 🟢 10 |
-| 28 | Transaction | 🟢 10 | 🟢 10 |
-| 29 | Home Automation | 🟢 9 | 🟢 10 |
-| 30 | Fitness Tracking | 🟢 9 | 🟢 9 |
-| 31 | Recipe / Cooking | 🟢 9 | 🔴 2 |
-| 32 | Personal Finance | 🟡 5 | 🟡 7 |
-| 33 | SEO Optimization | 🟢 9 | 🟢 9 |
-| 34 | Landing Page | 📝 5 | 📝 5 |
-| 35 | Travel Planning | 🟡 7 | 🟢 8 |
-| | **Tier 3 — Advanced** | | |
-| 36 | Code Generation | 🟢 10 | 🟢 10 |
-| 37 | Code Review | 🟢 8 | 🟢 10 |
-| 38 | QA / Test Writing | 🟢 8 | 🟢 8 |
-| 39 | Task Planning | 🟢 9 | 🟢 9 |
-| 40 | Fact-Checking | 🟢 10 | 🟢 10 |
-| 41 | Critic / Review | 📝 5 | 📝 5 |
-| 42 | Market Research | 🔴 4 | 🔴 0 |
-| 43 | Synthesizer | 🟢 10 | 🟡 7 |
-| 44 | Curriculum Design | 🟡 7 | 🟡 6 |
-| 45 | Prototype Gen | 🟡 5 | 🟡 6 |
-| 46 | DevOps | 🟢 10 | 🟡 7 |
-| | **Tier 4 — Expert** | | |
-| 47 | Math / Logic | 🟢 8 | 🟡 6 |
-| 48 | STEM Analysis | 🟢 10 | 🟢 10 |
-| 49 | Algorithm | 🟢 10 | 🟢 10 |
-| | **Tier 5 — Senior** | | |
-| 50 | Orchestrator | 🟢 8 | 🟢 8 |
-| 51 | Architect | 🟢 10 | 🟢 10 |
-| 52 | Debugger | 🟢 10 | 🟢 10 |
-| 53 | Legal Review | 🟢 9 | 🟢 10 |
-| 54 | Medical | 🟢 9 | 🟡 7 |
-| 55 | Financial | 🟢 10 | 🟢 10 |
-| 56 | Security | 🟢 10 | 🟡 6 |
-| 57 | SRE / Incident | 🟡 6 | 🟡 6 |
-| 58 | Book Writing | 📝 5 | 📝 5 |
-| 59 | Compliance | 🟢 8 | 🟡 7 |
-
-> ⭐ Star this repo to get notified when new models are added.
-
----
-
-### Phase E — 12 Killer Tests (Reasoning, Code, Structured Output, Multi-Turn)
-
-All scores out of 10.
-
-| # | Test | GPT-OSS Low | GPT-OSS Med | GPT-OSS High | 122B Think | 35B Think | 27B Think | 27B NoThink | 122B NoThink | 35B NoThink |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Precise Counting | 🟡 6 | 🟡 6 | 🟡 6 | 🟢 8 | 🔴 4 | 🟡 6 | 🔴 4 | 🔴 0 | 🔴 4 |
-| 2 | Constrained JSON | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 | 🟢 9 |
-| 3 | Logic Grid Puzzle | 🟢 10 | 🟢 10 | 🟡 6 | 🟢 10 | 🟢 10 | 🟢 10 | 🟡 5 | 🟡 5 | 🟡 6 |
-| 4 | Multi-Step Math | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 5 | Code Output Prediction | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
-| 6 | Contradiction Detection | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 | 🟡 5 |
-| 7 | Complex Multi-Key Sort | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🔴 3 |
-| 8 | Regex Construction | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟡 7 |
-| 9 | Data Transformation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🔴 0 | 🔴 2 | 🔴 2 |
-| 10 | Instruction Following | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 8 | 🟢 10 | 🔴 4 | 🔴 2 | 🔴 4 |
-| 11 | Multi-Turn Refinement | 🟢 10 | 🟢 10 | 🟢 10 | 🟡 7 | 🟢 8 | 🟢 10 | 🟢 10 | 🟢 8 | 🟢 9 |
-| 12 | Multi-Turn State Track | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 | 🟢 10 | 🟡 7 | 🟢 10 | 🟡 7 |
-
----
 
 ## 📦 Evaluation Phases
 
