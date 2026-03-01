@@ -46,67 +46,67 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | | | **Model** | **Score** | **Model** | **Score** |
 | | **Tier 1 — Utility** | | | | |
 | 1 | Router / Triage | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 2 | Input Validator | Any | 🟢 10 | Any | 🟢 10 |
+| 2 | Input Validator | All tested | 🟢 10 | All tested | 🟢 10 |
 | 3 | Health Monitor | 27B / 35B NoThink | 🔴 3 | GPT-OSS-120B | 🟢 8 |
 | 4 | Notification | 27B Think | 🟢 9 | GPT-OSS-120B | 🟢 9 |
-| 5 | Sentiment | Any | 🟢 10 | Any | 🟢 10 |
+| 5 | Sentiment | All tested | 🟢 10 | All tested | 🟢 10 |
 | 6 | FAQ Generation | 27B Think | 🟢 8 | Both | 🟡 5 |
 | 7 | Translation | 27B NoThink | 🟢 10 | 122B Think | 🟢 10 |
 | 8 | Calendar | — | 🔴 0 | — | 🔴 0 |
 | | **Tier 2 — Moderate** | | | | |
 | 9 | Research Agent | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 10 | Content Writer | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 10 | Content Writer | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 11 | Editor | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 12 | Content Planner | Any | 🟢 10 | Any | 🟢 10 |
+| 12 | Content Planner | All tested | 🟢 10 | All tested | 🟢 10 |
 | 13 | Email Drafting | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
 | 14 | Doc Summary | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
-| 15 | Meeting Notes | Any | 🟢 9 | 122B Think | 🟢 9 |
-| 16 | Social Scouting | Any | 🟢 10 | Any | 🟢 10 |
-| 17 | Social Content | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
-| 18 | News Aggregation | Any | 🟢 10 | Any | 🟢 10 |
+| 15 | Meeting Notes | All tested | 🟢 9 | 122B Think | 🟢 9 |
+| 16 | Social Scouting | All tested | 🟢 10 | All tested | 🟢 10 |
+| 17 | Social Content | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
+| 18 | News Aggregation | All tested | 🟢 10 | All tested | 🟢 10 |
 | 19 | Shopping | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 20 | Memory Mgmt | Any | 🟢 9 | Any | 🟢 9 |
+| 20 | Memory Mgmt | All tested | 🟢 9 | All tested | 🟢 9 |
 | 21 | RAG / Retrieval | 27B NoThink | 🟡 6 | Both | 🟡 6 |
 | 22 | Data Analysis | 27B / 35B NoThink | 🔴 3 | Both | 🔴 2 |
-| 23 | Web Scraping | Any | 🟢 10 | Any | 🟢 10 |
-| 24 | Image Description | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
-| 25 | Customer Support | 27B / 35B Think | 🟢 10 | Any | 🟢 10 |
+| 23 | Web Scraping | All tested | 🟢 10 | All tested | 🟢 10 |
+| 24 | Image Description | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
+| 25 | Customer Support | 27B / 35B Think | 🟢 10 | All tested | 🟢 10 |
 | 26 | Lead Scoring | 27B NoThink | 🟢 10 | Both | 🟢 8 |
 | 27 | Sprint Summary | 27B NoThink | 🟡 7 | 122B Think | 🟢 10 |
-| 28 | Transaction | 35B NoThink | 🟢 9 | Any | 🟢 10 |
+| 28 | Transaction | 35B NoThink | 🟢 9 | All tested | 🟢 10 |
 | 29 | Home Automation | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 30 | Fitness Tracking | 27B NoThink / Think | 🟢 9 | Any | 🟢 9 |
+| 30 | Fitness Tracking | 27B NoThink / Think | 🟢 9 | All tested | 🟢 9 |
 | 31 | Recipe / Cooking | 35B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 9 |
 | 32 | Personal Finance | 27B Think | 🟡 7 | 122B Think | 🟡 7 |
-| 33 | SEO Optimization | Any | 🟢 9 | Any | 🟢 9 |
-| 34 | Landing Page | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 33 | SEO Optimization | All tested | 🟢 9 | All tested | 🟢 9 |
+| 34 | Landing Page | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 35 | Travel Planning | 27B / 35B NoThink | 🟡 7 | 122B Think | 🟢 8 |
 | | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | Any | 🟢 10 | Any | 🟢 10 |
+| 36 | Code Generation | All tested | 🟢 10 | All tested | 🟢 10 |
 | 37 | Code Review | 35B NoThink / 27B Think | 🟢 10 | 122B Think | 🟢 10 |
 | 38 | QA / Test Writing | 35B NoThink | 🟢 10 | Both | 🟢 8 |
 | 39 | Task Planning | 35B NoThink | 🟢 10 | Both | 🟢 9 |
-| 40 | Fact-Checking | Any | 🟢 10 | Any | 🟢 10 |
-| 41 | Critic / Review | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 40 | Fact-Checking | All tested | 🟢 10 | All tested | 🟢 10 |
+| 41 | Critic / Review | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 42 | Market Research | 27B NoThink | 🟢 8 | GPT-OSS-120B | 🔴 4 |
 | 43 | Synthesizer | 27B / 35B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
-| 44 | Curriculum Design | Any Think/NoThink | 🟡 6 | GPT-OSS-120B | 🟡 7 |
+| 44 | Curriculum Design | All tested | 🟡 6 | GPT-OSS-120B | 🟡 7 |
 | 45 | Prototype Gen | 27B / 35B Think/NoThink | 🟡 6 | 122B Think | 🟡 6 |
 | 46 | DevOps | 27B NoThink / 35B Think | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | | **Tier 4 — Expert** | | | | |
 | 47 | Math / Logic | 27B / 35B Think | 🟡 6 | GPT-OSS-120B | 🟢 8 |
-| 48 | STEM Analysis | Any | 🟢 10 | Any | 🟢 10 |
-| 49 | Algorithm | Any | 🟢 10 | Any | 🟢 10 |
+| 48 | STEM Analysis | All tested | 🟢 10 | All tested | 🟢 10 |
+| 49 | Algorithm | All tested | 🟢 10 | All tested | 🟢 10 |
 | | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | Any | 🟢 8 | Any | 🟢 8 |
-| 51 | Architect | Any | 🟢 10 | Any | 🟢 10 |
-| 52 | Debugger | 35B NoThink | 🟢 10 | Any | 🟢 10 |
-| 53 | Legal Review | Any | 🟢 10 | 122B Think | 🟢 10 |
-| 54 | Medical | Any (24GB) | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 55 | Financial | 27B / 35B NoThink | 🟢 10 | Any | 🟢 10 |
-| 56 | Security | Any | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 50 | Orchestrator | All tested | 🟢 8 | All tested | 🟢 8 |
+| 51 | Architect | All tested | 🟢 10 | All tested | 🟢 10 |
+| 52 | Debugger | 35B NoThink | 🟢 10 | All tested | 🟢 10 |
+| 53 | Legal Review | All tested | 🟢 10 | 122B Think | 🟢 10 |
+| 54 | Medical | All tested | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 55 | Financial | 27B / 35B NoThink | 🟢 10 | All tested | 🟢 10 |
+| 56 | Security | All tested | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | 57 | SRE / Incident | 27B NoThink | 🟡 6 | Both | 🟡 6 |
-| 58 | Book Writing | 📝 Any | 📝 5 | 📝 Any | 📝 5 |
+| 58 | Book Writing | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 59 | Compliance | 27B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 8 |
 
 > 📊 **Detailed per-model comparisons:**
