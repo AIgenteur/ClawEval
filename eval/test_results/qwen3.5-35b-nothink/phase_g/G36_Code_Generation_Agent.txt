@@ -1,0 +1,173 @@
+```python
+import time
+import threading
+from collections import defaultdict
+
+class RateLimiter:
+    def __init__(self, max_requests: int, window_seconds: float, burst: int = 0):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.burst = burst
+        self._lock = threading.Lock()
+        self._data = defaultdict(lambda: {
+            "requests": [],
+            "burst_tokens": burst
+        })
+        self._burst_window_multiplier = 2.0
+
+    def _cleanup_old_requests(self, user_id: str, endpoint: str, current_time: float):
+        data = self._data[(user_id, endpoint)]
+        cutoff = current_time - self.window_seconds
+        data["requests"] = [t for t in data["requests"] if t > cutoff]
+
+    def _get_burst_window(self, current_time: float):
+        return current_time - (self.window_seconds * self._burst_window_multiplier)
+
+    def _regenerate_burst_tokens(self, user_id: str, endpoint: str, current_time: float):
+        data = self._data[(user_id, endpoint)]
+        if self.burst > 0:
+            burst_window_start = self._get_burst_window(current_time)
+            # Simple regeneration logic: if enough time passed since last check or initial
+            # For this implementation, we regenerate based on time elapsed since last request
+            # or a fixed interval. Here we regenerate up to max burst over the extended window.
+            # To keep it simple and stateful without complex history, we assume burst regenerates
+            # linearly over the extended window.
+            # However, to avoid complex state, we will just track burst tokens as a counter
+            # that regenerates over time.
+            # Regeneration rate: burst / (window_seconds * multiplier) per second
+            # But we need to know when last burst was used.
+            # Simplified approach: burst tokens are a separate counter that regenerates
+            # based on time elapsed since the last request that consumed burst, or simply
+            # over time.
+            # Let's implement a simple token regeneration:
+            # We store the last time burst was checked/used.
+            if "last_burst_check" not in data:
+                data["last_burst_check"] = current_time
+            
+            elapsed = current_time - data["last_burst_check"]
+            regen_rate = self.burst / (self.window_seconds * self._burst_window_multiplier)
+            new_tokens = int(elapsed * regen_rate)
+            data["burst_tokens"] = min(self.burst, data["burst_tokens"] + new_tokens)
+            data["last_burst_check"] = current_time
+
+    def allow(self, user_id: str, endpoint: str = "default") -> dict:
+        with self._lock:
+            current_time = time.time()
+            key = (user_id, endpoint)
+            data = self._data[key]
+            
+            self._cleanup_old_requests(user_id, endpoint, current_time)
+            self._regenerate_burst_tokens(user_id, endpoint, current_time)
+            
+            request_count = len(data["requests"])
+            effective_limit = self.max_requests + data["burst_tokens"]
+            
+            if request_count < effective_limit:
+                data["requests"].append(current_time)
+                if request_count >= self.max_requests:
+                    data["burst_tokens"] -= 1
+                
+                remaining = max(0, int(effective_limit - len(data["requests"])))
+                return {"allowed": True, "remaining": remaining, "retry_after": None}
+            else:
+                oldest_request = min(data["requests"])
+                retry_after = oldest_request + self.window_seconds - current_time
+                retry_after = max(0.0, retry_after)
+                remaining = 0
+                return {"allowed": False, "remaining": remaining, "retry_after": retry_after}
+
+    def allow_priority(self, user_id: str, endpoint: str = "default") -> dict:
+        with self._lock:
+            current_time = time.time()
+            key = (user_id, endpoint)
+            data = self._data[key]
+            
+            self._cleanup_old_requests(user_id, endpoint, current_time)
+            request_count = len(data["requests"])
+            remaining = max(0, self.max_requests + self.burst - request_count)
+            
+            return {"allowed": True, "remaining": remaining, "retry_after": None}
+
+    def cleanup(self, max_age_seconds: float = None) -> int:
+        with self._lock:
+            if max_age_seconds is None:
+                max_age_seconds = self.window_seconds * 2
+            
+            current_time = time.time()
+            cutoff = current_time - max_age_seconds
+            removed_count = 0
+            
+            keys_to_remove = []
+            for key, data in self._data.items():
+                if data["requests"]:
+                    oldest = min(data["requests"])
+                    if oldest <= cutoff:
+                        keys_to_remove.append(key)
+                        removed_count += 1
+                else:
+                    # If no requests, check if entry is old enough to remove entirely
+                    # We assume if no requests, it's safe to remove if it's old
+                    # But we don't track creation time. So we only remove if requests are old.
+                    pass
+            
+            for key in keys_to_remove:
+                del self._data[key]
+            
+            return removed_count
+
+    def get_usage(self, user_id: str, endpoint: str = "default") -> dict:
+        with self._lock:
+            current_time = time.time()
+            key = (user_id, endpoint)
+            data = self._data[key]
+            
+            self._cleanup_old_requests(user_id, endpoint, current_time)
+            self._regenerate_burst_tokens(user_id, endpoint, current_time)
+            
+            used = len(data["requests"])
+            limit = self.max_requests
+            burst_remaining = data["burst_tokens"]
+            
+            return {
+                "used": used,
+                "limit": limit,
+                "window_seconds": self.window_seconds,
+                "burst_remaining": burst_remaining
+            }
+
+    def to_dict(self) -> dict:
+        with self._lock:
+            current_time = time.time()
+            data_copy = {}
+            for key, value in self._data.items():
+                user_id, endpoint = key
+                requests = [t for t in value["requests"] if t > current_time - self.window_seconds]
+                data_copy[key] = {
+                    "requests": requests,
+                    "burst_tokens": value["burst_tokens"]
+                }
+            
+            return {
+                "max_requests": self.max_requests,
+                "window_seconds": self.window_seconds,
+                "burst": self.burst,
+                "data": data_copy
+            }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "RateLimiter":
+        limiter = cls(
+            max_requests=data["max_requests"],
+            window_seconds=data["window_seconds"],
+            burst=data["burst"]
+        )
+        with limiter._lock:
+            limiter._data = defaultdict(lambda: {"requests": [], "burst_tokens": 0})
+            for key, value in data["data"].items():
+                user_id, endpoint = key
+                limiter._data[key] = {
+                    "requests": value["requests"],
+                    "burst_tokens": value["burst_tokens"]
+                }
+        return limiter
+```

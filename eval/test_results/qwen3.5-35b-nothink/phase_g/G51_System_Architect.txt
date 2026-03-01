@@ -1,0 +1,54 @@
+{
+  "architecture": {
+    "components": ["API Gateway", "URL Shortening Service", "Redirect Service", "Analytics Service", "User Management Service", "Database Cluster", "Redis Cluster", "CDN Edge", "Message Queue"],
+    "database": {
+      "primary": "Cassandra",
+      "justification": "High write throughput for 10M daily inserts, linear scalability, and native support for time-series data expiration without complex cleanup jobs."
+    },
+    "cache": {
+      "type": "Redis Cluster",
+      "strategy": "Write-through with TTL",
+      "invalidation": "TTL-based expiration and explicit key deletion on GDPR requests"
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 encoding of distributed unique ID",
+      "length": 6,
+      "collision_handling": "Distributed ID generator with atomic increment and retry logic"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "Serve redirects entirely from Redis/CDN edge; database only for write and analytics",
+    "write_path": "API Gateway -> Async Queue -> URL Shortening Service -> Cassandra",
+    "horizontal_scaling": "Stateless microservices behind load balancers with auto-scaling groups"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-region active-active deployment with global DNS failover",
+    "failover": "Automatic traffic rerouting via health checks and DNS TTL management",
+    "data_replication": "Cassandra with RF=3 across availability zones; Redis with AOF persistence"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft delete with immediate cache invalidation; hard delete within 24h via background job",
+    "data_retention": "Configurable TTL per link; analytics data anonymized after 90 days",
+    "analytics_separation": "Analytics data stored in separate Cassandra keyspace with restricted access"
+  },
+  "cost_estimate": {
+    "monthly_total": 4850,
+    "breakdown": {
+      "compute": 2200,
+      "database": 1500,
+      "cache": 600,
+      "cdn": 400,
+      "other": 150
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket algorithm at API Gateway",
+    "limits": "100 requests/minute per IP, 1000/day per user"
+  },
+  "monitoring": {
+    "metrics": ["p99 latency", "error rate", "cache hit ratio", "queue depth", "database throughput"],
+    "alerting": "PagerDuty integration for p99 > 50ms, error rate > 0.1%, or cache miss rate > 5%"
+  }
+}
