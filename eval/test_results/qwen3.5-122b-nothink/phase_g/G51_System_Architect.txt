@@ -1,0 +1,71 @@
+{
+  "architecture": {
+    "components": [
+      "Global Load Balancer (GCLB)",
+      "Stateless API Gateway",
+      "URL Creation Service",
+      "Redirect Service",
+      "Async Link Expiration Worker",
+      "GDPR Deletion Service",
+      "Analytics Aggregator",
+      "Redis Cluster",
+      "DynamoDB (or Aurora Serverless)",
+      "CloudFront CDN"
+    ],
+    "database": {
+      "primary": "Amazon DynamoDB with Global Tables",
+      "justification": "Provides single-digit millisecond latency for 1B+ daily reads, infinite horizontal scaling, and built-in multi-region replication for 99.99% uptime. Cost-effective for high-volume key-value lookups compared to relational DBs."
+    },
+    "cache": {
+      "type": "Redis Cluster (Multi-AZ)",
+      "strategy": "Write-through for new URLs; Read-through for redirects. Hot keys (top 1% traffic) cached with 1-hour TTL to offload DB.",
+      "invalidation": "TTL-based expiration + explicit invalidation on GDPR deletion or custom alias update."
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 encoding of a 64-bit random integer (or Snowflake ID)",
+      "length": 7,
+      "collision_handling": "Check existence in DB before assignment; if collision (extremely rare), increment counter and re-encode."
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (100M writes, 10B reads)",
+    "read_optimization": "95% of traffic served via CDN edge caching (CloudFront) and Redis. Database only hit for cache misses or custom alias validation.",
+    "write_path": "Async processing for non-critical metadata; synchronous only for ID generation and DB write. Batch writes for analytics to reduce DB load.",
+    "horizontal_scaling": "Stateless microservices auto-scaled via Kubernetes (EKS) or Lambda based on CPU/Request count. Database scales automatically via DynamoDB On-Demand."
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-region active-active deployment with Global Accelerator for traffic routing. Health checks every 10s.",
+    "failover": "Automatic DNS failover to secondary region if primary region latency > 50ms or error rate > 0.1%. Database replication lag < 1s.",
+    "data_replication": "Synchronous replication within region, asynchronous cross-region replication for disaster recovery (RPO < 1min)."
+  },
+  "compliance": {
+    "gdpr_deletion": "Hard delete API triggers immediate removal from DB and cache. Analytics data anonymized (PII stripped) after 30 days.",
+    "data_retention": "Default 2 years for analytics; user-configurable expiration for links. Hard delete on request within 72 hours.",
+    "analytics_separation": "Analytics stored in a separate S3 bucket with lifecycle policies, decoupled from the core redirect path to prevent PII leakage."
+  },
+  "cost_estimate": {
+    "monthly_total": 4200,
+    "breakdown": {
+      "compute": 800,
+      "database": 1200,
+      "cache": 600,
+      "cdn": 1400,
+      "other": 200
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket algorithm at API Gateway level, distributed via Redis.",
+    "limits": "1000 req/sec per IP for redirects; 100 req/sec per API key for creation. Burst capacity allowed for 10x spikes."
+  },
+  "monitoring": {
+    "metrics": [
+      "p99 Redirect Latency",
+      "Cache Hit Ratio",
+      "DB Write/Read Capacity Units",
+      "Error Rate (4xx/5xx)",
+      "GDPR Deletion Queue Depth"
+    ],
+    "alerting": "PagerDuty integration for p99 > 50ms, error rate > 0.1%, or cache miss ratio > 10%."
+  }
+}

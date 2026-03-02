@@ -1,0 +1,238 @@
+```python
+import time
+import threading
+from collections import defaultdict
+
+class RateLimiter:
+    def __init__(self, max_requests: int, window_seconds: float, burst: int = 0):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.burst = burst
+        self._lock = threading.Lock()
+        # Structure: { (user_id, endpoint): { "tokens": float, "last_update": float, "burst_tokens": float, "burst_last_update": float } }
+        self._state = {}
+
+    def _get_state(self, user_id: str, endpoint: str):
+        key = (user_id, endpoint)
+        if key not in self._state:
+            now = time.time()
+            self._state[key] = {
+                "tokens": float(self.max_requests),
+                "last_update": now,
+                "burst_tokens": float(self.burst),
+                "burst_last_update": now
+            }
+        return self._state[key]
+
+    def _update_tokens(self, state):
+        now = time.time()
+        elapsed = now - state["last_update"]
+        
+        # Regenerate standard tokens
+        if elapsed > 0:
+            # Tokens regenerate at rate of max_requests per window_seconds
+            regenerate = (elapsed / self.window_seconds) * self.max_requests
+            state["tokens"] = min(self.max_requests, state["tokens"] + regenerate)
+            state["last_update"] = now
+
+        # Regenerate burst tokens (slower: 2x window)
+        if self.burst > 0:
+            burst_elapsed = now - state["burst_last_update"]
+            if burst_elapsed > 0:
+                # Regenerate at rate of burst per (2 * window_seconds)
+                burst_regenerate = (burst_elapsed / (2 * self.window_seconds)) * self.burst
+                state["burst_tokens"] = min(float(self.burst), state["burst_tokens"] + burst_regenerate)
+                state["burst_last_update"] = now
+
+    def allow(self, user_id: str, endpoint: str = "default") -> dict:
+        with self._lock:
+            state = self._get_state(user_id, endpoint)
+            self._update_tokens(state)
+            
+            total_available = state["tokens"] + state["burst_tokens"]
+            
+            if total_available >= 1.0:
+                # Consume 1 token
+                if state["tokens"] >= 1.0:
+                    state["tokens"] -= 1.0
+                else:
+                    # Use remaining standard + burst
+                    needed = 1.0 - state["tokens"]
+                    state["tokens"] = 0.0
+                    state["burst_tokens"] -= needed
+                
+                remaining = int(state["tokens"] + state["burst_tokens"])
+                return {
+                    "allowed": True,
+                    "remaining": remaining,
+                    "retry_after": None
+                }
+            else:
+                # Calculate retry_after based on when 1 token will be available
+                # We need 1 token. Current total is < 1.
+                # Rate of regeneration: max_requests/window + burst/(2*window)
+                # But simpler: calculate time to get 1 token from current state
+                # Since tokens regenerate linearly, we can estimate time to reach 1.0 total
+                
+                # If we have 0 tokens, we need 1.0.
+                # Standard regen rate: max_requests / window_seconds
+                # Burst regen rate: burst / (2 * window_seconds)
+                
+                # We need to wait until (tokens + burst_tokens) >= 1.0
+                # Let t be time needed.
+                # (tokens + rate_std * t) + (burst_tokens + rate_burst * t) >= 1.0
+                # t * (rate_std + rate_burst) >= 1.0 - (tokens + burst_tokens)
+                
+                current_total = state["tokens"] + state["burst_tokens"]
+                needed = 1.0 - current_total
+                
+                rate_std = self.max_requests / self.window_seconds
+                rate_burst = self.burst / (2 * self.window_seconds) if self.burst > 0 else 0.0
+                total_rate = rate_std + rate_burst
+                
+                if total_rate > 0:
+                    retry_after = needed / total_rate
+                else:
+                    retry_after = self.window_seconds # Fallback
+                
+                return {
+                    "allowed": False,
+                    "remaining": 0,
+                    "retry_after": retry_after
+                }
+
+    def allow_priority(self, user_id: str, endpoint: str = "default") -> dict:
+        # Priority users skip limits, but we still return usage stats
+        with self._lock:
+            state = self._get_state(user_id, endpoint)
+            self._update_tokens(state)
+            
+            remaining = int(state["tokens"] + state["burst_tokens"])
+            return {
+                "allowed": True,
+                "remaining": remaining,
+                "retry_after": None
+            }
+
+    def cleanup(self, max_age_seconds: float = None) -> int:
+        if max_age_seconds is None:
+            max_age_seconds = 2 * self.window_seconds
+            
+        now = time.time()
+        cutoff = now - max_age_seconds
+        removed_count = 0
+        keys_to_remove = []
+        
+        with self._lock:
+            for key, state in self._state.items():
+                # Check if the last update time is older than cutoff
+                if state["last_update"] < cutoff:
+                    keys_to_remove.append(key)
+            
+            for key in keys_to_remove:
+                del self._state[key]
+                removed_count += 1
+                
+        return removed_count
+
+    def get_usage(self, user_id: str, endpoint: str = "default") -> dict:
+        with self._lock:
+            state = self._get_state(user_id, endpoint)
+            self._update_tokens(state)
+            
+            used = self.max_requests - int(state["tokens"])
+            if used < 0: used = 0
+            # Note: "used" usually implies consumed from the base limit. 
+            # If burst is used, it's technically over the base limit.
+            # We calculate used as max_requests - current_tokens (clamped)
+            # But if tokens > max_requests (due to regen), used is 0.
+            
+            # Let's define "used" as how many requests have been made in the current window context
+            # Since we track tokens, used = max_requests - tokens (if tokens <= max_requests)
+            # If tokens > max_requests (unlikely due to cap), used = 0.
+            
+            # However, the requirement asks for "used". 
+            # If we start with max_requests, and consume 1, used is 1.
+            # So used = max_requests - tokens (if tokens < max_requests)
+            # But tokens can be fractional. Let's floor it for "used" count? 
+            # The prompt asks for int.
+            
+            # Let's calculate used based on initial state vs current.
+            # Initial tokens = max_requests.
+            # Current tokens = state["tokens"]
+            # Used = max_requests - state["tokens"]
+            
+            used_val = self.max_requests - state["tokens"]
+            if used_val < 0: used_val = 0
+            
+            return {
+                "used": int(used_val),
+                "limit": self.max_requests,
+                "window_seconds": self.window_seconds,
+                "burst_remaining": int(state["burst_tokens"])
+            }
+
+    def to_dict(self) -> dict:
+        with self._lock:
+            # Deep copy state for serialization
+            serialized_state = {}
+            for key, state in self._state.items():
+                serialized_state[key] = {
+                    "tokens": state["tokens"],
+                    "last_update": state["last_update"],
+                    "burst_tokens": state["burst_tokens"],
+                    "burst_last_update": state["burst_last_update"]
+                }
+            
+            return {
+                "max_requests": self.max_requests,
+                "window_seconds": self.window_seconds,
+                "burst": self.burst,
+                "state": serialized_state
+            }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'RateLimiter':
+        instance = cls(
+            max_requests=data["max_requests"],
+            window_seconds=data["window_seconds"],
+            burst=data["burst"]
+        )
+        with instance._lock:
+            instance._state = {}
+            for key_str, state_data in data["state"].items():
+                # key_str is a string representation of the tuple "(user_id, endpoint)"
+                # We need to parse it back. Since it's a tuple of strings, we can eval or parse manually.
+                # To be safe and avoid eval, we assume the format is "('user', 'endpoint')"
+                # But simpler: store as tuple in dict? No, JSON keys must be strings.
+                # We'll assume the key was stored as a string representation of the tuple.
+                # Actually, in Python, dict keys can be tuples, but to_dict() must convert to string for JSON compatibility?
+                # The prompt says "Serialize/deserialize full state". It doesn't specify JSON, just dict.
+                # If we return a dict with tuple keys, it's valid Python dict.
+                # But if we want to be robust, let's assume the key in data["state"] is the tuple itself if it's a Python dict,
+                # or a string if it was converted.
+                # Let's assume the input data["state"] has tuple keys if it's a direct Python dict copy.
+                # If it's a string key, we need to parse.
+                # Given the context of "from_dict", it's likely a Python dict passed in.
+                # If the key is a string like "('a', 'b')", we parse. If it's a tuple, we use it.
+                
+                if isinstance(key_str, str):
+                    # Parse string representation of tuple
+                    # Remove parentheses and split by comma, stripping quotes
+                    clean = key_str.strip("()")
+                    parts = [p.strip().strip("'").strip('"') for p in clean.split(",")]
+                    if len(parts) == 2:
+                        key = (parts[0], parts[1])
+                    else:
+                        key = (key_str, "default") # Fallback
+                else:
+                    key = key_str
+                
+                instance._state[key] = {
+                    "tokens": state_data["tokens"],
+                    "last_update": state_data["last_update"],
+                    "burst_tokens": state_data["burst_tokens"],
+                    "burst_last_update": state_data["burst_last_update"]
+                }
+        return instance
+```

@@ -1,0 +1,142 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Immediate Triage & Notification",
+      "agents": [
+        {
+          "agent": "notification_agent",
+          "input": "Alert: Production outage reported by customer. Initiating incident response.",
+          "timeout_seconds": 10
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "Create high-priority incident ticket with initial customer report details.",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "metric_checker",
+          "input": "Query error rates, latency, and availability for the affected service.",
+          "timeout_seconds": 20
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "Scan last 30 minutes of application logs for critical errors and stack traces.",
+          "timeout_seconds": 25
+        },
+        {
+          "agent": "db_checker",
+          "input": "Check database connection pool saturation, lock wait times, and replication lag.",
+          "timeout_seconds": 20
+        }
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete execution; incident ticket created."
+    },
+    {
+      "phase": 2,
+      "name": "Root Cause Analysis & Scope Definition",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": "Map upstream and downstream dependencies of the failing service to identify blast radius.",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "config_auditor",
+          "input": "Compare current configuration against the last known good state for recent changes.",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "Analyze CPU, memory, and network utilization trends for the last hour.",
+          "timeout_seconds": 15
+        }
+      ],
+      "parallel": true,
+      "gate": "Dependency map generated and config audit completed."
+    },
+    {
+      "phase": 3,
+      "name": "Customer Impact Assessment",
+      "agents": [
+        {
+          "agent": "customer_communicator",
+          "input": "Send initial status update to affected customers acknowledging the issue and investigating.",
+          "timeout_seconds": 10
+        }
+      ],
+      "parallel": false,
+      "gate": "Customer communication sent successfully."
+    },
+    {
+      "phase": 4,
+      "name": "Remediation Execution",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "Execute rollback to previous stable deployment version.",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": false,
+      "gate": "Remediation action initiated."
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Resolution",
+      "agents": [
+        {
+          "agent": "metric_checker",
+          "input": "Verify error rates have returned to baseline and latency is normal.",
+          "timeout_seconds": 20
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "Confirm absence of new critical errors in the last 5 minutes.",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "Update incident ticket with resolution details and close if stable.",
+          "timeout_seconds": 10
+        },
+        {
+          "agent": "customer_communicator",
+          "input": "Send resolution update to affected customers confirming service restoration.",
+          "timeout_seconds": 10
+        }
+      ],
+      "parallel": true,
+      "gate": "Metrics and logs confirm stability for 5 minutes."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "Config audit identifies a recent change as the root cause AND dependency map shows high blast radius.",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 3"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Rollback execution fails or metrics do not improve within 2 minutes of rollback start.",
+      "if_true": "go to phase 5 (skip verification, trigger escalation)",
+      "if_false": "go to phase 5"
+    }
+  ],
+  "escalation": {
+    "trigger": "Total elapsed time exceeds 15 minutes OR Phase 4 (Remediation) fails twice consecutively.",
+    "action": "Escalate to on-call Site Reliability Engineer (SRE) via PagerDuty and pause automated workflow for manual intervention."
+  },
+  "total_phases": 5,
+  "max_time_minutes": 20,
+  "rollback_conditions": [
+    "Config audit confirms a configuration change was deployed within the last 30 minutes.",
+    "Metric checker shows error rate > 5% for 3 consecutive checks.",
+    "Log analyzer identifies a specific stack trace pattern matching the last deployment commit.",
+    "Database health check shows connection pool exhaustion correlated with the deployment time."
+  ]
+}
+```

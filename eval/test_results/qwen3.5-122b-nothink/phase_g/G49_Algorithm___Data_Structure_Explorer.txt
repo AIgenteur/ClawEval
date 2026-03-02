@@ -1,0 +1,112 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()  # key -> (value, expiry_timestamp)
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+        self._current_time = time.time
+
+    def _is_expired(self, key: str) -> bool:
+        if key not in self.cache:
+            return True
+        _, expiry = self.cache[key]
+        if expiry is None:
+            return False
+        return self._current_time() > expiry
+
+    def _remove_expired(self, key: str) -> bool:
+        if self._is_expired(key):
+            del self.cache[key]
+            self.stats["expirations"] += 1
+            return True
+        return False
+
+    def get(self, key: str) -> any:
+        if key not in self.cache:
+            self.stats["misses"] += 1
+            return None
+        
+        if self._remove_expired(key):
+            self.stats["misses"] += 1
+            return None
+        
+        self.cache.move_to_end(key)
+        self.stats["hits"] += 1
+        return self.cache[key][0]
+
+    def put(self, key: str, value: any, ttl: float = None) -> None:
+        current_time = self._current_time()
+        expiry = None
+        if ttl is not None:
+            expiry = current_time + ttl
+        
+        if key in self.cache:
+            if self._remove_expired(key):
+                pass  # Key was expired, will be re-added below
+            else:
+                self.cache.move_to_end(key)
+        
+        # If key was not present or was expired, we need to check capacity
+        if key not in self.cache:
+            while len(self.cache) >= self.capacity:
+                # Remove the oldest (first) item
+                oldest_key, _ = self.cache.popitem(last=False)
+                # Check if the oldest item was expired (though it should be valid if we just checked)
+                # But strictly speaking, we just evict based on LRU order
+                self.stats["evictions"] += 1
+            
+            self.cache[key] = (value, expiry)
+        else:
+            # Key existed and was valid, just update value and expiry
+            self.cache[key] = (value, expiry)
+        
+        # Ensure the key is at the end (most recently used)
+        self.cache.move_to_end(key)
+
+    def delete(self, key: str) -> bool:
+        if key in self.cache:
+            if self._remove_expired(key):
+                return False
+            del self.cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        # Count non-expired entries
+        count = 0
+        for key in list(self.cache.keys()):
+            if not self._remove_expired(key):
+                count += 1
+        return count
+
+    def get_stats(self) -> dict:
+        return self.stats.copy()
+
+    def keys(self) -> list:
+        # Return non-expired keys in MRU order
+        result = []
+        # Iterate in reverse order (MRU to LRU) to maintain order if we filter
+        # But OrderedDict iterates LRU to MRU. We need MRU order.
+        # So we iterate normally, filter, and then reverse? 
+        # Requirement: "most-recently-used order". 
+        # OrderedDict: first is LRU, last is MRU.
+        # So we want the list from last to first? Or just the valid ones in order of access?
+        # Usually "keys in MRU order" means the list starts with the most recently used.
+        # So we iterate the OrderedDict (LRU -> MRU) and collect valid ones, then reverse.
+        
+        valid_keys = []
+        for key in self.cache:
+            if not self._remove_expired(key):
+                valid_keys.append(key)
+        
+        # valid_keys is currently [LRU, ..., MRU]
+        # We want [MRU, ..., LRU]
+        return valid_keys[::-1]
+
+    def clear(self) -> None:
+        self.cache.clear()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+```
