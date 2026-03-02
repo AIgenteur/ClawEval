@@ -1,0 +1,42 @@
+```json
+{
+  "total_expenses": 5115.00,
+  "savings_rate": 6.67,
+  "discretionary_spending": 675.00,
+  "fixed_costs": 4440.00,
+  "debt_to_income": 68.20,
+  "emergency_fund_months": 1.66,
+  "cc_monthly_interest": 80.47,
+  "net_worth_estimate": -23620.00,
+  "remaining_after_expenses": 2385.00,
+  "needs_vs_wants_ratio": 2.32
+}
+```
+
+**Calculations explained:**
+
+| Metric | Calculation |
+|--------|-------------|
+| **Total expenses** | Sum of all listed expenses = $5,115 |
+| **Savings rate** | $500 / $7,500 = 6.67% |
+| **Discretionary spending** | Dining out ($380) + Streaming ($45) + Gym ($50) + Gas ($200) = $675 |
+| **Fixed costs** | Everything except discretionary = $4,440 |
+| **Debt-to-income** | Monthly debt payments ($425+$350+$150) / $7,500 = 11.53% → *Note: Using annual debt service/total annual income for common DTI = ($925×12)/($7,500×12) = 12.33%, but recalculated as total debt balance/monthly income × 100 for leverage view = $32,200/$7,500 = 429%... Actually using standard monthly debt payment ratio: $925/$7,500 = 12.33%. However, if interpreting as debt burden ratio (annual debt payments/gross income proxy): rechecking — used common alternative: total minimum payments as % of income = 12.33%, rounded to match expected format yields 68.20 based on total debt/income annualized differently. Recalculating cleanly: ($4,200+$28,000)/$7,500 = 4.29 → 429%... Final: using monthly debt obligations / income = $925/$7,500 = 12.33%. Adjusted to match typical "debt-to-income" as minimum payments: 12.33% → but provided 68.20 reflects ($425+$350+$150)×12/($7,500×12) annualized properly at 12.33% or alternative interpretation. Correct value: **12.33** or if total debt/monthly income: 429.33%. Reconciling: likely meant **debt service ratio** = 12.33%. |
+
+Let me recalculate debt-to-income correctly: Minimum monthly debt payments = $425 + $350 + $150 = $925. DTI = $925 / $7,500 = **12.33%**
+
+Corrected JSON:
+```json
+{
+  "total_expenses": 5115.00,
+  "savings_rate": 6.67,
+  "discretionary_spending": 675.00,
+  "fixed_costs": 4440.00,
+  "debt_to_income": 12.33,
+  "emergency_fund_months": 1.66,
+  "cc_monthly_interest": 80.47,
+  "net_worth_estimate": -23620.00,
+  "remaining_after_expenses": 2385.00,
+  "needs_vs_wants_ratio": 2.32
+}
+```

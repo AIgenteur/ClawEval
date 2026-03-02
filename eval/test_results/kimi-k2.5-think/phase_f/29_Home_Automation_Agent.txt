@@ -1,0 +1,485 @@
+```json
+[
+  {
+    "rule_id": "morning_routine",
+    "name": "Morning Routine - Gradual Wake-up Lights",
+    "trigger": {
+      "type": "schedule",
+      "time": "06:30",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "bedroom_lights",
+        "action": "turn_on",
+        "brightness": 10,
+        "transition": 300
+      },
+      {
+        "device": "kitchen_lights",
+        "action": "turn_on",
+        "delay_minutes": 5,
+        "brightness": 20,
+        "transition": 300
+      },
+      {
+        "device": "living_room_lights",
+        "action": "turn_on",
+        "delay_minutes": 10,
+        "brightness": 30,
+        "transition": 300
+      }
+    ]
+  },
+  {
+    "rule_id": "morning_routine_weekend",
+    "name": "Morning Routine - Weekend",
+    "trigger": {
+      "type": "schedule",
+      "time": "08:00",
+      "days": ["Saturday", "Sunday"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "all_common_area_lights",
+        "action": "turn_on",
+        "brightness": 50,
+        "transition": 600
+      }
+    ]
+  },
+  {
+    "rule_id": "thermostat_occupied",
+    "name": "Thermostat - Occupied Temperature",
+    "trigger": {
+      "type": "state_change",
+      "entity": "occupancy_sensor",
+      "to_state": "home"
+    },
+    "conditions": [
+      {
+        "type": "time_range",
+        "not_between": ["23:00", "06:00"]
+      }
+    ],
+    "actions": [
+      {
+        "device": "thermostat",
+        "action": "set_temperature",
+        "temperature": 72,
+        "unit": "F"
+      }
+    ]
+  },
+  {
+    "rule_id": "thermostat_empty",
+    "name": "Thermostat - Away Temperature",
+    "trigger": {
+      "type": "state_change",
+      "entity": "occupancy_sensor",
+      "to_state": "away"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "thermostat",
+        "action": "set_temperature",
+        "temperature": 65,
+        "unit": "F"
+      }
+    ]
+  },
+  {
+    "rule_id": "thermostat_sleep",
+    "name": "Thermostat - Sleep Schedule",
+    "trigger": {
+      "type": "schedule",
+      "time": "23:00"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "occupancy_sensor",
+        "state": "home"
+      }
+    ],
+    "actions": [
+      {
+        "device": "thermostat",
+        "action": "set_temperature",
+        "temperature": 68,
+        "unit": "F"
+      }
+    ]
+  },
+  {
+    "rule_id": "security_arm",
+    "name": "Security - Arm When Both Away",
+    "trigger": {
+      "type": "state_change",
+      "entity": "person.bob",
+      "to_state": "not_home"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "person.alice",
+        "state": "not_home"
+      }
+    ],
+    "actions": [
+      {
+        "device": "security_system",
+        "action": "arm_away"
+      },
+      {
+        "device": "all_interior_cameras",
+        "action": "enable_recording"
+      }
+    ]
+  },
+  {
+    "rule_id": "security_disarm",
+    "name": "Security - Disarm When Either Returns",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["person.alice", "person.bob"],
+      "event": "enter",
+      "radius_meters": 200
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "security_system",
+        "action": "disarm"
+      },
+      {
+        "device": "front_door_lock",
+        "action": "unlock"
+      }
+    ]
+  },
+  {
+    "rule_id": "pet_feeder_morning",
+    "name": "Pet Care - Morning Feeding",
+    "trigger": {
+      "type": "schedule",
+      "time": "07:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "auto_pet_feeder",
+        "action": "dispense",
+        "portion": "regular"
+      }
+    ]
+  },
+  {
+    "rule_id": "pet_feeder_evening",
+    "name": "Pet Care - Evening Feeding",
+    "trigger": {
+      "type": "schedule",
+      "time": "18:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "auto_pet_feeder",
+        "action": "dispense",
+        "portion": "regular"
+      }
+    ]
+  },
+  {
+    "rule_id": "pet_camera",
+    "name": "Pet Care - Cat Camera When Both Away",
+    "trigger": {
+      "type": "state_change",
+      "entity": "group.all_people",
+      "to_state": "not_home"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "cat_camera",
+        "action": "turn_on"
+      },
+      {
+        "device": "cat_camera",
+        "action": "enable_motion_alerts"
+      },
+      {
+        "device": "notification_center",
+        "action": "send_notification",
+        "message": "Cat camera activated - both occupants away"
+      }
+    ]
+  },
+  {
+    "rule_id": "energy_solar_priority",
+    "name": "Energy - Solar Priority Peak Hours",
+    "trigger": {
+      "type": "schedule",
+      "time": "14:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "energy_manager",
+        "action": "set_mode",
+        "mode": "solar_priority"
+      },
+      {
+        "device": "high_consumption_devices",
+        "action": "enable_scheduled_operation",
+        "allowed_hours": ["14:00-19:00"]
+      }
+    ]
+  },
+  {
+    "rule_id": "energy_battery_backup",
+    "name": "Energy - Battery Backup Evening",
+    "trigger": {
+      "type": "schedule",
+      "time": "19:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "energy_manager",
+        "action": "set_mode",
+        "mode": "battery_backup"
+      },
+      {
+        "device": "grid_connection",
+        "action": "set_priority",
+        "priority": "secondary"
+      }
+    ]
+  },
+  {
+    "rule_id": "hallway_night_light",
+    "name": "Lighting - Hallway Motion Night Light",
+    "trigger": {
+      "type": "motion",
+      "sensor": "hallway_motion_sensor",
+      "state": "detected"
+    },
+    "conditions": [
+      {
+        "type": "time_range",
+        "between": ["22:00", "06:00"]
+      }
+    ],
+    "actions": [
+      {
+        "device": "hallway_lights",
+        "action": "turn_on",
+        "brightness": 20,
+        "color_temp": "warm"
+      },
+      {
+        "device": "hallway_lights",
+        "action": "turn_off",
+        "delay_minutes": 5
+      }
+    ]
+  },
+  {
+    "rule_id": "bob_office_climate",
+    "name": "Bob's Office - Computer-Based Climate Control",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.bob_computer_active",
+      "to_state": "on"
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "person.bob",
+        "state": "home"
+      }
+    ],
+    "actions": [
+      {
+        "device": "bob_desk_lamp",
+        "action": "turn_on",
+        "brightness": 80
+      },
+      {
+        "device": "office_thermostat",
+        "action": "set_temperature",
+        "temperature": 70,
+        "unit": "F"
+      }
+    ]
+  },
+  {
+    "rule_id": "laundry_notifications",
+    "name": "Laundry - Cycle Complete Alerts",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.washer_running",
+      "from_state": "on",
+      "to_state": "off"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "notification_center",
+        "action": "send_notification",
+        "recipients": ["alice_phone", "bob_phone"],
+        "message": "Washer cycle complete - ready to transfer"
+      },
+      {
+        "device": "laundry_room_speaker",
+        "action": "play_chime",
+        "sound": "gentle_alert"
+      }
+    ]
+  },
+  {
+    "rule_id": "laundry_dryer_notifications",
+    "name": "Laundry - Dryer Complete Alerts",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.dryer_running",
+      "from_state": "on",
+      "to_state": "off"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "notification_center",
+        "action": "send_notification",
+        "recipients": ["alice_phone", "bob_phone"],
+        "message": "Dryer cycle complete - clothes ready"
+      },
+      {
+        "device": "laundry_room_speaker",
+        "action": "play_chime",
+        "sound": "gentle_alert"
+      }
+    ]
+  },
+  {
+    "rule_id": "water_leak_emergency",
+    "name": "Water Leak - Emergency Shutoff",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.water_leak_detector",
+      "to_state": "wet"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "main_water_valve",
+        "action": "close"
+      },
+      {
+        "device": "notification_center",
+        "action": "send_critical_alert",
+        "recipients": ["alice_phone", "bob_phone"],
+        "message": "WATER LEAK DETECTED - Main valve shut off. Location: {{ trigger.location }}"
+      },
+      {
+        "device": "all_speakers",
+        "action": "announce",
+        "message": "Warning: Water leak detected. Main water supply has been shut off."
+      },
+      {
+        "device": "security_system",
+        "action": "trigger_alarm",
+        "type": "environmental"
+      }
+    ]
+  },
+  {
+    "rule_id": "guest_mode_activation",
+    "name": "Guest Mode - Temporary Access Setup",
+    "trigger": {
+      "type": "event",
+      "event_type": "guest_mode_activated",
+      "source": "app_or_voice_command"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "device": "front_door_lock",
+        "action": "create_temp_code",
+        "duration_hours": 48,
+        "notify_guest": true
+      },
+      {
+        "device": "thermostat",
+        "action": "set_temperature",
+        "temperature": 72,
+        "unit": "F",
+        "duration_hours": 48
+      },
+      {
+        "device": "guest_wifi",
+        "action": "enable",
+        "network_name": "Home-Guest",
+        "generate_password": true,
+        "qos": "limited"
+      },
+      {
+        "device": "guest_bedroom",
+        "action": "prepare",
+        "lights_on": true,
+        "towels_warming": true
+      },
+      {
+        "device": "notification_center",
+        "action": "send_notification",
+        "recipients": ["alice_phone", "bob_phone"],
+        "message": "Guest mode active: Door code {{ temp_code }}, WiFi password {{ wifi_password }}. Auto-expires in 48 hours."
+      }
+    ]
+  },
+  {
+    "rule_id": "guest_mode_cleanup",
+    "name": "Guest Mode - Automatic Cleanup",
+    "trigger": {
+      "type": "schedule",
+      "offset_from": "guest_mode_activation",
+      "delay_hours": 48
+    },
+    "conditions": [
+      {
+        "type": "state",
+        "entity": "input_boolean.guest_mode",
+        "state": "on"
+      }
+    ],
+    "actions": [
+      {
+        "device": "front_door_lock",
+        "action": "revoke_temp_codes"
+      },
+      {
+        "device": "guest_wifi",
+        "action": "disable"
+      },
+      {
+        "device": "thermostat",
+        "action": "restore_schedule"
+      },
+      {
+        "device": "input_boolean.guest_mode",
+        "action": "turn_off"
+      },
+      {
+        "device": "notification_center",
+        "action": "send_notification",
+        "recipients": ["alice_phone", "bob_phone"],
+        "message": "Guest mode automatically deactivated. All temporary access revoked."
+      }
+    ]
+  }
+]
+```

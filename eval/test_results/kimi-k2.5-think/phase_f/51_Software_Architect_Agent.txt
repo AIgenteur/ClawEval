@@ -1,0 +1,101 @@
+```json
+{
+  "components": [
+    {
+      "name": "Edge Load Balancers",
+      "technology": "Cloudflare / AWS Global Accelerator + HAProxy",
+      "purpose": "Distribute traffic globally, terminate TLS, DDoS protection, route to nearest region",
+      "scaling_strategy": "Anycast DNS auto-scaling, no session affinity needed (stateless)"
+    },
+    {
+      "name": "WebSocket Gateway Cluster",
+      "technology": "Elixir/Phoenix or Go with custom epoll/kqueue",
+      "purpose": "Maintain 1M persistent connections, handle connection lifecycle, heartbeat management",
+      "scaling_strategy": "Shard by user_id hash, 100K connections per pod, auto-scale on connection count"
+    },
+    {
+      "name": "Message Router Service",
+      "technology": "Rust/Tokio or C++",
+      "purpose": "Route messages between users, fan-out for groups, presence broadcast coordination",
+      "scaling_strategy": "Consistent hashing on conversation_id, stateless with Redis for routing table"
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster + Heartbeat workers",
+      "purpose": "Track online/offline status, last seen timestamps, typing indicators",
+      "scaling_strategy": "Redis Cluster with 16384 slots, TTL-based expiration, write-behind to Cassandra"
+    },
+    {
+      "name": "Message Persistence Layer",
+      "technology": "ScyllaDB (Cassandra-compatible) + S3 for large payloads",
+      "purpose": "Store message history with time-series partitioning, hot/warm/cold tiering",
+      "scaling_strategy": "Partition by (conversation_id, weekly_bucket), automatic compaction, add nodes linearly"
+    },
+    {
+      "name": "Read Receipt Processor",
+      "technology": "Kafka + Flink streaming",
+      "purpose": "Aggregate read receipts, debounce updates, batch write to reduce DB load",
+      "scaling_strategy": "Kafka partition by conversation_id, Flink parallelism matches partitions"
+    },
+    {
+      "name": "File Storage & CDN",
+      "technology": "AWS S3 + CloudFront / Cloudflare R2",
+      "purpose": "Encrypted file storage, virus scanning, thumbnail generation, global delivery",
+      "scaling_strategy": "S3 auto-scales, pre-signed URLs for direct upload, async processing queue"
+    },
+    {
+      "name": "Encryption Key Service",
+      "technology": "HashiCorp Vault + AWS KMS + Signal Protocol libs",
+      "purpose": "E2EE key management, X3DH ratchet initialization, secure enclave for private keys",
+      "scaling_strategy": "HSM-backed, multi-region replication, rate limiting per device"
+    },
+    {
+      "name": "Group Chat Fan-out Engine",
+      "technology": "Kafka + Custom consumer in Rust",
+      "purpose": "Handle 500-member group broadcasts efficiently, prevent thundering herd",
+      "scaling_strategy": "Batch notifications, incremental sync for large groups, separate fast/slow path"
+    },
+    {
+      "name": "Search & Indexing",
+      "technology": "Elasticsearch/OpenSearch cluster",
+      "purpose": "Full-text search across message history, encrypted index tokens (blind indexing)",
+      "scaling_strategy": "Separate hot/warm nodes, index per user with alias routing"
+    },
+    {
+      "name": "GDPR Compliance Service",
+      "technology": "Go + Temporal workflows",
+      "purpose": "Data export, right-to-erasure orchestration, retention policy enforcement, audit logging",
+      "scaling_strategy": "Async job processing, idempotent operations, progress tracking in PostgreSQL"
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Thanos + Jaeger + PagerDuty",
+      "purpose": "Sub-100ms latency tracking, distributed tracing, anomaly detection, SLA dashboards",
+      "scaling_strategy": "Remote-write to object storage, sampling for traces, hierarchical alerting"
+    }
+  ],
+  "data_flow": "Client → WebSocket Gateway (TLS 1.3 + Noise protocol handshake) → Message Router checks presence in Redis → For 1:1: direct WebSocket push; for groups: Kafka fan-out → Messages written to ScyllaDB (WAL in Kafka) → Read receipts batched via Flink → File uploads go direct to S3 via pre-signed URL with client-side encryption → E2EE keys from Vault with device attestation → GDPR service audits all data access to immutable log",
+  "infrastructure": {
+    "cloud": "Multi-cloud (AWS primary, GCP DR, bare metal for HSMs)",
+    "regions": 6,
+    "region_details": ["us-east-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-southeast-1", "ap-northeast-1"],
+    "kubernetes": "EKS with Karpenter autoscaling, spot instances for stateless workloads"
+  },
+  "estimated_monthly_cost": "$180,000 - $250,000 at 1M concurrent (breakdown: compute $80K, storage/DB $60K, bandwidth/CDN $40K, security/HSM $30K, observability $20K, reserved capacity discounts applied)",
+  "bottlenecks": [
+    "WebSocket connection memory: 1M connections × ~50KB = 50GB RAM minimum, requires careful buffer tuning",
+    "Group chat fan-out: 500 members × message rate could overwhelm small groups, needs backpressure",
+    "E2EE key distribution: X3DH initial setup is CPU-intensive, must cache and batch",
+    "Cold storage queries: Historical message retrieval >90 days needs aggressive caching",
+    "Cross-region replication lag: CAP theorem tradeoff for presence consistency"
+  ],
+  "tradeoffs": [
+    "Eventual consistency for read receipts vs strong consistency: chose <5s eventual for 10x throughput gain",
+    "Client-side E2EE prevents server-side search: implemented blind indexing with 20% larger storage",
+    "Horizontal sharding by conversation_id causes hot partitions for celebrity chats: added virtual shards",
+    "GDPR erasure vs immutability requirements: cryptographic shredding instead of physical deletion for audit trail",
+    "Cost vs latency: kept hot data in NVMe SSD, warm in EBS, cold in S3 IA with 24hr prefetch",
+    "Availability vs partition tolerance: accept brief presence inconsistency during network splits"
+  ]
+}
+```

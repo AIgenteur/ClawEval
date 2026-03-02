@@ -1,0 +1,137 @@
+```python
+import pytest
+from calculate_tax import calculate_tax
+
+
+def test_zero_income():
+    """Test zero income returns zero tax and zero effective rate."""
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0
+    assert rate == 0
+
+
+def test_negative_income_raises_error():
+    """Test negative income raises ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-1000, 'single')
+
+
+def test_non_numeric_income_raises_error():
+    """Test non-numeric income raises ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("50000", 'single')
+
+
+def test_invalid_filing_status_raises_error():
+    """Test invalid filing status raises ValueError."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'head_of_household')
+
+
+def test_single_low_income_first_bracket():
+    """Test single filer in 10% bracket."""
+    tax, rate = calculate_tax(10000, 'single')
+    expected_tax = 10000 * 0.10
+    assert tax == round(expected_tax, 2)
+    assert rate == 10.0
+
+
+def test_single_at_first_bracket_boundary():
+    """Test single filer exactly at first bracket limit."""
+    tax, rate = calculate_tax(11600, 'single')
+    expected_tax = 11600 * 0.10
+    assert tax == round(expected_tax, 2)
+
+
+def test_single_just_over_first_bracket():
+    """Test single filer just into second bracket."""
+    tax, rate = calculate_tax(12000, 'single')
+    expected_tax = 11600 * 0.10 + (12000 - 11600) * 0.12
+    assert tax == round(expected_tax, 2)
+
+
+def test_single_high_income_top_bracket():
+    """Test single filer in top 37% bracket."""
+    tax, rate = calculate_tax(1000000, 'single')
+    # Calculate manually: sum of all brackets up to 609350 at 35%, remainder at 37%
+    expected_tax = (
+        11600 * 0.10 +
+        (47150 - 11600) * 0.12 +
+        (100525 - 47150) * 0.22 +
+        (191950 - 100525) * 0.24 +
+        (243725 - 191950) * 0.32 +
+        (609350 - 243725) * 0.35 +
+        (1000000 - 609350) * 0.37
+    )
+    assert tax == round(expected_tax, 2)
+    expected_rate = round(expected_tax / 1000000 * 100, 2)
+    assert rate == expected_rate
+
+
+def test_married_typical_income():
+    """Test married filer with typical middle-class income."""
+    tax, rate = calculate_tax(80000, 'married')
+    expected_tax = 23200 * 0.10 + (80000 - 23200) * 0.12
+    assert tax == round(expected_tax, 2)
+
+
+def test_married_at_second_bracket_boundary():
+    """Test married filer exactly at second bracket limit."""
+    tax, rate = calculate_tax(94300, 'married')
+    expected_tax = 23200 * 0.10 + (94300 - 23200) * 0.12
+    assert tax == round(expected_tax, 2)
+
+
+def test_married_into_third_bracket():
+    """Test married filer into third bracket."""
+    tax, rate = calculate_tax(150000, 'married')
+    expected_tax = 23200 * 0.10 + (94300 - 23200) * 0.12 + (150000 - 94300) * 0.22
+    assert tax == round(expected_tax, 2)
+
+
+def test_married_very_high_infinite_bracket():
+    """Test married filer with extremely high income hitting infinity bracket."""
+    tax, rate = calculate_tax(2000000, 'married')
+    expected_tax = (
+        23200 * 0.10 +
+        (94300 - 23200) * 0.12 +
+        (201050 - 94300) * 0.22 +
+        (383900 - 201050) * 0.24 +
+        (487450 - 383900) * 0.32 +
+        (731200 - 487450) * 0.35 +
+        (2000000 - 731200) * 0.37
+    )
+    assert tax == round(expected_tax, 2)
+
+
+def test_single_vs_married_same_income():
+    """Test that married pays less tax than single for same income."""
+    income = 100000
+    single_tax, _ = calculate_tax(income, 'single')
+    married_tax, _ = calculate_tax(income, 'married')
+    assert married_tax < single_tax
+
+
+def test_float_income():
+    """Test that float income works correctly."""
+    tax, rate = calculate_tax(50000.75, 'single')
+    assert isinstance(tax, float)
+    assert tax > 0
+
+
+def test_exact_bracket_boundaries_all_single():
+    """Test all single bracket boundaries."""
+    boundaries = [0, 11600, 47150, 100525, 191950, 243725, 609350]
+    for boundary in boundaries:
+        tax, rate = calculate_tax(boundary, 'single')
+        assert tax >= 0
+        if boundary > 0:
+            assert rate > 0
+
+
+def test_small_income_rounding():
+    """Test very small income rounds correctly."""
+    tax, rate = calculate_tax(1, 'single')
+    assert tax == 0.1  # 10% of $1
+    assert rate == 10.0
+```

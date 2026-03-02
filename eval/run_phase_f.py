@@ -20,9 +20,9 @@ import requests
 from phase_f import PHASE_F_TESTS
 
 
-def call_llm(messages, base_url, model, max_tokens=4000, timeout=120, extra_body=None):
+def call_llm(messages, base_url, model, max_tokens=4000, timeout=120, extra_body=None, api_key=None):
     """Send messages and return response content."""
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer not-needed"}
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key or 'not-needed'}"}
     body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": 0.1}
     if extra_body:
         body.update(extra_body)
@@ -503,13 +503,13 @@ def score_recipe(content, scoring):
     return score, 10, msg
 
 
-def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, reasoning_prefix=None):
+def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, reasoning_prefix=None, api_key=None):
     """Run a single test and score it."""
     messages = []
     if reasoning_prefix:
         messages.append({"role": "system", "content": reasoning_prefix})
     messages.append({"role": "user", "content": test["prompt"]})
-    content, tokens, tps, elapsed = call_llm(messages, base_url, model, max_tokens, timeout=timeout, extra_body=extra_body)
+    content, tokens, tps, elapsed = call_llm(messages, base_url, model, max_tokens, timeout=timeout, extra_body=extra_body, api_key=api_key)
 
     scoring = test["scoring"]
     stype = scoring["type"]
@@ -536,10 +536,12 @@ def main():
     parser.add_argument("--base-url", required=True, help="LLM server base URL")
     parser.add_argument("--model", required=True, help="Model name for output directory")
     parser.add_argument("--api-model", help="Model name to send in API requests (defaults to --model)")
+    parser.add_argument("--api-key", help="API key for cloud endpoints (sent as Bearer token)")
     parser.add_argument("--max-tokens", type=int, default=4000, help="Max tokens per response")
     parser.add_argument("--timeout", type=int, default=300, help="Request timeout in seconds")
+    parser.add_argument("--delay", type=int, default=0, help="Delay in seconds between tests (for rate-limited APIs)")
     parser.add_argument("--thinking-budget", type=int, help="SGLang thinking token budget")
-    parser.add_argument("--nothink", action="store_true", help="SGLang: disable thinking (enable_thinking=false)")
+    parser.add_argument("--nothink", action="store_true", help="Disable thinking (Qwen/Kimi: thinking=False)")
     parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     parser.add_argument("--tier", type=int, help="Run only this tier")
@@ -549,7 +551,7 @@ def main():
     reasoning_prefix = f"Reasoning: {args.reasoning}" if args.reasoning else None
     extra_body = None
     if args.nothink:
-        extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
+        extra_body = {"chat_template_kwargs": {"thinking": False}}
     elif args.thinking_budget:
         extra_body = {"chat_template_kwargs": {"enable_thinking": True, "thinking_budget": args.thinking_budget}}
 
@@ -584,9 +586,17 @@ def main():
         is_manual = test["scoring_type"] == "manual"
         manual_tag = " [MANUAL]" if is_manual else ""
 
+        # Delay between tests (for rate-limited cloud APIs)
+        if i > 0 and args.delay:
+            import random
+            jitter = random.randint(0, max(3, args.delay // 4))
+            wait = args.delay + jitter
+            print(f"  \u23f3 Waiting {wait}s...", flush=True)
+            time.sleep(wait)
+
         print(f"[{i+1}/{len(tests)}] #{tid} T{tier}: {role}{manual_tag}")
 
-        result = run_test(test, args.base_url, api_model, args.max_tokens, args.timeout, extra_body=extra_body, reasoning_prefix=reasoning_prefix)
+        result = run_test(test, args.base_url, api_model, args.max_tokens, args.timeout, extra_body=extra_body, reasoning_prefix=reasoning_prefix, api_key=args.api_key)
 
         score = result["score"]
         max_score = result["max_score"]

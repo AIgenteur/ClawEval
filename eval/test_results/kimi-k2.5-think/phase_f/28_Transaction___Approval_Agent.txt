@@ -1,0 +1,56 @@
+```json
+{
+  "1": "APPROVE",
+  "2": "REJECT",
+  "3": "APPROVE",
+  "4": "REJECT",
+  "5": "REJECT",
+  "6": "APPROVE",
+  "7": "REJECT",
+  "8": "APPROVE",
+  "9": "REJECT",
+  "10": "REJECT"
+}
+```
+
+**Reasoning:**
+
+| Txn | Amount | Reason |
+|-----|--------|--------|
+| 1 | $450 | ✓ Under all limits, no flags |
+| 2 | $2,500 | ✗ >$2,000 requires manager approval (not given) |
+| 3 | $150 | ✓ Under all limits |
+| 4 | $3,000.00 | ✗ Round-dollar amount >$1,000 (suspicious) |
+| 5 | $800 | ✗ Same merchant (Amazon.com) as txn 1 within 1 hour (9:15 AM vs 11:02 AM = 1h47m? No wait—let me recheck: 9:15 AM to 11:02 AM is 1h47m, so NOT within 1 hour. Actually REJECT for different reason: daily total would exceed? Let me recalculate running total... Actually 11:02 AM - 9:15 AM = 1 hour 47 minutes, so outside 1-hour window. But wait—txn 8 also Amazon. Let me recheck txn 5: 9:15 to 11:02 is 107 minutes. Hmm, but I need to check if there's another Amazon transaction closer. No, txn 8 is at 3:45 PM. So txn 5 should be APPROVE on duplicate check. BUT let me recheck: actually I think I made an error. 11:02 - 9:15 = 1h47m, so not a duplicate. However, let me re-verify my answer stands as REJECT due to... actually no, it should be APPROVE. Wait—let me recheck all with proper math and running totals. |
+
+Let me recalculate properly with running totals:
+
+| Txn | Time | Merchant | Amount | Running Total | Checks |
+|-----|------|----------|--------|---------------|--------|
+| 1 | 9:15 AM | Amazon | $450 | $450 | ✓ |
+| 2 | 10:00 AM | Dell | $2,500 | $2,950 | ✗ >$2K, no approval |
+| 3 | 10:30 AM | Starbucks | $150 | $3,100 | ✓ |
+| 4 | 11:00 AM | BestBuy | $3,000.00 | $6,100 | ✗ Round dollar >$1K |
+| 5 | 11:02 AM | Amazon | $800 | $6,900 | Check: last Amazon was 9:15 AM = 1h47m ago, not duplicate ✓ |
+| 6 | 3:00 PM | Booking.com | €1,200 (~$1,200) | $8,100 | Int'l, 2PM is business hours ✓ |
+| 7 | 3:30 PM | Apple | $5,100 | would be $13,200 | ✗ Exceeds $5K single txn limit |
+| 8 | 3:45 PM | Amazon | $450 | $8,550 | Last Amazon 11:02 AM = 4h43m ago ✓ |
+| 9 | 4:00 PM | NewEgg | $2,000.00 | $10,550 | ✗ Round dollar >$1K |
+| 10 | 9:30 PM | Ryanair | €500 | - | ✗ Int'l outside business hours (9:30 PM) |
+
+Actually txn 5 and 8 should be APPROVE on duplicate check. My original answers were wrong for 5. Let me correct:
+
+```json
+{
+  "1": "APPROVE",
+  "2": "REJECT",
+  "3": "APPROVE",
+  "4": "REJECT",
+  "5": "APPROVE",
+  "6": "APPROVE",
+  "7": "REJECT",
+  "8": "APPROVE",
+  "9": "REJECT",
+  "10": "REJECT"
+}
+```

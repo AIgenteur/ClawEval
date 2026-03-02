@@ -1,0 +1,59 @@
+I'll calculate each metric step by step.
+
+**Data Processing:**
+
+| Product | Units | Price | Cost | Region | Revenue | COGS | Profit |
+|---------|-------|-------|------|--------|---------|------|--------|
+| Widget-A | 150 | $25 | $12.50 | North | $3,750 | $1,875 | $1,875 |
+| Widget-A | 200 | $25 | $12.50 | South | $5,000 | $2,500 | $2,500 |
+| Widget-B | 80 | $45 | $22.00 | North | $3,600 | $1,760 | $1,840 |
+| Widget-B | 120 | $45 | $22.00 | East | $5,400 | $2,640 | $2,760 |
+| Widget-C | 300 | $15 | $8.00 | South | $4,500 | $2,400 | $2,100 |
+| Widget-C | 50 | $15 | $8.00 | West | $750 | $400 | $350 |
+| Gadget-X | 90 | $60 | $30.00 | North | $5,400 | $2,700 | $2,700 |
+| Gadget-X | 110 | $60 | $30.00 | East | $6,600 | $3,300 | $3,300 |
+
+**Calculations:**
+
+- **m1 Total Revenue:** $3,750 + $5,000 + $3,600 + $5,400 + $4,500 + $750 + $5,400 + $6,600 = **$35,000**
+
+- **m2 Total COGS:** $1,875 + $2,500 + $1,760 + $2,640 + $2,400 + $400 + $2,700 + $3,300 = **$17,575**
+
+- **m3 Overall Profit Margin %:** ($35,000 - $17,575) / $35,000 × 100 = **49.79%**
+
+- **m4 North Region Revenue:** $3,750 + $3,600 + $5,400 = **$12,750**
+
+- **m5 Best-selling by units:** Widget-A: 350, Widget-B: 200, Widget-C: 350, Gadget-X: 200 → **Widget-A and Widget-C tie at 350** (using first alphabetically: "Widget-A")
+
+- **m6 Most profitable by total profit:**
+  - Widget-A: $4,375
+  - Widget-B: $4,600
+  - Widget-C: $2,450
+  - Gadget-X: $6,000 → **Gadget-X**
+
+- **m7 Weighted average price:** $35,000 / 1,100 = **$31.82**
+
+- **m8 Total units:** 150+200+80+120+300+50+90+110 = **1,100**
+
+- **m9 Widget revenue only:** $3,750 + $5,000 + $3,600 + $5,400 + $4,500 + $750 = **$23,000**
+
+- **m10 Highest margin %:**
+  - Widget-A: ($25-$12.50)/$25 = 50%
+  - Widget-B: ($45-$22)/$45 = 51.11%
+  - Widget-C: ($15-$8)/$15 = 46.67%
+  - Gadget-X: ($60-$30)/$60 = 50% → **Widget-B**
+
+```json
+{
+  "m1": 35000.00,
+  "m2": 17575.00,
+  "m3": 49.79,
+  "m4": 12750.00,
+  "m5": "Widget-A",
+  "m6": "Gadget-X",
+  "m7": 31.82,
+  "m8": 1100.00,
+  "m9": 23000.00,
+  "m10": "Widget-B"
+}
+```

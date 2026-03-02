@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Generate a cryptographically secure random key: import secrets; app.secret_key = secrets.token_hex(32)"
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Use render_template() with separate template files and pass variables safely, or escape user input: from markupsafe import escape; render_template_string(\"Results for: {{ q }}\", q=q)"
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "obj = pickle.loads(data)",
+      "fix": "Avoid pickle for untrusted data; use JSON: import json; obj = json.loads(data) with schema validation"
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid shell=True, validate/whitelist commands, use list format: subprocess.run([\"ls\", \"-la\"], capture_output=True)"
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "open(path).read()",
+      "fix": "Validate and sanitize path: import os; safe_path = os.path.join(BASE_DIR, os.path.basename(path)); verify with os.path.commonpath([safe_path, BASE_DIR]) == BASE_DIR"
+    },
+    {
+      "id": 7,
+      "type": "Weak Default Credentials / Backdoor",
+      "severity": "critical",
+      "location": "os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Remove default fallback, require explicit configuration: admin_pw = os.environ.get(\"ADMIN_PW\"); if not admin_pw: raise ValueError(\"ADMIN_PW must be set\")"
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "high",
+      "location": "return str(os.environ)",
+      "fix": "Remove debug endpoint entirely or restrict to authorized admins only in non-production environments"
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "Global Flask configuration",
+      "fix": "Enable TLS/SSL, use flask-talisman: from flask_talisman import Talisman; Talisman(app, force_https=True), or configure reverse proxy with HSTS headers"
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "All routes - no rate limiting configured",
+      "fix": "Implement rate limiting: from flask_limiter import Limiter; limiter = Limiter(app=app, key_func=get_remote_address); apply @limiter.limit(\"100 per hour\") decorators to routes"
+    }
+  ],
+  "count": 10
+}
+```

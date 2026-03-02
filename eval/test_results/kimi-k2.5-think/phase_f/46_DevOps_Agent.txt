@@ -1,0 +1,62 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Compose file version '2' is outdated and lacks modern features like secrets, health checks, and newer networking options",
+      "fix": "Use '3.8' or at minimum '3' for modern Docker Compose features"
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "'latest' tag is non-deterministic and can cause unpredictable deployments when the image updates",
+      "fix": "Pin to specific version like 'node:20-alpine' or 'node:20.11.0'"
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password stored in plaintext in compose file, committed to version control risk",
+      "fix": "Use Docker secrets (for swarm) or env_file, or external environment variables with ${DB_PASSWORD}"
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "NODE_ENV set to 'development' which enables verbose errors, debugging, and disables optimizations",
+      "fix": "Change to 'production' for deployed environments"
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Bind mounting source code (.:/app) is insecure for production and can cause permission issues",
+      "fix": "Remove volume mount and COPY code into image during build, or use named volumes for persistent data only"
+    },
+    {
+      "line": "restart: no",
+      "problem": "Container won't restart automatically on failure or host reboot",
+      "fix": "Use 'unless-stopped' or 'always' for production resilience"
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 reached End-of-Life in February 2021 and receives no security updates",
+      "fix": "Upgrade to mysql:8.0 or mysql:8.4 (LTS)"
+    },
+    {
+      "line": "- \"3306:3306\"",
+      "problem": "Database port exposed publicly without restriction, allowing external attacks",
+      "fix": "Remove ports mapping and use internal Docker network only, or bind to localhost '127.0.0.1:3306:3306'"
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp is typically tmpfs or cleared on reboot, causing complete data loss",
+      "fix": "Use named volume like 'mysql_data:/var/lib/mysql' or proper host path outside /tmp"
+    },
+    {
+      "line": "- \"6379:6379\"",
+      "problem": "Redis port exposed publicly with no authentication, allowing unauthorized access",
+      "fix": "Remove ports mapping (use internal network) or add requirepass, and bind to localhost if needed"
+    },
+    {
+      "line": "image: redis",
+      "problem": "No Redis authentication configured and using default unprotected configuration",
+      "fix": "Add command: redis-server --requirepass ${REDIS_PASSWORD} or use redis.conf with protected-mode yes"
+    }
+  ],
+  "count": 11
+}
+```
