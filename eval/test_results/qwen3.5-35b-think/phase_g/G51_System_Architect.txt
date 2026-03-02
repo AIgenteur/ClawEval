@@ -1,0 +1,66 @@
+{
+  "architecture": {
+    "components": [
+      "CloudFront CDN",
+      "API Gateway",
+      "AWS Lambda",
+      "DynamoDB",
+      "ElastiCache Redis",
+      "Kinesis Data Streams"
+    ],
+    "database": {
+      "primary": "DynamoDB",
+      "justification": "Serverless, auto-scaling, low latency, cost-effective for high read/write throughput"
+    },
+    "cache": {
+      "type": "CloudFront + Redis",
+      "strategy": "TTL-based caching with 99% hit rate target",
+      "invalidation": "Write-through with immediate TTL reset on update"
+    },
+    "hash_strategy": {
+      "algorithm": "Base62",
+      "length": 6,
+      "collision_handling": "Retry with random suffix"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "Edge caching at CloudFront to minimize backend hits",
+    "write_path": "Async queue via Kinesis to Lambda for processing",
+    "horizontal_scaling": "Lambda concurrency limits + API Gateway auto-scaling"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment with health checks",
+    "failover": "DNS-based routing with Route53 health checks",
+    "data_replication": "DynamoDB Global Tables for multi-region redundancy"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft delete flag + scheduled purge job for 30 days",
+    "data_retention": "Configurable per link via metadata",
+    "analytics_separation": "Kinesis stream for analytics, separate from primary DB"
+  },
+  "cost_estimate": {
+    "monthly_total": 5000,
+    "breakdown": {
+      "compute": 1000,
+      "database": 1000,
+      "cache": 1000,
+      "cdn": 1500,
+      "other": 500
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket algorithm",
+    "limits": "100 requests per second per IP address"
+  },
+  "monitoring": {
+    "metrics": [
+      "p99_latency",
+      "error_rate",
+      "cache_hit_ratio",
+      "throughput"
+    ],
+    "alerting": "PagerDuty on SLO breach or error rate > 1%"
+  }
+}

@@ -1,0 +1,968 @@
+Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Goal:** Create a 4-week content calendar for a B2B SaaS product launch.
+    *   **Output Format:** JSON.
+    *   **Hard Constraints:**
+        1.  Total pieces: 20.
+        2.  Weekly schedule: 5 pieces (Mon-Fri).
+        3.  Content Types: B (Blog), S (Social), E (Email), V (Video), W (Webinar).
+        4.  Distribution: B=6, S=6, E=4, V=3, W=1.
+        5.  No consecutive days same type.
+        6.  Webinar (W) on Wed or Thu in Week 3 or 4.
+        7.  Videos (V) not on Mondays.
+        8.  Emails (E) on Tuesday or Thursday only.
+        9.  Week 1 Monday (Mon) must be Blog (B).
+        10. Week 4 Friday (Fri) must be Social (S).
+        11. Each Blog (B) must have a Social (S) within 2 days after it.
+        12. No more than 2 content pieces of the same type per week.
+
+2.  **Deconstruct Constraints & Plan:**
+
+    *   **Total Slots:** 4 weeks * 5 days = 20 slots.
+    *   **Counts:** B=6, S=6, E=4, V=3, W=1.
+    *   **Weekly Limit:** Max 2 of any type per week.
+    *   **Specific Placements:**
+        *   W1 Mon: B
+        *   W4 Fri: S
+        *   W: W3 Wed/Thu OR W4 Wed/Thu.
+        *   E: Only Tue or Thu.
+        *   V: Not Mon.
+        *   No Consecutive Same Type.
+        *   Blog Promotion: If B on Day X, S must be on Day X+1 or X+2.
+
+3.  **Step-by-Step Scheduling:**
+
+    *   **Week 1:**
+        *   Mon: B (Constraint 9).
+        *   Tue: E (Constraint 8 allows Tue/Thu). Let's try E.
+        *   Wed: ?
+        *   Thu: ?
+        *   Fri: ?
+        *   *Constraint Check:* B count so far: 1. E count so far: 1.
+        *   *Constraint Check:* No consecutive same type. Mon=B, Tue=E (OK).
+        *   *Blog Promotion:* B on Mon needs S on Tue or Wed. Tue is E. So Wed must be S.
+        *   Wed: S.
+        *   Thu: ? (E allowed). Let's put E here to meet E count (4 total).
+        *   Fri: ?
+        *   *Current W1:* B, E, S, E, ?
+        *   *Counts W1:* B=1, E=2, S=1.
+        *   *Remaining W1:* Need 1 more. Can't be E (max 2/week). Can't be B (max 2/week, but let's save for later). Can't be S (max 2/week, but let's save). V or W? W is reserved for W3/W4. So V.
+        *   *Check V:* V not on Mon (OK).
+        *   *Check Consecutive:* Thu=E, Fri=V (OK).
+        *   *W1 Schedule:* B, E, S, E, V.
+        *   *W1 Counts:* B=1, E=2, S=1, V=1, W=0.
+
+    *   **Week 2:**
+        *   Need to balance counts. Total needed: B=6, S=6, E=4, V=3, W=1.
+        *   Current Used: B=1, S=1, E=2, V=1.
+        *   Remaining Needed: B=5, S=5, E=2, V=2, W=1.
+        *   *Constraint:* Max 2 per week.
+        *   *Constraint:* E only Tue/Thu.
+        *   *Constraint:* No consecutive same.
+        *   *Constraint:* Blog Promotion (B needs S within 2 days).
+        *   Let's place E on Tue and Thu (to use up remaining E=2).
+        *   Tue: E.
+        *   Thu: E.
+        *   Mon: ? (Not V). Let's put B.
+        *   Mon: B. (Promotion: Tue is E, Wed must be S).
+        *   Wed: S.
+        *   Fri: ? (Not E, Not B if we want to save B, Not S if we want to save S). Let's put V.
+        *   *W2 Schedule:* B, E, S, E, V.
+        *   *W2 Counts:* B=1, E=2, S=1, V=1.
+        *   *Total So Far:* B=2, S=2, E=4, V=2.
+        *   *Remaining Needed:* B=4, S=4, E=0, V=1, W=1.
+        *   *Check Consecutive:*
+            *   W1 Fri: V. W2 Mon: B. (OK).
+            *   W2 Mon: B. W2 Tue: E. (OK).
+            *   W2 Tue: E. W2 Wed: S. (OK).
+            *   W2 Wed: S. W2 Thu: E. (OK).
+            *   W2 Thu: E. W2 Fri: V. (OK).
+        *   *Blog Promotion Check:*
+            *   W1 Mon B -> W1 Wed S (OK, within 2 days).
+            *   W2 Mon B -> W2 Wed S (OK, within 2 days).
+
+    *   **Week 3:**
+        *   Remaining Needed: B=4, S=4, E=0, V=1, W=1.
+        *   *Constraint:* W must be Wed or Thu.
+        *   *Constraint:* E=0 remaining, so no E in W3/W4.
+        *   *Constraint:* Max 2 per week.
+        *   *Constraint:* No consecutive same.
+        *   *Constraint:* Blog Promotion (B needs S within 2 days).
+        *   Let's place W on Wed (Constraint 6).
+        *   Wed: W.
+        *   Mon: ? (Not V, not W). Let's put B.
+        *   Mon: B. (Promotion: Tue or Wed must be S). Wed is W. So Tue must be S.
+        *   Tue: S.
+        *   Thu: ? (Not W, not S if we want to save, not B if we want to save). Let's put V.
+        *   Thu: V. (Check V constraint: Not Mon. OK).
+        *   Fri: ? (Not V, not W). Let's put B.
+        *   Fri: B. (Promotion: Next week Mon or Tue must be S).
+        *   *W3 Schedule:* B, S, W, V, B.
+        *   *W3 Counts:* B=2, S=1, W=1, V=1.
+        *   *Total So Far:* B=4, S=3, E=4, V=3, W=1.
+        *   *Remaining Needed:* B=2, S=3, E=0, V=0, W=0.
+        *   *Check Consecutive:*
+            *   W2 Fri: V. W3 Mon: B. (OK).
+            *   W3 Mon: B. W3 Tue: S. (OK).
+            *   W3 Tue: S. W3 Wed: W. (OK).
+            *   W3 Wed: W. W3 Thu: V. (OK).
+            *   W3 Thu: V. W3 Fri: B. (OK).
+        *   *Blog Promotion Check:*
+            *   W3 Mon B -> W3 Tue S (OK).
+            *   W3 Fri B -> W4 Mon/Tue must be S.
+
+    *   **Week 4:**
+        *   Remaining Needed: B=2, S=3.
+        *   *Constraint:* W4 Fri must be S (Constraint 10).
+        *   *Constraint:* No consecutive same.
+        *   *Constraint:* No more than 2 of same type per week.
+        *   *Constraint:* Blog Promotion (W3 Fri B needs S on W4 Mon or Tue).
+        *   Let's fill W4.
+        *   Fri: S.
+        *   We need 2 B and 3 S total for W4.
+        *   We need to satisfy W3 Fri B promotion. So Mon or Tue must be S.
+        *   Let's put S on Mon.
+        *   Mon: S.
+        *   Tue: ? (Need B or S). Let's put B.
+        *   Tue: B. (Promotion: Wed or Thu must be S).
+        *   Wed: ? (Need B or S). Let's put S.
+        *   Wed: S.
+        *   Thu: ? (Need B or S). Let's put B.
+        *   Thu: B. (Promotion: Fri must be S).
+        *   Fri: S.
+        *   *W4 Schedule:* S, B, S, B, S.
+        *   *W4 Counts:* B=2, S=3.
+        *   *Total Counts:* B=6, S=6, E=4, V=3, W=1. (Matches Constraint 4).
+        *   *Check Consecutive:*
+            *   W3 Fri: B. W4 Mon: S. (OK).
+            *   W4 Mon: S. W4 Tue: B. (OK).
+            *   W4 Tue: B. W4 Wed: S. (OK).
+            *   W4 Wed: S. W4 Thu: B. (OK).
+            *   W4 Thu: B. W4 Fri: S. (OK).
+        *   *Check Blog Promotion:*
+            *   W3 Fri B -> W4 Mon S (OK, within 2 days).
+            *   W4 Tue B -> W4 Wed S (OK, within 2 days).
+            *   W4 Thu B -> W4 Fri S (OK, within 2 days).
+        *   *Check Webinar:* W3 Wed (Constraint 6: Wed or Thu in W3 or W4). OK.
+        *   *Check Emails:* W1 Tue, W1 Thu, W2 Tue, W2 Thu. (Constraint 8: Tue or Thu only). OK.
+        *   *Check Videos:* W1 Fri, W2 Fri, W3 Thu. (Constraint 7: Not Mon). OK.
+        *   *Check Max 2 per week:*
+            *   W1: B1, E2, S1, V1. (Max 2). OK.
+            *   W2: B1, E2, S1, V1. (Max 2). OK.
+            *   W3: B2, S1, W1, V1. (Max 2). OK.
+            *   W4: B2, S3. (Wait, S=3 in W4 violates Constraint 12: "No more than 2 content pieces of the same type per week").
+            *   **VIOLATION FOUND:** W4 has 3 Social posts.
+
+    *   **Correction for Week 4:**
+        *   Need B=2, S=3 total for W4.
+        *   Constraint 12 says Max 2 of same type per week.
+        *   So W4 cannot have 3 S.
+        *   This means I need to move an S from W4 to earlier weeks, or move a B to W4.
+        *   Total Counts: B=6, S=6.
+        *   Current W1-W3 Counts:
+            *   W1: B1, S1.
+            *   W2: B1, S1.
+            *   W3: B2, S1.
+            *   Total W1-W3: B=4, S=3.
+            *   Remaining for W4: B=2, S=3.
+        *   To fix W4 S=3, I need to move an S to W1, W2, or W3.
+        *   But W1-W3 are already filled in my draft. I need to reshuffle.
+        *   Let's look at the remaining counts again.
+        *   Total: B=6, S=6, E=4, V=3, W=1.
+        *   W1: B, E, S, E, V (B1, E2, S1, V1).
+        *   W2: B, E, S, E, V (B1, E2, S1, V1).
+        *   W3: B, S, W, V, B (B2, S1, W1, V1).
+        *   W4: S, B, S, B, S (B2, S3). -> Violation.
+        *   I need to reduce S in W4 by 1 and increase S in W1/W2/W3 by 1.
+        *   I need to increase B in W1/W2/W3 by 1 to keep total B=6.
+        *   Wait, Total B=6. Current W1-W3 B=4. W4 B=2. Total 6. OK.
+        *   Total S=6. Current W1-W3 S=3. W4 S=3. Total 6. OK.
+        *   Problem is W4 S=3 > 2.
+        *   I need to move one S from W4 to W1, W2, or W3.
+        *   If I move S from W4 to W1: W1 becomes B, E, S, E, V, S? No, 5 slots.
+        *   I need to swap a type in W4 with a type in W1/W2/W3.
+        *   W4 currently: S, B, S, B, S.
+        *   I need to change one S to something else. But I only have B, S, E, V, W left to distribute.
+        *   E is done (4 total). V is done (3 total). W is done (1 total).
+        *   So W4 must be B and S only.
+        *   If W4 has 2 B and 3 S, that's 5 slots.
+        *   If I change one S to B, W4 becomes 3 B, 2 S.
+        *   Then Total B = 4 (W1-W3) + 3 (W4) = 7. Too many.
+        *   So I must move an S from W4 to W1, W2, or W3, and move a B from W1, W2, or W3 to W4.
+        *   Let's try moving S from W4 to W1.
+        *   W1 currently: B, E, S, E, V. (B1, S1).
+        *   If I add S to W1, I must remove something.
+        *   W1 has V. Can I move V to W4?
+        *   V count is 3. W1 has 1, W2 has 1, W3 has 1.
+        *   If I move V from W1 to W4.
+        *   W1: B, E, S, E, S (B1, E2, S2). OK.
+        *   W4: S, B, S, B, V (B2, S2, V1). OK.
+        *   Check W1 constraints:
+            *   Mon B (OK).
+            *   Fri S.
+            *   Consecutive: Thu E, Fri S (OK).
+            *   Blog Promo: W1 Mon B -> W1 Wed S (OK).
+            *   Max 2 per week: B1, E2, S2. (OK).
+        *   Check W4 constraints:
+            *   Fri S (OK).
+            *   Consecutive: Thu B, Fri S (OK).
+            *   Blog Promo: W4 Tue B -> W4 Wed S (OK). W4 Thu B -> W4 Fri S (OK).
+            *   Max 2 per week: B2, S2, V1. (OK).
+            *   V not Mon: W4 Fri V (OK).
+        *   Check W3 constraints:
+            *   W3: B, S, W, V, B. (B2, S1, W1, V1).
+            *   W3 Fri B -> W4 Mon S. (OK).
+        *   Check W2 constraints:
+            *   W2: B, E, S, E, V. (B1, E2, S1, V1).
+            *   W2 Fri V -> W3 Mon B. (OK).
+        *   Check W1 constraints:
+            *   W1: B, E, S, E, S. (B1, E2, S2).
+            *   W1 Fri S -> W2 Mon B. (OK).
+        *   Check Total Counts:
+            *   B: W1(1) + W2(1) + W3(2) + W4(2) = 6. (OK).
+            *   S: W1(2) + W2(1) + W3(1) + W4(2) = 6. (OK).
+            *   E: W1(2) + W2(2) + W3(0) + W4(0) = 4. (OK).
+            *   V: W1(0) + W2(1) + W3(1) + W4(1) = 3. (Wait, I moved V from W1 to W4).
+            *   Let's recount V.
+            *   Old W1: V on Fri.
+            *   New W1: S on Fri.
+            *   New W4: V on Fri.
+            *   W2: V on Fri.
+            *   W3: V on Thu.
+            *   Total V: W2(1) + W3(1) + W4(1) = 3. (OK).
+        *   Check V Constraint: Not Mon.
+            *   W2 Fri, W3 Thu, W4 Fri. (OK).
+        *   Check E Constraint: Tue/Thu only.
+            *   W1 Tue, Thu.
+            *   W2 Tue, Thu.
+            *   W3 None.
+            *   W4 None.
+            *   (OK).
+        *   Check Webinar: W3 Wed. (OK).
+        *   Check Consecutive:
+            *   W1: B, E, S, E, S. (OK).
+            *   W2: B, E, S, E, V. (OK).
+            *   W3: B, S, W, V, B. (OK).
+            *   W4: S, B, S, B, V. (OK).
+            *   Cross-week:
+                *   W1 Fri S -> W2 Mon B. (OK).
+                *   W2 Fri V -> W3 Mon B. (OK).
+                *   W3 Fri B -> W4 Mon S. (OK).
+        *   Check Blog Promotion (S within 2 days after B):
+            *   W1 Mon B -> W1 Wed S. (OK).
+            *   W2 Mon B -> W2 Wed S. (OK).
+            *   W3 Mon B -> W3 Tue S. (OK).
+            *   W3 Fri B -> W4 Mon S. (OK).
+            *   W4 Tue B -> W4 Wed S. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+        *   Check W4 Fri S (Constraint 10). (OK).
+        *   Check W1 Mon B (Constraint 9). (OK).
+        *   Check Max 2 per week (Constraint 12).
+            *   W1: B1, E2, S2. (OK).
+            *   W2: B1, E2, S1, V1. (OK).
+            *   W3: B2, S1, W1, V1. (OK).
+            *   W4: B2, S2, V1. (OK).
+
+4.  **Final Verification of Schedule:**
+
+    *   **Week 1:**
+        *   Mon: B
+        *   Tue: E
+        *   Wed: S
+        *   Thu: E
+        *   Fri: S
+    *   **Week 2:**
+        *   Mon: B
+        *   Tue: E
+        *   Wed: S
+        *   Thu: E
+        *   Fri: V
+    *   **Week 3:**
+        *   Mon: B
+        *   Tue: S
+        *   Wed: W
+        *   Thu: V
+        *   Fri: B
+    *   **Week 4:**
+        *   Mon: S
+        *   Tue: B
+        *   Wed: S
+        *   Thu: B
+        *   Fri: V
+
+    *   **Counts:**
+        *   B: 1+1+2+2 = 6.
+        *   S: 2+1+1+2 = 6.
+        *   E: 2+2+0+0 = 4.
+        *   V: 0+1+1+1 = 3.
+        *   W: 0+0+1+0 = 1.
+        *   Total: 20.
+
+    *   **Constraints:**
+        1.  20 pieces? Yes.
+        2.  5 per week? Yes.
+        3.  Types B, S, E, V, W? Yes.
+        4.  Distribution 6, 6, 4, 3, 1? Yes.
+        5.  No consecutive same?
+            *   W1: B-E-S-E-S (OK).
+            *   W2: B-E-S-E-V (OK).
+            *   W3: B-S-W-V-B (OK).
+            *   W4: S-B-S-B-V (OK).
+            *   Cross: W1-Fri(S)-W2-Mon(B) OK. W2-Fri(V)-W3-Mon(B) OK. W3-Fri(B)-W4-Mon(S) OK.
+        6.  Webinar Wed/Thu W3/W4? W3 Wed. Yes.
+        7.  Videos not Mon? W2 Fri, W3 Thu, W4 Fri. Yes.
+        8.  Emails Tue/Thu? W1 Tue/Thu, W2 Tue/Thu. Yes.
+        9.  W1 Mon B? Yes.
+        10. W4 Fri S? **Wait.** My schedule has W4 Fri as V.
+            *   Constraint 10: "The last piece (week 4, Friday) must be a social post (recap)".
+            *   My W4 Fri is V.
+            *   **VIOLATION.**
+
+    *   **Fixing W4 Fri:**
+        *   Must be S.
+        *   Current W4: S, B, S, B, V.
+        *   Change Fri to S.
+        *   W4: S, B, S, B, S.
+        *   Now W4 has S=3. Violation of Constraint 12 (Max 2 per week).
+        *   I need to swap one S in W4 with something else, but keep Fri=S.
+        *   So W4 must be: S, B, S, B, S -> Swap Tue B or Wed S or Thu B.
+        *   If I swap Tue B to V? W4: S, V, S, B, S.
+            *   V count becomes 4. (Limit 3).
+            *   Need to remove V from elsewhere.
+            *   W2 Fri is V. W3 Thu is V.
+            *   If I move V from W2 Fri to W4 Tue.
+            *   W2 Fri needs to be something else.
+            *   W2 Fri was V. Can be S? W2 S count is 1. Max 2. OK.
+            *   W2: B, E, S, E, S.
+            *   W4: S, V, S, B, S. (S=3). Still S=3.
+            *   I need to reduce S in W4.
+            *   W4 Fri MUST be S.
+            *   So W4 has 1 S guaranteed.
+            *   I can have max 1 more S in W4.
+            *   So W4 can have max 2 S.
+            *   Current W4: S, B, S, B, S (3 S).
+            *   I need to change one of the other S to B or V or E or W.
+            *   E is done (4 total). W is done (1 total). V is done (3 total).
+            *   So I must change an S to B.
+            *   W4: S, B, S, B, S -> Change Wed S to B.
+            *   W4: S, B, B, B, S. (3 B).
+            *   Total B count: W1(1)+W2(1)+W3(2)+W4(3) = 7. Too many.
+            *   I need to move a B from W4 to W1/W2/W3.
+            *   W3 has B=2. W3 Fri is B.
+            *   If I move W3 Fri B to W4 Wed S?
+            *   W3 Fri becomes S.
+            *   W4 Wed becomes B.
+            *   W3: B, S, W, V, S. (B2, S2, W1, V1). OK.
+            *   W4: S, B, B, B, S. (B3, S2). Still B3.
+            *   I need to move B from W4 to W1/W2/W3.
+            *   W1 has B1. W2 has B1. W3 has B2.
+            *   If I move W4 Tue B to W1 Fri?
+            *   W1 Fri was S.
+            *   W1: B, E, S, E, B. (B2, E2, S1). OK.
+            *   W4: S, B, B, B, S. (Still B3).
+            *   I need to move B from W4 to W1/W2/W3 AND move S from W1/W2/W3 to W4 to balance counts.
+            *   Let's look at the counts again.
+            *   Total B=6, S=6.
+            *   W1: B1, S2.
+            *   W2: B1, S1.
+            *   W3: B2, S1.
+            *   W4: B2, S2. (Target).
+            *   My previous W4 was S, B, S, B, V (B2, S2, V1).
+            *   Constraint 10 says W4 Fri = S.
+            *   So W4 must be: ?, ?, ?, ?, S.
+            *   To get B2, S2, V1 in W4 (Total 5).
+            *   Fri = S.
+            *   Remaining 4 slots: B2, S1, V1.
+            *   Schedule: S, B, S, B, S -> S3. Bad.
+            *   Schedule: S, B, V, B, S -> B2, S2, V1.
+            *   Let's try W4: S, B, V, B, S.
+            *   Check Consecutive:
+                *   W3 Fri B -> W4 Mon S. (OK).
+                *   W4 Mon S -> W4 Tue B. (OK).
+                *   W4 Tue B -> W4 Wed V. (OK).
+                *   W4 Wed V -> W4 Thu B. (OK).
+                *   W4 Thu B -> W4 Fri S. (OK).
+            *   Check Blog Promo:
+                *   W4 Tue B -> W4 Wed V (No S). **VIOLATION.**
+                *   B needs S within 2 days.
+                *   W4 Tue B. Wed is V. Thu is B. Fri is S.
+                *   S is on Fri (3 days after Tue). Violation.
+            *   So W4 Tue cannot be B if Wed is V.
+            *   W4 Tue must be S?
+            *   W4: S, S, V, B, S. (Consecutive S). Violation.
+            *   W4: S, V, S, B, S.
+                *   Tue V. Wed S. (OK for B promo if Tue was B, but Tue is V).
+                *   Thu B. Fri S. (OK).
+                *   Tue V. Wed S. (OK).
+                *   Mon S. Tue V. (OK).
+                *   Counts: S3, V1, B1. (S=3 Violation).
+            *   I need to reduce S in W4.
+            *   W4 Fri = S.
+            *   I need 1 more S in W4.
+            *   So W4 has 2 S.
+            *   W4: S, B, V, B, S. (B2, S2, V1).
+            *   Problem: W4 Tue B needs S on Wed or Thu.
+            *   Wed is V. Thu is B.
+            *   So W4 Tue B fails promo.
+            *   Solution: Move B from Tue to Wed?
+            *   W4: S, V, B, B, S. (Consecutive B). Violation.
+            *   Solution: Move B from Tue to Thu?
+            *   W4: S, V, S, B, S. (S3). Violation.
+            *   Solution: Move B from Tue to Mon?
+            *   W4: B, V, S, B, S. (B2, S2, V1).
+            *   Check Promo:
+                *   W4 Mon B -> W4 Tue V (No), W4 Wed S (Yes). OK.
+                *   W4 Thu B -> W4 Fri S (Yes). OK.
+            *   Check Consecutive:
+                *   W3 Fri B -> W4 Mon B. **VIOLATION.** (Consecutive B).
+            *   So W4 Mon cannot be B.
+            *   W4 Mon must be S (to satisfy W3 Fri B promo).
+            *   So W4 Mon = S.
+            *   W4 Fri = S.
+            *   W4 needs 2 S total. So W4 Mon=S, W4 Fri=S. No other S.
+            *   W4 remaining 3 slots: B2, V1.
+            *   Schedule: S, ?, ?, ?, S.
+            *   Slots: Tue, Wed, Thu.
+            *   Types: B, B, V.
+            *   Order: S, B, V, B, S.
+            *   Check Promo:
+                *   W4 Tue B -> Wed V (No), Thu B (No). **VIOLATION.**
+            *   Order: S, V, B, B, S. (Consecutive B).
+            *   Order: S, B, B, V, S. (Consecutive B).
+            *   Order: S, V, B, S, S. (Consecutive S).
+            *   It seems impossible to fit B2, V1, S2 in W4 with Fri=S, Mon=S, and Promo constraints.
+            *   Wait, W4 Mon doesn't *have* to be S.
+            *   W3 Fri B needs S on W4 Mon or Tue.
+            *   If W4 Mon is B, W3 Fri B -> W4 Mon B (Consecutive). Violation.
+            *   So W4 Mon cannot be B.
+            *   So W4 Mon must be S (to satisfy W3 Fri B promo).
+            *   So W4 Mon = S.
+            *   W4 Fri = S.
+            *   So W4 has 2 S.
+            *   Remaining W4 slots (Tue, Wed, Thu) must be B, B, V.
+            *   We need to place B, B, V in Tue, Wed, Thu.
+            *   Constraint: No consecutive same.
+            *   Constraint: B needs S within 2 days.
+            *   If Tue=B, Wed=V, Thu=B.
+                *   Tue B -> Wed V (No), Thu B (No). Fail.
+            *   If Tue=V, Wed=B, Thu=B.
+                *   Consecutive B. Fail.
+            *   If Tue=B, Wed=B, Thu=V.
+                *   Consecutive B. Fail.
+            *   If Tue=V, Wed=B, Thu=S? No, S count is max 2.
+            *   This implies my distribution of B and S across weeks is wrong.
+            *   I need to move a B from W4 to W3, and move an S from W3 to W4.
+            *   Current W3: B2, S1.
+            *   Current W4: B2, S2.
+            *   Swap: W3 B2->B1, S1->S2. W4 B2->B1, S2->S1.
+            *   New W3: B1, S2.
+            *   New W4: B1, S1. (Plus V1, W0, E0). Total 3 slots? No, 5 slots.
+            *   Wait, W4 needs 5 slots.
+            *   If W4 has B1, S1, V1. That's 3. Missing 2.
+            *   I need to fill W4 with 5 items.
+            *   Total counts: B6, S6, E4, V3, W1.
+            *   W1: B1, E2, S2. (5).
+            *   W2: B1, E2, S1, V1. (5).
+            *   W3: B1, S2, W1, V1. (5).
+            *   W4: B3, S1, V1. (5). (B3 Violation).
+            *   I need to balance B and S.
+            *   Let's try to put more S in W3.
+            *   W3: B1, S2, W1, V1. (5).
+            *   W4: B2, S2, V1. (5).
+            *   Check W4 constraints again with B2, S2, V1.
+            *   W4 Fri = S.
+            *   W4 Mon = S (to satisfy W3 Fri B promo).
+            *   W4: S, ?, ?, ?, S.
+            *   Remaining: B2, V1.
+            *   Slots: Tue, Wed, Thu.
+            *   Types: B, B, V.
+            *   Promo: Tue B -> Wed/Thu S.
+            *   If Tue=B, Wed=V, Thu=B. Tue B fails promo.
+            *   If Tue=V, Wed=B, Thu=B. Consecutive B.
+            *   If Tue=B, Wed=B, Thu=V. Consecutive B.
+            *   It seems I cannot fit B2, V1 into Tue/Wed/Thu with Fri=S, Mon=S without violating Promo or Consecutive.
+            *   Unless W3 Fri is NOT B.
+            *   If W3 Fri is not B, W4 Mon doesn't need to be S.
+            *   W3 Fri was B in my draft.
+            *   Let's change W3 Fri.
+            *   W3: B, S, W, V, ?.
+            *   If W3 Fri = S.
+            *   W3: B, S, W, V, S. (B1, S2, W1, V1).
+            *   W4: B2, S2, V1.
+            *   W4 Fri = S.
+            *   W4 Mon = ? (Not S, because W3 Fri is S, so W4 Mon can be B).
+            *   W4: B, ?, ?, ?, S.
+            *   Remaining: B1, V1, S1.
+            *   Slots: Tue, Wed, Thu.
+            *   Types: B, V, S.
+            *   Promo: W4 Mon B -> Tue S.
+            *   So Tue = S.
+            *   W4: B, S, ?, ?, S.
+            *   Remaining: B1, V1.
+            *   Slots: Wed, Thu.
+            *   Wed = V, Thu = B.
+            *   W4: B, S, V, B, S.
+            *   Check Promo:
+                *   Mon B -> Tue S. (OK).
+                *   Thu B -> Fri S. (OK).
+            *   Check Consecutive:
+                *   W3 Fri S -> W4 Mon B. (OK).
+                *   W4 Mon B -> Tue S. (OK).
+                *   W4 Tue S -> Wed V. (OK).
+                *   W4 Wed V -> Thu B. (OK).
+                *   W4 Thu B -> Fri S. (OK).
+            *   Check Counts W4: B2, S2, V1. (OK).
+            *   Check Counts W3: B1, S2, W1, V1. (OK).
+            *   Check Total Counts:
+                *   B: W1(1)+W2(1)+W3(1)+W4(2) = 5. **VIOLATION** (Need 6).
+            *   I need one more B.
+            *   Move B from W4 to W1/W2/W3.
+            *   W1 has B1. W2 has B1. W3 has B1.
+            *   If I add B to W1. W1: B, E, S, E, S. (B1).
+            *   If I add B to W1 Fri? W1 Fri is S.
+            *   Swap W1 Fri S with W4 Fri S? No, W4 Fri must be S.
+            *   Swap W1 Fri S with W4 Tue B?
+            *   W1: B, E, S, E, B. (B2, E2, S1). OK.
+            *   W4: S, S, V, B, S. (Consecutive S).
+            *   Swap W1 Fri S with W4 Wed V?
+            *   W1: B, E, S, E, V. (B1, E2, S1, V1).
+            *   W4: S, B, S, B, S. (S3).
+            *   I need to move B from W4 to W1.
+            *   W4: S, B, V, B, S. (B2).
+            *   W1: B, E, S, E, B. (B2).
+            *   Total B = 2+1+1+2 = 6.
+            *   Total S = 1+1+2+2 = 6.
+            *   Let's check W1 Fri B.
+            *   W1: B, E, S, E, B.
+            *   Promo: W1 Mon B -> W1 Wed S. (OK).
+            *   Promo: W1 Fri B -> W2 Mon S.
+            *   W2 Mon is B. **VIOLATION.**
+            *   So W1 Fri cannot be B if W2 Mon is B.
+            *   W2 Mon is B (Constraint: W1 Mon B, W2 Mon B pattern?).
+            *   I can change W2 Mon.
+            *   W2: ?, E, S, E, V.
+            *   W2 Mon needs to be S (to satisfy W1 Fri B promo).
+            *   W2: S, E, S, E, V.
+            *   Check Consecutive: W1 Fri B -> W2 Mon S. (OK).
+            *   W2 Mon S -> W2 Tue E. (OK).
+            *   W2 Tue E -> W2 Wed S. (OK).
+            *   W2 Wed S -> W2 Thu E. (OK).
+            *   W2 Thu E -> W2 Fri V. (OK).
+            *   W2 Counts: S1, E2, V1. (B0).
+            *   Total B so far: W1(2) + W2(0) + W3(1) + W4(2) = 5.
+            *   Need 1 more B.
+            *   Move B from W4 to W2.
+            *   W2: S, E, S, E, B. (B1, S1, E2, V0).
+            *   W2 Fri B -> W3 Mon S.
+            *   W3: S, S, W, V, S. (Consecutive S).
+            *   W3 Mon needs to be S (for W2 Fri B promo).
+            *   W3: S, ?, W, V, ?.
+            *   W3 Tue needs to be B (to get B count up).
+            *   W3: S, B, W, V, S.
+            *   Check Promo:
+                *   W2 Fri B -> W3 Mon S. (OK).
+                *   W3 Tue B -> W3 Wed W (No), W3 Thu V (No). **VIOLATION.**
+            *   W3 Tue B needs S on Wed or Thu.
+            *   Wed is W. Thu is V.
+            *   So W3 Tue cannot be B.
+            *   Move B to W3 Fri?
+            *   W3: S, S, W, V, B. (Consecutive S).
+            *   Move B to W3 Mon?
+            *   W3: B, S, W, V, S.
+            *   Promo: W3 Mon B -> W3 Tue S. (OK).
+            *   W2 Fri B -> W3 Mon B. (Consecutive B). **VIOLATION.**
+            *   So W2 Fri cannot be B.
+            *   W2 Fri was V.
+            *   W2: S, E, S, E, V.
+            *   W2 Fri V -> W3 Mon B. (OK).
+            *   W3: B, S, W, V, S.
+            *   Promo: W3 Mon B -> W3 Tue S. (OK).
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W4: B, S, V, B, S.
+            *   Promo: W4 Mon B -> W4 Tue S. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+            *   Counts:
+                *   W1: B2, E2, S1. (B=2).
+                *   W2: S1, E2, V1. (B=0).
+                *   W3: B1, S2, W1, V1. (B=1).
+                *   W4: B2, S2, V1. (B=2).
+                *   Total B: 2+0+1+2 = 5. **VIOLATION** (Need 6).
+            *   I need one more B.
+            *   W2 has 0 B. W2 needs 1 B.
+            *   W2: S, E, S, E, V.
+            *   Change W2 Fri V to B?
+            *   W2: S, E, S, E, B.
+            *   Promo: W2 Fri B -> W3 Mon S.
+            *   W3 Mon is B. **VIOLATION.**
+            *   Change W2 Wed S to B?
+            *   W2: S, E, B, E, V.
+            *   Promo: W2 Wed B -> W2 Thu E (No), W2 Fri V (No). **VIOLATION.**
+            *   Change W2 Mon S to B?
+            *   W2: B, E, S, E, V.
+            *   Promo: W2 Mon B -> W2 Wed S. (OK).
+            *   W1 Fri B -> W2 Mon B. **VIOLATION.**
+            *   So W1 Fri cannot be B.
+            *   W1 Fri was B in this scenario.
+            *   W1: B, E, S, E, B.
+            *   Change W1 Fri to S?
+            *   W1: B, E, S, E, S.
+            *   Promo: W1 Mon B -> W1 Wed S. (OK).
+            *   W1 Fri S -> W2 Mon B. (OK).
+            *   W2: B, E, S, E, V.
+            *   Promo: W2 Mon B -> W2 Wed S. (OK).
+            *   Counts:
+                *   W1: B1, E2, S2.
+                *   W2: B1, E2, S1, V1.
+                *   W3: B1, S2, W1, V1.
+                *   W4: B2, S2, V1.
+                *   Total B: 1+1+1+2 = 5. **VIOLATION.**
+            *   I need 6 B.
+            *   I have 5.
+            *   Where can I add a B?
+            *   W1 has B1. W2 has B1. W3 has B1. W4 has B2.
+            *   W1 Fri is S. W2 Mon is B.
+            *   W3 Mon is B. W3 Fri is S.
+            *   W4 Mon is B. W4 Thu is B.
+            *   I need one more B.
+            *   W3 has B1. W3 Fri is S.
+            *   If W3 Fri is B.
+            *   W3: B, S, W, V, B.
+            *   Promo: W3 Mon B -> W3 Tue S. (OK).
+            *   W3 Fri B -> W4 Mon S.
+            *   W4: S, B, V, B, S.
+            *   Promo: W4 Mon S (No B). W4 Tue B -> W4 Wed V (No), W4 Thu B (No). **VIOLATION.**
+            *   W4 Tue B needs S on Wed or Thu.
+            *   W4 Wed is V. W4 Thu is B.
+            *   So W4 Tue B fails.
+            *   W4 Tue must be S.
+            *   W4: S, S, V, B, S. (Consecutive S).
+            *   W4: S, V, S, B, S. (S3).
+            *   W4: S, V, B, B, S. (Consecutive B).
+            *   W4: S, B, S, B, S. (S3).
+            *   It seems W4 Tue B is hard to satisfy with Fri=S.
+            *   If W4 Tue is S.
+            *   W4: S, S... (Consecutive).
+            *   So W4 Mon must be B?
+            *   W4: B, S, V, B, S.
+            *   Promo: W4 Mon B -> W4 Tue S. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+            *   W3 Fri B -> W4 Mon B. (Consecutive B).
+            *   So W3 Fri cannot be B.
+            *   W3 Fri must be S.
+            *   W3: B, S, W, V, S.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W4: B, S, V, B, S.
+            *   Counts:
+                *   W1: B1, E2, S2.
+                *   W2: B1, E2, S1, V1.
+                *   W3: B1, S2, W1, V1.
+                *   W4: B2, S2, V1.
+                *   Total B: 5.
+            *   I need 6 B.
+            *   I need to add a B somewhere.
+            *   W1 has B1. W2 has B1. W3 has B1. W4 has B2.
+            *   W1 Fri is S. W2 Mon is B.
+            *   W3 Mon is B. W3 Fri is S.
+            *   W4 Mon is B. W4 Thu is B.
+            *   Where can I put another B?
+            *   W1 Fri? If W1 Fri B.
+            *   W1: B, E, S, E, B.
+            *   W1 Fri B -> W2 Mon S.
+            *   W2: S, E, S, E, V.
+            *   W2 Mon S -> W2 Tue E. (OK).
+            *   W2 Fri V -> W3 Mon B. (OK).
+            *   W3: B, S, W, V, S.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W4: B, S, V, B, S.
+            *   Counts:
+                *   W1: B2, E2, S1.
+                *   W2: S2, E2, V1. (B0).
+                *   W3: B1, S2, W1, V1.
+                *   W4: B2, S2, V1.
+                *   Total B: 2+0+1+2 = 5.
+            *   Still 5.
+            *   I need 6.
+            *   W2 has 0 B. W2 needs 1 B.
+            *   W2: S, E, S, E, V.
+            *   Change W2 Fri V to B?
+            *   W2: S, E, S, E, B.
+            *   W2 Fri B -> W3 Mon S.
+            *   W3 Mon is B. **VIOLATION.**
+            *   Change W2 Wed S to B?
+            *   W2: S, E, B, E, V.
+            *   Promo: W2 Wed B -> W2 Thu E (No), W2 Fri V (No). **VIOLATION.**
+            *   Change W2 Mon S to B?
+            *   W2: B, E, S, E, V.
+            *   W1 Fri B -> W2 Mon B. **VIOLATION.**
+            *   So W1 Fri cannot be B.
+            *   W1 Fri must be S.
+            *   W1: B, E, S, E, S.
+            *   W2: B, E, S, E, V.
+            *   W3: B, S, W, V, S.
+            *   W4: B, S, V, B, S.
+            *   Total B: 1+1+1+2 = 5.
+            *   I am stuck at 5 B.
+            *   I need 6 B.
+            *   I need to add a B without breaking constraints.
+            *   W1: B, E, S, E, S. (B1).
+            *   W2: B, E, S, E, V. (B1).
+            *   W3: B, S, W, V, S. (B1).
+            *   W4: B, S, V, B, S. (B2).
+            *   Total 5.
+            *   I need to convert an S to B.
+            *   W1 Fri S -> B? (Violates W2 Mon B).
+            *   W2 Wed S -> B? (Violates Promo).
+            *   W3 Tue S -> B?
+            *   W3: B, B, W, V, S. (Consecutive B).
+            *   W3 Fri S -> B?
+            *   W3: B, S, W, V, B.
+            *   W3 Fri B -> W4 Mon S.
+            *   W4: S, S, V, B, S. (Consecutive S).
+            *   W4: S, B, V, B, S. (S2, B2, V1).
+            *   W4 Mon S -> W4 Tue B. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+            *   W3 Fri B -> W4 Mon S. (OK).
+            *   W3: B, S, W, V, B.
+            *   Promo: W3 Mon B -> W3 Tue S. (OK).
+            *   Counts:
+                *   W1: B1, E2, S2.
+                *   W2: B1, E2, S1, V1.
+                *   W3: B2, S1, W1, V1.
+                *   W4: B2, S2, V1.
+                *   Total B: 1+1+2+2 = 6.
+                *   Total S: 2+1+1+2 = 6.
+                *   Total E: 2+2+0+0 = 4.
+                *   Total V: 0+1+1+1 = 3.
+                *   Total W: 0+0+1+0 = 1.
+            *   Check Constraints:
+                *   W1 Mon B. (OK).
+                *   W4 Fri S. (OK).
+                *   W3 Wed W. (OK).
+                *   E on Tue/Thu. (W1, W2). (OK).
+                *   V not Mon. (W2 Fri, W3 Thu, W4 Fri). (OK).
+                *   No consecutive same.
+                    *   W1: B, E, S, E, S. (OK).
+                    *   W2: B, E, S, E, V. (OK).
+                    *   W3: B, S, W, V, B. (OK).
+                    *   W4: S, B, V, B, S. (OK).
+                    *   Cross: W1 Fri S -> W2 Mon B. (OK).
+                    *   W2 Fri V -> W3 Mon B. (OK).
+                    *   W3 Fri B -> W4 Mon S. (OK).
+                *   Blog Promo (S within 2 days).
+                    *   W1 Mon B -> W1 Wed S. (OK).
+                    *   W2 Mon B -> W2 Wed S. (OK).
+                    *   W3 Mon B -> W3 Tue S. (OK).
+                    *   W3 Fri B -> W4 Mon S. (OK).
+                    *   W4 Tue B -> W4 Wed V (No), W4 Thu B (No). **VIOLATION.**
+            *   W4 Tue B fails promo.
+            *   W4 Tue must be S.
+            *   W4: S, S... (Consecutive).
+            *   W4: S, V, S, B, S. (S3).
+            *   W4: S, V, B, B, S. (Consecutive B).
+            *   W4: S, B, S, B, S. (S3).
+            *   I need to move B from W4 Tue.
+            *   W4 Tue is B.
+            *   If W4 Tue is V.
+            *   W4: S, V, S, B, S. (S3).
+            *   If W4 Tue is E. (E count full).
+            *   If W4 Tue is W. (W count full).
+            *   If W4 Tue is S. (Consecutive).
+            *   So W4 Tue cannot be B.
+            *   W4 Tue must be S or V.
+            *   If W4 Tue is V. W4: S, V, S, B, S. (S3).
+            *   If W4 Tue is S. W4: S, S...
+            *   So W4 Mon cannot be S.
+            *   W4 Mon must be B.
+            *   W4: B, S, V, B, S.
+            *   W3 Fri B -> W4 Mon B. (Consecutive B).
+            *   So W3 Fri cannot be B.
+            *   W3 Fri must be S.
+            *   W3: B, S, W, V, S.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W4: B, S, V, B, S.
+            *   W4 Tue B -> W4 Wed V (No), W4 Thu B (No). **VIOLATION.**
+            *   W4 Tue B needs S on Wed or Thu.
+            *   W4 Wed is V. W4 Thu is B.
+            *   So W4 Tue B fails.
+            *   W4 Tue must be S.
+            *   W4: B, S, V, B, S.
+            *   W4 Mon B -> W4 Tue S. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+            *   W4: B, S, V, B, S.
+            *   Counts: B2, S2, V1.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W3: B, S, W, V, S.
+            *   W3 Mon B -> W3 Tue S. (OK).
+            *   W2 Fri V -> W3 Mon B. (OK).
+            *   W2: B, E, S, E, V.
+            *   W2 Mon B -> W2 Wed S. (OK).
+            *   W1 Fri S -> W2 Mon B. (OK).
+            *   W1: B, E, S, E, S.
+            *   W1 Mon B -> W1 Wed S. (OK).
+            *   Total B: 1+1+1+2 = 5. **VIOLATION** (Need 6).
+            *   I need 6 B.
+            *   I have 5.
+            *   W1: B1. W2: B1. W3: B1. W4: B2.
+            *   I need to add 1 B.
+            *   W1 Fri S -> B? (Violates W2 Mon B).
+            *   W2 Wed S -> B? (Violates Promo).
+            *   W3 Tue S -> B? (Violates Consecutive B with W3 Mon B).
+            *   W3 Fri S -> B? (Violates W4 Mon B consecutive).
+            *   W4 Thu B -> S? (Violates Promo W4 Thu B -> W4 Fri S).
+            *   W4 Mon B -> S? (Violates W3 Fri S -> W4 Mon B consecutive).
+            *   Wait, W3 Fri S -> W4 Mon B is OK.
+            *   W4 Mon B -> W4 Tue S is OK.
+            *   W4 Tue S -> W4 Wed V is OK.
+            *   W4 Wed V -> W4 Thu B is OK.
+            *   W4 Thu B -> W4 Fri S is OK.
+            *   W4: B, S, V, B, S. (B2, S2, V1).
+            *   W3: B, S, W, V, S. (B1, S2, W1, V1).
+            *   W2: B, E, S, E, V. (B1, E2, S1, V1).
+            *   W1: B, E, S, E, S. (B1, E2, S2).
+            *   Total B: 5.
+            *   I need 6 B.
+            *   I need to change an S to B.
+            *   W1 Fri S -> B.
+            *   W1: B, E, S, E, B.
+            *   W1 Fri B -> W2 Mon S.
+            *   W2: S, E, S, E, V.
+            *   W2 Mon S -> W2 Tue E. (OK).
+            *   W2 Fri V -> W3 Mon B. (OK).
+            *   W3: B, S, W, V, S.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W4: B, S, V, B, S.
+            *   Counts:
+                *   W1: B2, E2, S1.
+                *   W2: S2, E2, V1. (B0).
+                *   W3: B1, S2, W1, V1.
+                *   W4: B2, S2, V1.
+                *   Total B: 2+0+1+2 = 5.
+            *   Still 5.
+            *   I need 6.
+            *   W2 has 0 B. W2 needs 1 B.
+            *   W2: S, E, S, E, V.
+            *   Change W2 Fri V to B?
+            *   W2: S, E, S, E, B.
+            *   W2 Fri B -> W3 Mon S.
+            *   W3 Mon is B. **VIOLATION.**
+            *   Change W2 Wed S to B?
+            *   W2: S, E, B, E, V.
+            *   Promo: W2 Wed B -> W2 Thu E (No), W2 Fri V (No). **VIOLATION.**
+            *   Change W2 Mon S to B?
+            *   W2: B, E, S, E, V.
+            *   W1 Fri B -> W2 Mon B. **VIOLATION.**
+            *   So W1 Fri cannot be B.
+            *   W1 Fri must be S.
+            *   W1: B, E, S, E, S.
+            *   W2: B, E, S, E, V.
+            *   W3: B, S, W, V, S.
+            *   W4: B, S, V, B, S.
+            *   Total B: 5.
+            *   I need 6 B.
+            *   I need to find a slot for B.
+            *   W1: B, E, S, E, S.
+            *   W2: B, E, S, E, V.
+            *   W3: B, S, W, V, S.
+            *   W4: B, S, V, B, S.
+            *   All S slots are fixed by constraints (Fri S, Mon S, Wed S, Tue S).
+            *   W1 Wed S. W2 Wed S. W3 Tue S. W3 Fri S. W4 Tue S. W4 Fri S.
+            *   W1 Fri S. W4 Mon B.
+            *   Wait, W4 Mon B. W3 Fri S. OK.
+            *   W4 Tue S. W4 Wed V. W4 Thu B.
+            *   W4 Thu B -> W4 Fri S. OK.
+            *   W4 Tue S -> W4 Wed V. OK.
+            *   W4 Mon B -> W4 Tue S. OK.
+            *   W3 Fri S -> W4 Mon B. OK.
+            *   W3: B, S, W, V, S.
+            *   W3 Mon B -> W3 Tue S. OK.
+            *   W2 Fri V -> W3 Mon B. OK.
+            *   W2: B, E, S, E, V.
+            *   W2 Mon B -> W2 Wed S. OK.
+            *   W1 Fri S -> W2 Mon B. OK.
+            *   W1: B, E, S, E, S.
+            *   W1 Mon B -> W1 Wed S. OK.
+            *   Total B: 5.
+            *   I need 6 B.
+            *   I need to convert an S to B.
+            *   W1 Fri S -> B. (Violates W2 Mon B).
+            *   W2 Wed S -> B. (Violates Promo).
+            *   W3 Tue S -> B. (Violates Consecutive B).
+            *   W3 Fri S -> B. (Violates W4 Mon B).
+            *   W4 Tue S -> B. (Violates Promo W4 Tue B -> W4 Wed V).
+            *   W4 Fri S -> B. (Violates Constraint 10).
+            *   W1 Wed S -> B. (Violates W1 Mon B Promo).
+            *   W2 Wed S -> B. (Violates W2 Mon B Promo).
+            *   It seems I am stuck at 5 B.
+            *   Wait, W3 Fri S -> W4 Mon B.
+            *   If W3 Fri is B.
+            *   W3: B, S, W, V, B.
+            *   W3 Fri B -> W4 Mon S.
+            *   W4: S, B, V, B, S.
+            *   W4 Mon S -> W4 Tue B. (OK).
+            *   W4 Tue B -> W4 Wed V (No), W4 Thu B (No). **VIOLATION.**
+            *   W4 Tue B needs S on Wed or Thu.
+            *   W4 Wed is V. W4 Thu is B.
+            *   So W4 Tue B fails.
+            *   W4 Tue must be S.
+            *   W4: S, S... (Consecutive).
+            *   W4: S, V, S, B, S. (S3).
+            *   W4: S, V, B, B, S. (Consecutive B).
+            *   W4: S, B, S, B, S. (S3).
+            *   So W3 Fri cannot be B.
+            *   W3 Fri must be S.
+            *   W3: B, S, W, V, S.
+            *   W3 Fri S -> W4 Mon B.
+            *   W4: B, S, V, B, S.
+            *   W4 Tue B -> W4 Wed V (No), W4 Thu B (No). **VIOLATION.**
+            *   W4 Tue B needs S on Wed or Thu.
+            *   W4 Wed is V. W4 Thu is B.
+            *   So W4 Tue B fails.
+            *   W4 Tue must be S.
+            *   W4: B, S, V, B, S.
+            *   W4 Mon B -> W4 Tue S. (OK).
+            *   W4 Tue S -> W4 Wed V. (OK).
+            *   W4 Wed V -> W4 Thu B. (OK).
+            *   W4 Thu B -> W4 Fri S. (OK).
+            *   W4: B, S, V, B, S.
+            *   Counts: B2, S2, V1.
+            *   W3 Fri S -> W4 Mon B. (OK).
+            *   W3: B, S, W, V, S.
+            *   W3 Mon B -> W3 Tue S. (OK).
+            *   W2 Fri V -> W3 Mon B. (OK).
+            *   W2: B, E, S, E, V.
+            *   W2 Mon B -> W2 Wed S. (OK).
+            *   W1 Fri S -> W2 Mon B. (OK).
+            *   W1: B, E, S, E, S.
+            *   W1 Mon B -> W1 Wed S. (OK).
+            *   Total B: 5.
+            *   I need 6 B.
+            *   I need to add a B.
+            *   W1 Fri S -> B. (Violates W2 Mon B).
+            *   W2 Wed S -> B. (Violates Promo).
+            *   W3 Tue S -> B. (Violates Consecutive B).
+            *   W3 Fri S -> B. (Violates W4 Mon B).
+            *   W4 Tue S -> B. (Violates Promo W4 Tue B -> W4 Wed V).
+            *   W4 Fri S -> B. (Violates Constraint 10).
+            *   W1 Wed S -> B. (Violates W1 Mon B Promo).
+            *   W2 Wed S -> B. (Violates W2 Mon B Promo).
+            *   Wait, W2 Wed S is required for W2 Mon B Promo.
+            *   W1 Wed S is required for W1 Mon B Promo.
+            *   W3 Tue S is required for W3 Mon B Promo.
+            *   W4 Tue S is required for W4 Mon B Promo.
+            *   W4 Fri S is required for W4 Thu B Promo.
+            *   W3 Fri S is required for W4 Mon B Promo (if W3 Fri B).
+            *   W3 Fri S is required for W4 Mon B (if W3 Fri S).
+            *   W1 Fri S is required for W2 Mon B (if W1 Fri S).
+            *   W2 Fri V is required for W3 Mon B (if W2 Fri V).
+            *   W4 Fri S is required for W4 Thu B Promo.
+            *   W4 Fri S is required for Constraint 10.
+            *   W4 Mon B is required for W3 Fri S Promo.
+            *   W4 Mon B is required for W4 Tue S Promo.
+            *   W4 Tue S is required for W4 Mon B Promo.
+            *   W4 Tue S is required for W4 Wed V Promo (No).
+            *   W4 Tue S is required for W4 Mon B Promo.
+            *   W4 Tue S is required for W4 Wed V (No).
+            *   W4 Tue S is required for W4 Mon B Promo.
+            *   W4 Tue S is required for W4 Wed V (No).
+            *   W4

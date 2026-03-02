@@ -1,0 +1,141 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Triage & Alerting",
+      "agents": [
+        {
+          "agent": "notification_agent",
+          "input": "alert_team_oncall",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "production_error_logs",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "metric_checker",
+          "input": "error_rate_and_latency",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "db_checker",
+          "input": "connection_pool_and_locks",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": true,
+      "gate": "Incident confirmed with error rate > 5%"
+    },
+    {
+      "phase": 2,
+      "name": "Root Cause Analysis",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": "service_topology",
+          "timeout_seconds": 120
+        },
+        {
+          "agent": "config_auditor",
+          "input": "recent_deployment_changes",
+          "timeout_seconds": 120
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "resource_utilization",
+          "timeout_seconds": 120
+        }
+      ],
+      "parallel": true,
+      "gate": "Root cause identified or scope defined"
+    },
+    {
+      "phase": 3,
+      "name": "Customer Notification & Ticket Update",
+      "agents": [
+        {
+          "agent": "customer_communicator",
+          "input": "outage_status_update",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "update_incident_ticket",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": false,
+      "gate": "Customer notified and ticket updated"
+    },
+    {
+      "phase": 4,
+      "name": "Rollback Execution",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "previous_stable_version",
+          "timeout_seconds": 300
+        }
+      ],
+      "parallel": false,
+      "gate": "Rollback command executed"
+    },
+    {
+      "phase": 5,
+      "name": "Service Verification",
+      "agents": [
+        {
+          "agent": "metric_checker",
+          "input": "error_rate_and_latency",
+          "timeout_seconds": 120
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "post_rollback_logs",
+          "timeout_seconds": 120
+        }
+      ],
+      "parallel": true,
+      "gate": "Metrics returned to normal thresholds"
+    },
+    {
+      "phase": 6,
+      "name": "Escalation & Handoff",
+      "agents": [
+        {
+          "agent": "incident_reporter",
+          "input": "escalate_to_sre_team",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": false,
+      "gate": "Escalation ticket created"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "Error rate > 10% AND recent deployment timestamp < 2 hours ago",
+      "if_true": "go to phase 3",
+      "if_false": "go to phase 5"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Rollback status == success",
+      "if_true": "go to phase 5",
+      "if_false": "go to phase 6"
+    }
+  ],
+  "escalation": {
+    "trigger": "If total workflow duration exceeds 15 minutes without resolution",
+    "action": "Notify VP of Engineering and create high-priority incident"
+  },
+  "total_phases": 6,
+  "max_time_minutes": 20,
+  "rollback_conditions": [
+    "Error rate > 10% for 5 consecutive minutes",
+    "Recent deployment timestamp < 2 hours ago"
+  ]
+}

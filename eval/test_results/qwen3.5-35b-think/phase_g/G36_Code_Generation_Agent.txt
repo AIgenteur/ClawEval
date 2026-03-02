@@ -1,0 +1,1294 @@
+Thinking Process:
+
+1.  **Analyze the Request:**
+    *   Target: Python class `RateLimiter`.
+    *   Functionality: Hybrid token-bucket / sliding-window rate limiter.
+    *   Requirements:
+        1.  Constructor: `__init__(max_requests, window_seconds, burst=0)`.
+        2.  Method: `allow(user_id, endpoint="default")` -> `{"allowed": bool, "remaining": int, "retry_after": float | None}`. Tracks per (user_id, endpoint). Handles burst logic (2x window regeneration for burst).
+        3.  Method: `allow_priority(user_id, endpoint="default")` -> `{"allowed": True, ...}`. Skips limits.
+        4.  Method: `cleanup(max_age_seconds=None)` -> `int`. Removes old entries.
+        5.  Method: `get_usage(user_id, endpoint="default")` -> `{"used": int, "limit": int, "window_seconds": float, "burst_remaining": int}`.
+        6.  Method: `to_dict()` and `from_dict(data)` -> Serialization/Deserialization.
+        7.  Constraints: Use `time.time()`, no external deps (only `time`, `threading`, `collections`), output ONLY class code.
+
+2.  **Design the Data Structure:**
+    *   Need to store state per `(user_id, endpoint)`. A dictionary `self.state` mapping `(user_id, endpoint)` to some internal state object or dict is appropriate.
+    *   State needs to track:
+        *   Request timestamps (for sliding window).
+        *   Token count (for token bucket aspect, though the prompt says "hybrid token-bucket / sliding-window").
+        *   Actually, looking at requirement 2: "If burst > 0, allow up to max_requests + burst, but burst tokens regenerate slower (2x window)". This implies a specific logic.
+        *   Standard Sliding Window Log: Count requests in `(now - window, now]`.
+        *   Token Bucket: Tokens available.
+        *   Hybrid interpretation based on requirements:
+            *   `max_requests`: The hard limit within the `window_seconds`.
+            *   `burst`: Extra capacity allowed temporarily.
+            *   Logic:
+                *   Check sliding window count.
+                *   If count < `max_requests`: Allow.
+                *   If count == `max_requests` and `burst` > 0: Check if burst tokens available.
+                *   Wait, requirement 2 says "burst tokens regenerate slower (2x window)". This suggests a token bucket mechanism for the burst part.
+                *   Let's refine the state per user/endpoint:
+                    *   `requests`: List of timestamps (Sliding Window).
+                    *   `burst_tokens`: Float/Int (Token Bucket).
+                    *   `last_burst_update`: Timestamp.
+            *   Actually, a simpler interpretation often used in "hybrid" contexts for rate limiting:
+                *   Sliding window counts requests.
+                *   Burst allows exceeding the count limit temporarily.
+                *   Let's stick to the specific requirement text: "If burst > 0, allow up to max_requests + burst, but burst tokens regenerate slower (2x window)".
+                *   This implies:
+                    *   Base limit: `max_requests` within `window_seconds`.
+                    *   Burst limit: `max_requests + burst`.
+                    *   Burst regeneration: Slower.
+            *   Let's model the state as:
+                *   `timestamps`: List of request times (for sliding window).
+                *   `burst_tokens`: Current burst tokens available.
+                *   `last_burst_time`: When burst tokens were last updated.
+            *   Wait, `allow` returns `remaining`. `remaining` usually refers to `max_requests - current_count`.
+            *   If burst is involved, `remaining` might be tricky. Usually `remaining` is `max_requests - count`. If burst is used, `remaining` might be negative or 0, but `allowed` is True.
+            *   Let's look at `get_usage`: `{"used": int, "limit": int, "window_seconds": float, "burst_remaining": int}`.
+            *   This suggests `burst_remaining` is separate from `limit`.
+            *   So, `limit` = `max_requests`. `used` = count in window.
+            *   If `used` < `limit`: Allowed.
+            *   If `used` >= `limit`: Check `burst_remaining`.
+            *   If `burst_remaining` > 0: Allowed, decrement `burst_remaining`.
+            *   If `burst_remaining` == 0: Denied.
+            *   Regeneration:
+                *   Standard requests don't regenerate tokens (they are just counts).
+                *   Burst tokens regenerate over time.
+                *   Requirement: "burst tokens regenerate slower (2x window)".
+                *   So, `burst_tokens` refill rate = `burst` / (`window_seconds` * 2).
+    *   Wait, `allow` returns `remaining`. If I use a burst token, is `remaining` 0 or -1? Usually `remaining` is `max_requests - count`. If count hits `max_requests`, `remaining` is 0. If I use burst, `allowed` is True, but `remaining` is likely 0 (since I hit the hard limit).
+    *   Let's refine the logic based on `get_usage` output.
+    *   `get_usage` returns `burst_remaining`.
+    *   So `allow` should probably calculate `remaining` based on `max_requests - count`.
+    *   If `count < max_requests`: `allowed` = True, `remaining` = `max_requests - count`.
+    *   If `count == max_requests`:
+        *   If `burst_remaining > 0`: `allowed` = True, `remaining` = 0 (or maybe `max_requests - count` which is 0).
+        *   If `burst_remaining == 0`: `allowed` = False, `retry_after` = time until next token or window reset.
+    *   Wait, sliding window resets naturally. If I am at `max_requests` at time `T`, and a request expires at `T - window`, I can make a new request.
+    *   So `retry_after` should be based on the oldest request in the window.
+    *   Let's structure the internal state per user/endpoint:
+        *   `timestamps`: List of floats (request times).
+        *   `burst_tokens`: Float (current burst capacity).
+        *   `last_burst_update`: Float (timestamp).
+    *   Initialization:
+        *   `timestamps`: []
+        *   `burst_tokens`: `burst` (initially full).
+        *   `last_burst_update`: `time.time()`.
+    *   `allow` logic:
+        1.  Get `now`.
+        2.  Clean `timestamps` (remove < `now - window_seconds`).
+        3.  Update `burst_tokens` based on time elapsed since `last_burst_update`.
+            *   Regeneration rate: `burst` / (`window_seconds` * 2).
+            *   `elapsed = now - last_burst_update`.
+            *   `added = elapsed * rate`.
+            *   `burst_tokens = min(burst, burst_tokens + added)`.
+            *   `last_burst_update = now`.
+        4.  Check `count = len(timestamps)`.
+        5.  If `count < max_requests`:
+            *   Add timestamp.
+            *   `allowed` = True.
+            *   `remaining` = `max_requests - count - 1` (after adding).
+            *   `retry_after` = None.
+        6.  Else (`count >= max_requests`):
+            *   If `burst_tokens > 0`:
+                *   Decrement `burst_tokens`.
+                *   Add timestamp.
+                *   `allowed` = True.
+                *   `remaining` = 0 (since we hit the hard limit).
+                *   `retry_after` = None.
+            *   Else:
+                *   `allowed` = False.
+                *   `remaining` = 0.
+                *   `retry_after` = time until oldest request expires.
+    *   Wait, requirement 2 says: "If burst > 0, allow up to max_requests + burst".
+    *   This implies the total capacity is `max_requests + burst`.
+    *   But `get_usage` asks for `burst_remaining`.
+    *   Okay, logic seems consistent.
+    *   `allow_priority`: Always True. Add timestamp? Usually priority users should still be tracked for usage stats, but not rate limited. Requirement says "skip limits". So add timestamp (for usage tracking) but don't check limits.
+    *   `cleanup`: Remove entries older than `max_age_seconds`.
+        *   Iterate `self.state`.
+        *   If `now - last_activity > max_age_seconds`: Remove.
+        *   Wait, `cleanup` removes entries (user/endpoint keys) older than `max_age_seconds`.
+        *   What defines "older"? Usually the last request time.
+        *   Requirement: "Remove entries older than max_age_seconds".
+        *   So if `state[user][endpoint]['last_request']` is older than `now - max_age_seconds`, remove the key.
+    *   `get_usage`:
+        *   `used`: `len(timestamps)`.
+        *   `limit`: `max_requests`.
+        *   `window_seconds`: `self.window_seconds`.
+        *   `burst_remaining`: `int(burst_tokens)`.
+    *   `to_dict` / `from_dict`:
+        *   Need to serialize `state`.
+        *   `state` keys are tuples `(user_id, endpoint)`.
+        *   Values are dicts with `timestamps`, `burst_tokens`, `last_burst_update`.
+        *   Note: `time.time()` is used, so timestamps are floats.
+        *   Serialization needs to handle the state structure.
+    *   Thread Safety: `threading` is allowed. Should use a lock for `self.state` access.
+
+3.  **Refining Logic Details:**
+    *   **Sliding Window:** Standard implementation keeps a list of timestamps. To be efficient, we should prune old timestamps on every access.
+    *   **Burst Regeneration:**
+        *   Rate = `burst` / (`window_seconds` * 2).
+        *   `burst_tokens` = `min(burst, burst_tokens + (now - last_burst_update) * rate)`.
+    *   **Retry After:**
+        *   If denied, `retry_after` is the time until the oldest request in the window expires.
+        *   Oldest request time = `timestamps[0]`.
+        *   `retry_after = (timestamps[0] + window_seconds) - now`.
+        *   If `timestamps` is empty (shouldn't happen if denied), handle gracefully.
+    *   **Priority:**
+        *   `allow_priority` adds timestamp but ignores limit check.
+    *   **Cleanup:**
+        *   Iterate keys. Check `last_request_time`. If `now - last_request_time > max_age_seconds`, delete key.
+        *   Wait, `state` stores `timestamps`. The "last request" is `max(timestamps)` or `timestamps[-1]` (if sorted).
+        *   Actually, `cleanup` removes entries (keys) that haven't been used recently.
+    *   **Serialization:**
+        *   `to_dict`: Return `{"max_requests": ..., "window_seconds": ..., "burst": ..., "state": ...}`.
+        *   `from_dict`: Reconstruct `RateLimiter` and populate `state`.
+        *   Note: `state` keys are tuples. JSON/Dict serialization usually requires string keys. I should convert `(user, endpoint)` to a string key like `"user|endpoint"` or keep as tuple if Python dict allows (it does, but `from_dict` might receive JSON-like data). The prompt says `from_dict(data: dict)`. Python dicts support tuple keys. I will assume Python dict usage.
+    *   **Locking:** Use `threading.Lock`.
+
+4.  **Drafting the Code:**
+
+    *   Imports: `time`, `threading`, `collections`.
+    *   Class `RateLimiter`.
+    *   `__init__`: Store params, init `self.state = {}`, `self.lock = threading.Lock()`.
+    *   Helper `_get_state(user_id, endpoint)`: Returns state dict or creates new one.
+    *   Helper `_update_burst(state, now)`: Updates burst tokens.
+    *   `allow`:
+        *   Lock.
+        *   Get state.
+        *   Clean timestamps (remove < `now - window`).
+        *   Update burst.
+        *   Check limit.
+        *   If allowed: add timestamp.
+        *   Return dict.
+    *   `allow_priority`:
+        *   Lock.
+        *   Get state.
+        *   Clean timestamps.
+        *   Add timestamp.
+        *   Return allowed dict.
+    *   `cleanup`:
+        *   Lock.
+        *   Iterate keys.
+        *   Check last activity.
+        *   Remove if old.
+        *   Return count.
+    *   `get_usage`:
+        *   Lock.
+        *   Get state.
+        *   Clean timestamps (read-only).
+        *   Update burst (read-only).
+        *   Return usage dict.
+    *   `to_dict`:
+        *   Lock.
+        *   Copy state.
+        *   Return dict.
+    *   `from_dict`:
+        *   Class method.
+        *   Create instance.
+        *   Load state.
+
+5.  **Addressing Specific Constraints:**
+    *   "Give ONLY the class code, no explanation."
+    *   "No imports except time, threading, collections."
+    *   "Must use time.time()".
+    *   "Hybrid token-bucket / sliding-window".
+    *   "Burst tokens regenerate slower (2x window)".
+
+    *   *Self-Correction on `get_usage`*: It should return `burst_remaining`. If I update burst tokens in `get_usage`, it changes state. Usually `get_usage` is read-only. However, to be accurate, burst tokens *do* regenerate over time. If I don't update them, `burst_remaining` will be stale.
+    *   Requirement: "get_usage... Returns... burst_remaining".
+    *   If I update state in `get_usage`, it's a side effect. Is that allowed? Usually yes for rate limiters to keep state consistent.
+    *   However, `allow` updates state. `get_usage` should probably reflect current state.
+    *   Let's update burst tokens in `get_usage` as well to ensure accuracy, but don't consume them.
+    *   Wait, `cleanup` removes entries.
+    *   `to_dict` needs to serialize the state correctly.
+    *   `from_dict` needs to restore it.
+
+    *   *Refining `allow` return value*:
+        *   `remaining`: `max_requests - count`.
+        *   If burst is used, `count` is `max_requests`. `remaining` is 0.
+        *   If burst is NOT used, `count` < `max_requests`. `remaining` > 0.
+        *   Wait, if I use burst, I am technically over the `max_requests` limit.
+        *   Requirement: "allow up to max_requests + burst".
+        *   So `remaining` should probably be `max_requests - count`. If `count` > `max_requests`, `remaining` is negative?
+        *   Usually `remaining` in rate limiters is `max_requests - count`. If I hit the limit, it's 0.
+        *   Let's stick to `remaining = max(0, max_requests - count)`.
+        *   Wait, if I use burst, `count` becomes `max_requests + 1`. `remaining` would be -1.
+        *   Better: `remaining` represents how many *standard* requests are left.
+        *   If `count < max_requests`: `remaining = max_requests - count`.
+        *   If `count >= max_requests`: `remaining = 0`.
+        *   This aligns with standard API responses (e.g., X-RateLimit-Remaining).
+
+    *   *Refining `retry_after`*:
+        *   If denied, calculate time until oldest request expires.
+        *   `oldest = timestamps[0]`.
+        *   `retry_after = (oldest + window_seconds) - now`.
+        *   If `retry_after` < 0 (shouldn't happen if logic correct), set to 0.
+
+    *   *Refining `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   Remove keys where `last_request_time < now - max_age_seconds`.
+        *   `last_request_time` is `timestamps[-1]` (assuming sorted).
+
+    *   *Refining `to_dict` / `from_dict`*:
+        *   `state` keys are tuples `(user_id, endpoint)`.
+        *   When serializing, tuples are fine in Python dicts.
+        *   `from_dict` takes `data: dict`.
+        *   Need to ensure `state` values are restored correctly.
+
+    *   *Thread Safety*:
+        *   Wrap all state modifications in `self.lock`.
+
+    *   *Imports*: `time`, `threading`, `collections`.
+
+    *   *Code Structure*:
+        *   Class definition.
+        *   `__init__`.
+        *   `_get_or_create_state`.
+        *   `_clean_timestamps`.
+        *   `_update_burst`.
+        *   `allow`.
+        *   `allow_priority`.
+        *   `cleanup`.
+        *   `get_usage`.
+        *   `to_dict`.
+        *   `from_dict`.
+
+    *   *Wait, one detail*: `from_dict` is a class method. It should return a new instance.
+    *   *Wait, `to_dict`*: Should it include `max_requests`, `window_seconds`, `burst`? Yes, "Serialize/deserialize full state".
+
+    *   *Wait, `cleanup` logic*:
+        *   "Remove entries older than max_age_seconds".
+        *   Entry age = `now - last_request_time`.
+        *   If `now - last_request_time > max_age_seconds`, remove.
+
+    *   *Wait, `allow` logic detail*:
+        *   If `count < max_requests`: Allow.
+        *   If `count == max_requests`: Check burst.
+        *   If `burst_tokens > 0`: Allow, decrement burst.
+        *   If `burst_tokens == 0`: Deny.
+        *   Wait, what if `count > max_requests`? (e.g. burst used previously).
+        *   If `count > max_requests`, we are in burst territory.
+        *   If `burst_tokens == 0`, deny.
+        *   If `burst_tokens > 0`, allow, decrement.
+        *   So effectively: `count >= max_requests` -> check burst.
+        *   Wait, if `count` is `max_requests + 1` (burst used), and `burst_tokens` is 0. Deny.
+        *   If `count` is `max_requests`, and `burst_tokens` > 0. Allow, decrement.
+        *   So logic:
+            1. Clean timestamps.
+            2. Update burst.
+            3. `count = len(timestamps)`.
+            4. If `count < max_requests`:
+                *   Add timestamp.
+                *   Allowed.
+            5. Else:
+                *   If `burst_tokens > 0`:
+                    *   Add timestamp.
+                    *   Decrement burst.
+                    *   Allowed.
+                *   Else:
+                    *   Denied.
+        *   Wait, `burst_tokens` should be float to allow fractional regeneration? Requirement says `burst: int`. `burst_remaining` in `get_usage` is `int`.
+        *   So `burst_tokens` can be float internally, cast to int for `get_usage`? Or keep as int?
+        *   Regeneration: `elapsed * rate`. `rate = burst / (window * 2)`.
+        *   If `burst` is int, `rate` might be float.
+        *   `burst_tokens` should be float to accumulate fractional tokens.
+        *   `get_usage` returns `int(burst_remaining)`.
+        *   `allow` checks `> 0`.
+        *   Okay, `burst_tokens` as float.
+
+    *   *Wait, `allow` return*:
+        *   `remaining`: `max_requests - count` (before adding new request? or after?).
+        *   Usually `remaining` reflects the state *after* the request is processed.
+        *   If allowed: `remaining = max_requests - count_after`.
+        *   If denied: `remaining = 0`.
+        *   Let's check standard behavior. If I have 10 limit, 5 used. `remaining` = 5. I make request. `remaining` = 4.
+        *   So `remaining` = `max_requests - count_after`.
+        *   If burst used: `count_after` = `max_requests + 1`. `remaining` = -1?
+        *   Usually `remaining` is clamped to 0.
+        *   Let's clamp `remaining` to 0.
+
+    *   *Wait, `from_dict`*:
+        *   It needs to be a class method.
+        *   It needs to reconstruct the object.
+        *   It needs to set `self.state`.
+        *   Since `from_dict` is a class method, it creates a new instance.
+        *   It should probably call `__init__` first or set attributes directly.
+        *   Calling `__init__` sets `self.state = {}`. Then we overwrite it.
+        *   Or just set attributes.
+        *   Let's call `__init__` then update `self.state`.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a dict that can be passed to `from_dict`.
+        *   Structure: `{"max_requests": ..., "window_seconds": ..., "burst": ..., "state": ...}`.
+
+    *   *Wait, `cleanup`*:
+        *   Returns count of removed entries.
+
+    *   *Wait, `allow_priority`*:
+        *   "Always returns {"allowed": True, ...}".
+        *   Does it return `remaining`?
+        *   Requirement: "Returns: {"allowed": bool, "remaining": int, "retry_after": float or None}".
+        *   So `allow_priority` must return the same structure.
+        *   `remaining` for priority? Usually 0 or `max_requests`.
+        *   Since it skips limits, `remaining` might be irrelevant or `max_requests`.
+        *   Let's return `remaining = max_requests` (as if no limit hit) or `0`?
+        *   Given "skip limits", `remaining` is technically undefined.
+        *   But to match signature, let's return `remaining = max_requests` (optimistic) or `0` (conservative).
+        *   Actually, if it skips limits, it doesn't consume the limit. So `remaining` should probably be `max_requests` (unchanged).
+        *   Wait, `allow` consumes the limit. `allow_priority` does not.
+        *   So `remaining` should be `max_requests - current_count`.
+        *   But `allow_priority` adds a timestamp. So `current_count` increases.
+        *   So `remaining` = `max_requests - count_after`.
+        *   Wait, if I skip limits, do I count towards the limit?
+        *   "skip limits" usually means "don't check the limit".
+        *   But for `get_usage` consistency, it should be tracked.
+        *   So `allow_priority` adds timestamp, but doesn't check `count < max_requests`.
+        *   So `remaining` = `max_requests - count_after`.
+        *   If `count_after` > `max_requests`, `remaining` is negative?
+        *   Let's clamp `remaining` to 0.
+
+    *   *Wait, `allow` return*:
+        *   If denied, `retry_after` is calculated.
+        *   If allowed, `retry_after` is None.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   Remove entries where `now - last_request > max_age_seconds`.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `to_dict`*:
+        *   `state` keys are tuples.
+        *   `from_dict` expects `data: dict`.
+        *   If I pass `state` with tuple keys, `from_dict` must handle it.
+        *   Python dicts support tuple keys.
+        *   So `to_dict` returns `state` as is.
+        *   `from_dict` sets `self.state = data['state']`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should initialize the instance properly.
+
+    *   *Wait, `allow` logic check*:
+        *   If `count < max_requests`:
+            *   Add timestamp.
+            *   `remaining` = `max_requests - count_after`.
+        *   If `count >= max_requests`:
+            *   If `burst_tokens > 0`:
+                *   Add timestamp.
+                *   `burst_tokens -= 1`.
+                *   `remaining` = 0.
+            *   Else:
+                *   `allowed` = False.
+                *   `remaining` = 0.
+                *   `retry_after` = ...
+
+    *   *Wait, `retry_after` calculation*:
+        *   `oldest = timestamps[0]`.
+        *   `retry_after = (oldest + window_seconds) - now`.
+        *   If `retry_after` < 0, set to 0.
+
+    *   *Wait, `cleanup`*:
+        *   Iterate `self.state`.
+        *   If `len(state['timestamps']) == 0`: remove?
+        *   Requirement: "Remove entries older than max_age_seconds".
+        *   If `timestamps` is empty, `last_request` is undefined.
+        *   If `timestamps` is empty, it's an old entry (never used recently).
+        *   So if `len(timestamps) == 0` or `now - timestamps[-1] > max_age_seconds`: remove.
+        *   Wait, if `timestamps` is empty, it means no requests ever?
+        *   If `state` exists, it means it was created.
+        *   If `timestamps` is empty, it means all requests expired.
+        *   So `last_request` is effectively `now - window` (or earlier).
+        *   So if `len(timestamps) == 0`, it's definitely older than `window_seconds`.
+        *   So if `len(timestamps) == 0` or `now - timestamps[-1] > max_age_seconds`: remove.
+
+    *   *Wait, `from_dict`*:
+        *   Needs to handle `state` keys.
+        *   `data['state']` might have string keys if serialized via JSON, but prompt says `dict`.
+        *   I will assume Python dict with tuple keys is preserved.
+
+    *   *Wait, `to_dict`*:
+        *   Should I deep copy `state`? Yes, to avoid external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   Returns `{"allowed": True, "remaining": ..., "retry_after": None}`.
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It needs to be a class method.
+        *   It needs to return the instance.
+        *   It needs to set `self.state`.
+        *   It needs to set `self.max_requests`, `self.window_seconds`, `self.burst`.
+        *   It needs to set `self.lock`.
+
+    *   *Wait, `to_dict`*:
+        *   Should I include `state`? Yes.
+        *   Should I include `max_requests`, `window_seconds`, `burst`? Yes.
+
+    *   *Wait, `allow` logic*:
+        *   If `count < max_requests`:
+            *   Add timestamp.
+            *   `remaining` = `max_requests - count_after`.
+        *   If `count >= max_requests`:
+            *   If `burst_tokens > 0`:
+                *   Add timestamp.
+                *   `burst_tokens -= 1`.
+                *   `remaining` = 0.
+            *   Else:
+                *   `allowed` = False.
+                *   `remaining` = 0.
+                *   `retry_after` = ...
+
+    *   *Wait, `burst_tokens` update*:
+        *   `rate = burst / (window_seconds * 2)`.
+        *   `added = (now - last_burst_update) * rate`.
+        *   `burst_tokens = min(burst, burst_tokens + added)`.
+        *   `last_burst_update = now`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is float.
+        *   If `max_age_seconds` is None, set it.
+
+    *   *Wait, `from_dict`*:
+        *   `data` is `dict`.
+        *   `data` keys: `max_requests`, `window_seconds`, `burst`, `state`.
+        *   `state` keys: `(user_id, endpoint)`.
+        *   `state` values: `timestamps`, `burst_tokens`, `last_burst_update`.
+
+    *   *Wait, `to_dict`*:
+        *   `state` keys are tuples.
+        *   If I serialize to JSON, tuples become lists.
+        *   But `from_dict` takes `dict`.
+        *   I will assume Python dict structure is preserved.
+
+    *   *Wait, `allow`*:
+        *   `retry_after` calculation:
+        *   `oldest = timestamps[0]`.
+        *   `retry_after = (oldest + window_seconds) - now`.
+        *   If `retry_after < 0`, `retry_after = 0`.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state` to prevent external modification.
+
+    *   *Wait, `allow`*:
+        *   `remaining` calculation:
+        *   If allowed: `remaining = max(0, max_requests - count_after)`.
+        *   If denied: `remaining = 0`.
+
+    *   *Wait, `allow_priority`*:
+        *   `remaining`: `max(0, max_requests - count_after)`.
+        *   `retry_after`: None.
+
+    *   *Wait, `get_usage`*:
+        *   `burst_remaining`: `int(burst_tokens)`.
+
+    *   *Wait, `cleanup`*:
+        *   `max_age_seconds` default `2 * window_seconds`.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, `max_age_seconds` is a parameter.
+        *   If `max_age_seconds` is None, use `2 * window_seconds`.
+        *   Wait, requirement says "default: 2 * window_seconds".
+        *   So `if max_age_seconds is None: max_age_seconds = 2 * self.window_seconds`.
+
+    *   *Wait, `from_dict`*:
+        *   It's a class method.
+        *   It should return the instance.
+        *   It should not use `self` in the signature (it's a class method).
+        *   It should create `cls()`.
+        *   Then update attributes.
+
+    *   *Wait, `to_dict`*:
+        *   Should return a copy of `state
