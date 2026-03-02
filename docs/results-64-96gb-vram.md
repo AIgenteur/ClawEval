@@ -77,3 +77,7 @@
 - **Qwen3.5-122B-A10B** runs on SGLang with NVFP4 and 16K thinking budget
 - GPT-OSS-120B excels on: Health Monitor (8 vs 3), Recipe (9 vs 2), Math/Logic (8 vs 6), Synthesizer (10 vs 7), DevOps (10 vs 7)
 - 122B Think excels on: Shopping (10 vs 8), Sprint Summary (10 vs 9), Code Review (10 vs 8)
+
+### 122B NoThink (Phase G only)
+
+The 122B was also tested **without thinking** on 11 harder Phase G discriminator tests, scoring **87/110 (79%)** — the best single-config score. See [Phase G results](results-phase-g.md) for the full comparison.

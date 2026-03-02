@@ -77,3 +77,10 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (RTX 3090 / RTX
 - 📝 Manual review tests default to 5/10 pending human review
 - 🔄 **Think vs NoThink tradeoffs:** Thinking helps on Shopping (10 vs 4), Math/Logic (6 vs 4), and RAG (6 vs 4). NoThink avoids overthinking on Recipe (9 vs 0), Market Research (7 vs 0), and Travel (7 vs 0)
 - **27B dense vs 35B MoE (both nothink):** Very close overall. 27B beats 35B on RAG (6 vs 4), Lead Scoring (10 vs 8), SRE (6 vs 3), Market Research (8 vs 7). 35B wins on Recipe (9 vs 2), Code Review (10 vs 8), QA (10 vs 8)
+
+### Phase G — Harder Discriminator Tests
+
+Many roles above show identical scores (10/10) across models. [Phase G tests](results-phase-g.md) use harder prompts to differentiate:
+- **27B NoThink: 83/110 (75%)** — best at Code Gen (10/10) and Fact-Checking (10/10)
+- **35B Think: 51/60 (85%)** on 6 completed tests — Content Planner 8/10 is unique (all NoThink score 1)
+- **35B NoThink: 77/110 (70%)**
