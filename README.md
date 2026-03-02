@@ -39,36 +39,36 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
 
-**The only table you need.** Best-scoring model for each agent role at each VRAM tier. All scores out of 10.
+**The only table you need.** Best-scoring model for each role at each VRAM tier. Combines Phase F (role tests) + Phase G (discriminator tests). All scores out of 10.
 
 | # | Agent Role | 🟢 Best 24GB | | 🔵 Best 64–96GB | |
 |---|---|---|---|---|---|
 | | | **Model** | **Score** | **Model** | **Score** |
 | | **Tier 1 — Utility** | | | | |
 | 1 | Router / Triage | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 2 | Input Validator | All tested | 🟢 10 | All tested | 🟢 10 |
+| 2 | Input Validator | 27B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
 | 3 | Health Monitor | 27B / 35B NoThink | 🔴 3 | GPT-OSS-120B | 🟢 8 |
 | 4 | Notification | 27B Think | 🟢 9 | GPT-OSS-120B | 🟢 9 |
-| 5 | Sentiment | All tested | 🟢 10 | All tested | 🟢 10 |
+| 5 | Sentiment | 27B / 35B NoThink | 🟢 8† | 122B NoThink | 🟢 8† |
 | 6 | FAQ Generation | 27B Think | 🟢 8 | Both | 🟡 5 |
 | 7 | Translation | 27B NoThink | 🟢 10 | 122B Think | 🟢 10 |
 | 8 | Calendar | — | 🔴 0 | — | 🔴 0 |
 | | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 9 | Research Agent | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B / 122B NT | 🟢 9† |
 | 10 | Content Writer | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 11 | Editor | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 12 | Content Planner | All tested | 🟢 10 | All tested | 🟢 10 |
+| 12 | Content Planner | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
 | 13 | Email Drafting | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
 | 14 | Doc Summary | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | 15 | Meeting Notes | All tested | 🟢 9 | 122B Think | 🟢 9 |
-| 16 | Social Scouting | All tested | 🟢 10 | All tested | 🟢 10 |
+| 16 | Social Scouting | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
 | 17 | Social Content | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
-| 18 | News Aggregation | All tested | 🟢 10 | All tested | 🟢 10 |
+| 18 | News Aggregation | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
 | 19 | Shopping | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 20 | Memory Mgmt | All tested | 🟢 9 | All tested | 🟢 9 |
+| 20 | Memory Mgmt | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
 | 21 | RAG / Retrieval | 27B NoThink | 🟡 6 | Both | 🟡 6 |
 | 22 | Data Analysis | 27B / 35B NoThink | 🔴 3 | Both | 🔴 2 |
-| 23 | Web Scraping | All tested | 🟢 10 | All tested | 🟢 10 |
+| 23 | Web Scraping | 35B NoThink | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
 | 24 | Image Description | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 25 | Customer Support | 27B / 35B Think | 🟢 10 | All tested | 🟢 10 |
 | 26 | Lead Scoring | 27B NoThink | 🟢 10 | Both | 🟢 8 |
@@ -78,15 +78,15 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 30 | Fitness Tracking | 27B NoThink / Think | 🟢 9 | All tested | 🟢 9 |
 | 31 | Recipe / Cooking | 35B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 9 |
 | 32 | Personal Finance | 27B Think | 🟡 7 | 122B Think | 🟡 7 |
-| 33 | SEO Optimization | All tested | 🟢 9 | All tested | 🟢 9 |
+| 33 | SEO Optimization | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
 | 34 | Landing Page | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 35 | Travel Planning | 27B / 35B NoThink | 🟡 7 | 122B Think | 🟢 8 |
 | | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | All tested | 🟢 10 | All tested | 🟢 10 |
+| 36 | Code Generation | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 8† |
 | 37 | Code Review | 35B NoThink / 27B Think | 🟢 10 | 122B Think | 🟢 10 |
 | 38 | QA / Test Writing | 35B NoThink | 🟢 10 | Both | 🟢 8 |
 | 39 | Task Planning | 35B NoThink | 🟢 10 | Both | 🟢 9 |
-| 40 | Fact-Checking | All tested | 🟢 10 | All tested | 🟢 10 |
+| 40 | Fact-Checking | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 10† |
 | 41 | Critic / Review | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 42 | Market Research | 27B NoThink | 🟢 8 | GPT-OSS-120B | 🔴 4 |
 | 43 | Synthesizer | 27B / 35B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
@@ -95,23 +95,26 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 46 | DevOps | 27B NoThink / 35B Think | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | | **Tier 4 — Expert** | | | | |
 | 47 | Math / Logic | 27B / 35B Think | 🟡 6 | GPT-OSS-120B | 🟢 8 |
-| 48 | STEM Analysis | All tested | 🟢 10 | All tested | 🟢 10 |
-| 49 | Algorithm | All tested | 🟢 10 | All tested | 🟢 10 |
+| 48 | STEM Analysis | 27B NoThink | 🔴 2† | 122B NoThink / GPT-OSS | 🟡 5† |
+| 49 | Algorithm | 27B NoThink | 🟢 9† | 122B NoThink / GPT-OSS | 🟢 10† |
 | | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | All tested | 🟢 8 | All tested | 🟢 8 |
-| 51 | Architect | All tested | 🟢 10 | All tested | 🟢 10 |
+| 50 | Orchestrator | 27B / 35B NoThink | 🟡 7† | 122B NoThink / GPT-OSS | 🟡 7† |
+| 51 | Architect | 27B / 35B NoThink | 🟢 9† | 122B NoThink | 🟢 10† |
 | 52 | Debugger | 35B NoThink | 🟢 10 | All tested | 🟢 10 |
 | 53 | Legal Review | All tested | 🟢 10 | 122B Think | 🟢 10 |
 | 54 | Medical | All tested | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 55 | Financial | 27B / 35B NoThink | 🟢 10 | All tested | 🟢 10 |
-| 56 | Security | All tested | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 55 | Financial | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 56 | Security | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
 | 57 | SRE / Incident | 27B NoThink | 🟡 6 | Both | 🟡 6 |
 | 58 | Book Writing | 📝 All tested | 📝 5 | 📝 All tested | 📝 5 |
 | 59 | Compliance | 27B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 8 |
 
+> † Phase G discriminator score (harder test that differentiates models — [details](docs/results-phase-g.md))
+>
 > 📊 **Detailed per-model comparisons:**
 > - [🟢 24GB VRAM — Think vs NoThink (4 models)](docs/results-24gb-vram.md)
 > - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
+> - [🆕 Phase G — Discriminator Tests (harder tests)](docs/results-phase-g.md)
 > - [Phase E — 12 Killer Tests (all models)](docs/results-phase-e.md)
 > - [Full detailed results with all configs →](RESULTS.md)
 
