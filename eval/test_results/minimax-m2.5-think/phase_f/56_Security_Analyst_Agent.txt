@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a strong, randomly generated secret key stored in environment variables"
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Use a template engine with context isolation or sanitize user input"
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries or prepared statements"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Use a safe serialization format like JSON"
+    },
+    {
+      "id": 5,
+      "type": "OS Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid shell=True and validate/sanitize command input"
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal",
+      "severity": "high",
+      "location": "open(path).read()",
+      "fix": "Validate and sanitize the path, use os.path.abspath() to check paths"
+    },
+    {
+      "id": 7,
+      "type": "Timing Attack",
+      "severity": "medium",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Use hmac.compare_digest() for constant-time comparison"
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "high",
+      "location": "return str(os.environ)",
+      "fix": "Remove or restrict access to debug endpoints in production"
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "No HTTPS configuration",
+      "fix": "Enable HTTPS with proper SSL/TLS certificates"
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "No rate limiting on endpoints",
+      "fix": "Implement rate limiting using Flask-Limiter or similar"
+    }
+  ],
+  "count": 10
+}
+```

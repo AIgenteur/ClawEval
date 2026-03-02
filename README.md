@@ -34,6 +34,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 |---|---|---|
 | Alibaba Coding Plan | **Kimi K2.5** — 473/590 (80%) Phase F, 96/110 (87%) Phase G | ✅ Tested |
 | Alibaba Coding Plan | **GLM-5** — 465/590 (79%) Phase F, 80/110 (73%) Phase G | ✅ Tested |
+| Alibaba Coding Plan | **MiniMax-M2.5** — 465/590 (79%) Phase F, ~85 t/s fastest | ✅ Tested |
 | OpenRouter, Alibaba, and other affordable providers | Open-source models via API | 🔜 Coming soon |
 
 
@@ -125,7 +126,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
 
-> 🔜 **More cloud models coming soon.** Currently tested: Kimi K2.5, GLM-5. Next up: additional models via OpenRouter, Alibaba, and other providers.
+> 🔜 **More cloud models coming soon.** Currently tested: Kimi K2.5, GLM-5, MiniMax-M2.5. All via Alibaba Coding Plan.
 
 | # | Agent Role | ☁️ Best Cloud | |
 |---|---|---|---|
@@ -145,7 +146,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 11 | Editor | Kimi K2.5 | 🟢 10 |
 | 12 | Content Planner | K2.5 / GLM-5 | 🟢 10† |
 | 13 | Email Drafting | Kimi K2.5 | 🟢 10 |
-| 14 | Doc Summary | K2.5 / GLM-5 | 🟢 8 |
+| 14 | Doc Summary | MiniMax-M2.5 | 🟢 10 |
 | 15 | Meeting Notes | Kimi K2.5 | 🟢 10 |
 | 16 | Social Scouting | K2.5 / GLM-5 | 🟢 10 |
 | 17 | Social Content | 📝 Manual | 📝 5 |
@@ -174,7 +175,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 39 | Task Planning | Kimi K2.5 | 🟢 10 |
 | 40 | Fact-Checking | K2.5 / GLM-5 | 🟢 10† |
 | 41 | Critic / Review | 📝 Manual | 📝 5 |
-| 42 | Market Research | K2.5 / GLM-5 | 🟢 8 |
+| 42 | Market Research | MiniMax-M2.5 | 🟢 9 |
 | 43 | Synthesizer | Kimi K2.5 | 🟢 10 |
 | 44 | Curriculum Design | Kimi K2.5 | 🟡 7 |
 | 45 | Prototype Gen | GLM-5 NoThink | 🟡 7 |

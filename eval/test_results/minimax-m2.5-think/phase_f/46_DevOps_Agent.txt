@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version '2' is outdated and no longer supported",
+      "fix": "Use version '3.8' or higher (e.g., '3.8' or '3.9')"
+    },
+    {
+      "line": "4",
+      "problem": "Using 'latest' tag is non-deterministic and can cause unexpected behavior",
+      "fix": "Use a specific version tag (e.g., 'node:18-alpine')"
+    },
+    {
+      "line": "6",
+      "problem": "Database password stored in plaintext in environment variable",
+      "fix": "Use Docker secrets or environment files with proper secret management"
+    },
+    {
+      "line": "8",
+      "problem": "NODE_ENV set to 'development' - insecure for production",
+      "fix": "Set NODE_ENV to 'production'"
+    },
+    {
+      "line": "10",
+      "problem": "Source volume mount (.:/app) mounts host directory into container - insecure for production",
+      "fix": "Remove volume mount or use a named volume for production"
+    },
+    {
+      "line": "11",
+      "problem": "restart: no - container won't restart after failure or reboot",
+      "fix": "Use 'restart: unless-stopped' or 'restart: always'"
+    },
+    {
+      "line": "14",
+      "problem": "MySQL 5.6 is End of Life (EOL) and no longer receives security updates",
+      "fix": "Use MySQL 8.0 or a supported version (e.g., 'mysql:8.0')"
+    },
+    {
+      "line": "15",
+      "problem": "Database port 3306 exposed publicly without access control",
+      "fix": "Remove host port mapping or bind to localhost only ('127.0.0.1:3306:3306')"
+    },
+    {
+      "line": "18",
+      "problem": "Using /tmp for persistent data - will be lost on system reboot (tmpfs)",
+      "fix": "Use a named volume or host path outside /tmp (e.g., './mysql-data:/var/lib/mysql')"
+    },
+    {
+      "line": "21",
+      "problem": "Redis port 6379 exposed publicly without authentication",
+      "fix": "Bind to localhost only ('127.0.0.1:6379:6379') and add password protection via requirepass"
+    }
+  ],
+  "count": 10
+}
+```
