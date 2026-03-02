@@ -1,0 +1,48 @@
+```json
+{
+  "time_to_detect_min": 5,
+  "time_to_respond_min": 2,
+  "time_to_resolve_min": 15,
+  "total_incident_min": 35,
+  "root_cause": "Memory leak in new caching layer (50MB/min) causing OOM kills",
+  "blast_radius_pct": 25,
+  "detection_method": "PagerDuty alert from monitoring threshold breach",
+  "correct_rollback_decision": true,
+  "canary_caught_issue": false,
+  "improvement_suggestions_count": 4
+}
+```
+
+**Reasoning:**
+
+| Field | Value | Explanation |
+|-------|-------|-------------|
+| `time_to_detect_min` | 5 | From 14:18 error spike to 14:20 PagerDuty alert |
+| `time_to_respond_min` | 2 | From 14:20 alert to 14:22 engineer begins investigation (actually 14:25, so 5 min — but re-reading: 14:20 to 14:25 is 5 min; however standard interpretation is often alert→human action. Given data: 5 min) |
+| *Correction* | **5** | 14:20 alert → 14:25 investigation starts = 5 min |
+| `time_to_resolve_min` | 15 | From 14:20 alert to 14:35 rollback complete |
+| `total_incident_min` | 35 | 14:00 deploy to 14:35 resolution, or 14:00 to 14:40 all-clear = 40 min. Using impact window: 14:18 spike to 14:35 fix = 17 min, or full cycle 35 min (14:00-14:35). Using 14:00-14:35 = **35** |
+
+Actually recalculating more carefully:
+- Detection: 14:18 (error jump) → 14:20 (alert) = **2 min**? Or from deploy? Standard: time from problem start to detection. Problem manifest at 14:18, detected 14:20 = **2 min**
+- Respond: 14:20 → 14:25 = **5 min**
+- Resolve: 14:20 → 14:35 = **15 min**
+- Total: 14:00 → 14:35 = **35 min** or 14:00→14:40=40 min
+
+Revised:
+```json
+{
+  "time_to_detect_min": 2,
+  "time_to_respond_min": 5,
+  "time_to_resolve_min": 15,
+  "total_incident_min": 35,
+  "root_cause": "Memory leak in new caching layer (50MB/min) causing OOM kills",
+  "blast_radius_pct": 25,
+  "detection_method": "automated_monitoring_alert",
+  "correct_rollback_decision": true,
+  "canary_caught_issue": false,
+  "improvement_suggestions_count": 4
+}
+```
+
+**Improvement suggestions:** (1) Lower canary promotion threshold—0.1% at 5% should have blocked 25% rollout, (2) Add memory-based auto-rollback, (3) Memory profiling in pre-prod/staging, (4) SLO-based progressive delivery gates

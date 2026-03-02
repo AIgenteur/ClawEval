@@ -1,0 +1,64 @@
+I'll analyze the timeline step by step.
+
+**Timeline data:**
+- 00:00: CPU 45%, Mem 62%, Disk 78%, Errors 2
+- 00:05: CPU 47%, Mem 63%, Disk 78%, Errors 1
+- 00:10: CPU 92%, Mem 64%, Disk 79%, Errors 45
+- 00:15: CPU 95%, Mem 65%, Disk 79%, Errors 52
+- 00:20: CPU 48%, Mem 66%, Disk 80%, Errors 3
+- 00:25: CPU 46%, Mem 67%, Disk 80%, Errors 2
+- 00:30: CPU 44%, Mem 68%, Disk 81%, Errors 1
+- 00:35: CPU 45%, Mem 69%, Disk 81%, Errors 2
+- 00:40: CPU 93%, Mem 70%, Disk 82%, Errors 48
+- 00:45: CPU 46%, Mem 71%, Disk 82%, Errors 1
+
+**Q1: CPU spike events (CPU > 90%)**
+- 00:10: 92% ✓
+- 00:15: 95% ✓
+- 00:40: 93% ✓
+**Answer: 3**
+
+**Q2: Average error count during CPU spikes vs normal**
+- Spike periods (CPU > 90%): errors = 45, 52, 48. Average = (45+52+48)/3 = 145/3 = 48.33...
+- Normal periods (CPU ≤ 90%): errors = 2, 1, 3, 2, 1, 2, 1. Average = (2+1+3+2+1+2+1)/7 = 12/7 = 1.71...
+
+Let me recheck: 7 normal readings? 00:00, 00:05, 00:20, 00:25, 00:30, 00:35, 00:45 = 7 readings. Sum = 2+1+3+2+1+2+1 = 12. Average = 12/7 ≈ 1.714...
+
+Actually, let me provide exact: spike avg = 48.333..., normal avg = 1.714... or as fractions 145/3 and 12/7.
+
+But the question asks for exact numbers. Let me recalculate: (45+52+48)/3 = 48.333... and (2+1+3+2+1+2+1)/7 = 12/7 ≈ 1.71
+
+Or perhaps they want two numbers: "48.33 vs 1.71" or rounded. Let me use exact decimals: 48.33 and 1.71, or more precisely 48.3 and 1.7.
+
+Actually re-reading: I should give precise values. Spike: 48.333... Normal: 1.714...
+
+**Q3: Memory increase per 5-min interval**
+Memory goes: 62, 63, 64, 65, 66, 67, 68, 69, 70, 71
+That's +1 percentage point every 5 minutes consistently.
+**Answer: 1**
+
+**Q4: Time to reach 95% memory from 00:45**
+At 00:45, memory is 71%. Need to reach 95%. Difference = 24 percentage points.
+At 1 point per 5 minutes: 24 × 5 = 120 minutes.
+**Answer: 120**
+
+**Q5: Disk growth rate per hour**
+Disk: 78, 78, 79, 79, 80, 80, 81, 81, 82, 82
+Increases by 1 percentage point every 10 minutes (two 5-min intervals).
+In 60 minutes: 6 intervals of 10 min, so 6 percentage points per hour.
+Or: 0.5 points per 5 min × 12 = 6 points per hour.
+From 00:00 to 00:45 (45 min), disk went 78→82 = 4 points in 45 min = 4/45 per min × 60 = 5.333... 
+
+Wait, let me recheck: 78, 78, 79, 79, 80, 80, 81, 81, 82, 82 — that's 9 intervals of 5 min = 45 min total, increase of 4 points.
+
+Rate = 4 points / 45 minutes = 4/45 per minute.
+Per hour: (4/45) × 60 = 240/45 = 16/3 = 5.333... = 5.33
+
+Or looking at pattern: increases every 10 minutes by 1 point = 6 points per hour? But data shows 45 min = 4 points, not 4.5.
+
+Actually from 00:00 to 00:45 is exactly 45 minutes, disk 78 to 82 = 4 percentage points.
+Rate = 4/45 × 60 = 5.333... percentage points per hour.
+
+```json
+{"q1": 3, "q2": "48.33 vs 1.71", "q3": 1, "q4": 120, "q5": 5.33}
+```

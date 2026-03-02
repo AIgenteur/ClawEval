@@ -1,0 +1,37 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "No validation that discount is between 0-100; discount > 100 creates negative price (capped at 0) but discount < 0 increases price unexpectedly",
+      "fix": "Add validation: discount = max(0, min(100, order.get('discount', 0)))"
+    },
+    {
+      "line": 10,
+      "issue": "Price cap at 0 hides business logic error; negative prices after discount should likely be rejected or logged, not silently clamped",
+      "fix": "Consider raising ValueError or logging warning instead of silent clamp, or validate discount earlier"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when processed is empty (no pending orders)",
+      "fix": "avg = total / len(processed) if processed else 0"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed), giving wrong count of actually processed orders",
+      "fix": "'count': len(processed)"
+    },
+    {
+      "line": 6,
+      "issue": "Mutates input order dictionaries (side effect), modifying caller's data unexpectedly",
+      "fix": "Create copy: processed_order = order.copy(), then modify and append the copy"
+    },
+    {
+      "line": 7,
+      "issue": "No type/validation checking; price or quantity could be None, string, or negative, causing TypeError or incorrect calculations",
+      "fix": "Add validation: price = float(order['price']) * int(order['quantity']), with try/except and checks for negative values"
+    }
+  ],
+  "count": 6
+}
+```

@@ -1,0 +1,112 @@
+```json
+{
+  "components": [
+    {
+      "name": "Edge Load Balancers",
+      "technology": "Cloudflare / AWS Global Accelerator with Anycast",
+      "purpose": "Distribute traffic globally, terminate TLS, DDoS protection, route to nearest region",
+      "scaling_strategy": "Managed service with automatic scaling; deploy in 15+ edge locations"
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong / AWS API Gateway / Envoy",
+      "purpose": "Rate limiting, authentication, request routing, API versioning, WebSocket upgrade handling",
+      "scaling_strategy": "Auto-scaling pods based on connection count (target: 50k connections per instance)"
+    },
+    {
+      "name": "WebSocket Connection Managers",
+      "technology": "Elixir/Phoenix (1M+ connections per node) or Go with gorilla/websocket",
+      "purpose": "Maintain persistent WebSocket connections, heartbeat management, message fan-out",
+      "scaling_strategy": "Stateful horizontal scaling with consistent hashing; 20 nodes × 50k connections = 1M capacity"
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster with Redis Streams + Elixir GenServers",
+      "purpose": "Track online/offline status, last seen timestamps, typing indicators",
+      "scaling_strategy": "Redis Cluster with 10 shards; ephemeral state, no persistence required"
+    },
+    {
+      "name": "Message Router",
+      "technology": "Apache Kafka / Redpanda (event streaming)",
+      "purpose": "Decouple message ingestion from delivery, ensure ordering per conversation, handle backpressure",
+      "scaling_strategy": "100 partitions per topic, replication factor 3; scale brokers horizontally"
+    },
+    {
+      "name": "Message Processors",
+      "technology": "Go / Rust consumer groups",
+      "purpose": "Process messages from Kafka, apply business logic, trigger push notifications, update read receipts",
+      "scaling_strategy": "Consumer groups auto-scale based on lag metrics; 50-200 consumers"
+    },
+    {
+      "name": "E2E Encryption Service",
+      "technology": "Signal Protocol libraries (libsignal-client) in isolated microservices",
+      "purpose": "Key generation, pre-key management, double ratchet for session keys; plaintext never touches servers",
+      "scaling_strategy": "Stateless horizontal scaling; HSM (AWS CloudHSM) for master key protection"
+    },
+    {
+      "name": "Chat History Database",
+      "technology": "ScyllaDB / Cassandra (time-series optimized) for hot storage; S3 for cold archive",
+      "purpose": "Store encrypted message payloads, metadata, support time-range queries",
+      "scaling_strategy": "ScyllaDB: 30 nodes with 3x replication; TTL-based tiering to S3 after 90 days"
+    },
+    {
+      "name": "Metadata Database",
+      "technology": "CockroachDB / Spanner (globally distributed SQL)",
+      "purpose": "User profiles, group memberships, conversation metadata, device registrations",
+      "scaling_strategy": "Multi-region deployment with follower reads; automatic rebalancing"
+    },
+    {
+      "name": "File Storage & CDN",
+      "technology": "AWS S3 + CloudFront / Cloudflare R2 with signed URLs",
+      "purpose": "Encrypted file storage, chunked upload/resume, virus scanning, geographic distribution",
+      "scaling_strategy": "Unlimited; multipart uploads for 50MB files; Lambda@Edge for access control"
+    },
+    {
+      "name": "Push Notification Service",
+      "technology": "Firebase FCM + APNs + custom Web Push; BullMQ for queueing",
+      "purpose": "Deliver notifications to offline users, notification batching and deduplication",
+      "scaling_strategy": "Queue-based workers scale with notification volume; ~5% of messages generate pushes"
+    },
+    {
+      "name": "Search & Indexing",
+      "technology": "Elasticsearch / OpenSearch with encrypted indices",
+      "purpose": "Full-text search over message history (client-side decrypted index or searchable encryption)",
+      "scaling_strategy": "Dedicated cluster with 20 nodes; index sharding by user_id prefix"
+    },
+    {
+      "name": "GDPR Compliance Service",
+      "technology": "Temporal.io workflows + Apache Airflow",
+      "purpose": "Automated data export, right-to-erasure with cryptographic shredding, consent management, audit logging",
+      "scaling_strategy": "Event-driven; scales with request volume; idempotent operations"
+    },
+    {
+      "name": "Observability Stack",
+      "technology": "Prometheus + Grafana + Jaeger + ELK",
+      "purpose": "Metrics, distributed tracing, log aggregation, latency SLO monitoring (<100ms p99)",
+      "scaling_strategy": "Dedicated monitoring cluster; 15-day hot retention, S3 archive"
+    }
+  ],
+  "data_flow": "1. Client connects via WebSocket through Edge LB → API Gateway → assigned Connection Manager (consistent hash on user_id). 2. Outbound message: client encrypts with Signal Protocol → WebSocket → Kafka (partitioned by conversation_id for ordering). 3. Message Processor consumes, updates presence if needed, queries group membership from Metadata DB, fans out to recipient Connection Managers via Redis Pub/Sub or direct gRPC. 4. Recipients receive encrypted payload; decryption occurs client-side. 5. Read receipts flow through separate low-priority Kafka topic. 6. Files: client requests signed URL, uploads directly to S3, sends encrypted reference in message. 7. Offline users: Push Notification Service triggered via Kafka consumer.",
+  "infrastructure": {
+    "cloud": "Multi-cloud primary (AWS us-east-1, eu-west-1, ap-southeast-1) with GCP/Azure failover for 99.99%",
+    "regions": 6,
+    "details": "Active-active in 3 regions, warm standby in 3; data residency controls for GDPR; cross-region replication lag <500ms"
+  },
+  "estimated_monthly_cost": "$180,000 - $250,000 at 1M concurrent (assuming 10M DAU, 500 messages/user/day). Breakdown: Compute (EKS/GKE) $45k, Kafka/Redpanda $25k, ScyllaDB $30k, CockroachDB $20k, Redis $15k, CDN/Storage $25k, Network egress $35k, Observability $15k, Security/HSM $10k.",
+  "bottlenecks": [
+    "WebSocket connection manager memory limits: 50k connections/node requires careful tuning; kernel params, file descriptors",
+    "Kafka partition count limits group chat scalability: 500-member groups need special handling (fan-out vs. broadcast tradeoff)",
+    "E2E encryption key distribution: initial key fetch can add 50-200ms latency on new conversations",
+    "Global consistency for read receipts: eventual consistency acceptable but UX degradation possible",
+    "Cold storage query latency: messages >90 days old require S3 retrieval (seconds, not milliseconds)"
+  ],
+  "tradeoffs": [
+    "E2E encryption vs. server-side features: cannot offer server-side search, content moderation, or message recovery without client cooperation",
+    "Strong consistency vs. latency: cross-region writes to CockroachDB add 100-300ms; use async replication for non-critical metadata",
+    "Memory vs. cost: keeping 1M WebSockets open requires ~200GB RAM across cluster; cheaper with long-polling but violates latency SLA",
+    "GDPR erasure vs. blockchain audit logs: immutable audit trails conflict with right to erasure; implement cryptographic shredding instead",
+    "Group chat fan-out: O(n) write amplification for 500-member groups; accept or limit group size / use gossip protocols",
+    "Encryption key escrow: balancing user recovery vs. zero-knowledge architecture; implement social recovery or hardware security modules"
+  ]
+}
+```

@@ -1,0 +1,53 @@
+```json
+{
+  "1": "APPROVE",
+  "2": "REJECT",
+  "3": "APPROVE",
+  "4": "REJECT",
+  "5": "REJECT",
+  "6": "APPROVE",
+  "7": "REJECT",
+  "8": "APPROVE",
+  "9": "REJECT",
+  "10": "REJECT"
+}
+```
+
+**Reasoning:**
+
+| Txn | Amount | Reason |
+|-----|--------|--------|
+| 1 | $450 | ✓ Under all limits, no flags |
+| 2 | $2,500 | ✗ >$2,000 requires manager approval (not given) |
+| 3 | $150 | ✓ No issues |
+| 4 | $3,000.00 | ✗ Round-dollar amount >$1,000 (suspicious) |
+| 5 | $800 | ✗ Same merchant (Amazon.com) as txn 1 within 1 hour (9:15 AM vs 11:02 AM = 1h47m? No wait—let me recheck: 9:15 AM to 11:02 AM is **1h47m**, which is >1 hour... Actually this is APPROVE. Let me recheck txn 8.) |
+
+Wait—re-checking txn 5: 9:15 AM to 11:02 AM = 1 hour 47 minutes > 1 hour, so NOT duplicate. But let me re-verify: **APPROVE**
+
+Actually re-reading: txn 1 at 9:15 AM, txn 5 at 11:02 AM = 1h47m apart. Not duplicate.
+
+But txn 8 at 3:45 PM vs txn 5 at 11:02 AM = 4h43m apart. Not duplicate with 5.
+
+However, checking if any other Amazon transactions: txn 1 and txn 8 are both Amazon, but 9:15 AM to 3:45 PM = 6.5 hours apart. Not duplicate.
+
+Let me recheck txn 5 timing against txn 1: 9:15 to 11:02 = 1h47m. **Not duplicate → APPROVE**
+
+Revised:
+
+```json
+{
+  "1": "APPROVE",
+  "2": "REJECT",
+  "3": "APPROVE",
+  "4": "REJECT",
+  "5": "APPROVE",
+  "6": "APPROVE",
+  "7": "REJECT",
+  "8": "APPROVE",
+  "9": "REJECT",
+  "10": "REJECT"
+}
+```
+
+Final check on daily total for approved transactions: 450+150+800+1200(€)+450 = $2,850 + €1,200. Assuming €1,200 ≈ $1,300, total ~$4,150. Well under $10,000 limit.

@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version: '2' is outdated and lacks modern features like secrets, health checks, and newer networking capabilities",
+      "fix": "version: '3.8'"
+    },
+    {
+      "line": "4",
+      "problem": "image: node:latest uses non-deterministic 'latest' tag causing unpredictable builds and potential breaking changes",
+      "fix": "image: node:20-alpine (or specific LTS version)"
+    },
+    {
+      "line": "7-8",
+      "problem": "DB_PASSWORD in plaintext environment variable exposes sensitive credentials in compose file, shell history, and docker inspect",
+      "fix": "Use Docker secrets or external env file: DB_PASSWORD_FILE=/run/secrets/db_password"
+    },
+    {
+      "line": "9",
+      "problem": "NODE_ENV=development enables debug mode, verbose errors, and disables optimizations - security risk for deployed containers",
+      "fix": "NODE_ENV: production"
+    },
+    {
+      "line": "11",
+      "problem": "volumes: .:/app mounts host source code into container, breaking immutability and causing issues with node_modules architecture mismatch",
+      "fix": "Remove volume mount and use COPY in Dockerfile, or use named volume for persistent data only"
+    },
+    {
+      "line": "13",
+      "problem": "restart: no means container won't restart on failure or host reboot, causing service outages",
+      "fix": "restart: unless-stopped (or always for critical services)"
+    },
+    {
+      "line": "16",
+      "problem": "mysql:5.6 reached End-of-Life in February 2021 and receives no security patches",
+      "fix": "image: mysql:8.0 or mariadb:10.11"
+    },
+    {
+      "line": "18",
+      "problem": "ports: \"3306:3306\" exposes database port publicly to all interfaces, allowing external attacks",
+      "fix": "Remove ports entirely (internal networking only) or use \"127.0.0.1:3306:3306\" for localhost-only access"
+    },
+    {
+      "line": "21",
+      "problem": "/tmp/mysql-data uses /tmp which is typically tmpfs or cleared on reboot, causing complete data loss; also lacks named volume",
+      "fix": "volumes:\n  - db_data:/var/lib/mysql\n\nvolumes:\n  db_data:"
+    },
+    {
+      "line": "24",
+      "problem": "Redis port 6379 exposed publicly with no authentication allows anyone to connect and access/modify cache data",
+      "fix": "Remove ports (use internal DNS), or add command: redis-server --requirepass ${REDIS_PASSWORD} with proper secret handling"
+    }
+  ],
+  "count": 10
+}
+```

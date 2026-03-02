@@ -1,0 +1,33 @@
+```json
+{
+  "bugs": [
+    {
+      "description": "Race condition: acquire() iterates and modifies pool without holding lock. Multiple threads can see same conn['in_use']=False, both acquire it, or one sees stale state during another's release.",
+      "line": 17,
+      "fix": "Wrap the scan-and-acquire logic with `with self.lock:`"
+    },
+    {
+      "description": "Busy-wait pattern: returns None instead of blocking when pool exhausted. Caller must poll-loop, wasting CPU and causing thundering herd under load.",
+      "line": 21,
+      "fix": "Add `self.available = threading.Condition(self.lock)` and use `wait()`/`notify()`; or raise exception/queue for proper backpressure"
+    },
+    {
+      "description": "No ownership validation: release() accepts any dict-like object. Malicious/corrupted input can mark arbitrary memory as free, or double-release causes logical leaks (conn freed twice, count wrong).",
+      "line": 23,
+      "fix": "Verify `conn in self.pool` and that `conn['in_use'] is True` before clearing; raise ValueError if invalid"
+    },
+    {
+      "description": "Concurrent modification during iteration: health_check removes items from pool while other threads may be iterating in acquire(). Causes skipped items, IndexError, or missed connections.",
+      "line": 30,
+      "fix": "Hold `self.lock` during entire health_check; build new pool list then assign atomically, or mark for lazy replacement instead of immediate remove()"
+    },
+    {
+      "description": "ID collision and metadata loss: recycled connection reuses old ID but `_new_connection` timestamp resets. If caller logs by ID, appears as same connection; also original conn dict still referenced externally could resurrect ghost state.",
+      "line": 31,
+      "fix": "Use monotonic global ID counter instead of `conn['id']`; ensure released connections are invalidated/removed from external references"
+    }
+  ],
+  "root_cause_chain": "The fundamental design lacks proper synchronization primitives. Bug 1 (missing lock) masks Bug 4 (unsafe mutation) because without locking you don't notice the structural race. Once you add locks for Bug 1, Bug 2 becomes visible as callers block forever with no signaling mechanism. Fixing Bug 2 with Condition variables exposes that release() (Bug 3) can corrupt state by freeing foreign objects. Finally, once the pool is properly synchronized, Bug 5's ID reuse causes debugging nightmares and potential aliasing bugs in logging/metrics that assume ID uniqueness.",
+  "count": 5
+}
+```
