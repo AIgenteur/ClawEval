@@ -32,6 +32,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 | Provider | Models | Status |
 |---|---|---|
+| Alibaba Coding Plan | **Kimi K2.5** — 96/110 (87%) Think, 91/110 (83%) NoThink | ✅ Tested |
 | OpenRouter, Chutes, and other affordable providers | Open-source models via API | 🔜 Coming soon |
 
 
@@ -111,7 +112,10 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 > † Phase G discriminator score (harder test that differentiates models — [details](docs/results-phase-g.md))
 >
+> ☁️ **Cloud champion: [Kimi K2.5](docs/results-phase-g.md#%EF%B8%8F-cloud-models) scored 96/110 (87%) with thinking — the highest Phase G score across all models.**
+>
 > 📊 **Detailed per-model comparisons:**
+> - [☁️ Cloud Models — Kimi K2.5 Phase G](docs/results-phase-g.md#%EF%B8%8F-cloud-models)
 > - [🟢 24GB VRAM — Think vs NoThink (4 models)](docs/results-24gb-vram.md)
 > - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
 > - [🆕 Phase G — Discriminator Tests (harder tests)](docs/results-phase-g.md)
