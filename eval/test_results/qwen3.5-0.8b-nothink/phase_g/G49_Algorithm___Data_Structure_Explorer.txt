@@ -1,0 +1,45 @@
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.items = {}
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+
+    def get(self, key: str) -> any:
+        if key not in self.items:
+            self.stats["misses"] += 1
+            return None
+        self.stats["hits"] += 1
+        return self.items[key]
+
+    def put(self, key: str, value: any, ttl: float = None) -> bool:
+        if key in self.items:
+            return False
+        if ttl is None:
+            ttl = 0
+        if ttl > 0:
+            self.items[key] = value
+            self.stats["expirations"] += 1
+        else:
+            self.items[key] = value
+            self.stats["misses"] += 1
+        return True
+
+    def delete(self, key: str) -> bool:
+        if key not in self.items:
+            return False
+        self.items[key] = None
+        self.stats["evictions"] += 1
+        return True
+
+    def size(self) -> int:
+        return len(self.items)
+
+    def get_stats(self) -> dict:
+        return self.stats
+
+    def keys(self) -> list:
+        return list(self.items.keys())
+
+    def clear(self) -> None:
+        self.items.clear()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}

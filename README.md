@@ -18,13 +18,13 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 We test quantized open-source models that fit on hardware you already own. Find out which model is best for each agent role **before you commit your VRAM.** We're also testing smaller models for max context and usability — even a 16GB GPU can run capable sub-agents.
 
-| 🟡 16GB VRAM | 🟢 24GB VRAM | 🔵 64–96GB VRAM |
-|---|---|---|
-| Qwen3-8B, Phi-4 14B | Qwen3.5-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
-| Mistral Small 24B, GPT-OSS-20B | Qwen3.5-27B Q4_K_M | GPT-OSS-120B GGUF (llama.cpp) |
-| Coming soon | llama.cpp · SGLang · vLLM | SGLang · vLLM · llama.cpp |
+| 🔴 8GB VRAM | 🟡 12–16GB VRAM | 🟢 24GB VRAM | 🔵 64–96GB VRAM |
+|---|---|---|---|
+| Qwen3.5-0.8B Q4_K_M | Qwen3.5-4B, Qwen3.5-9B | Qwen3.5-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
+| Qwen3.5-2B Q4_K_M | ~275 t/s · llama.cpp | Qwen3.5-27B Q4_K_M | GPT-OSS-120B GGUF (llama.cpp) |
+| ~275 t/s · llama.cpp | ✅ Testing | llama.cpp · SGLang · vLLM | SGLang · vLLM · llama.cpp |
 
-> 📖 **VRAM Guides:** [16GB](docs/OpenClaw%2016GB%20VRAM%20Local%20LLM%20Subagents.md) · [24GB](docs/The%2024GB%20VRAM%20Tier_%20Where%20Local%20AI%20Agents%20Get%20Serious.md) · [32GB](docs/openclaw-model-selection-32gb-tier.md) · [48GB](docs/openclaw-48gb-tier.md) · [64GB](docs/openclaw-64gb-tier.md) · [96GB](docs/openclaw-96gb-tier.md) — Which models fit, context limits, speed estimates
+> 📖 **VRAM Guides:** [8–16GB Small Models](docs/results-small-vram.md) · [16GB](docs/OpenClaw%2016GB%20VRAM%20Local%20LLM%20Subagents.md) · [24GB](docs/The%2024GB%20VRAM%20Tier_%20Where%20Local%20AI%20Agents%20Get%20Serious.md) · [32GB](docs/openclaw-model-selection-32gb-tier.md) · [48GB](docs/openclaw-48gb-tier.md) · [64GB](docs/openclaw-64gb-tier.md) · [96GB](docs/openclaw-96gb-tier.md) — Which models fit, context limits, speed estimates
 
 ### ☁️ CLOUD Models — Run via API
 
@@ -45,77 +45,78 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 **The only table you need.** Best-scoring model for each role at each VRAM tier. Combines Phase F (role tests) + Phase G (discriminator tests). All scores out of 10.
 
-| # | Agent Role | 🟢 Best 24GB | | 🔵 Best 64–96GB | |
-|---|---|---|---|---|---|
-| | | **Model** | **Score** | **Model** | **Score** |
-| | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 2 | Input Validator | 27B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
-| 3 | Health Monitor | 27B / 35B NoThink | 🔴 3 | GPT-OSS-120B | 🟢 8 |
-| 4 | Notification | 27B Think | 🟢 9 | GPT-OSS-120B | 🟢 9 |
-| 5 | Sentiment | 27B / 35B NoThink | 🟢 8† | 122B NoThink | 🟢 8† |
-| 6 | FAQ Generation | 27B Think | 🟢 8 | 122B / GPT-OSS | 🟡 5 |
-| 7 | Translation | 27B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 8 | Calendar | — | 🔴 0 | — | 🔴 0 |
-| | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B / 122B NT | 🟢 9† |
-| 10 | Content Writer | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 11 | Editor | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 12 | Content Planner | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
-| 13 | Email Drafting | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 14 | Doc Summary | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
-| 15 | Meeting Notes | 27B / 35B NoThink | 🟢 9 | 122B Think | 🟢 9 |
-| 16 | Social Scouting | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
-| 17 | Social Content | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 18 | News Aggregation | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
-| 19 | Shopping | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 20 | Memory Mgmt | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
-| 21 | RAG / Retrieval | 27B NoThink | 🟡 6 | 122B / GPT-OSS | 🟡 6 |
-| 22 | Data Analysis | 27B / 35B NoThink | 🔴 3 | 122B / GPT-OSS | 🔴 2 |
-| 23 | Web Scraping | 35B NoThink | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
-| 24 | Image Description | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 25 | Customer Support | 27B / 35B Think | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
-| 26 | Lead Scoring | 27B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 8 |
-| 27 | Sprint Summary | 27B NoThink | 🟡 7 | 122B Think | 🟢 10 |
-| 28 | Transaction | 35B NoThink | 🟢 9 | 122B NoThink / GPT-OSS | 🟢 10 |
-| 29 | Home Automation | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 30 | Fitness Tracking | 27B NoThink / Think | 🟢 9 | 122B NoThink / GPT-OSS | 🟢 9 |
-| 31 | Recipe / Cooking | 35B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 9 |
-| 32 | Personal Finance | 27B Think | 🟡 7 | 122B Think | 🟡 7 |
-| 33 | SEO Optimization | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
-| 34 | Landing Page | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 35 | Travel Planning | 27B / 35B NoThink | 🟡 7 | 122B Think | 🟢 8 |
-| | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 8† |
-| 37 | Code Review | 35B NoThink / 27B Think | 🟢 10 | 122B Think | 🟢 10 |
-| 38 | QA / Test Writing | 35B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 8 |
-| 39 | Task Planning | 35B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 9 |
-| 40 | Fact-Checking | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 10† |
-| 41 | Critic / Review | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 42 | Market Research | 27B NoThink | 🟢 8 | GPT-OSS-120B | 🔴 4 |
-| 43 | Synthesizer | 27B / 35B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
-| 44 | Curriculum Design | 27B / 35B NoThink | 🟡 6 | GPT-OSS-120B | 🟡 7 |
-| 45 | Prototype Gen | 27B / 35B Think/NoThink | 🟡 6 | 122B Think | 🟡 6 |
-| 46 | DevOps | 27B NoThink / 35B Think | 🟢 10 | GPT-OSS-120B | 🟢 10 |
-| | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | 27B / 35B Think | 🟡 6 | GPT-OSS-120B | 🟢 8 |
-| 48 | STEM Analysis | 27B NoThink | 🔴 2† | 122B NoThink / GPT-OSS | 🟡 5† |
-| 49 | Algorithm | 27B NoThink | 🟢 9† | 122B NoThink / GPT-OSS | 🟢 10† |
-| | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | 27B / 35B NoThink | 🟡 7† | 122B NoThink / GPT-OSS | 🟡 7† |
-| 51 | Architect | 27B / 35B NoThink | 🟢 9† | 122B NoThink | 🟢 10† |
-| 52 | Debugger | 35B NoThink | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
-| 53 | Legal Review | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
-| 54 | Medical | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
-| 55 | Financial | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
-| 56 | Security | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
-| 57 | SRE / Incident | 27B NoThink | 🟡 6 | 122B / GPT-OSS | 🟡 6 |
-| 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 59 | Compliance | 27B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 8 |
+| # | Agent Role | 🔴 Best 8GB | | 🟢 Best 24GB | | 🔵 Best 64–96GB | |
+|---|---|---|---|---|---|---|---|
+| | | **Model** | **Score** | **Model** | **Score** | **Model** | **Score** |
+| | **Tier 1 — Utility** | | | | | | |
+| 1 | Router / Triage | 0.8B | 🟡 7 | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 2 | Input Validator | 0.8B | 🟢 10 | 27B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 3 | Health Monitor | 0.8B NT | 🔴 3 | 27B / 35B NoThink | 🔴 3 | GPT-OSS-120B | 🟢 8 |
+| 4 | Notification | 0.8B | 🟡 6 | 27B Think | 🟢 9 | GPT-OSS-120B | 🟢 9 |
+| 5 | Sentiment | 0.8B Think | 🟡 6 | 27B / 35B NoThink | 🟢 8† | 122B NoThink | 🟢 8† |
+| 6 | FAQ Generation | 0.8B NT | 🔴 3 | 27B Think | 🟢 8 | 122B / GPT-OSS | 🟡 5 |
+| 7 | Translation | 0.8B NT | 🟢 9 | 27B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 8 | Calendar | — | 🔴 0 | — | 🔴 0 | — | 🔴 0 |
+| | **Tier 2 — Moderate** | | | | | | |
+| 9 | Research Agent | 0.8B | 🟡 6 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B / 122B NT | 🟢 9† |
+| 10 | Content Writer | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 11 | Editor | 0.8B | 🟡 7 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 12 | Content Planner | 0.8B | 🟢 10 | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 13 | Email Drafting | 0.8B Think | 🟡 6 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 14 | Doc Summary | 0.8B NT | 🟢 8 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 15 | Meeting Notes | 0.8B | 🟢 9 | 27B / 35B NoThink | 🟢 9 | 122B Think | 🟢 9 |
+| 16 | Social Scouting | 0.8B | 🟢 10 | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 17 | Social Content | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 18 | News Aggregation | 0.8B | 🟢 10 | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 19 | Shopping | 0.8B Think | 🔴 4 | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 20 | Memory Mgmt | 0.8B | 🟢 9 | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
+| 21 | RAG / Retrieval | — | 🔴 0 | 27B NoThink | 🟡 6 | 122B / GPT-OSS | 🟡 6 |
+| 22 | Data Analysis | 0.8B Think | 🔴 1 | 27B / 35B NoThink | 🔴 3 | 122B / GPT-OSS | 🔴 2 |
+| 23 | Web Scraping | 0.8B | 🟢 10 | 35B NoThink | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
+| 24 | Image Description | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 25 | Customer Support | 0.8B | 🟡 6 | 27B / 35B Think | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
+| 26 | Lead Scoring | 0.8B | 🔴 2 | 27B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 8 |
+| 27 | Sprint Summary | 0.8B | 🔴 2 | 27B NoThink | 🟡 7 | 122B Think | 🟢 10 |
+| 28 | Transaction | 0.8B | 🔴 1 | 35B NoThink | 🟢 9 | 122B NoThink / GPT-OSS | 🟢 10 |
+| 29 | Home Automation | 0.8B NT | 🟢 10 | 27B / 35B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 30 | Fitness Tracking | 0.8B | 🔴 3 | 27B NoThink / Think | 🟢 9 | 122B NoThink / GPT-OSS | 🟢 9 |
+| 31 | Recipe / Cooking | — | 🔴 0 | 35B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 9 |
+| 32 | Personal Finance | 0.8B | 🔴 3 | 27B Think | 🟡 7 | 122B Think | 🟡 7 |
+| 33 | SEO Optimization | 0.8B | 🟢 9 | 27B / 35B NoThink | 🟢 9 | 122B NoThink | 🟢 9 |
+| 34 | Landing Page | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 35 | Travel Planning | 0.8B | 🔴 4 | 27B / 35B NoThink | 🟡 7 | 122B Think | 🟢 8 |
+| | **Tier 3 — Advanced** | | | | | | |
+| 36 | Code Generation | 0.8B | 🟢 8 | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 8† |
+| 37 | Code Review | 0.8B NT | 🟢 10 | 35B NoThink / 27B Think | 🟢 10 | 122B Think | 🟢 10 |
+| 38 | QA / Test Writing | 0.8B | 🟢 8 | 35B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 8 |
+| 39 | Task Planning | 0.8B Think | 🟢 9 | 35B NoThink | 🟢 10 | 122B / GPT-OSS | 🟢 9 |
+| 40 | Fact-Checking | 0.8B Think | 🟡 5 | 27B NoThink | 🟢 10† | 122B NoThink | 🟢 10† |
+| 41 | Critic / Review | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 42 | Market Research | 0.8B | 🔴 4 | 27B NoThink | 🟢 8 | GPT-OSS-120B | 🔴 4 |
+| 43 | Synthesizer | 0.8B | 🟢 9 | 27B / 35B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
+| 44 | Curriculum Design | 0.8B | 🔴 4 | 27B / 35B NoThink | 🟡 6 | GPT-OSS-120B | 🟡 7 |
+| 45 | Prototype Gen | 0.8B Think | 🟡 7 | 27B / 35B Think/NoThink | 🟡 6 | 122B Think | 🟡 6 |
+| 46 | DevOps | 0.8B Think | 🟢 10 | 27B NoThink / 35B Think | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| | **Tier 4 — Expert** | | | | | | |
+| 47 | Math / Logic | 0.8B | 🔴 2 | 27B / 35B Think | 🟡 6 | GPT-OSS-120B | 🟢 8 |
+| 48 | STEM Analysis | — | 🔴 0 | 27B NoThink | 🔴 2† | 122B NoThink / GPT-OSS | 🟡 5† |
+| 49 | Algorithm | 0.8B Think | 🟡 5 | 27B NoThink | 🟢 9† | 122B NoThink / GPT-OSS | 🟢 10† |
+| | **Tier 5 — Senior** | | | | | | |
+| 50 | Orchestrator | 0.8B | 🟢 8 | 27B / 35B NoThink | 🟡 7† | 122B NoThink / GPT-OSS | 🟡 7† |
+| 51 | Architect | 0.8B NT | 🟢 9 | 27B / 35B NoThink | 🟢 9† | 122B NoThink | 🟢 10† |
+| 52 | Debugger | 0.8B NT | 🟢 10 | 35B NoThink | 🟢 10 | 122B NoThink / GPT-OSS | 🟢 10 |
+| 53 | Legal Review | 0.8B | 🟢 10 | 27B / 35B NoThink | 🟢 10 | 122B Think | 🟢 10 |
+| 54 | Medical | 0.8B | 🟢 10 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 9 |
+| 55 | Financial | 0.8B Think | 🔴 2 | 27B / 35B NoThink | 🟢 10 | 122B NoThink | 🟢 10 |
+| 56 | Security | 0.8B Think | 🟡 6 | 27B / 35B NoThink | 🟢 10 | GPT-OSS-120B | 🟢 10 |
+| 57 | SRE / Incident | 0.8B | 🔴 2 | 27B NoThink | 🟡 6 | 122B / GPT-OSS | 🟡 6 |
+| 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
+| 59 | Compliance | 0.8B | 🟢 8 | 27B NoThink | 🟢 9 | GPT-OSS-120B | 🟢 8 |
 
 > † Phase G discriminator score (harder test that differentiates models — [details](docs/results-phase-g.md))
 >
 > 📊 **Detailed local comparisons:**
+> - [🆕 🔴 8–16GB Small VRAM — Qwen3.5-0.8B/2B/4B/9B](docs/results-small-vram.md)
 > - [🟢 24GB VRAM — Think vs NoThink (4 models)](docs/results-24gb-vram.md)
 > - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
 > - [🆕 Phase G — Discriminator Tests (harder tests)](docs/results-phase-g.md)

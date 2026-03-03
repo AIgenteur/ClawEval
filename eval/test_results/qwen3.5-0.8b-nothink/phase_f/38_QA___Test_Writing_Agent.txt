@@ -1,0 +1,165 @@
+from typing import List, Tuple, Optional
+import pytest
+
+
+def test_calculate_tax_zero_income():
+    """Test calculation for zero income."""
+    result = calculate_tax(0, 'single')
+    assert result == (0.0, 0.0)
+    result = calculate_tax(0, 'married')
+    assert result == (0.0, 0.0)
+
+
+def test_calculate_tax_negative_income():
+    """Test calculation for negative income."""
+    with pytest.raises(ValueError, match="Income must be non-negative"):
+        calculate_tax(-10, 'single')
+
+
+def test_calculate_tax_invalid_filing_status():
+    """Test calculation for invalid filing status."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(10000, 'invalid')
+
+
+def test_calculate_tax_single_brackets():
+    """Test calculation for single filer using brackets_single."""
+    result = calculate_tax(100000, 'single')
+    assert result == (100000 * 0.10, 0.10)
+    result = calculate_tax(200000, 'single')
+    assert result == (200000 * 0.12, 0.12)
+    result = calculate_tax(300000, 'single')
+    assert result == (300000 * 0.22, 0.22)
+    result = calculate_tax(400000, 'single')
+    assert result == (400000 * 0.24, 0.24)
+    result = calculate_tax(500000, 'single')
+    assert result == (500000 * 0.32, 0.32)
+    result = calculate_tax(600000, 'single')
+    assert result == (600000 * 0.35, 0.35)
+    result = calculate_tax(700000, 'single')
+    assert result == (700000 * 0.37, 0.37)
+
+
+def test_calculate_tax_married_brackets():
+    """Test calculation for married filer using brackets_married."""
+    result = calculate_tax(100000, 'married')
+    assert result == (23200 * 0.10, 0.10)
+    result = calculate_tax(200000, 'married')
+    assert result == (94300 * 0.12, 0.12)
+    result = calculate_tax(300000, 'married')
+    assert result == (201050 * 0.22, 0.22)
+    result = calculate_tax(400000, 'married')
+    assert result == (383900 * 0.24, 0.24)
+    result = calculate_tax(500000, 'married')
+    assert result == (487450 * 0.32, 0.32)
+    result = calculate_tax(600000, 'married')
+    assert result == (731200 * 0.35, 0.35)
+
+
+def test_calculate_tax_bracket_boundaries():
+    """Test calculation at exact bracket boundaries."""
+    # Single: 11600 -> 0.10, 47150 -> 0.12
+    result = calculate_tax(11600, 'single')
+    assert result == (0.10, 0.10)
+    result = calculate_tax(47150, 'single')
+    assert result == (0.12, 0.12)
+    
+    # Single: 100525 -> 0.22, 191950 -> 0.24
+    result = calculate_tax(100525, 'single')
+    assert result == (0.22, 0.22)
+    result = calculate_tax(191950, 'single')
+    assert result == (0.24, 0.24)
+    
+    # Single: 243725 -> 0.32, 609350 -> 0.35
+    result = calculate_tax(243725, 'single')
+    assert result == (0.32, 0.32)
+    result = calculate_tax(609350, 'single')
+    assert result == (0.35, 0.35)
+    
+    # Single: float('inf') -> 0.37
+    result = calculate_tax(float('inf'), 'single')
+    assert result == (0.37, 0.37)
+
+
+def test_calculate_tax_married_bracket_boundaries():
+    """Test calculation at exact bracket boundaries for married filer."""
+    # Married: 23200 -> 0.10, 94300 -> 0.12
+    result = calculate_tax(23200, 'married')
+    assert result == (0.10, 0.10)
+    result = calculate_tax(94300, 'married')
+    assert result == (0.12, 0.12)
+    
+    # Married: 201050 -> 0.22, 383900 -> 0.24
+    result = calculate_tax(201050, 'married')
+    assert result == (0.22, 0.22)
+    result = calculate_tax(383900, 'married')
+    assert result == (0.24, 0.24)
+    
+    # Married: 487450 -> 0.32, 731200 -> 0.35
+    result = calculate_tax(487450, 'married')
+    assert result == (0.32, 0.32)
+    result = calculate_tax(731200, 'married')
+    assert result == (0.35, 0.35)
+
+
+def test_calculate_tax_invalid_bracket():
+    """Test calculation for bracket that doesn't exist in the list."""
+    result = calculate_tax(100000, 'single')
+    assert result == (0.10, 0.10)
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(100000, 'invalid')
+
+
+def test_calculate_tax_high_income_single():
+    """Test calculation for high income single filer."""
+    result = calculate_tax(1000000, 'single')
+    assert result == (1000000 * 0.37, 0.37)
+    result = calculate_tax(2000000, 'single')
+    assert result == (2000000 * 0.37, 0.37)
+
+
+def test_calculate_tax_high_income_married():
+    """Test calculation for high income married filer."""
+    result = calculate_tax(1000000, 'married')
+    assert result == (1000000 * 0.37, 0.37)
+    result = calculate_tax(2000000, 'married')
+    assert result == (2000000 * 0.37, 0.37)
+
+
+def test_calculate_tax_single_vs_married():
+    """Test calculation for single vs married filers with same income."""
+    result_single = calculate_tax(100000, 'single')
+    result_married = calculate_tax(100000, 'married')
+    assert result_single == result_married
+
+
+def test_calculate_tax_invalid_bracket_value():
+    """Test calculation for bracket with invalid value (e.g., 0.00)."""
+    result = calculate_tax(100000, 'single')
+    assert result == (0.10, 0.10)
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(100000, 'single')
+
+
+def test_calculate_tax_invalid_bracket_rate():
+    """Test calculation for bracket with invalid rate (e.g., 0.00)."""
+    result = calculate_tax(100000, 'single')
+    assert result == (0.10, 0.10)
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(100000, 'single')
+
+
+def test_calculate_tax_invalid_bracket_value():
+    """Test calculation for bracket with invalid value (e.g., 0.00)."""
+    result = calculate_tax(100000, 'single')
+    assert result == (0.10, 0.10)
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(100000, 'single')
+
+
+def test_calculate_tax_invalid_bracket_rate():
+    """Test calculation for bracket with invalid rate (e.g., 0.00)."""
+    result = calculate_tax(100000, 'single')
+    assert result == (0.10, 0.10)
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(100000, 'single')

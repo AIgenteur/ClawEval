@@ -1,0 +1,733 @@
+class RateLimiter:
+    def __init__(self, max_requests: int, window_seconds: float, burst: int = 0):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.burst = burst
+        self._lock = threading.Lock()
+        self._usage = {}
+        self._cleanup_count = 0
+        self._cleanup_threshold = window_seconds
+
+    def _get_bucket_key(self, user_id: str, endpoint: str) -> tuple:
+        return (user_id, endpoint)
+
+    def _get_bucket_usage(self, user_id: str, endpoint: str) -> dict:
+        key = self._get_bucket_key(user_id, endpoint)
+        if key not in self._usage:
+            return {"used": 0, "limit": 0, "window_seconds": self.window_seconds, "burst_remaining": 0}
+        return self._usage[key]
+
+    def _get_bucket_remaining(self, user_id: str, endpoint: str) -> int:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        return self.max_requests - usage["used"]
+
+    def _get_bucket_burst_remaining(self, user_id: str, endpoint: str) -> int:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        return self.burst - usage["used"]
+
+    def _cleanup_old_entries(self) -> int:
+        now = time.time()
+        cutoff = now - self._cleanup_threshold
+        removed = 0
+        for key, data in self._usage.items():
+            if now - data["used"] > cutoff:
+                del self._usage[key]
+                removed += 1
+        return removed
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_priority(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None
+        return (self.window_seconds / remaining)
+
+    def _get_retry_after_burst(self, user_id: str, endpoint: str) -> float:
+        key = self._get_bucket_key(user_id, endpoint)
+        usage = self._get_bucket_usage(user_id, endpoint)
+        remaining = self._get_bucket_burst_remaining(user_id, endpoint)
+        if remaining <= 0:
+            return None

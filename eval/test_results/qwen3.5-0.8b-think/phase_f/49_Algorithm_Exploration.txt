@@ -1,0 +1,42 @@
+```python
+from functools import lru_cache
+from typing import Any, Callable, Dict, List, Tuple
+
+def lru_cache(capacity: int) -> Callable[[str, Any], Any]:
+    """
+    LRU cache with O(1) get and put.
+    
+    Args:
+        capacity: maximum number of items in the cache
+    
+    Returns:
+        A callable that returns a cache object with get(key) and put(key, value) methods.
+    """
+    class Cache:
+        def __init__(self, capacity: int):
+            self._cache: Dict[str, Any] = {}
+            self._capacity: int = capacity
+            self._last_used: Dict[str, int] = {}
+            self._evict_key: List[str] = []
+        
+        def put(self, key: str, value: Any) -> None:
+            if key not in self._cache:
+                self._cache[key] = value
+                self._last_used[key] = 0
+            elif self._last_used[key] < self._capacity:
+                self._cache[key] = value
+                self._last_used[key] += 1
+            else:
+                # Evict least recently used
+                evicted_key = self._evict_key.pop(0)
+                del self._cache[evicted_key]
+                del self._last_used[evicted_key]
+                self._evict_key.append(evicted_key)
+        
+        def get(self, key: str) -> Any:
+            if key not in self._cache:
+                return -1
+            return self._cache[key]
+    
+    return Cache(capacity)
+```

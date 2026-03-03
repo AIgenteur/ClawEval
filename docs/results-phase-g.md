@@ -12,6 +12,29 @@ Phase F tests showed identical scores (10/10) across all models for ~15 roles, m
 
 ---
 
+## 🔴 8GB VRAM Results (Small Models)
+
+| # | Test | 0.8B Think | 0.8B NT |
+|---|------|:---:|:---:|
+| | | Qwen3.5-0.8B | Qwen3.5-0.8B |
+| | | Q4_K_M · llama.cpp | Q4_K_M · llama.cpp |
+| 36 | Code Gen (RateLimiter) | 🔴 0 | 🔴 0 |
+| 2 | Input Validator (nested) | 🟡 5 | 🟡 5 |
+| 5 | Sentiment (hard, 20 items) | 🔴 2 | 🔴 2 |
+| 40 | Fact-Checking (plausible) | 🔴 0 | 🔴 0 |
+| 49 | Algorithm (LRU Cache + TTL) | 🔴 3 | 🔴 3 |
+| 51 | Architect (trade-offs) | 🟡 7 | 🟡 7 |
+| 48 | STEM (multi-step calc) | 🔴 0 | 🔴 0 |
+| 9 | Research (contradictions) | 🟢 **8** | 🟢 **8** |
+| 12 | Content Planner (15 constraints) | 🔴 1 | 🔴 1 |
+| 50 | Orchestrator (multi-agent) | 🟡 **7** | 🟡 **7** |
+| 23 | Web Scraping (messy HTML) | 🔴 0 | 🔴 0 |
+| | **TOTAL** | **33/110 (30%)** | **33/110 (30%)** |
+
+> 0.8B model shows near-identical Think/NoThink scores — the model doesn't generate meaningful COT at this size. Research Agent (8/10) and Architect (7/10) are standout results for a sub-1B model.
+
+---
+
 ## 24GB VRAM Results
 
 | # | Test | 35B Think | 35B NoThink | 27B NoThink |
@@ -94,6 +117,7 @@ Phase F tests showed identical scores (10/10) across all models for ~15 roles, m
 | 9 | **35B NoThink** | 77/110 (70%) | Local 24GB |
 | 10 | **GLM-5 Think** | 76/110 (69%) | Cloud · Timeout hurt score |
 | 11 | **35B Think** | 51/60 (85%)* | Local · 5/11 tests overflow |
+| 12 | **0.8B Think / NT** | 33/110 (30%) | Local 8GB · Research 8/10 is impressive |
 
 \* Only 6/11 tests completed due to SGLang thinking budget bug
 

@@ -1,0 +1,94 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Diagnostic & Dependency Mapping",
+      "agents": [
+        {"agent": "log_analyzer", "input": "customer_report.txt", "timeout_seconds": 300},
+        {"agent": "metric_checker", "input": "system_metrics.json", "timeout_seconds": 300},
+        {"agent": "dependency_mapper", "input": "service_registry.yaml", "timeout_seconds": 300}
+      ],
+      "parallel": true,
+      "gate": "All three agents must successfully analyze logs, metrics, and dependencies within 300 seconds."
+    },
+    {
+      "phase": 2,
+      "name": "Root Cause Analysis & Rollback Preparation",
+      "agents": [
+        {"agent": "rollback_agent", "input": "current_state.json", "timeout_seconds": 300},
+        {"agent": "db_checker", "input": "database_health.json", "timeout_seconds": 300},
+        {"agent": "config_auditor", "input": "recent_config_changes.json", "timeout_seconds": 300}
+      ],
+      "parallel": true,
+      "gate": "All three agents must identify a root cause and confirm rollback capability within 300 seconds."
+    },
+    {
+      "phase": 3,
+      "name": "Customer Communication & Notification",
+      "agents": [
+        {"agent": "notification_agent", "input": "customer_status", "timeout_seconds": 300},
+        {"agent": "customer_communicator", "input": "customer_id", "timeout_seconds": 300}
+      ],
+      "parallel": true,
+      "gate": "Notification and communication must complete within 300 seconds."
+    },
+    {
+      "phase": 4,
+      "name": "Verification & Capacity Planning",
+      "agents": [
+        {"agent": "capacity_planner", "input": "resource_utilization.json", "timeout_seconds": 300},
+        {"agent": "db_checker", "input": "database_health.json", "timeout_seconds": 300}
+      ],
+      "parallel": true,
+      "gate": "Verification phase must confirm no critical errors remain and capacity is sufficient."
+    },
+    {
+      "phase": 5,
+      "name": "Incident Reporting & Finalization",
+      "agents": [
+        {"agent": "incident_reporter", "input": "incident_summary", "timeout_seconds": 300}
+      ],
+      "parallel": false,
+      "gate": "Incident report must be generated and saved to the incident management system."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "All three diagnostic agents completed successfully within 300 seconds",
+      "if_true": "Proceed to Phase 2",
+      "if_false": "Re-run Phase 1 with extended timeout (450s) or switch to manual intervention"
+    },
+    {
+      "after_phase": 2,
+      "condition": "All three rollback agents identified a root cause and confirmed rollback capability within 300 seconds",
+      "if_true": "Proceed to Phase 3",
+      "if_false": "Re-run Phase 2 with extended timeout (450s) or switch to manual intervention"
+    },
+    {
+      "after_phase": 3,
+      "condition": "Notification and customer communication completed within 300 seconds",
+      "if_true": "Proceed to Phase 4",
+      "if_false": "Re-run Phase 3 with extended timeout (450s) or switch to manual intervention"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Verification phase confirmed no critical errors remain and capacity is sufficient",
+      "if_true": "Proceed to Phase 5",
+      "if_false": "Re-run Phase 4 with extended timeout (450s) or switch to manual intervention"
+    },
+    {
+      "after_phase": 5,
+      "condition": "Incident report generated and saved to the incident management system",
+      "if_true": "Complete workflow",
+      "if_false": "Re-run Phase 5 with extended timeout (450s) or switch to manual intervention"
+    }
+  ],
+  "escalation": {
+    "trigger": "Phase 1 timeout (300s) or Phase 2 timeout (300s)",
+    "action": "Immediately notify customer_communicator and initiate rollback_agent to revert to previous deployment state."
+  },
+  "total_phases": 5,
+  "max_time_minutes": 15,
+  "rollback_conditions": ["If Phase 1 fails to complete within 300 seconds", "If Phase 2 fails to complete within 300 seconds", "If Phase 3 fails to complete within 300 seconds", "If Phase 4 fails to complete within 300 seconds", "If Phase 5 fails to complete within 300 seconds"]
+}

@@ -1,0 +1,62 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "version '2' is outdated",
+      "fix": "version: '3.0'"
+    },
+    {
+      "line": "  web: ...",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "  web: ...\\n    image: node:18-alpine"
+    },
+    {
+      "line": "  db: ...",
+      "problem": "DB password in plaintext",
+      "fix": "  db: ...\\n    environment: \\n      MYSQL_ROOT_PASSWORD: supersecret123\\n    volumes: \\n      - /tmp/mysql-data:/var/lib/mysql"
+    },
+    {
+      "line": "  redis: ...",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "  redis: ...\\n    image: redis\\n    ports: ...\\n    environment: ...\\n    volumes: ...\\n    restart: always"
+    },
+    {
+      "line": "  web: ...",
+      "problem": "Source volume mount (.:/app) in production",
+      "fix": "  web: ...\\n    volumes: ...\\n      - .:/app"
+    },
+    {
+      "line": "  db: ...",
+      "problem": "MySQL 5.6 is EOL",
+      "fix": "  db: ...\\n    image: mysql:8.0"
+    },
+    {
+      "line": "  db: ...",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "  db: ...\\n    ports: ...\\n    environment: ...\\n    volumes: ...\\n    restart: always"
+    },
+    {
+      "line": "  web: ...",
+      "problem": "/tmp for persistent data (will be lost)",
+      "fix": "  web: ...\\n    volumes: ...\\n      - .:/app"
+    },
+    {
+      "line": "  db: ...",
+      "problem": "MySQL 5.6 is EOL",
+      "fix": "  db: ...\\n    image: mysql:8.0"
+    },
+    {
+      "line": "  db: ...",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "  db: ...\\n    ports: ...\\n    environment: ...\\n    volumes: ...\\n    restart: always"
+    },
+    {
+      "line": "  web: ...",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "  redis: ...\\n    image: redis\\n    ports: ...\\n    environment: ...\\n    volumes: ...\\n    restart: always"
+    }
+  ],
+  "count": 10
+}
+```

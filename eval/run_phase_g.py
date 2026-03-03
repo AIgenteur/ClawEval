@@ -77,27 +77,69 @@ def call_llm(messages, base_url, model, max_tokens=4000, timeout=300, extra_body
     return content, tokens, tps, elapsed
 
 
+def _clean_json_text(text):
+    """Clean common JSON issues from LLM output before parsing."""
+    text = re.sub(r'(\d+(?:\.\d+)?)\s*[MBKmbk]\b', r'\1', text)
+    text = re.sub(r',\s*([}\]])', r'\1', text)
+    # Fix stray trailing quotes on numeric values: "key": 40" → "key": 40
+    # Only match when preceded by ': ' (JSON value context) to avoid breaking strings
+    text = re.sub(r'(:\s*\d+)"(\s*[,}\n])', r'\1\2', text, flags=re.DOTALL)
+    return text
+
+def _try_parse_json(text):
+    """Try to parse JSON, returning parsed result or None."""
+    try:
+        result = json.loads(text)
+        if isinstance(result, list) and len(result) == 1 and isinstance(result[0], dict):
+            return result[0]
+        return result
+    except:
+        return None
+
 def extract_json(text):
     """Extract JSON from response text, handling markdown code fences."""
-    # Try direct parse
+    text = text.strip()
+    # Extract from code fences first
+    if "```" in text:
+        m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+        if m:
+            text = m.group(1).strip()
+    # Try raw parse
+    result = _try_parse_json(text)
+    if result is not None:
+        return result
+    # Try after cleaning
+    result = _try_parse_json(_clean_json_text(text))
+    if result is not None:
+        return result
+    # Try regex extraction
+    for pattern in [r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', r'\[.*\]']:
+        m = re.search(pattern, text, re.DOTALL)
+        if m:
+            result = _try_parse_json(m.group())
+            if result is not None:
+                return result
+            result = _try_parse_json(_clean_json_text(m.group()))
+            if result is not None:
+                return result
+    # Try finding deeply nested JSON
     try:
-        return json.loads(text)
+        start = text.index('{')
+        depth = 0
+        for i in range(start, len(text)):
+            if text[i] == '{': depth += 1
+            elif text[i] == '}': depth -= 1
+            if depth == 0:
+                candidate = text[start:i+1]
+                result = _try_parse_json(candidate)
+                if result is not None:
+                    return result
+                result = _try_parse_json(_clean_json_text(candidate))
+                if result is not None:
+                    return result
+                break
     except:
         pass
-
-    # Try extracting from code fences
-    patterns = [
-        r"```json\s*(.*?)\s*```",
-        r"```\s*(.*?)\s*```",
-        r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
-    ]
-    for pat in patterns:
-        m = re.search(pat, text, re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group(1) if "```" in pat else m.group(0))
-            except:
-                continue
     return None
 
 
@@ -106,7 +148,16 @@ def extract_json(text):
 # ============================================================
 
 def _find_value_in_json(data, key):
-    """Flexibly find a value in JSON — handles case-insensitive keys, nested dicts."""
+    """Flexibly find a value in JSON — handles case-insensitive keys, nested dicts, and lists."""
+    if isinstance(data, list):
+        # If key is numeric, use as 1-based index into list
+        try:
+            idx = int(key) - 1
+            if 0 <= idx < len(data):
+                return data[idx]
+        except (ValueError, TypeError):
+            pass
+        return None
     if not isinstance(data, dict):
         return None
     # Exact match

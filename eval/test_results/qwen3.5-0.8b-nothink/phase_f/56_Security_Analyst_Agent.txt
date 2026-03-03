@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "app.route(\"/user/<id>\")",
+      "fix": "Use parameterized queries (e.g., sqlite3.connect('app.db', check_same_thread=False))"
+    },
+    {
+      "id": 2,
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "high",
+      "location": "app.route(\"/search\")",
+      "fix": "Escape user input in template string before rendering"
+    },
+    {
+      "id": 3,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/upload\")",
+      "fix": "Use JSON response format (e.g., json.dumps(obj)) instead of str(obj)"
+    },
+    {
+      "id": 4,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "app.route(\"/run\")",
+      "fix": "Use parameterized queries (e.g., subprocess.check_output(cmd, shell=True))"
+    },
+    {
+      "id": 5,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/file\")",
+      "fix": "Use JSON response format (e.g., json.dumps(path)) instead of open(path).read()"
+    },
+    {
+      "id": 6,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "app.route(\"/login\")",
+      "fix": "Use parameterized queries (e.g., os.environ.get('ADMIN_PW', 'admin'))"
+    },
+    {
+      "id": 7,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/debug\")",
+      "fix": "Use JSON response format (e.g., json.dumps(os.environ)) instead of str(os.environ)"
+    },
+    {
+      "id": 8,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/login\")",
+      "fix": "Use JSON response format (e.g., json.dumps(pw)) instead of pw"
+    },
+    {
+      "id": 9,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/run\")",
+      "fix": "Use JSON response format (e.g., json.dumps(result)) instead of result"
+    },
+    {
+      "id": 10,
+      "type": "Insecure Response Format",
+      "severity": "high",
+      "location": "app.route(\"/upload\")",
+      "fix": "Use JSON response format (e.g., json.dumps(data)) instead of data"
+    }
+  ],
+  "count": 10
+}
+```

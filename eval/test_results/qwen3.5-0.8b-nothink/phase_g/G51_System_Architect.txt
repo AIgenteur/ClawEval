@@ -1,0 +1,69 @@
+```json
+{
+  "architecture": {
+    "components": [
+      "primary_database",
+      "cache_layer",
+      "reverse_proxy",
+      "api_gateway",
+      "edge_cdn"
+    ],
+    "database": {
+      "primary": "PostgreSQL",
+      "justification": "Primary for high-availability data persistence and transactional consistency under 10M/day load."
+    },
+    "cache": {
+      "type": "Redis",
+      "strategy": "LRU with TTL and Redis Pub/Sub for event-driven updates",
+      "invalidation": "Redis Pub/Sub for real-time event notifications"
+    },
+    "hash_strategy": {
+      "algorithm": "SHA-256",
+      "length": 64,
+      "collision_handling": "Collision detection via hash collision probability analysis"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "Read-only access via Redis Pub/Sub for low-latency event tracking",
+    "write_path": "Primary PostgreSQL + Redis Pub/Sub for high-throughput write operations",
+    "horizontal_scaling": "Load balancer with auto-scaling groups"
+  },
+  "reliability": {
+    "uptime_strategy": "99.99% via 99.99% availability SLA with 0.001% MTTR",
+    "failover": "Multi-region deployment with automatic failover to secondary region",
+    "data_replication": "Multi-region replication for disaster recovery"
+  },
+  "compliance": {
+    "gdpr_deletion": "GDPR-compliant data deletion via API endpoint with 7-day retention window",
+    "data_retention": "7-day retention for sensitive data, configurable per user",
+    "analytics_separation": "Separate analytics layer for user behavior tracking and system metrics"
+  },
+  "cost_estimate": {
+    "monthly_total": 5000,
+    "breakdown": {
+      "compute": 1500,
+      "database": 800,
+      "cache": 1000,
+      "cdn": 500,
+      "other": 500
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Rate limiting with exponential backoff for burst handling",
+    "limits": "100 requests per 100ms per IP, 1000 requests per minute per IP"
+  },
+  "monitoring": {
+    "metrics": [
+      "CPU usage",
+      "Memory usage",
+      "Latency (p95)",
+      "Throughput (requests/second)",
+      "Error rate",
+      "Bandwidth usage"
+    ],
+    "alerting": "Alerts on CPU > 80%, Latency > 100ms, Error rate > 0.1%, and Bandwidth > 80% of capacity"
+  }
+}
+```

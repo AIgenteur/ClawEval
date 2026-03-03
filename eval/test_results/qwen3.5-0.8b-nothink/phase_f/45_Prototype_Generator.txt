@@ -1,0 +1,532 @@
+```python
+from flask import Flask, request, jsonify
+from datetime import datetime
+from typing import List, Optional
+import uuid
+
+app = Flask(__name__)
+
+# In-memory database
+books: List[dict] = []
+
+# Book dataclass
+class Book:
+    def __init__(self, title: str, author: str, isbn: str, price: float):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.price = price
+        self.created_at = datetime.now()
+
+# Helper function to create a book
+def create_book(title: str, author: str, isbn: str, price: float) -> Book:
+    return Book(title, author, isbn, price)
+
+# Helper function to delete a book
+def delete_book(book_id: str) -> bool:
+    return False
+
+# Helper function to update a book
+def update_book(book_id: str, data: dict) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),
+        author=data.get('author', ''),
+        isbn=data.get('isbn', ''),
+        price=data.get('price', 0)
+    )
+
+# Helper function to update a book
+def update_book_from_data(data: dict) -> bool:
+    return False
+
+# Helper function to delete a book
+def delete_book_from_data(book_id: str) -> bool:
+    return False
+
+# Helper function to get a book by ID
+def get_book_from_data(book_id: str) -> Optional[dict]:
+    return None
+
+# Helper function to paginate books
+def paginate_books_from_data(page: int, per_page: int) -> List[dict]:
+    start = (page - 1) * per_page
+    end = start + per_page
+    return books[start:end]
+
+# Helper function to create a book
+def create_book_from_data(data: dict) -> Book:
+    return create_book(
+        title=data.get('title', ''),

@@ -1,0 +1,600 @@
+{
+  "model": "qwen3.5-0.8b-think",
+  "timestamp": "2026-03-03T09:18:55.880832",
+  "total_score": 339,
+  "total_max": 585,
+  "percentage": 57.9,
+  "manual_tests": 6,
+  "results": [
+    {
+      "id": 1,
+      "role": "Router / Triage Agent",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 7,
+      "max": 10,
+      "detail": "7/10 correct | 1: expected code_help, got support; 4: expected billing, got support; 10: expected data_analysis, got devops",
+      "tokens": 67
+    },
+    {
+      "id": 2,
+      "role": "Input Validator / Sanitizer",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 errors found",
+      "tokens": 175
+    },
+    {
+      "id": 3,
+      "role": "Heartbeat / Health Monitor",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "1/6 correct | q1: expected 3, got 1; q2_spike: missing; q2_normal: missing; q4: expected 120, got 10.5; q5: expected 4.0, got 0.02",
+      "tokens": 62
+    },
+    {
+      "id": 4,
+      "role": "Notification / Alert Agent",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 correct | 1: expected P1, got P3; 2: expected P2, got P3; 5: expected P2, got P3; 7: expected P2, got P3",
+      "tokens": 72
+    },
+    {
+      "id": 5,
+      "role": "Sentiment Analysis Agent",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 correct | 2: expected negative, got positive; 4: expected negative, got positive; 7: expected negative, got positive; 10: expected negative, got positive",
+      "tokens": 62
+    },
+    {
+      "id": 6,
+      "role": "FAQ Generation Agent",
+      "tier": 1,
+      "scoring_type": "constraint",
+      "score": 1,
+      "max": 10,
+      "detail": "1/10 constraints | Missing: has_8_faqs, mentions_storage_contradiction, mentions_mobile_contradiction, mentions_sla_contradiction, q_a_format",
+      "tokens": 4000
+    },
+    {
+      "id": 7,
+      "role": "Translation Agent",
+      "tier": 1,
+      "scoring_type": "constraint",
+      "score": 7,
+      "max": 10,
+      "detail": "7/10 constraints | Missing: has_spanish, has_japanese, has_notes",
+      "tokens": 1108
+    },
+    {
+      "id": 8,
+      "role": "Calendar / Scheduling Agent",
+      "tier": 1,
+      "scoring_type": "exact",
+      "score": 0,
+      "max": 10,
+      "detail": "0/2 correct | utc_start: expected 17:00, got 10:00; utc_end: expected 17:30, got 10:30",
+      "tokens": 67
+    },
+    {
+      "id": 9,
+      "role": "Research / Web Search Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 correct | 2: expected TRUE, got FALSE; 6: expected TRUE, got FALSE; 8: expected TRUE, got FALSE; 9: not found",
+      "tokens": 56
+    },
+    {
+      "id": 10,
+      "role": "Content Writer / Blog Writer",
+      "tier": 2,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 673
+    },
+    {
+      "id": 11,
+      "role": "Editor Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 7,
+      "max": 10,
+      "detail": "7/10 found | missed: London; missed: visited paid monument; missed: copper",
+      "tokens": 398
+    },
+    {
+      "id": 12,
+      "role": "Content Planner",
+      "tier": 2,
+      "scoring_type": "constraint",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 constraints",
+      "tokens": 909
+    },
+    {
+      "id": 13,
+      "role": "Email Drafting / Summarization",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "5/8 correct | 1: expected P1, got P4; 2: expected P2, got P4; 6: expected P3, got P4",
+      "tokens": 57
+    },
+    {
+      "id": 14,
+      "role": "Document Summarization",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 correct | q1: expected 325, got 45; q2: expected 15, got 0; q4: expected 130, got 230; q6: expected 280, got 45",
+      "tokens": 113
+    },
+    {
+      "id": 15,
+      "role": "Meeting Notes / Transcription Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 9,
+      "max": 10,
+      "detail": "7/8 action items | missed: Everyone - Q4 OKRs",
+      "tokens": 383
+    },
+    {
+      "id": 16,
+      "role": "Social Media Scouting / Monitoring",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 16,
+      "max": 10,
+      "detail": "8.0/5.0 checks correct",
+      "tokens": 278
+    },
+    {
+      "id": 17,
+      "role": "Social Media Content Agent",
+      "tier": 2,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 4000
+    },
+    {
+      "id": 18,
+      "role": "News Aggregation Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "2/2 found",
+      "tokens": 601
+    },
+    {
+      "id": 19,
+      "role": "Shopping / Price Comparison",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 4,
+      "max": 10,
+      "detail": "2/5 correct | 2: expected 1240.64, got 1061; 4: expected 1257.98, got 999; 5: expected 1133.1, got 1034",
+      "tokens": 871
+    },
+    {
+      "id": 20,
+      "role": "Memory / Knowledge Management",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 9,
+      "max": 10,
+      "detail": "9/10 correct | q3: expected 2.3, got v2.3",
+      "tokens": 112
+    },
+    {
+      "id": 21,
+      "role": "RAG / Retrieval Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 0,
+      "max": 10,
+      "detail": "0/5 correct | q1: expected 758.40, got NOT_FOUND; q2: expected 23.70, got NOT_FOUND; q3: expected No, got NOT_FOUND; q4: expected TLS 1.3, got NOT_FOUND; q5: expected 3, got NOT_FOUND",
+      "tokens": 54
+    },
+    {
+      "id": 22,
+      "role": "Data Analysis Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 1,
+      "max": 10,
+      "detail": "1/10 correct | m1: expected 28600.0, got 112500.0; m2: expected 14210.0, got 10500.0; m3: expected 50.31, got 91.88; m4: expected 14150.0, got 15000.0; m5: expected Widget-C, got Widget-A",
+      "tokens": 147
+    },
+    {
+      "id": 23,
+      "role": "Website Scraping / Understanding",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 correct",
+      "tokens": 127
+    },
+    {
+      "id": 24,
+      "role": "Image Description / Understanding",
+      "tier": 2,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 683
+    },
+    {
+      "id": 25,
+      "role": "Customer Support Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 correct | 1_category: expected account, got billing; 2_priority: expected P3, got P1; 3_priority: expected P2, got P1; 5_priority: expected P2, got P1",
+      "tokens": 140
+    },
+    {
+      "id": 26,
+      "role": "Lead Scoring / Prospecting",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "1/5 correct | 2: expected 20, got 100; 3: expected 55, got 100; 4: expected 85, got 100; 5: expected 6, got 100",
+      "tokens": 101
+    },
+    {
+      "id": 27,
+      "role": "Sprint / Project Summarizer",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "2/10 correct | velocity: expected 35, got 4.5; completed_pts: expected 35, got 45; completion_rate: expected 77.78, got 1.0; carryover_pts: expected 13, got 15; scope_change_pts: expected 3, got 0",
+      "tokens": 114
+    },
+    {
+      "id": 28,
+      "role": "Transaction / Approval Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 1,
+      "max": 10,
+      "detail": "1/10 correct | 1: expected APPROVE, got REJECT; 2: expected REJECT, got APPROVE; 3: expected APPROVE, got REJECT; 4: expected REJECT, got APPROVE; 5: expected APPROVE, got REJECT",
+      "tokens": 104
+    },
+    {
+      "id": 29,
+      "role": "Home Automation Agent",
+      "tier": 2,
+      "scoring_type": "constraint",
+      "score": 7,
+      "max": 10,
+      "detail": "7/10 constraints | Missing: has_security_arm_disarm, has_energy_management, has_office_automation",
+      "tokens": 776
+    },
+    {
+      "id": 30,
+      "role": "Fitness / Health Tracking",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 3,
+      "max": 10,
+      "detail": "3/10 correct | total_calories: expected 3280, got 2500; total_active_minutes: expected 430, got 1650; avg_daily_calories: expected 468.57, got 357.14; max_hr_pct: expected 84.21, got 81.82; zone_2_minutes: expected 255, got 100",
+      "tokens": 135
+    },
+    {
+      "id": 31,
+      "role": "Recipe / Cooking Agent",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 0,
+      "max": 10,
+      "detail": "0/9 correct | flour_cups: missing; baking_powder_tsp: missing; salt_tsp: missing; butter_cups: missing; sugar_cups: missing",
+      "tokens": 29
+    },
+    {
+      "id": 32,
+      "role": "Personal Finance Tracking",
+      "tier": 2,
+      "scoring_type": "exact",
+      "score": 3,
+      "max": 10,
+      "detail": "3/10 correct | total_expenses: expected 5115, got 2700; discretionary_spending: expected 475, got 4750; fixed_costs: expected 3140, got 1800; debt_to_income: expected 429.33, got 0.0; cc_monthly_interest: expected 80.47, got 0.0",
+      "tokens": 155
+    },
+    {
+      "id": 33,
+      "role": "SEO Optimization Agent",
+      "tier": 2,
+      "scoring_type": "constraint",
+      "score": 9,
+      "max": 10,
+      "detail": "9/10 constraints | Missing: og_fields_present",
+      "tokens": 312
+    },
+    {
+      "id": 34,
+      "role": "Landing Page Generator",
+      "tier": 2,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 4000
+    },
+    {
+      "id": 35,
+      "role": "Travel Planning Agent",
+      "tier": 2,
+      "scoring_type": "constraint",
+      "score": 4,
+      "max": 10,
+      "detail": "4/10 constraints | Missing: budget_total, budget_breakdown, 1_activity_per_day, lunch_break, dinner_mix",
+      "tokens": 4000
+    },
+    {
+      "id": 36,
+      "role": "Code Generation Agent",
+      "tier": 3,
+      "scoring_type": "code",
+      "score": 8,
+      "max": 10,
+      "detail": "8/10 test cases passed | tc3: expected [[0, 4]], got [[1, 4]]; tc9: expected [[1, 8], [10, 12]], got [[5, 8], [10, 12]]",
+      "tokens": 116
+    },
+    {
+      "id": 37,
+      "role": "Code Review Agent",
+      "tier": 3,
+      "scoring_type": "exact",
+      "score": 8,
+      "max": 10,
+      "detail": "4/5 found | missed: mutate",
+      "tokens": 299
+    },
+    {
+      "id": 38,
+      "role": "QA / Test Writing Agent",
+      "tier": 3,
+      "scoring_type": "code",
+      "score": 8,
+      "max": 10,
+      "detail": "8/10 constraints | Missing: tests_effective_rate, has_8_tests",
+      "tokens": 4000
+    },
+    {
+      "id": 39,
+      "role": "Task Planning / Decomposition",
+      "tier": 3,
+      "scoring_type": "constraint",
+      "score": 9,
+      "max": 10,
+      "detail": "9/10 constraints | Missing: dependencies_valid",
+      "tokens": 732
+    },
+    {
+      "id": 40,
+      "role": "Fact-Checking Agent",
+      "tier": 3,
+      "scoring_type": "exact",
+      "score": 5,
+      "max": 10,
+      "detail": "5/10 correct | 2: expected TRUE, got FALSE; 3: expected FALSE, got TRUE; 6: expected TRUE, got FALSE; 7: expected TRUE, got FALSE; 10: expected TRUE, got FALSE",
+      "tokens": 59
+    },
+    {
+      "id": 41,
+      "role": "Critic / Review Agent",
+      "tier": 3,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 1832
+    },
+    {
+      "id": 42,
+      "role": "Market Research Agent",
+      "tier": 3,
+      "scoring_type": "exact",
+      "score": 4,
+      "max": 10,
+      "detail": "4/10 correct | total_revenue: expected 2626, got 1547; market_leader_by_revenue: expected Smartsheet, got Monday.com; highest_revenue_per_employee: expected Notion, got ClickUp; combined_market_share: expected 17.51, got 0.11; avg_revenue_per_customer: expected varies, got 1.8",
+      "tokens": 135
+    },
+    {
+      "id": 43,
+      "role": "Synthesizer / Aggregator",
+      "tier": 3,
+      "scoring_type": "exact",
+      "score": 9,
+      "max": 10,
+      "detail": "6/7 found | missed: innovation",
+      "tokens": 156
+    },
+    {
+      "id": 44,
+      "role": "Curriculum / Course Designer",
+      "tier": 3,
+      "scoring_type": "constraint",
+      "score": 4,
+      "max": 10,
+      "detail": "4/10 constraints | Missing: prerequisites_ordered, covers_all_topics, has_quizzes_assignments, has_final_project, monotonic_difficulty",
+      "tokens": 4000
+    },
+    {
+      "id": 45,
+      "role": "Prototype Generator",
+      "tier": 3,
+      "scoring_type": "code",
+      "score": 7,
+      "max": 10,
+      "detail": "7/10 constraints | Missing: has_put, has_validation, has_404_handling",
+      "tokens": 4000
+    },
+    {
+      "id": 46,
+      "role": "DevOps Agent",
+      "tier": 3,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 found",
+      "tokens": 546
+    },
+    {
+      "id": 47,
+      "role": "Math / Logic Reasoning",
+      "tier": 4,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "1/5 correct | p1: expected 10:53 AM, got 10:15 AM; p2: expected 70.6, got 68.5; p3: expected 439805, got 42; p4: expected 0.05, got 0.10",
+      "tokens": 69
+    },
+    {
+      "id": 48,
+      "role": "STEM Analysis",
+      "tier": 4,
+      "scoring_type": "exact",
+      "score": 0,
+      "max": 5,
+      "detail": "Could not parse JSON",
+      "tokens": 4000
+    },
+    {
+      "id": 49,
+      "role": "Algorithm Exploration",
+      "tier": 4,
+      "scoring_type": "code",
+      "score": 5,
+      "max": 10,
+      "detail": "5/10 test cases passed | tc2: expected [None, None, None, -1], got [None, None, None, 1]; tc3: expected [None, None, 1, None, -1], got [None, None, 1, None, 2]; tc7: expected [None, None, None, None, -1], got [None, None, None, None, 2]",
+      "tokens": 360
+    },
+    {
+      "id": 50,
+      "role": "Orchestrator / Manager Agent",
+      "tier": 5,
+      "scoring_type": "constraint",
+      "score": 8,
+      "max": 10,
+      "detail": "8/10 constraints | Missing: seo_before_web, no_circular_deps",
+      "tokens": 662
+    },
+    {
+      "id": 51,
+      "role": "Software Architect Agent",
+      "tier": 5,
+      "scoring_type": "constraint",
+      "score": 8,
+      "max": 10,
+      "detail": "8/10 constraints | Missing: has_websocket_layer, mentions_tradeoffs",
+      "tokens": 4000
+    },
+    {
+      "id": 52,
+      "role": "Complex Debugger Agent",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "3/5 found | missed: validation; missed: concurrent",
+      "tokens": 534
+    },
+    {
+      "id": 53,
+      "role": "Legal Document Review",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 found",
+      "tokens": 784
+    },
+    {
+      "id": 54,
+      "role": "Medical / Health Analysis",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 10,
+      "max": 10,
+      "detail": "10/10 found",
+      "tokens": 520
+    },
+    {
+      "id": 55,
+      "role": "Financial Analysis / Stock Research",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "2/10 correct | gross_margin: expected 40.0, got 0.4; operating_margin: expected 20.0, got 0.2; net_margin: expected 12.79, got 0.21; debt_to_equity: expected 0.74, got 0.09; roe: expected 25.29, got 0.22",
+      "tokens": 136
+    },
+    {
+      "id": 56,
+      "role": "Security Analyst Agent",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 6,
+      "max": 10,
+      "detail": "6/10 found | missed: hardcoded secret; missed: pickle deserialization; missed: path traversal; missed: env variable leak",
+      "tokens": 854
+    },
+    {
+      "id": 57,
+      "role": "SRE / Incident Response",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 2,
+      "max": 10,
+      "detail": "2/9 correct | time_to_detect_min: expected 18, got 14; time_to_respond_min: expected 20, got 14; time_to_resolve_min: expected 35, got 14; total_incident_min: expected 40, got 14; root_cause: expected memory leak, got Memory leak in caching layer causing OOM kills",
+      "tokens": 137
+    },
+    {
+      "id": 58,
+      "role": "Book / Long-Form Writing",
+      "tier": 5,
+      "scoring_type": "manual",
+      "score": 5,
+      "max": 10,
+      "detail": "MANUAL \u2014 10 criteria to review",
+      "tokens": 4000
+    },
+    {
+      "id": 59,
+      "role": "Compliance / Regulatory Agent",
+      "tier": 5,
+      "scoring_type": "exact",
+      "score": 8,
+      "max": 10,
+      "detail": "8/10 found | missed: no DPO; missed: no data portability",
+      "tokens": 863
+    }
+  ]
+}

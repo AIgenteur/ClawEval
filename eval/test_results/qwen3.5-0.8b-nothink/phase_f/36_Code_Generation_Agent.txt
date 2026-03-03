@@ -1,0 +1,18 @@
+def merge_intervals(intervals):
+    if not intervals:
+        return []
+    
+    merged = []
+    last_start = intervals[0][0]
+    last_end = intervals[0][1]
+    
+    for start, end in intervals:
+        if start <= last_end:
+            last_end = max(last_end, end)
+        else:
+            merged.append([last_start, last_end])
+            last_start = start
+            last_end = end
+    
+    merged.append([last_start, last_end])
+    return merged

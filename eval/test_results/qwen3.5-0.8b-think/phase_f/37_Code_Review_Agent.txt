@@ -1,0 +1,32 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "Discount calculation uses division by 100, but discount could be > 100",
+      "fix": "Discount should be clamped to 100 (e.g., discount = min(discount, 100))"
+    },
+    {
+      "line": 10,
+      "issue": "Price check for negative values ignores the discount calculation result",
+      "fix": "Check if price is negative after applying the discount calculation"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when no orders are pending",
+      "fix": "Handle empty list or empty dict in the for loop"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed)",
+      "fix": "Return len(processed) to reflect the number of processed items"
+    },
+    {
+      "line": 23,
+      "issue": "No type checking on price/quantity (could be None)",
+      "fix": "Add type checking: if price or quantity is None, set to 0"
+    }
+  ],
+  "count": 5
+}
+```

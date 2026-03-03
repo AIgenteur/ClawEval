@@ -46,6 +46,27 @@ def call_llm(messages, base_url, model, max_tokens=4000, timeout=120, extra_body
         return f"ERROR: {e}", 0, 0, round(elapsed, 1)
 
 
+def _clean_json_text(text):
+    """Clean common JSON issues from LLM output before parsing."""
+    # Strip number suffixes: 1547M → 1547, 2.3B → 2.3, 500K → 500
+    text = re.sub(r'(\d+(?:\.\d+)?)\s*[MBKmbk]\b', r'\1', text)
+    # Fix trailing commas before } or ]
+    text = re.sub(r',\s*([}\]])', r'\1', text)
+    # Fix stray trailing quotes on numeric values: "key": 40" → "key": 40
+    text = re.sub(r'(:\s*\d+)"(\s*[,}\n])', r'\1\2', text, flags=re.DOTALL)
+    return text
+
+def _try_parse_json(text):
+    """Try to parse JSON, returning parsed result or None."""
+    try:
+        result = json.loads(text)
+        # Unwrap single-element arrays containing a dict: [{...}] → {...}
+        if isinstance(result, list) and len(result) == 1 and isinstance(result[0], dict):
+            return result[0]
+        return result
+    except:
+        return None
+
 def extract_json(text):
     """Extract JSON from response text, handling markdown code fences."""
     text = text.strip()
@@ -53,17 +74,25 @@ def extract_json(text):
         m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
         if m:
             text = m.group(1).strip()
-    try:
-        return json.loads(text)
-    except:
-        pass
+    # Try raw parse first
+    result = _try_parse_json(text)
+    if result is not None:
+        return result
+    # Try after cleaning common LLM quirks
+    cleaned = _clean_json_text(text)
+    result = _try_parse_json(cleaned)
+    if result is not None:
+        return result
+    # Try regex extraction
     for pattern in [r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', r'\[.*\]']:
         m = re.search(pattern, text, re.DOTALL)
         if m:
-            try:
-                return json.loads(m.group())
-            except:
-                pass
+            result = _try_parse_json(m.group())
+            if result is not None:
+                return result
+            result = _try_parse_json(_clean_json_text(m.group()))
+            if result is not None:
+                return result
     # Try finding deeply nested JSON
     try:
         start = text.index('{')
@@ -72,7 +101,14 @@ def extract_json(text):
             if text[i] == '{': depth += 1
             elif text[i] == '}': depth -= 1
             if depth == 0:
-                return json.loads(text[start:i+1])
+                candidate = text[start:i+1]
+                result = _try_parse_json(candidate)
+                if result is not None:
+                    return result
+                result = _try_parse_json(_clean_json_text(candidate))
+                if result is not None:
+                    return result
+                break
     except:
         pass
     return None
@@ -83,7 +119,16 @@ def extract_json(text):
 # ============================================================
 
 def _find_value_in_json(data, key):
-    """Flexibly find a value in JSON — handles case-insensitive keys, nested dicts, composite keys."""
+    """Flexibly find a value in JSON — handles case-insensitive keys, nested dicts, composite keys, and lists."""
+    if isinstance(data, list):
+        # If key is numeric, use as 1-based index into list
+        try:
+            idx = int(key) - 1
+            if 0 <= idx < len(data):
+                return data[idx]
+        except (ValueError, TypeError):
+            pass
+        return None
     if not isinstance(data, dict):
         return None
     key_lower = key.lower()
@@ -207,8 +252,11 @@ def score_error_count(content, scoring):
         score = round(found / len(expected_errors) * 10)
         return score, 10, f"Fallback: {found}/{len(expected_errors)} error keywords found"
 
-    # Check error count
-    errors = data.get("errors", [])
+    # Check error count — handle both {"errors": [...]} and bare [...]
+    if isinstance(data, list):
+        errors = data
+    else:
+        errors = data.get("errors", [])
     if isinstance(errors, list):
         found = 0
         for exp in expected_errors:

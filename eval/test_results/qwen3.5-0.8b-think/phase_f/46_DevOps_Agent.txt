@@ -1,0 +1,58 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "version '2' is outdated",
+      "fix": "version: '3.0'"
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "image: node:18"
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "DB password in plaintext (should use secrets)",
+      "fix": "env: DB_PASSWORD: supersecret123"
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "NODE_ENV should be 'production'",
+      "fix": "env: NODE_ENV: production"
+    },
+    {
+      "line": "ports: - \"80:3000\"",
+      "problem": "Source volume mount (.:/app) in production",
+      "fix": "volumes: - /app:/app"
+    },
+    {
+      "line": "restart: no",
+      "problem": "restart: no — should be 'unless-stopped' or 'always'",
+      "fix": "restart: unless-stopped"
+    },
+    {
+      "line": "MySQL 5.6 is EOL",
+      "problem": "MySQL 5.6 is EOL",
+      "fix": "image: mysql:8.0"
+    },
+    {
+      "line": "DB port 3306 exposed publicly",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "ports: - \"3306:3306\""
+    },
+    {
+      "line": "/tmp for persistent data (will be lost)",
+      "problem": "/tmp for persistent data (will be lost)",
+      "fix": "volumes: - /var/lib/mysql:/var/lib/mysql"
+    },
+    {
+      "line": "Redis port exposed publicly + no auth",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "ports: - \"6379:6379\"",
+      "issue": "Redis port exposed publicly + no auth"
+    }
+  ],
+  "count": 10
+}
+```
