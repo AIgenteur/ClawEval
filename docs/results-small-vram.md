@@ -113,4 +113,83 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (local server).
 
 ---
 
+## 📐 Max Context Per VRAM Tier
+
+All models Q4_K_M, Flash Attention on, native max 262,144 tokens (256K).
+
+Context is capped at native max. If native max fits at a lower VRAM tier, higher tiers are marked ✅ (same).
+
+### f16 KV Cache
+
+| Model | File Size | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
+|-------|----------|-----------|------|-------|-------|-------|
+| Qwen3.5-0.8B | 0.5 GB | 1,343 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
+| Qwen3.5-2B | 1.3 GB | 2,061 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
+| Qwen3.5-4B | 2.7 GB | 3,501 MiB | 150,000 | **262,144** ⭐ | ✅ | ✅ |
+| Qwen3.5-9B | 5.7 GB | 5,765 MiB | 77,500 | 202,500 | **262,144** ⭐ | ✅ |
+
+### q8_0 KV Cache
+
+| Model | File Size | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
+|-------|----------|-----------|------|-------|-------|-------|
+| Qwen3.5-0.8B | 0.5 GB | 1,343 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
+| Qwen3.5-2B | 1.3 GB | 2,061 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
+| Qwen3.5-4B | 2.7 GB | 3,501 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
+| Qwen3.5-9B | 5.7 GB | 5,765 MiB | 145,000 | **262,144** ⭐ | ✅ | ✅ |
+
+⭐ = native max (262K) reached &nbsp; ✅ = same (fits at lower tier)
+
+### Per-Model Details
+
+<details>
+<summary><b>Qwen3.5-0.8B</b> — File: 0.5 GB · Base VRAM: 1,343 MiB</summary>
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 262,144 ⭐ | 262,144 ⭐ |
+| 12GB | ✅ | ✅ |
+| 16GB | ✅ | ✅ |
+| 24GB | ✅ | ✅ |
+
+</details>
+
+<details>
+<summary><b>Qwen3.5-2B</b> — File: 1.3 GB · Base VRAM: 2,061 MiB</summary>
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 262,144 ⭐ | 262,144 ⭐ |
+| 12GB | ✅ | ✅ |
+| 16GB | ✅ | ✅ |
+| 24GB | ✅ | ✅ |
+
+</details>
+
+<details>
+<summary><b>Qwen3.5-4B</b> — File: 2.7 GB · Base VRAM: 3,501 MiB</summary>
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 150,000 | 262,144 ⭐ |
+| 12GB | 262,144 ⭐ | ✅ |
+| 16GB | ✅ | ✅ |
+| 24GB | ✅ | ✅ |
+
+</details>
+
+<details>
+<summary><b>Qwen3.5-9B</b> — File: 5.7 GB · Base VRAM: 5,765 MiB</summary>
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 77,500 | 145,000 |
+| 12GB | 202,500 | 262,144 ⭐ |
+| 16GB | 262,144 ⭐ | ✅ |
+| 24GB | ✅ | ✅ |
+
+</details>
+
+---
+
 [← Back to Main Results](../README.md)
+
