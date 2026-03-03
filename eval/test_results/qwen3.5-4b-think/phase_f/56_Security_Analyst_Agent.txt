@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a secure random string generator (e.g., secrets module) to generate a unique secret key and store it securely."
+    },
+    {
+      "id": 2,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries (e.g., db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))) instead of string formatting."
+    },
+    {
+      "id": 3,
+      "type": "Remote Code Execution (RCE)",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Never use shell=True with untrusted input. Use subprocess.run with a list of arguments (e.g., [\"cmd\", \"arg1\", \"arg2\"]) and validate input strictly."
+    },
+    {
+      "id": 4,
+      "type": "Deserialization Vulnerability",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Avoid using pickle for untrusted data. Use safer serialization formats like JSON or Protocol Buffers."
+    },
+    {
+      "id": 5,
+      "type": "Path Traversal / Local File Inclusion",
+      "severity": "high",
+      "location": "return open(path).read()",
+      "fix": "Validate and sanitize the file path to ensure it resides within a designated directory (e.g., using os.path.abspath and checking against a base directory)."
+    },
+    {
+      "id": 6,
+      "type": "Insecure Direct Object Reference (IDOR) / Information Disclosure",
+      "severity": "high",
+      "location": "return str(user)",
+      "fix": "Ensure proper authorization checks before accessing user data and avoid returning sensitive information in plain text."
+    },
+    {
+      "id": 7,
+      "type": "Insecure Configuration / Hardcoded Credentials",
+      "severity": "high",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Never hardcode default passwords. Use environment variables with strong, unique values and enforce secure credential management."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Remove the debug endpoint or restrict access to sensitive environment variables. Do not expose system configuration to clients."
+    },
+    {
+      "id": 9,
+      "type": "Man-in-the-Middle (MitM) / Data in Transit",
+      "severity": "medium",
+      "location": "# V9: No HTTPS enforcement",
+      "fix": "Enforce HTTPS by setting 'secure=True' in Flask's app factory and configuring the server to require SSL/TLS."
+    },
+    {
+      "id": 10,
+      "type": "Denial of Service (DoS)",
+      "severity": "medium",
+      "location": "# V10: No rate limiting",
+      "fix": "Implement rate limiting using extensions like Flask-Limiter to prevent brute-force attacks and resource exhaustion."
+    }
+  ],
+  "count": 10
+}
+```

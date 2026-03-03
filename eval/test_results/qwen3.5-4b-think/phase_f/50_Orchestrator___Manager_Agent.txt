@@ -1,0 +1,62 @@
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "agent": "data_analyst",
+      "action": "Analyze Q3 earnings data and prepare summary metrics",
+      "depends_on": [],
+      "input_from": []
+    },
+    {
+      "id": "T2",
+      "agent": "writer",
+      "action": "Draft blog post and email newsletter content based on data analysis",
+      "depends_on": ["T1"],
+      "input_from": ["T1"]
+    },
+    {
+      "id": "T3",
+      "agent": "editor",
+      "action": "Review and edit blog post and email content for clarity and tone",
+      "depends_on": ["T2"],
+      "input_from": ["T2"]
+    },
+    {
+      "id": "T4",
+      "agent": "seo",
+      "action": "Optimize blog post content with keywords and meta tags",
+      "depends_on": ["T3"],
+      "input_from": ["T3"]
+    },
+    {
+      "id": "T5",
+      "agent": "designer",
+      "action": "Create social media graphics and email header images",
+      "depends_on": ["T2"],
+      "input_from": ["T2"]
+    },
+    {
+      "id": "T6",
+      "agent": "social_media",
+      "action": "Draft and schedule social media posts using generated graphics",
+      "depends_on": ["T3", "T5"],
+      "input_from": ["T3", "T5"]
+    },
+    {
+      "id": "T7",
+      "agent": "email_marketing",
+      "action": "Finalize email newsletter and schedule send to subscribers",
+      "depends_on": ["T3", "T5"],
+      "input_from": ["T3", "T5"]
+    },
+    {
+      "id": "T8",
+      "agent": "web_publisher",
+      "action": "Publish SEO-optimized blog post to the website",
+      "depends_on": ["T4"],
+      "input_from": ["T4"]
+    }
+  ],
+  "execution_order": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"],
+  "parallel_groups": [["T1"], ["T2"], ["T3"], ["T4"], ["T5"], ["T6", "T7"], ["T8"]]
+}

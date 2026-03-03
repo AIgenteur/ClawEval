@@ -1,0 +1,130 @@
+```python
+from flask import Flask, request, jsonify
+from dataclasses import dataclass
+from typing import List, Optional
+import uuid
+
+app = Flask(__name__)
+
+# In-memory "database"
+books: List[dict] = []
+
+@dataclass
+class Book:
+    id: str
+    title: str
+    author: str
+    isbn: str
+    price: float
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "isbn": self.isbn,
+            "price": self.price
+        }
+
+def validate_book_data(data: dict) -> Optional[dict]:
+    """Validates required fields and basic types."""
+    required_fields = ["title", "author", "isbn", "price"]
+    
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return None
+    
+    if not isinstance(data["title"], str) or not isinstance(data["author"], str) or not isinstance(data["isbn"], str):
+        return None
+    if not isinstance(data["price"], (int, float)):
+        return None
+    
+    return data
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    if page < 1:
+        page = 1
+    if per_page < 1:
+        per_page = 10
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+    
+    paginated_books = books[start:end]
+    
+    return jsonify({
+        "books": [book.to_dict() for book in paginated_books],
+        "total": len(books),
+        "page": page,
+        "per_page": per_page,
+        "total_pages": (len(books) + per_page - 1) // per_page
+    }), 200
+
+@app.route('/books/<int:book_id>', methods=['GET'])
+def get_book(book_id: int):
+    # In a real scenario, IDs might be UUIDs or strings. 
+    # Here we assume integer IDs for simplicity based on the prompt structure.
+    # If the in-memory list uses UUIDs, this endpoint would need adjustment.
+    # Adjusting to support UUIDs if needed, but prompt implies <id> usually means int or string.
+    # Let's assume the ID in the list is an integer for this skeleton to match <int:book_id>.
+    
+    for book in books:
+        if book["id"] == book_id:
+            return jsonify(book.to_dict()), 200
+    
+    return jsonify({"error": "Book not found"}), 404
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    data = request.get_json()
+    
+    if not validate_book_data(data):
+        return jsonify({"error": "Missing required fields: title, author, isbn, price"}), 400
+    
+    book = Book(
+        id=str(uuid.uuid4()),
+        title=data["title"],
+        author=data["author"],
+        isbn=data["isbn"],
+        price=float(data["price"])
+    )
+    
+    books.append(book)
+    
+    return jsonify(book.to_dict()), 201
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id: int):
+    data = request.get_json()
+    
+    if not validate_book_data(data):
+        return jsonify({"error": "Missing required fields: title, author, isbn, price"}), 400
+    
+    for book in books:
+        if book["id"] == book_id:
+            # Update only provided fields
+            book["title"] = data.get("title", book["title"])
+            book["author"] = data.get("author", book["author"])
+            book["isbn"] = data.get("isbn", book["isbn"])
+            book["price"] = float(data.get("price", book["price"]))
+            
+            return jsonify(book.to_dict()), 200
+    
+    return jsonify({"error": "Book not found"}), 404
+
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id: int):
+    for i, book in enumerate(books):
+        if book["id"] == book_id:
+            del books[i]
+            return jsonify({"message": "Book deleted successfully"}), 200
+    
+    return jsonify({"error": "Book not found"}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

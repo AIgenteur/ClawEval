@@ -1,0 +1,84 @@
+```json
+{
+  "components": [
+    {
+      "name": "WebSocket Gateway Cluster",
+      "technology": "Nginx + Redis Pub/Sub",
+      "purpose": "Handle high-concurrency real-time connections and distribute traffic to message brokers.",
+      "scaling_strategy": "Auto-scaling groups based on active connection count; Redis horizontal sharding."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka or RabbitMQ",
+      "purpose": "Decouple message ingestion from processing; ensure ordering and reliability.",
+      "scaling_strategy": "Partitioned topics with dynamic partition rebalancing; multiple broker nodes per region."
+    },
+    {
+      "name": "Message Processing Engine",
+      "technology": "Go-based Microservices (gRPC)",
+      "purpose": "Handle business logic: encryption, status updates, read receipts, and group management.",
+      "scaling_strategy": "Stateless containerized services with Kubernetes HPA (Horizontal Pod Autoscaler)."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "OpenSSL / Cryptography Library",
+      "purpose": "Perform End-to-End Encryption (E2EE) before messages leave the client and decrypt on the receiver.",
+      "scaling_strategy": "Stateless, integrated into the Message Processing Engine; no state to scale."
+    },
+    {
+      "name": "Database Layer (Hot Data)",
+      "technology": "Cassandra or DynamoDB",
+      "purpose": "Store user profiles, online status, and recent message history for fast retrieval.",
+      "scaling_strategy": "Wide-column stores designed for horizontal partitioning; multi-region replication."
+    },
+    {
+      "name": "Database Layer (Cold Data)",
+      "technology": "Elasticsearch or S3 + Lambda",
+      "purpose": "Index and store full chat history for search and long-term archival.",
+      "scaling_strategy": "Serverless indexing; S3 bucket scaling automatically with data volume."
+    },
+    {
+      "name": "File Storage",
+      "technology": "MinIO or AWS S3",
+      "purpose": "Store file attachments up to 50MB per file.",
+      "scaling_strategy": "Object storage with versioning and lifecycle policies; CDN integration for global access."
+    },
+    {
+      "name": "CDN & Edge Caching",
+      "technology": "CloudFront / Cloudflare",
+      "purpose": "Cache static assets and frequently accessed message previews to reduce origin load.",
+      "scaling_strategy": "Global edge network; automatic caching strategies based on TTL."
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Grafana + Jaeger",
+      "purpose": "Track latency, throughput, error rates, and trace request flows.",
+      "scaling_strategy": "Centralized collection; dashboards auto-refresh; alerting rules for SLA breaches."
+    },
+    {
+      "name": "Identity & Access Management",
+      "technology": "Auth0 or AWS Cognito",
+      "purpose": "Handle authentication, authorization, and GDPR-compliant user data management.",
+      "scaling_strategy": "Federated identity providers; role-based access control (RBAC)."
+    }
+  ],
+  "data_flow": "Client -> WebSocket Gateway -> Message Broker -> Processing Engine (E2EE) -> DB/File Storage. For read receipts: Client -> Gateway -> Broker -> Engine -> DB. For history: Engine writes to Hot DB (recent) and Cold DB (archived).",
+  "infrastructure": {
+    "cloud": "Multi-cloud (AWS primary, Azure secondary for disaster recovery)",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$150,000 - $250,000 (depending on traffic spikes and data retention policies)",
+  "bottlenecks": [
+    "Network latency between regions for cross-border messaging",
+    "Database write throughput limits during peak hours",
+    "File upload bandwidth saturation",
+    "Encryption key rotation complexity"
+  ],
+  "tradeoffs": [
+    "E2EE increases latency slightly due to double encryption/decryption",
+    "Multi-region setup increases operational complexity and cost",
+    "No-DB approach (eventual consistency) vs SQL consistency trade-off for group chats",
+    "Serverless file storage reduces management but increases cold-start latency"
+  ]
+}
+```

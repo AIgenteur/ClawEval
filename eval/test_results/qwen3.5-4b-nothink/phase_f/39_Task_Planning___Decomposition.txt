@@ -1,0 +1,102 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "Design and initialize PostgreSQL database schema",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Implement user registration and login logic with JWT",
+      "depends_on": ["T1"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Implement CRUD operations for todos",
+      "depends_on": ["T1", "T2"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Implement todo categories/tags functionality",
+      "depends_on": ["T1", "T2"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Implement due date reminders logic",
+      "depends_on": ["T1", "T2", "T3"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Implement rate limiting middleware",
+      "depends_on": ["T1", "T2"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Write unit tests for authentication module",
+      "depends_on": ["T2"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Write unit tests for todo CRUD operations",
+      "depends_on": ["T3"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Write unit tests for categories, reminders, and rate limiting",
+      "depends_on": ["T4", "T5", "T6"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Generate and validate OpenAPI documentation",
+      "depends_on": ["T2", "T3", "T4", "T5", "T6"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Create Dockerfile and docker-compose.yml",
+      "depends_on": ["T1", "T2", "T3", "T4", "T5", "T6"],
+      "estimated_hours": 6,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T12",
+      "name": "Configure CI/CD pipeline (build, test, deploy)",
+      "depends_on": ["T7", "T8", "T9", "T10", "T11"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T11",
+    "T12"
+  ],
+  "total_hours": 118,
+  "parallel_tracks": 3
+}
+```

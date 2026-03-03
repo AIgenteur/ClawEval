@@ -1,0 +1,564 @@
+```json
+[
+  {
+    "id": "rule_morning_routine",
+    "name": "Morning Routine - Gradual Lights",
+    "trigger": {
+      "type": "schedule",
+      "time": "06:30",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "living_room_lights",
+          "value": "off"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_lighting",
+        "device": "living_room_lights",
+        "action": "turn_on",
+        "brightness": 20,
+        "transition": {
+          "type": "fade",
+          "duration": 60
+        }
+      },
+      {
+        "type": "set_lighting",
+        "device": "kitchen_lights",
+        "action": "turn_on",
+        "brightness": 50,
+        "transition": {
+          "type": "fade",
+          "duration": 60
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_morning_routine_weekend",
+    "name": "Morning Routine - Gradual Lights (Weekend)",
+    "trigger": {
+      "type": "schedule",
+      "time": "08:00",
+      "days": ["Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "living_room_lights",
+          "value": "off"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_lighting",
+        "device": "living_room_lights",
+        "action": "turn_on",
+        "brightness": 20,
+        "transition": {
+          "type": "fade",
+          "duration": 60
+        }
+      },
+      {
+        "type": "set_lighting",
+        "device": "kitchen_lights",
+        "action": "turn_on",
+        "brightness": 50,
+        "transition": {
+          "type": "fade",
+          "duration": 60
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_occupied",
+    "name": "Thermostat - Occupied Mode",
+    "trigger": {
+      "type": "geofence",
+      "action": "enter",
+      "location": "home"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "thermostat",
+          "value": "heating"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_temperature",
+        "device": "thermostat",
+        "target": 72
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_empty",
+    "name": "Thermostat - Empty Mode",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "thermostat",
+          "value": "heating"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_temperature",
+        "device": "thermostat",
+        "target": 65
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_sleeping",
+    "name": "Thermostat - Sleeping Mode",
+    "trigger": {
+      "type": "schedule",
+      "time": "23:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "thermostat",
+          "value": "heating"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_temperature",
+        "device": "thermostat",
+        "target": 68
+      }
+    ]
+  },
+  {
+    "id": "rule_security_arm",
+    "name": "Security - Arm When Both Away",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "geofence",
+          "user": "Alice",
+          "status": "away"
+        },
+        {
+          "type": "geofence",
+          "user": "Bob",
+          "status": "away"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_security",
+        "device": "front_door_lock",
+        "action": "lock"
+      },
+      {
+        "type": "set_security",
+        "device": "back_door_lock",
+        "action": "lock"
+      },
+      {
+        "type": "set_security",
+        "device": "motion_sensors",
+        "action": "arm_home"
+      }
+    ]
+  },
+  {
+    "id": "rule_security_disarm",
+    "name": "Security - Disarm When Either Returns",
+    "trigger": {
+      "type": "geofence",
+      "action": "enter",
+      "location": "home"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "front_door_lock",
+          "value": "locked"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_security",
+        "device": "front_door_lock",
+        "action": "unlock"
+      },
+      {
+        "type": "set_security",
+        "device": "back_door_lock",
+        "action": "unlock"
+      },
+      {
+        "type": "set_security",
+        "device": "motion_sensors",
+        "action": "disarm"
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_care_feeder",
+    "name": "Pet Care - Auto Feeder",
+    "trigger": {
+      "type": "schedule",
+      "time": "07:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "cat_feeder",
+          "value": "off"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "activate_feeder",
+        "device": "cat_feeder",
+        "action": "dispense",
+        "amount": 50,
+        "unit": "grams"
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_care_evening",
+    "name": "Pet Care - Evening Feeder",
+    "trigger": {
+      "type": "schedule",
+      "time": "18:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "cat_feeder",
+          "value": "off"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "activate_feeder",
+        "device": "cat_feeder",
+        "action": "dispense",
+        "amount": 50,
+        "unit": "grams"
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_care_camera",
+    "name": "Pet Care - Camera On When Away",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "geofence",
+          "user": "Alice",
+          "status": "away"
+        },
+        {
+          "type": "geofence",
+          "user": "Bob",
+          "status": "away"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_camera",
+        "device": "cat_camera",
+        "action": "turn_on"
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_solar_peak",
+    "name": "Energy - Solar Priority",
+    "trigger": {
+      "type": "schedule",
+      "time": "14:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "solar_inverter",
+          "value": "producing"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_energy_mode",
+        "device": "smart_grid",
+        "action": "export_max"
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_battery_evening",
+    "name": "Energy - Battery Backup",
+    "trigger": {
+      "type": "schedule",
+      "time": "18:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "battery_backup",
+          "value": "charging"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_energy_mode",
+        "device": "battery_backup",
+        "action": "charge"
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_motion_hallway",
+    "name": "Lighting - Motion Hallway",
+    "trigger": {
+      "type": "schedule",
+      "time": "22:00",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "hallway_lights",
+          "value": "off"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_lighting",
+        "device": "hallway_lights",
+        "action": "turn_on",
+        "brightness": 20,
+        "transition": {
+          "type": "instant"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_motion_timeout",
+    "name": "Lighting - Hallway Timeout",
+    "trigger": {
+      "type": "event",
+      "event": "motion_detected",
+      "device": "hallway_lights"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "hallway_lights",
+          "value": "on"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_lighting",
+        "device": "hallway_lights",
+        "action": "turn_off",
+        "delay": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_office_bob",
+    "name": "Bob's Office - Desk Lamp & AC",
+    "trigger": {
+      "type": "event",
+      "event": "computer_started",
+      "device": "bob_desktop"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "user",
+          "name": "Bob"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_lighting",
+        "device": "bob_desk_lamp",
+        "action": "turn_on",
+        "brightness": 80
+      },
+      {
+        "type": "set_temperature",
+        "device": "office_thermostat",
+        "target": 70
+      }
+    ]
+  },
+  {
+    "id": "rule_laundry_notify",
+    "name": "Laundry - Cycle Complete",
+    "trigger": {
+      "type": "event",
+      "event": "cycle_complete",
+      "device": "washer_dryer"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "washer_dryer",
+          "status": "completed"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "send_notification",
+        "recipient": "Alice",
+        "recipient": "Bob",
+        "message": "Laundry cycle complete. Clothes are ready."
+      }
+    ]
+  },
+  {
+    "id": "rule_leak_detector",
+    "name": "Water Leak - Shut Off & Alert",
+    "trigger": {
+      "type": "event",
+      "event": "leak_detected",
+      "device": "water_leak_detector"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "state",
+          "device": "water_leak_detector",
+          "status": "active"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_valve",
+        "device": "main_water_valve",
+        "action": "shut_off"
+      },
+      {
+        "type": "send_notification",
+        "recipient": "Alice",
+        "recipient": "Bob",
+        "message": "URGENT: Water leak detected. Main valve shut off."
+      }
+    ]
+  },
+  {
+    "id": "rule_guest_mode",
+    "name": "Guest Mode - Temporary Access",
+    "trigger": {
+      "type": "event",
+      "event": "guest_invited",
+      "device": "smart_home_hub"
+    },
+    "conditions": {
+      "type": "and",
+      "rules": [
+        {
+          "type": "user",
+          "name": "Alice"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "type": "set_door_lock",
+        "device": "front_door_lock",
+        "action": "set_code",
+        "code": "123456",
+        "expiry": "2023-12-31"
+      },
+      {
+        "type": "set_temperature",
+        "device": "thermostat",
+        "target": 72
+      },
+      {
+        "type": "set_wifi",
+        "device": "guest_wifi",
+        "action": "enable"
+      }
+    ]
+  }
+]
+```

@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": 1,
+      "problem": "version '2' is outdated; version '3' is recommended for modern features and compatibility.",
+      "fix": "Change 'version: '2'' to 'version: '3.8''."
+    },
+    {
+      "line": 5,
+      "problem": "Using 'node:latest' tag is non-deterministic and can lead to unexpected behavior or security vulnerabilities due to unpredictable updates.",
+      "fix": "Pin the image to a specific version, e.g., 'node:18-alpine' or 'node:20-alpine'."
+    },
+    {
+      "line": 8,
+      "problem": "DB_PASSWORD is exposed in plaintext within the Compose file.",
+      "fix": "Use Docker secrets or a configuration management tool (like Vault or environment variables injected at runtime) to store sensitive data."
+    },
+    {
+      "line": 9,
+      "problem": "NODE_ENV is set to 'development', which may expose debug logging and insecure configurations.",
+      "fix": "Set 'NODE_ENV' to 'production' unless development is explicitly required."
+    },
+    {
+      "line": 12,
+      "problem": "Mounting the current directory (.) to /app is generally unsafe for production as it exposes host files and can cause permission issues.",
+      "fix": "Use a named volume or a specific directory path instead of the root directory, e.g., '- ./src:/app'."
+    },
+    {
+      "line": 13,
+      "problem": "restart: no prevents the container from restarting after a crash, leading to service downtime.",
+      "fix": "Change 'restart: no' to 'restart: unless-stopped' or 'restart: always'."
+    },
+    {
+      "line": 17,
+      "problem": "MySQL 5.6 is End-of-Life (EOL) and no longer receives security updates.",
+      "fix": "Upgrade to a supported version, such as 'mysql:8.0' or 'mysql:8.0.35'."
+    },
+    {
+      "line": 18,
+      "problem": "MySQL port 3306 is exposed publicly, allowing unauthorized access from outside the Docker network.",
+      "fix": "Remove the port mapping or restrict access using a firewall and internal networking."
+    },
+    {
+      "line": 21,
+      "problem": "Mounting /tmp for persistent data means data will be lost when the container is removed or the host reboots.",
+      "fix": "Use a named volume (e.g., '- mysql-data:/var/lib/mysql') instead of /tmp."
+    },
+    {
+      "line": 25,
+      "problem": "Redis port 6379 is exposed publicly and lacks authentication, making it vulnerable to unauthorized access.",
+      "fix": "Remove the port mapping or add Redis authentication (e.g., 'REDIS_PASSWORD' environment variable) and restrict access."
+    }
+  ],
+  "count": 10
+}
+```

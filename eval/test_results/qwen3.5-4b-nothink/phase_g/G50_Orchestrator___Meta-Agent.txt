@@ -1,0 +1,134 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Triage & Diagnostic Collection",
+      "agents": [
+        {
+          "agent": "log_analyzer",
+          "input": "Production error logs from last 10 minutes",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "metric_checker",
+          "input": "Current CPU, Memory, and Error Rate metrics",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "db_checker",
+          "input": "Database connection pool status and active locks",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "config_auditor",
+          "input": "Configuration changes made in the last 24 hours",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete without timeout and return valid data structures."
+    },
+    {
+      "phase": 2,
+      "name": "Impact Assessment & Notification",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": "List of services affected by the error patterns found in Phase 1",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "Resource utilization trends during the outage window",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "notification_agent",
+          "input": "Confirmed outage status and affected service list",
+          "timeout_seconds": 15
+        }
+      ],
+      "parallel": true,
+      "gate": "Dependency map must identify at least one critical downstream service; notification must be sent successfully."
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Hypothesis & Customer Communication",
+      "agents": [
+        {
+          "agent": "incident_reporter",
+          "input": "Aggregated data from Phases 1 and 2 to draft initial incident ticket",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "customer_communicator",
+          "input": "Draft incident summary and estimated resolution time",
+          "timeout_seconds": 45
+        }
+      ],
+      "parallel": true,
+      "gate": "Incident ticket must be created with status 'Investigating' and customer communication must be delivered."
+    },
+    {
+      "phase": 4,
+      "name": "Remediation Execution",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "Decision to rollback based on Phase 3 findings (e.g., specific config change or bad deployment)",
+          "timeout_seconds": 120
+        }
+      ],
+      "parallel": false,
+      "gate": "Rollback decision must be explicitly triggered by the orchestration logic based on Phase 3 analysis."
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Stabilization",
+      "agents": [
+        {
+          "agent": "metric_checker",
+          "input": "Post-remediation metrics to confirm stability",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "New error logs post-remediation",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "db_checker",
+          "input": "Database health post-remediation",
+          "timeout_seconds": 30
+        }
+      ],
+      "parallel": true,
+      "gate": "All verification agents must report 'Healthy' or 'Stable' status with no critical errors."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "log_analyzer detects a known critical bug pattern OR config_auditor identifies a recent dangerous config change",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 2"
+    },
+    {
+      "after_phase": 3,
+      "condition": "customer_communicator confirms all affected users have been notified AND incident_reporter sets severity to 'Critical'",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 2"
+    }
+  ],
+  "escalation": {
+    "trigger": "Phase 5 verification fails OR Phase 4 rollback does not resolve the issue within 10 minutes",
+    "action": "Automatically escalate to on-call SRE lead via PagerDuty P1 alert and freeze all deployment pipelines."
+  },
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    "log_analyzer identifies a specific known CVE or critical bug signature in the stack trace",
+    "config_auditor detects a configuration change that violates security policies or causes immediate service degradation",
+    "metric_checker shows error rates spiking by >500% immediately after a specific deployment commit"
+  ]
+}

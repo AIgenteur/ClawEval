@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Insecure Configuration",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a cryptographically secure random string for the secret key, e.g., os.urandom(32) or secrets.token_hex(32)."
+    },
+    {
+      "id": 2,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,)).fetchone()"
+    },
+    {
+      "id": 3,
+      "type": "Template Injection",
+      "severity": "high",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Use Jinja2 templates with proper escaping or sanitize input before passing to render_template_string."
+    },
+    {
+      "id": 4,
+      "type": "Deserialization Vulnerability",
+      "severity": "critical",
+      "location": "obj = pickle.loads(data)",
+      "fix": "Avoid using pickle for untrusted data. Use JSON or a safer serialization format like Protocol 0 pickle with strict validation."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid shell=True and use argument lists: subprocess.check_output([\"/bin/sh\", \"-c\", cmd]) with input sanitization."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Local File Inclusion",
+      "severity": "high",
+      "location": "return open(path).read()",
+      "fix": "Validate and sanitize the path: ensure it starts with an allowed directory and use os.path.abspath."
+    },
+    {
+      "id": 7,
+      "type": "Insecure Direct Object Reference / Hardcoded Credentials",
+      "severity": "high",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Store passwords securely using a hashing algorithm like bcrypt or Argon2, and never hardcode or use plain text in environment variables."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Remove the debug endpoint or restrict access to sensitive environment variables."
+    },
+    {
+      "id": 9,
+      "type": "Missing Transport Layer Security",
+      "severity": "medium",
+      "location": "No HTTPS enforcement",
+      "fix": "Enforce HTTPS by setting app.config['SECURE_PROXY_SSL_HEADER'] and using a reverse proxy like Nginx with SSL."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "No rate limiting",
+      "fix": "Implement rate limiting using Flask-Limiter or similar middleware to prevent brute-force attacks and DoS."
+    }
+  ],
+  "count": 10
+}
+```

@@ -1,0 +1,551 @@
+```json
+[
+  {
+    "id": "rule_morning_routine",
+    "name": "Morning Routine",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "time": "06:30:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "lighting",
+        "target": "living_room_lights",
+        "action": "turn_on",
+        "brightness": 50,
+        "transition": "fade",
+        "duration": 300
+      },
+      {
+        "type": "lighting",
+        "target": "kitchen_lights",
+        "action": "turn_on",
+        "brightness": 80,
+        "transition": "fade",
+        "duration": 300
+      },
+      {
+        "type": "lighting",
+        "target": "bathroom_lights",
+        "action": "turn_on",
+        "brightness": 100,
+        "transition": "fade",
+        "duration": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_morning_routine_weekend",
+    "name": "Weekend Morning Routine",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Saturday", "Sunday"],
+      "time": "08:00:00"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "lighting",
+        "target": "living_room_lights",
+        "action": "turn_on",
+        "brightness": 50,
+        "transition": "fade",
+        "duration": 300
+      },
+      {
+        "type": "lighting",
+        "target": "kitchen_lights",
+        "action": "turn_on",
+        "brightness": 80,
+        "transition": "fade",
+        "duration": 300
+      },
+      {
+        "type": "lighting",
+        "target": "bathroom_lights",
+        "action": "turn_on",
+        "brightness": 100,
+        "transition": "fade",
+        "duration": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_occupied",
+    "name": "Thermostat Occupied",
+    "trigger": {
+      "type": "geofence",
+      "action": "enter",
+      "location": "home"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "geofence",
+            "status": "both_away",
+            "location": "home"
+          },
+          {
+            "type": "time",
+            "operator": "not_between",
+            "start": "23:00",
+            "end": "06:00"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "climate",
+        "target": "main_thermostat",
+        "action": "set_temperature",
+        "value": 72,
+        "mode": "heat_cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_empty",
+    "name": "Thermostat Empty",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "geofence",
+            "status": "both_away",
+            "location": "home"
+          },
+          {
+            "type": "time",
+            "operator": "not_between",
+            "start": "23:00",
+            "end": "06:00"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "climate",
+        "target": "main_thermostat",
+        "action": "set_temperature",
+        "value": 65,
+        "mode": "heat_cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_sleeping",
+    "name": "Thermostat Sleeping",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "time": "23:00:00"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "time",
+            "operator": "between",
+            "start": "23:00",
+            "end": "06:00"
+          },
+          {
+            "type": "geofence",
+            "status": "both_away",
+            "location": "home"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "climate",
+        "target": "main_thermostat",
+        "action": "set_temperature",
+        "value": 68,
+        "mode": "heat_cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_security_arm",
+    "name": "Security Arm Both Away",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "geofence",
+            "status": "both_away",
+            "location": "home"
+          },
+          {
+            "type": "time",
+            "operator": "not_between",
+            "start": "23:00",
+            "end": "06:00"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "security",
+        "target": "main_security_system",
+        "action": "arm_home"
+      }
+    ]
+  },
+  {
+    "id": "rule_security_disarm",
+    "name": "Security Disarm Either Returns",
+    "trigger": {
+      "type": "geofence",
+      "action": "enter",
+      "location": "home"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "geofence",
+            "status": "one_or_both_present",
+            "location": "home"
+          },
+          {
+            "type": "security",
+            "status": "armed",
+            "system": "main_security_system"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "security",
+        "target": "main_security_system",
+        "action": "disarm"
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_care_feeder",
+    "name": "Pet Feeder Schedule",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "times": ["07:00:00", "18:00:00"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "automation",
+        "target": "pet_feeder",
+        "action": "activate",
+        "duration": 60
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_care_camera",
+    "name": "Cat Camera Active When Away",
+    "trigger": {
+      "type": "geofence",
+      "action": "leave",
+      "location": "home"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "geofence",
+            "status": "both_away",
+            "location": "home"
+          },
+          {
+            "type": "time",
+            "operator": "not_between",
+            "start": "23:00",
+            "end": "06:00"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "camera",
+        "target": "cat_camera",
+        "action": "turn_on"
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_solar_peak",
+    "name": "Solar Priority Peak",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "time": "14:00:00"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "time",
+            "operator": "between",
+            "start": "14:00",
+            "end": "19:00"
+          },
+          {
+            "type": "energy",
+            "source": "solar",
+            "status": "available"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "energy",
+        "target": "smart_plugs",
+        "action": "set_priority",
+        "source": "solar"
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_battery_evening",
+    "name": "Battery Backup Evening",
+    "trigger": {
+      "type": "schedule",
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "time": "19:00:00"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "time",
+            "operator": "between",
+            "start": "19:00",
+            "end": "06:00"
+          },
+          {
+            "type": "energy",
+            "source": "solar",
+            "status": "unavailable"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "energy",
+        "target": "battery_backup",
+        "action": "activate"
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_motion_hallway",
+    "name": "Hallway Motion Lighting",
+    "trigger": {
+      "type": "motion",
+      "sensor": "hallway_sensor",
+      "action": "detected"
+    },
+    "conditions": [
+      {
+        "type": "time",
+        "operator": "between",
+        "start": "22:00",
+        "end": "06:00"
+      }
+    ],
+    "actions": [
+      {
+        "type": "lighting",
+        "target": "hallway_lights",
+        "action": "turn_on",
+        "brightness": 20,
+        "transition": "fade",
+        "duration": 300
+      },
+      {
+        "type": "timer",
+        "target": "hallway_lights",
+        "action": "set_timeout",
+        "duration": 300
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_off_after_5min",
+    "name": "Hallway Lights Off After 5 Min",
+    "trigger": {
+      "type": "timer",
+      "duration": 300
+    },
+    "conditions": [
+      {
+        "type": "lighting",
+        "target": "hallway_lights",
+        "status": "on"
+      }
+    ],
+    "actions": [
+      {
+        "type": "lighting",
+        "target": "hallway_lights",
+        "action": "turn_off"
+      }
+    ]
+  },
+  {
+    "id": "rule_bobs_office",
+    "name": "Bob's Office Setup",
+    "trigger": {
+      "type": "automation",
+      "target": "computer",
+      "action": "power_on"
+    },
+    "conditions": [
+      {
+        "type": "logic",
+        "operator": "and",
+        "operands": [
+          {
+            "type": "user",
+            "name": "Bob",
+            "status": "present",
+            "location": "office"
+          },
+          {
+            "type": "time",
+            "operator": "between",
+            "start": "09:00",
+            "end": "17:00"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "lighting",
+        "target": "desk_lamp",
+        "action": "turn_on",
+        "brightness": 100
+      },
+      {
+        "type": "climate",
+        "target": "office_thermostat",
+        "action": "set_temperature",
+        "value": 70,
+        "mode": "heat_cool"
+      }
+    ]
+  },
+  {
+    "id": "rule_laundry_notify",
+    "name": "Laundry Cycle Complete",
+    "trigger": {
+      "type": "automation",
+      "target": "washer_dryer",
+      "action": "cycle_complete"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "notification",
+        "target": "all_users",
+        "message": "Laundry cycle complete. Check your laundry room.",
+        "channels": ["push", "email"]
+      }
+    ]
+  },
+  {
+    "id": "rule_water_leak",
+    "name": "Water Leak Detection",
+    "trigger": {
+      "type": "sensor",
+      "target": "water_leak_detector",
+      "action": "triggered"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "automation",
+        "target": "main_valve",
+        "action": "shut_off"
+      },
+      {
+        "type": "notification",
+        "target": "all_users",
+        "message": "Water leak detected! Main valve shut off.",
+        "channels": ["push", "sms", "email"]
+      }
+    ]
+  },
+  {
+    "id": "rule_guest_mode",
+    "name": "Guest Mode Activation",
+    "trigger": {
+      "type": "automation",
+      "target": "guest_app",
+      "action": "activated"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "security",
+        "target": "door_lock",
+        "action": "set_code",
+        "code": "guest_temp_code",
+        "duration": 24
+      },
+      {
+        "type": "climate",
+        "target": "main_thermostat",
+        "action": "set_temperature",
+        "value": 72,
+        "mode": "heat_cool"
+      },
+      {
+        "type": "network",
+        "target": "wifi",
+        "action": "enable_guest_network"
+      }
+    ]
+  }
+]
+```

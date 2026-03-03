@@ -1,0 +1,31 @@
+{
+  "architecture": {
+    "components": ["Load Balancer (ALB)", "API Gateway", "Redis Cluster", "PostgreSQL (Primary)", "Elasticsearch (Analytics)", "Object Storage (S3)", "CDN (CloudFront)"],
+    "database": {"primary": "PostgreSQL with Read Replicas", "justification": "Relational data integrity for link metadata, supports complex queries for analytics, and offers ACID compliance for financial/compliance tracking."},
+    "cache": {"type": "Redis Cluster", "strategy": "Write-through for new links, Write-behind for updates, TTL-based expiration", "invalidation": "Automatic TTL on creation, manual purge via API for GDPR, cache warming on traffic spikes"},
+    "hash_strategy": {"algorithm": "Base62 (A-Z, a-z, 0-9)", "length": 6, "collision_handling": "Chained hash buckets with automatic rehashing on collision threshold"}
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "All redirects served via CDN edge nodes with TTL; API calls to DB cached in Redis; Read replicas handle analytics queries",
+    "write_path": "Write-through to PostgreSQL via dedicated write cluster; async indexing to Elasticsearch; rate-limited to prevent lock contention",
+    "horizontal_scaling": "Auto-scaling groups for API workers and read replicas; Redis cluster sharding; S3 bucket scaling"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment with active-passive failover; Health checks on every component; Circuit breakers on downstream services",
+    "failover": "Automatic DNS failover via Route53; Database read/write failover within 30 seconds; Redis Sentinel for automatic master promotion",
+    "data_replication": "Synchronous replication for critical metadata to primary DB; Asynchronous replication to read replicas and S3 for durability"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft-delete flag with immediate cache invalidation; Hard-delete via background job within 24 hours; Audit log of all deletion requests",
+    "data_retention": "Configurable retention policies per user; Automatic archival to cold storage after 90 days; Legal hold support for litigation",
+    "analytics_separation": "Analytics stored in separate Elasticsearch cluster; PII masked before storage; User consent management integrated into analytics pipeline"
+  },
+  "cost_estimate": {
+    "monthly_total": 4850,
+    "breakdown": {"compute": 1200, "database": 1500, "cache": 800, "cdn": 1000, "other": 350},
+    "fits_budget": true
+  },
+  "rate_limiting": {"strategy": "Token bucket algorithm per IP and per User-Agent", "limits": {"api_writes": "1000 req/min per IP", "api_reads": "10000 req/min per IP", "redirects": "Unlimited via CDN, but throttled at origin if abuse detected"}},
+  "monitoring": {"metrics": ["p99 latency", "error rate", "cache hit ratio", "DB connection pool usage", "queue depth"], "alerting": "PagerDuty integration for critical failures; Slack notifications for non-critical spikes; Synthetic monitoring for redirect paths"}
+}

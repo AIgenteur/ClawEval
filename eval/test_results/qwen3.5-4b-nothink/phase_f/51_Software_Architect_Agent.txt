@@ -1,0 +1,72 @@
+```json
+{
+  "components": [
+    {
+      "name": "WebSocket Gateway Cluster",
+      "technology": "Nginx + Redis Pub/Sub (Redis Cluster)",
+      "purpose": "Handles real-time bidirectional communication, connection management, and initial handshake for <100ms latency.",
+      "scaling_strategy": "Horizontal scaling via Redis Cluster sharding and load balancing across multiple availability zones."
+    },
+    {
+      "name": "Message Broker & Routing Engine",
+      "technology": "Apache Kafka",
+      "purpose": "Decouples message ingestion from processing, ensures ordering within groups, and supports high-throughput message persistence.",
+      "scaling_strategy": "Partitioned topics per user/group; dynamic partition rebalancing; consumer group scaling."
+    },
+    {
+      "name": "State Management Service",
+      "technology": "Redis (Cluster Mode)",
+      "purpose": "Stores online/offline status, last-seen timestamps, read receipts, and ephemeral session data.",
+      "scaling_strategy": "Sharded by user ID; memory-optimized instances; automatic failover."
+    },
+    {
+      "name": "Message Storage Layer",
+      "technology": "Cassandra or DynamoDB",
+      "purpose": "Persistent storage of message history, metadata, and file references with eventual consistency.",
+      "scaling_strategy": "Wide-column store for high write throughput; partitioning by user/group ID; secondary indexes for filtering."
+    },
+    {
+      "name": "File Storage & CDN",
+      "technology": "MinIO (S3-compatible) + CloudFront/Cloudflare CDN",
+      "purpose": "Stores large file attachments (up to 50MB) and serves them globally with low latency.",
+      "scaling_strategy": "Object storage scales infinitely; CDN caches static assets at edge locations."
+    },
+    {
+      "name": "Encryption & Key Management",
+      "technology": "HashiCorp Vault + Web Crypto API",
+      "purpose": "Generates, stores, and rotates end-to-end encryption keys; manages user-specific key pairs securely.",
+      "scaling_strategy": "Stateless key rotation; distributed key retrieval via Vault; client-side encryption logic."
+    },
+    {
+      "name": "Business Logic & Auth Service",
+      "technology": "Go-based Microservices (gRPC)",
+      "purpose": "Handles authentication, authorization, group management, read receipt logic, and GDPR compliance checks.",
+      "scaling_strategy": "Containerized microservices with auto-scaling based on CPU/memory usage."
+    },
+    {
+      "name": "Analytics & Monitoring",
+      "technology": "Prometheus + Grafana + ELK Stack",
+      "purpose": "Monitors system health, latency, error rates, and compliance audit logs.",
+      "scaling_strategy": "Time-series database for metrics; log aggregation for real-time alerting."
+    }
+  ],
+  "data_flow": "Client connects via WebSocket to Gateway -> Gateway authenticates and routes to Message Broker (Kafka) -> Broker delivers messages to consumers (Business Logic) -> Business Logic encrypts messages (E2EE), updates State (Redis), and persists to Storage -> Files uploaded to Object Storage -> CDN serves files -> Read receipts and status updates flow bidirectionally via Redis Pub/Sub.",
+  "infrastructure": {
+    "cloud": "Multi-cloud hybrid (AWS for primary, Azure/GCP for disaster recovery)",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$150,000 - $250,000 (excluding licensing and third-party API costs)",
+  "bottlenecks": [
+    "Network bandwidth for high-frequency small messages",
+    "Database write throughput during peak hours",
+    "Key rotation latency in distributed environments",
+    "GDPR data residency requirements across regions"
+  ],
+  "tradeoffs": [
+    "Chosen eventual consistency for storage to ensure horizontal scalability; users may see slight delays in message ordering.",
+    "Client-side encryption adds complexity to the client but ensures true E2EE; server cannot access message content.",
+    "Multi-cloud strategy increases operational complexity and cost but mitigates single-point failure risks.",
+    "Real-time status updates rely on Redis; if Redis fails, online status updates may be delayed until recovery."
+  ]
+}
+```

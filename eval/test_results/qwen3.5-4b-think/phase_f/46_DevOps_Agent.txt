@@ -1,0 +1,62 @@
+```json
+{
+  "issues": [
+    {
+      "line": 1,
+      "problem": "version '2' is outdated; version '3' is recommended for modern features and syntax.",
+      "fix": "Change 'version: '2'' to 'version: '3.8'' or 'version: '3.9''."
+    },
+    {
+      "line": 5,
+      "problem": "Using 'node:latest' tag is non-deterministic and can lead to unexpected behavior or security vulnerabilities due to unpredictable updates.",
+      "fix": "Pin the image to a specific version, e.g., 'node:18-alpine' or 'node:20-alpine'."
+    },
+    {
+      "line": 8,
+      "problem": "DB_PASSWORD is exposed in plaintext within the Compose file.",
+      "fix": "Use Docker secrets or a .env file with a tool like docker-compose config --env-file .env, or use a secrets manager."
+    },
+    {
+      "line": 9,
+      "problem": "NODE_ENV is set to 'development', which may expose debug logs and insecure configurations.",
+      "fix": "Set 'NODE_ENV: production' unless development is explicitly required."
+    },
+    {
+      "line": 12,
+      "problem": "Mounting the current directory (.) to /app is generally unsafe for production as it exposes host files and can cause permission issues.",
+      "fix": "Use a named volume or bind mount a specific directory, e.g., '- ./src:/app' or '- my-app-data:/app'."
+    },
+    {
+      "line": 14,
+      "problem": "restart: no prevents the container from restarting after a crash, leading to service downtime.",
+      "fix": "Change 'restart: no' to 'restart: unless-stopped' or 'restart: always'."
+    },
+    {
+      "line": 17,
+      "problem": "MySQL 5.6 is End-of-Life (EOL) and no longer receives security updates.",
+      "fix": "Upgrade to a supported version, e.g., 'mysql:8.0' or 'mariadb:10.11'."
+    },
+    {
+      "line": 19,
+      "problem": "MySQL root password is exposed in plaintext within the Compose file.",
+      "fix": "Use Docker secrets or a .env file to manage sensitive credentials."
+    },
+    {
+      "line": 21,
+      "problem": "Mounting /tmp to /var/lib/mysql stores data in a temporary directory that is cleared on reboot, causing data loss.",
+      "fix": "Remove the volume mount and let Docker create a named volume, e.g., '- mysql-data:/var/lib/mysql'."
+    },
+    {
+      "line": 24,
+      "problem": "MySQL port 3306 is exposed publicly, allowing unauthorized access from outside the Docker network.",
+      "fix": "Remove the ports mapping or restrict access to the Docker network only."
+    },
+    {
+      "line": 27,
+      "problem": "Redis port 6379 is exposed publicly and has no authentication configured.",
+      "fix": "Remove the ports mapping or restrict access to the Docker network, and add 'REDIS_PASSWORD' to the environment variables."
+    }
+  ],
+  "count": 11
+}
+```

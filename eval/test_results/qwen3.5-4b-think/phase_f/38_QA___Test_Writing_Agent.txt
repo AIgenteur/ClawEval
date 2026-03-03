@@ -1,0 +1,65 @@
+```python
+import pytest
+from your_module import calculate_tax
+
+def test_zero_income():
+    """Test calculation with zero income."""
+    result = calculate_tax(0, 'single')
+    assert result == (0.0, 0.0)
+
+def test_typical_single_income():
+    """Test calculation with typical single income in middle bracket."""
+    result = calculate_tax(50000, 'single')
+    assert result[0] == 5750.0
+    assert result[1] == 11.5
+
+def test_typical_married_income():
+    """Test calculation with typical married income in middle bracket."""
+    result = calculate_tax(100000, 'married')
+    assert result[0] == 17600.0
+    assert result[1] == 17.6
+
+def test_high_income_single():
+    """Test calculation with high single income in top bracket."""
+    result = calculate_tax(1000000, 'single')
+    assert result[0] == 373950.0
+    assert result[1] == 37.395
+
+def test_high_income_married():
+    """Test calculation with high married income in top bracket."""
+    result = calculate_tax(1000000, 'married')
+    assert result[0] == 373950.0
+    assert result[1] == 37.395
+
+def test_invalid_income_type():
+    """Test raising error for non-numeric income."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("10000", 'single')
+
+def test_negative_income():
+    """Test raising error for negative income."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-1000, 'single')
+
+def test_invalid_filing_status():
+    """Test raising error for invalid filing status."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'head_of_household')
+
+def test_empty_filing_status():
+    """Test raising error for empty string filing status."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, '')
+
+def test_bracket_boundary_single():
+    """Test calculation exactly at single bracket boundary."""
+    result = calculate_tax(47150, 'single')
+    assert result[0] == 5658.0
+    assert result[1] == 12.0
+
+def test_bracket_boundary_married():
+    """Test calculation exactly at married bracket boundary."""
+    result = calculate_tax(94300, 'married')
+    assert result[0] == 11316.0
+    assert result[1] == 12.0
+```
