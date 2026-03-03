@@ -1,0 +1,69 @@
+```python
+import pytest
+# Assume calculate_tax is imported from your main module
+# from tax_module import calculate_tax 
+
+def test_zero_income():
+    """Edge case: Zero income should return 0 tax and 0 effective rate."""
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0.0
+    assert rate == 0
+
+def test_invalid_income_type():
+    """Edge case: Non-numeric income should raise ValueError."""
+    with pytest.raises(ValueError):
+        calculate_tax("50000", 'single')
+    with pytest.raises(ValueError):
+        calculate_tax(None, 'single')
+
+def test_negative_income():
+    """Edge case: Negative income should raise ValueError."""
+    with pytest.raises(ValueError):
+        calculate_tax(-100, 'single')
+    with pytest.raises(ValueError):
+        calculate_tax(-0.01, 'married')
+
+def test_invalid_filing_status():
+    """Edge case: Invalid filing status should raise ValueError."""
+    with pytest.raises(ValueError):
+        calculate_tax(50000, 'head_of_household')
+    with pytest.raises(ValueError):
+        calculate_tax(50000, '')
+
+def test_single_bracket_boundary_exact():
+    """Edge case: Income exactly at the first bracket boundary for single filer."""
+    # Bracket 1 limit: 11600, Rate: 0.10
+    tax, rate = calculate_tax(11600, 'single')
+    assert tax == 1160.0
+    assert rate == 10.0
+
+def test_single_bracket_boundary_overflow():
+    """Edge case: Income exceeding first bracket by 1 dollar."""
+    # 11600 @ 0.10 + 1 @ 0.12
+    tax, rate = calculate_tax(11601, 'single')
+    assert tax == 1160.12
+    # Effective rate check
+    assert rate == round((1160.12 / 11601) * 100, 2)
+
+def test_married_filing_status():
+    """Edge case: Married brackets differ from single (double width approx)."""
+    # Married bracket 1 limit: 23200, Rate: 0.10
+    tax_single, _ = calculate_tax(23200, 'single')
+    tax_married, _ = calculate_tax(23200, 'married')
+    
+    # Single filer at 23200 hits higher brackets, married stays in 10%
+    assert tax_married == 2320.0
+    assert tax_single > tax_married
+
+def test_high_income_top_bracket():
+    """Edge case: Income exceeding the highest defined bracket limit."""
+    # Single top bracket starts after 609350
+    income = 1000000
+    tax, rate = calculate_tax(income, 'single')
+    
+    # Verify tax is calculated and rate is capped near 37%
+    assert tax > 0
+    assert rate <= 37.0
+    assert isinstance(tax, float)
+    assert isinstance(rate, float)
+```

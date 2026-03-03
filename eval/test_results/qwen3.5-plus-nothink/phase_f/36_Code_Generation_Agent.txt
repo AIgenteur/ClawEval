@@ -1,0 +1,22 @@
+```python
+def merge_intervals(intervals):
+    if not intervals:
+        return []
+    
+    # Sort intervals by start time
+    intervals.sort(key=lambda x: x[0])
+    
+    merged = [intervals[0]]
+    
+    for current in intervals[1:]:
+        last = merged[-1]
+        # Check if current interval overlaps or is adjacent to the last merged interval
+        if current[0] <= last[1]:
+            # Merge them by updating the end time of the last interval
+            last[1] = max(last[1], current[1])
+        else:
+            # No overlap, add the current interval to the result
+            merged.append(current)
+    
+    return merged
+```

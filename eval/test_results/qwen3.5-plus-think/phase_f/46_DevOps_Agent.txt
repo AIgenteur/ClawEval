@@ -1,0 +1,55 @@
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version '2' is outdated",
+      "fix": "Update to version '3' or remove version key"
+    },
+    {
+      "line": "4",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "Pin specific image version (e.g., node:18-alpine)"
+    },
+    {
+      "line": "19",
+      "problem": "DB password in plaintext (should use secrets)",
+      "fix": "Use Docker secrets or environment files"
+    },
+    {
+      "line": "9",
+      "problem": "NODE_ENV should be 'production'",
+      "fix": "Change NODE_ENV to 'production'"
+    },
+    {
+      "line": "11",
+      "problem": "Source volume mount (.:/app) in production",
+      "fix": "Remove volume mount or use named volume for artifacts"
+    },
+    {
+      "line": "12",
+      "problem": "restart: no — should be 'unless-stopped' or 'always'",
+      "fix": "Change restart policy to 'unless-stopped'"
+    },
+    {
+      "line": "15",
+      "problem": "MySQL 5.6 is EOL",
+      "fix": "Upgrade to supported version (e.g., mysql:8.0)"
+    },
+    {
+      "line": "17",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "Remove ports mapping or restrict to internal network"
+    },
+    {
+      "line": "21",
+      "problem": "/tmp for persistent data (will be lost)",
+      "fix": "Use named volume or persistent host path"
+    },
+    {
+      "line": "26",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "Remove port mapping and add requirepass command"
+    }
+  ],
+  "count": 10
+}

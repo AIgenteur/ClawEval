@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError occurs if 'processed' list is empty (no pending orders).",
+      "fix": "Check if len(processed) > 0 before calculating average, else set avg to 0."
+    },
+    {
+      "line": 23,
+      "issue": "Returns total input count instead of the count of processed orders.",
+      "fix": "Change len(orders) to len(processed)."
+    },
+    {
+      "line": 8,
+      "issue": "Discount value is not validated; values > 100 result in negative price before clamping.",
+      "fix": "Validate discount is between 0 and 100 before calculation."
+    },
+    {
+      "line": 13,
+      "issue": "Mutates the input order dictionary directly (side effect).",
+      "fix": "Create a copy of the order dictionary before modifying fields."
+    },
+    {
+      "line": 7,
+      "issue": "No type checking on price/quantity; could be None or non-numeric causing TypeError.",
+      "fix": "Add validation to ensure price and quantity are valid numbers."
+    }
+  ],
+  "count": 5
+}

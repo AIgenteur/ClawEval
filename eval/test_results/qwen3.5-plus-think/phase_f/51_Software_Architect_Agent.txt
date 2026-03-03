@@ -1,0 +1,72 @@
+{
+  "components": [
+    {
+      "name": "Global Load Balancer",
+      "technology": "AWS Global Accelerator + ALB",
+      "purpose": "Route traffic to nearest region and distribute load across WebSocket servers",
+      "scaling_strategy": "Managed service auto-scaling based on request count"
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Go on Kubernetes",
+      "purpose": "Maintain persistent connections, handle authentication, and manage message routing",
+      "scaling_strategy": "Horizontal Pod Autoscaler based on CPU and active connection count"
+    },
+    {
+      "name": "Event Bus",
+      "technology": "Apache Kafka",
+      "purpose": "Decouple message ingestion from processing, persistence, and notification fans",
+      "scaling_strategy": "Increase partition count and broker nodes based on throughput"
+    },
+    {
+      "name": "Message Store",
+      "technology": "ScyllaDB",
+      "purpose": "High-write throughput NoSQL storage for message history and persistence",
+      "scaling_strategy": "Add nodes to cluster with consistent hashing for sharding by conversation_id"
+    },
+    {
+      "name": "User Service DB",
+      "technology": "PostgreSQL (Citus)",
+      "purpose": "Store relational user data, group memberships, and encryption public keys",
+      "scaling_strategy": "Sharding by user_id using Citus extension"
+    },
+    {
+      "name": "Presence Cache",
+      "technology": "Redis Cluster",
+      "purpose": "Store online/offline status and session mapping with TTL",
+      "scaling_strategy": "Add shards to cluster based on memory and connection load"
+    },
+    {
+      "name": "File Storage",
+      "technology": "AWS S3 + CloudFront",
+      "purpose": "Store encrypted file attachments and serve via CDN for low latency",
+      "scaling_strategy": "Unlimited object storage scaling with CDN edge caching"
+    },
+    {
+      "name": "Key Management",
+      "technology": "AWS KMS + HashiCorp Vault",
+      "purpose": "Manage E2EE key exchange metadata and secure storage of public keys",
+      "scaling_strategy": "Multi-region replication for availability and compliance"
+    }
+  ],
+  "data_flow": "Client encrypts message (E2EE) -> WSS to Global Load Balancer -> WebSocket Gateway (validates session) -> Publishes to Kafka -> Message Worker persists to ScyllaDB -> Presence Service checks Redis for recipient online status -> If online, push via recipient's WebSocket Gateway -> If offline, store for sync -> Read receipts trigger async update to Kafka -> DB -> Sender.",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$420,000 USD",
+  "bottlenecks": [
+    "Database write throughput during global peak traffic events",
+    "WebSocket connection table limits on single gateway instances",
+    "Network egress bandwidth costs for large file attachments",
+    "Hot partition keys in NoSQL database for highly active group chats",
+    "Redis cluster memory limits for storing 1M concurrent presence states"
+  ],
+  "tradeoffs": [
+    "End-to-End Encryption prevents server-side message search and content moderation",
+    "Strong consistency for read receipts may increase latency vs eventual consistency",
+    "Multi-region active-active architecture increases complexity for GDPR data residency compliance",
+    "Persistent WebSocket connections consume significant server memory compared to HTTP polling",
+    "High availability (99.99%) requires costly multi-region redundancy and failover mechanisms"
+  ]
+}

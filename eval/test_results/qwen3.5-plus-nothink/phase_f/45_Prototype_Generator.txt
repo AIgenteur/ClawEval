@@ -1,0 +1,164 @@
+```python
+from flask import Flask, request, jsonify, abort
+from dataclasses import dataclass, asdict
+from typing import List, Optional
+import math
+
+app = Flask(__name__)
+
+@dataclass
+class Book:
+    id: int
+    title: str
+    author: str
+    isbn: str
+    price: float
+
+# In-memory database
+books_db: List[Book] = []
+next_id = 1
+
+def get_book_or_404(book_id: int) -> Book:
+    for book in books_db:
+        if book.id == book_id:
+            return book
+    abort(404, description=f"Book with ID {book_id} not found")
+
+def validate_book_data(data: dict, required_fields: list) -> tuple[Optional[dict], Optional[str]]:
+    errors = []
+    
+    # Check for missing required fields
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            errors.append(f"Missing required field: {field}")
+    
+    if errors:
+        return None, "; ".join(errors)
+
+    # Type validation
+    if not isinstance(data.get('title'), str) or not data['title'].strip():
+        errors.append("Title must be a non-empty string")
+    
+    if not isinstance(data.get('author'), str) or not data['author'].strip():
+        errors.append("Author must be a non-empty string")
+    
+    if not isinstance(data.get('isbn'), str) or not data['isbn'].strip():
+        errors.append("ISBN must be a non-empty string")
+    
+    try:
+        price = float(data.get('price', 0))
+        if price < 0:
+            errors.append("Price must be a non-negative number")
+    except (TypeError, ValueError):
+        errors.append("Price must be a valid number")
+
+    if errors:
+        return None, "; ".join(errors)
+    
+    return {
+        "title": data['title'].strip(),
+        "author": data['author'].strip(),
+        "isbn": data['isbn'].strip(),
+        "price": float(data['price'])
+    }, None
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": error.description}), 404
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({"error": error.description}), 400
+
+@app.route('/books', methods=['GET'])
+def list_books():
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        
+        if page < 1 or per_page < 1:
+            return jsonify({"error": "Page and per_page must be positive integers"}), 400
+    except ValueError:
+        return jsonify({"error": "Invalid pagination parameters"}), 400
+
+    total_books = len(books_db)
+    total_pages = math.ceil(total_books / per_page) if total_books > 0 else 1
+    
+    start_idx = (page - 1) * per_page
+    end_idx = start_idx + per_page
+    
+    paginated_books = books_db[start_idx:end_idx]
+    
+    return jsonify({
+        "books": [asdict(b) for b in paginated_books],
+        "page": page,
+        "per_page": per_page,
+        "total": total_books,
+        "total_pages": total_pages
+    }), 200
+
+@app.route('/books/<int:book_id>', methods=['GET'])
+def get_book(book_id: int):
+    book = get_book_or_404(book_id)
+    return jsonify(asdict(book)), 200
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    global next_id
+    
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 400
+    
+    data = request.get_json()
+    validated_data, error_msg = validate_book_data(data, ['title', 'author', 'isbn', 'price'])
+    
+    if error_msg:
+        return jsonify({"error": error_msg}), 422
+    
+    new_book = Book(
+        id=next_id,
+        title=validated_data['title'],
+        author=validated_data['author'],
+        isbn=validated_data['isbn'],
+        price=validated_data['price']
+    )
+    
+    books_db.append(new_book)
+    next_id += 1
+    
+    return jsonify(asdict(new_book)), 201
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id: int):
+    book = get_book_or_404(book_id)
+    
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 400
+    
+    data = request.get_json()
+    # For PUT, we allow partial updates but validate provided fields if present
+    # However, requirement says "title, author, isbn, price required" for creation.
+    # Usually PUT replaces the resource, so we expect all fields or merge carefully.
+    # Here we implement full replacement logic requiring all fields to be present and valid.
+    
+    validated_data, error_msg = validate_book_data(data, ['title', 'author', 'isbn', 'price'])
+    
+    if error_msg:
+        return jsonify({"error": error_msg}), 422
+    
+    book.title = validated_data['title']
+    book.author = validated_data['author']
+    book.isbn = validated_data['isbn']
+    book.price = validated_data['price']
+    
+    return jsonify(asdict(book)), 200
+
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id: int):
+    book = get_book_or_404(book_id)
+    books_db.remove(book)
+    return "", 204
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

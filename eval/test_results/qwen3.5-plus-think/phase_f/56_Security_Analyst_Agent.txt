@@ -1,0 +1,75 @@
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "high",
+      "location": "Line 5",
+      "fix": "Use a cryptographically secure random value stored in environment variables (e.g., os.urandom(24))."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "Line 10",
+      "fix": "Pass variables as keyword arguments to render_template_string instead of using f-string interpolation."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "Line 15",
+      "fix": "Use parameterized queries with placeholders (e.g., WHERE id = ?) instead of string formatting."
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "Line 21",
+      "fix": "Avoid pickle for untrusted data; use safe serialization formats like JSON."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "Line 27",
+      "fix": "Avoid shell=True; pass commands as a list of arguments and validate input strictly."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "Line 33",
+      "fix": "Validate file paths against an allowlist and use secure file serving methods."
+    },
+    {
+      "id": 7,
+      "type": "Weak Default Password",
+      "severity": "high",
+      "location": "Line 38",
+      "fix": "Enforce strong passwords, remove default fallbacks, and store hashed passwords."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "high",
+      "location": "Line 43",
+      "fix": "Remove debug endpoints in production; never expose environment variables to users."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "Line 45 (Configuration)",
+      "fix": "Enforce HTTPS via reverse proxy (Nginx) or Flask-Talisman to encrypt data in transit."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "Line 46 (Configuration)",
+      "fix": "Implement rate limiting (e.g., Flask-Limiter) to prevent brute-force and DoS attacks."
+    }
+  ],
+  "count": 10
+}

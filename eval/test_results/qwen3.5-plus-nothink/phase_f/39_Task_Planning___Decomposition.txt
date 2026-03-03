@@ -1,0 +1,95 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "Design Database Schema and ERD",
+      "depends_on": [],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Setup PostgreSQL Docker Container and Connection",
+      "depends_on": ["T1"],
+      "estimated_hours": 2,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T3",
+      "name": "Implement User Registration and Login (JWT)",
+      "depends_on": ["T2"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Implement Todo CRUD Operations",
+      "depends_on": ["T3"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Implement Categories/Tags System",
+      "depends_on": ["T4"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Implement Due Date Reminders Logic",
+      "depends_on": ["T4"],
+      "estimated_hours": 5,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Implement Rate Limiting Middleware",
+      "depends_on": ["T3"],
+      "estimated_hours": 3,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Write Unit Tests for Auth and Core Features",
+      "depends_on": ["T3", "T4", "T5", "T6", "T7"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Generate OpenAPI Documentation",
+      "depends_on": ["T3", "T4", "T5", "T6"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Create Production Dockerfile and Docker Compose",
+      "depends_on": ["T8"],
+      "estimated_hours": 3,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T11",
+      "name": "Setup CI/CD Pipeline",
+      "depends_on": ["T8", "T10"],
+      "estimated_hours": 5,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T8",
+    "T10",
+    "T11"
+  ],
+  "total_hours": 54,
+  "parallel_tracks": 2
+}
+```

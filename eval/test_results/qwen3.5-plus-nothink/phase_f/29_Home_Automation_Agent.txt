@@ -1,0 +1,297 @@
+```json
+[
+  {
+    "id": "rule_01_morning_routine",
+    "name": "Morning Routine Lighting",
+    "trigger": {
+      "type": "time",
+      "value": "dynamic"
+    },
+    "conditions": [
+      {
+        "entity": "calendar.alice_work",
+        "state": "is_weekday",
+        "operator": "equals"
+      }
+    ],
+    "actions": [
+      {
+        "target": "light.all_bedrooms",
+        "command": "turn_on",
+        "parameters": {
+          "brightness_step": 1,
+          "transition_seconds": 900,
+          "scheduled_time": "06:30:00"
+        }
+      }
+    ],
+    "alternative_flow": {
+      "conditions": [
+        {
+          "entity": "calendar.alice_work",
+          "state": "is_weekend",
+          "operator": "equals"
+        }
+      ],
+      "actions": [
+        {
+          "target": "light.all_bedrooms",
+          "command": "turn_on",
+          "parameters": {
+            "brightness_step": 1,
+            "transition_seconds": 900,
+            "scheduled_time": "08:00:00"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "rule_02_thermostat_climate",
+    "name": "Smart Thermostat Scheduling",
+    "trigger": {
+      "type": "state_change",
+      "entity": ["sensor.occupancy_status", "sensor.time_period"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "condition_check": "if occupancy == 'occupied' AND time NOT BETWEEN 23:00-06:00",
+        "target": "climate.main_thermostat",
+        "command": "set_temperature",
+        "parameters": { "temperature": 72, "unit": "F" }
+      },
+      {
+        "condition_check": "if occupancy == 'empty'",
+        "target": "climate.main_thermostat",
+        "command": "set_temperature",
+        "parameters": { "temperature": 65, "unit": "F" }
+      },
+      {
+        "condition_check": "if time BETWEEN 23:00-06:00",
+        "target": "climate.main_thermostat",
+        "command": "set_temperature",
+        "parameters": { "temperature": 68, "unit": "F" }
+      }
+    ]
+  },
+  {
+    "id": "rule_03_security_geofence",
+    "name": "Geofence Security Arm/Disarm",
+    "trigger": {
+      "type": "zone_event",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "condition_check": "if alice_phone == 'outside' AND bob_phone == 'outside'",
+        "target": "alarm_control_panel.home_security",
+        "command": "arm_away",
+        "parameters": { "delay_seconds": 30 }
+      },
+      {
+        "condition_check": "if alice_phone == 'inside' OR bob_phone == 'inside'",
+        "target": "alarm_control_panel.home_security",
+        "command": "disarm",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "id": "rule_04_pet_care_automation",
+    "name": "Pet Feeding and Monitoring",
+    "trigger": {
+      "type": "time",
+      "value": ["07:00:00", "18:00:00"]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "target": "switch.cat_feeder",
+        "command": "turn_on",
+        "parameters": { "duration_seconds": 10 }
+      }
+    ],
+    "secondary_trigger": {
+      "type": "state_change",
+      "entities": ["device_tracker.alice_phone", "device_tracker.bob_phone"]
+    },
+    "secondary_actions": [
+      {
+        "condition_check": "if alice_phone == 'outside' AND bob_phone == 'outside'",
+        "target": "camera.cat_cam",
+        "command": "turn_on",
+        "parameters": { "recording_mode": "motion_detect" }
+      },
+      {
+        "condition_check": "if alice_phone == 'inside' OR bob_phone == 'inside'",
+        "target": "camera.cat_cam",
+        "command": "turn_off",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "id": "rule_05_energy_management",
+    "name": "Solar and Battery Priority",
+    "trigger": {
+      "type": "time",
+      "value": "dynamic"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "condition_check": "if time BETWEEN 14:00-19:00",
+        "target": "energy.grid_controller",
+        "command": "set_source_priority",
+        "parameters": { "primary": "solar", "secondary": "grid", "battery_action": "charge" }
+      },
+      {
+        "condition_check": "if time AFTER 19:00",
+        "target": "energy.grid_controller",
+        "command": "set_source_priority",
+        "parameters": { "primary": "battery", "secondary": "grid", "solar_action": "idle" }
+      }
+    ]
+  },
+  {
+    "id": "rule_06_hallway_night_light",
+    "name": "Dim Hallway Motion Lights",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.hallway_motion",
+      "to_state": "on"
+    },
+    "conditions": [
+      {
+        "entity": "sensor.time",
+        "operator": "between",
+        "value": ["22:00:00", "06:00:00"]
+      }
+    ],
+    "actions": [
+      {
+        "target": "light.hallway_strip",
+        "command": "turn_on",
+        "parameters": { "brightness_pct": 20, "color_temp": 3000 }
+      },
+      {
+        "target": "timer.hallway_off",
+        "command": "start",
+        "parameters": { "duration_minutes": 5, "on_finish": "turn_off_light.hallway_strip" }
+      }
+    ]
+  },
+  {
+    "id": "rule_07_bob_office_sync",
+    "name": "Bob's Workstation Activation",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.bob_pc_power",
+      "to_state": "on"
+    },
+    "conditions": [
+      {
+        "entity": "device_tracker.bob_phone",
+        "state": "home",
+        "operator": "equals"
+      }
+    ],
+    "actions": [
+      {
+        "target": "light.bob_desk_lamp",
+        "command": "turn_on",
+        "parameters": { "brightness_pct": 100 }
+      },
+      {
+        "target": "climate.office_thermostat",
+        "command": "set_temperature",
+        "parameters": { "temperature": 70, "unit": "F", "mode": "cool" }
+      }
+    ]
+  },
+  {
+    "id": "rule_08_laundry_notification",
+    "name": "Laundry Cycle Complete Alert",
+    "trigger": {
+      "type": "state_change",
+      "entities": ["sensor.washer_status", "sensor.dryer_status"],
+      "to_state": "idle"
+    },
+    "conditions": [
+      {
+        "entity": "sensor.previous_washer_status",
+        "operator": "was",
+        "value": "running"
+      }
+    ],
+    "actions": [
+      {
+        "target": "notify.mobile_app_alice",
+        "command": "send_message",
+        "parameters": { "title": "Laundry Done", "message": "The cycle has finished." }
+      },
+      {
+        "target": "notify.mobile_app_bob",
+        "command": "send_message",
+        "parameters": { "title": "Laundry Done", "message": "The cycle has finished." }
+      }
+    ]
+  },
+  {
+    "id": "rule_09_leak_emergency",
+    "name": "Water Leak Emergency Shutdown",
+    "trigger": {
+      "type": "state_change",
+      "entity": "binary_sensor.water_leak_detector",
+      "to_state": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "target": "switch.main_water_valve",
+        "command": "turn_off",
+        "parameters": { "priority": "critical" }
+      },
+      {
+        "target": "notify.mobile_app_alice",
+        "command": "send_critical_alert",
+        "parameters": { "title": "WATER LEAK DETECTED", "message": "Main valve shut off automatically." }
+      },
+      {
+        "target": "notify.mobile_app_bob",
+        "command": "send_critical_alert",
+        "parameters": { "title": "WATER LEAK DETECTED", "message": "Main valve shut off automatically." }
+      }
+    ]
+  },
+  {
+    "id": "rule_10_guest_mode",
+    "name": "Guest Mode Activation",
+    "trigger": {
+      "type": "event",
+      "name": "guest_mode_activated",
+      "source": "input_boolean.guest_mode_switch"
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "target": "lock.front_door",
+        "command": "generate_temporary_code",
+        "parameters": { "duration_hours": 24, "notify_owner": true }
+      },
+      {
+        "target": "climate.main_thermostat",
+        "command": "set_temperature",
+        "parameters": { "temperature": 72, "unit": "F", "override_schedule": true }
+      },
+      {
+        "target": "wifi_router",
+        "command": "enable_ssid",
+        "parameters": { "ssid_name": "Home_Guest", "isolate_clients": true }
+      }
+    ]
+  }
+]
+```

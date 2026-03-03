@@ -1,0 +1,77 @@
+{
+  "components": [
+    {
+      "name": "Edge Load Balancer",
+      "technology": "AWS Global Accelerator / NGINX Plus",
+      "purpose": "Route traffic to nearest region, handle TLS termination, and mitigate DDoS attacks.",
+      "scaling_strategy": "Managed service auto-scaling based on request volume and connection count."
+    },
+    {
+      "name": "Gateway Service",
+      "technology": "Go (Gorilla WebSocket) or Erlang/OTP",
+      "purpose": "Maintain persistent WebSocket connections, handle heartbeat/ping-pong, and route messages to internal services.",
+      "scaling_strategy": "Horizontal scaling via Kubernetes HPA based on CPU/Memory and active connection count; stateless design allows easy replication."
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka",
+      "purpose": "Decouple ingestion from processing, ensure ordered delivery for group chats, and act as a buffer during traffic spikes.",
+      "scaling_strategy": "Partition sharding by ChatID; add brokers and increase partition count as throughput grows."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster with Pub/Sub",
+      "purpose": "Track online/offline status in real-time and broadcast state changes to subscribed clients.",
+      "scaling_strategy": "Shard user presence data by UserID across Redis nodes; read replicas for high-frequency status checks."
+    },
+    {
+      "name": "Chat Engine",
+      "technology": "Microservices (Node.js/Go)",
+      "purpose": "Orchestrate message logic, handle group chat fan-out, manage read receipts, and enforce rate limiting.",
+      "scaling_strategy": "Stateless horizontal scaling; specific instances can be pinned to handle large group fan-out tasks."
+    },
+    {
+      "name": "Encryption Proxy",
+      "technology": "Custom Sidecar / Hardware Security Module (HSM)",
+      "purpose": "Manage E2EE key exchange (Double Ratchet algorithm) without accessing plaintext message content on the server.",
+      "scaling_strategy": "Scaled alongside Chat Engine; keys stored in client-side secure enclaves, server only relays encrypted blobs."
+    },
+    {
+      "name": "Primary Data Store",
+      "technology": "Cassandra or ScyllaDB",
+      "purpose": "Store message history and metadata with high write throughput and low latency reads.",
+      "scaling_strategy": "Linear horizontal scaling by adding nodes to the ring; data automatically rebalanced."
+    },
+    {
+      "name": "Object Storage",
+      "technology": "AWS S3 with CloudFront",
+      "purpose": "Store file attachments (up to 50MB) with pre-signed URLs for secure access.",
+      "scaling_strategy": "Infinite vertical scalability provided by cloud provider; CDN edge caching for global download speed."
+    },
+    {
+      "name": "Compliance & Audit Logger",
+      "technology": "ELK Stack (Elasticsearch, Logstash, Kibana) + Vault",
+      "purpose": "Log metadata for GDPR compliance (right to be forgotten, data export) without storing message content.",
+      "scaling_strategy": "Elasticsearch cluster expansion based on log retention policies and index size."
+    }
+  ],
+  "data_flow": "Client establishes WSS connection -> Edge LB -> Gateway. Outbound: Client sends encrypted payload -> Gateway validates session -> Pushes to Kafka -> Chat Engine consumes -> Fans out to recipients via Gateway (if online) or stores in Cassandra (if offline). Presence updates flow through Redis Pub/Sub. Files uploaded directly to S3 via pre-signed URL, metadata sent via message pipeline.",
+  "infrastructure": {
+    "cloud": "AWS (Multi-AZ)",
+    "regions": 3,
+    "details": "Deployed across US-East, EU-West, and AP-Southeast for latency optimization and disaster recovery. Active-Active configuration with global DNS routing."
+  },
+  "estimated_monthly_cost": "$450,000 - $600,000 USD",
+  "bottlenecks": [
+    "Redis hot-keys for massive group chats (500 members sending simultaneously)",
+    "Database write latency during peak global events if partition strategy is suboptimal",
+    "Network bandwidth costs for 50MB file transfers at scale",
+    "Key exchange latency for E2EE on low-end mobile devices"
+  ],
+  "tradeoffs": [
+    "Consistency vs. Availability: Chose eventual consistency for message delivery to ensure 99.99% uptime, accepting rare out-of-order arrival which is corrected by client-side sequencing.",
+    "Complexity vs. Security: Implementing server-side E2EE increases architectural complexity and makes server-side search impossible without client-side indexing.",
+    "Cost vs. Latency: Multi-region active-active setup significantly increases infrastructure cost but is required for <100ms global latency and SLA compliance.",
+    "Storage Cost vs. Retention: Infinite history requires tiered storage strategies (hot/cold) to manage costs while meeting GDPR data minimization principles."
+  ]
+}

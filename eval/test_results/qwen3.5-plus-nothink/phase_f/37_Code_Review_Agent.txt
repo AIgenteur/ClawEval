@@ -1,0 +1,32 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError occurs when no orders are pending because len(processed) will be 0.",
+      "fix": "Add a check: avg = total / len(processed) if processed else 0"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed), misrepresenting the count of successfully processed orders.",
+      "fix": "Change to 'count': len(processed)"
+    },
+    {
+      "line": 8,
+      "issue": "No validation ensures discount is not greater than 100, which could result in negative prices before the clamp.",
+      "fix": "Add validation: discount = max(0, min(order.get('discount', 0), 100))"
+    },
+    {
+      "line": 5,
+      "issue": "The function mutates the input order dictionaries directly (side effect), modifying 'status' and adding 'final_price'.",
+      "fix": "Create a copy of the order dict before modification: order_copy = order.copy()"
+    },
+    {
+      "line": 7,
+      "issue": "No type checking or handling for None values on 'price' or 'quantity', which will cause TypeError during multiplication.",
+      "fix": "Add validation: if order.get('price') is None or order.get('quantity') is None: continue"
+    }
+  ],
+  "count": 5
+}
+```

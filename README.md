@@ -32,6 +32,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 | Provider | Models | Status |
 |---|---|---|
+| Alibaba Coding Plan | **Qwen3.5-Plus** — 🥇 482/590 (82%) Phase F NoThink champion | ✅ Tested |
 | Alibaba Coding Plan | **Kimi K2.5** — 473/590 (80%) Phase F, 96/110 (87%) Phase G | ✅ Tested |
 | Alibaba Coding Plan | **GLM-5** — 465/590 (79%) Phase F, 80/110 (73%) Phase G | ✅ Tested |
 | Alibaba Coding Plan | **MiniMax-M2.5** — 465/590 (79%) Phase F, 78/110 (71%) Phase G, ~85 t/s | ✅ Tested |
@@ -126,7 +127,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
 
-> 🔜 **More cloud models coming soon.** Currently tested: Kimi K2.5, GLM-5, MiniMax-M2.5. All via Alibaba Coding Plan.
+> Currently tested: Qwen3.5-Plus, Kimi K2.5, GLM-5, MiniMax-M2.5. All via Alibaba Coding Plan.
 
 | # | Agent Role | ☁️ Best Cloud | |
 |---|---|---|---|
@@ -137,7 +138,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 3 | Health Monitor | K2.5 / GLM-5 | 🟡 5 |
 | 4 | Notification | Kimi K2.5 | 🟢 9 |
 | 5 | Sentiment | K2.5 / GLM-5 | 🟢 10† |
-| 6 | FAQ Generation | K2.5 / GLM-5 | 🟡 7 |
+| 6 | FAQ Generation | Qwen3.5+ NT | 🟢 8 |
 | 7 | Translation | K2.5 / GLM-5 | 🟢 9 |
 | 8 | Calendar | — | 🔴 0 |
 | | **Tier 2 — Moderate** | | |
@@ -154,7 +155,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 19 | Shopping | K2.5 / GLM-5 | 🟢 10 |
 | 20 | Memory Mgmt | K2.5 / GLM-5 | 🟢 9 |
 | 21 | RAG / Retrieval | K2.5 / GLM-5 | 🟡 6 |
-| 22 | Data Analysis | GLM-5 NoThink | 🔴 3 |
+| 22 | Data Analysis | Qwen3.5+ NT | 🟡 5 |
 | 23 | Web Scraping | K2.5 / GLM-5 | 🟢 10† |
 | 24 | Image Description | 📝 Manual | 📝 5 |
 | 25 | Customer Support | K2.5 / GLM-5 | 🟢 10 |
@@ -163,7 +164,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 28 | Transaction | GLM-5 | 🟢 10 |
 | 29 | Home Automation | K2.5 / GLM-5 | 🟢 10 |
 | 30 | Fitness Tracking | GLM-5 | 🟢 9 |
-| 31 | Recipe / Cooking | GLM-5 | 🔴 2 |
+| 31 | Recipe / Cooking | Qwen3.5+ NT | 🟢 9 |
 | 32 | Personal Finance | GLM-5 | 🟡 7 |
 | 33 | SEO Optimization | K2.5 / GLM-5 | 🟢 9 |
 | 34 | Landing Page | 📝 Manual | 📝 5 |

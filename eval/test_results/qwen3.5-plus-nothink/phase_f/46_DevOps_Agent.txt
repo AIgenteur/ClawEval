@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Compose file version '2' is outdated and lacks modern features like native secrets support.",
+      "fix": "Update to 'version: \"3.8\"' or use the modern Compose specification (no version key)."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using the 'latest' tag is non-deterministic and can cause unexpected breaking changes during updates.",
+      "fix": "Pin to a specific version, e.g., 'node:18-alpine'."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database passwords are stored in plaintext within the compose file, posing a security risk.",
+      "fix": "Use Docker Secrets or an external .env file with restricted permissions."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "Running with NODE_ENV set to 'development' in a production context reduces performance and exposes debug details.",
+      "fix": "Change to 'NODE_ENV: production'."
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Mounting the host source directory directly into the container is unsafe for production and ties the container to the host filesystem.",
+      "fix": "Remove the volume mount for production or use a named volume for persistent data only."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Setting restart policy to 'no' means the service will not recover automatically after a crash or system reboot.",
+      "fix": "Change to 'restart: unless-stopped' or 'restart: always'."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 has reached End of Life (EOL) and no longer receives security patches.",
+      "fix": "Upgrade to a supported version like 'mysql:8.0'."
+    },
+    {
+      "line": "- \"3306:3306\"",
+      "problem": "Exposing the database port publicly allows unauthorized external access attempts.",
+      "fix": "Remove the ports mapping; services within the same Compose network can communicate without host exposure."
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "Using '/tmp' for persistent database storage is critical; data in '/tmp' is often cleared on reboot.",
+      "fix": "Use a named Docker volume (e.g., 'db_data') or a persistent host path outside of '/tmp'."
+    },
+    {
+      "line": "ports: - \"6379:6379\" (redis service)",
+      "problem": "Redis is exposed publicly without authentication configured, allowing anyone to access or manipulate the cache.",
+      "fix": "Remove the ports mapping and configure a requirepass in the command or config file."
+    }
+  ],
+  "count": 10
+}
+```

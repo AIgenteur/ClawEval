@@ -1,0 +1,83 @@
+```python
+import pytest
+from your_module import calculate_tax  # Replace 'your_module' with the actual filename
+
+def test_zero_income_single():
+    """Test zero income for single filer returns (0.0, 0)."""
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0.0
+    assert rate == 0
+
+def test_zero_income_married():
+    """Test zero income for married filer returns (0.0, 0)."""
+    tax, rate = calculate_tax(0, 'married')
+    assert tax == 0.0
+    assert rate == 0
+
+def test_typical_income_single():
+    """Test typical income within second bracket for single filer."""
+    # Income: 50,000
+    # Bracket 1: 11,600 * 0.10 = 1,160
+    # Bracket 2: (50,000 - 11,600) * 0.12 = 38,400 * 0.12 = 4,608
+    # Total: 5,768
+    tax, rate = calculate_tax(50000, 'single')
+    assert tax == 5768.0
+    assert rate == pytest.approx(11.54, rel=1e-2)
+
+def test_typical_income_married():
+    """Test typical income within second bracket for married filer."""
+    # Income: 100,000
+    # Bracket 1: 23,200 * 0.10 = 2,320
+    # Bracket 2: (100,000 - 23,200) * 0.12 = 76,800 * 0.12 = 9,216
+    # Total: 11,536
+    tax, rate = calculate_tax(100000, 'married')
+    assert tax == 11536.0
+    assert rate == pytest.approx(11.54, rel=1e-2)
+
+def test_high_income_top_bracket():
+    """Test very high income hitting the top marginal rate (37%)."""
+    income = 1000000
+    tax, rate = calculate_tax(income, 'single')
+    # Manual verification logic ensures it reaches the 0.37 bracket
+    assert rate == 37.0 or rate > 30.0  # Effective rate should be high
+    assert isinstance(tax, float)
+    assert tax > 0
+
+def test_bracket_boundary_exact():
+    """Test income exactly at a bracket threshold (11,600 for single)."""
+    # Should be fully taxed at 10%
+    tax, rate = calculate_tax(11600, 'single')
+    assert tax == 1160.0
+    assert rate == 10.0
+
+def test_bracket_boundary_over():
+    """Test income just over a bracket threshold."""
+    # Income: 11,601 for single
+    # First 11,600 @ 10% = 1,160
+    # Remaining 1 @ 12% = 0.12
+    # Total: 1,160.12
+    tax, rate = calculate_tax(11601, 'single')
+    assert tax == 1160.12
+    assert rate == pytest.approx(10.00, rel=1e-2)
+
+def test_invalid_income_type():
+    """Test that non-numeric income raises ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("50000", 'single')
+
+def test_invalid_income_negative():
+    """Test that negative income raises ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-100, 'married')
+
+def test_invalid_filing_status():
+    """Test that invalid filing status raises ValueError."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'head_of_household')
+
+def test_float_income_precision():
+    """Test handling of float income values."""
+    tax, rate = calculate_tax(11600.50, 'single')
+    # 11600 * 0.10 + 0.50 * 0.12 = 1160 + 0.06 = 1160.06
+    assert tax == 1160.06
+```

@@ -1,0 +1,125 @@
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "Database Schema Design (PostgreSQL)",
+      "depends_on": [],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Database Setup & Migration Scripts",
+      "depends_on": [
+        "T1"
+      ],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "User Authentication (JWT, Register, Login)",
+      "depends_on": [
+        "T2"
+      ],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Todo CRUD Operations (Protected)",
+      "depends_on": [
+        "T3"
+      ],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Todo Categories/Tags Implementation",
+      "depends_on": [
+        "T3"
+      ],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Due Date Reminders Logic",
+      "depends_on": [
+        "T4"
+      ],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Rate Limiting Middleware",
+      "depends_on": [
+        "T3"
+      ],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Unit & Integration Tests (80%+ Coverage)",
+      "depends_on": [
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "API Documentation (OpenAPI/Swagger)",
+      "depends_on": [
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Dockerfile & Docker Compose Configuration",
+      "depends_on": [
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "estimated_hours": 4,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T11",
+      "name": "CI/CD Pipeline Configuration",
+      "depends_on": [
+        "T8",
+        "T10"
+      ],
+      "estimated_hours": 6,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T6",
+    "T8",
+    "T11"
+  ],
+  "total_hours": 70,
+  "parallel_tracks": 3
+}
