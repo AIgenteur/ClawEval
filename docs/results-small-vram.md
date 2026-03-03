@@ -126,7 +126,7 @@ Context capped at native max. If native max fits at a lower VRAM tier, higher ti
 |-------|------|-----------|------|-------|-------|-------|
 | **Qwen3.5-0.8B** | 0.5 GB | 1,343 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
 | **Qwen3.5-2B** | 1.3 GB | 2,061 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
-| **Ministral-3-3B** | 2.1 GB | 2,665 MiB | 100K | 172K | 245K | **262K ⭐** |
+| **Ministral-3-3B** | 2.1 GB | 2,665 MiB | 100K | 172K | 245K | 256K |
 | **Qwen3.5-4B** | 2.7 GB | 3,501 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
 | **Ministral-3-8B** | 5.2 GB | 5,307 MiB | 40K | 97K | 152K | 257K |
 | **Qwen3.5-9B** | 5.7 GB | 5,765 MiB | 145K | **262K ⭐** | ✅ | ✅ |
@@ -223,7 +223,7 @@ Qwen3.5 uses a **hybrid DeltaNet + Attention** architecture (only 1 in 4 layers 
 | 8GB | 52,500 | 100,000 |
 | 12GB | 92,500 | 172,500 |
 | 16GB | 132,500 | 245,000 |
-| 24GB | 207,500 | 262,144 ⭐ |
+| 24GB | 207,500 | 256,000 |
 
 #### Ministral-3-8B
 
