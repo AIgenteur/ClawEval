@@ -80,7 +80,6 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (local server).
 - Social Scouting (#16) scored 16/10 due to scoring bug — capped to 10 in totals above
 - STEM (#48) scored 0/5 (not 0/10) — model generated degenerate repetitive output filling the token limit
 - Think and NoThink perform nearly identically for 0.8B — the model doesn't produce meaningful chain-of-thought at this size
-- **Speed:** ~275 t/s on RTX 3090/4090 at Q4_K_M
 
 ---
 
@@ -105,13 +104,12 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (local server).
 
 ## Summary — Best Score Per VRAM Tier
 
-| VRAM | Best Model | Phase F | Phase G | Speed |
-|------|-----------|:---:|:---:|:---:|
-| **8GB** | Qwen3.5-0.8B Think | 339/585 (58%) | 33/110 (30%) | ~275 t/s |
-| **8–12GB** | Qwen3.5-2B | *testing* | *testing* | — |
-| **12GB** | Qwen3.5-4B | *testing* | *testing* | — |
-| **16GB** | Qwen3.5-9B | *testing* | *testing* | — |
-| **24GB** | Qwen3.5-35B-A3B NT | 433/590 (73%) | 77/110 (70%) | ~35 t/s |
+| VRAM | Best Model | Phase F | Phase G |
+|------|-----------|:---:|:---:|
+| **8GB** | Qwen3.5-0.8B Think | 339/585 (58%) | 33/110 (30%) |
+| **12GB** | Qwen3.5-2B / 4B | *testing* | *testing* |
+| **16GB** | Qwen3.5-9B | *testing* | *testing* |
+| **24GB** | Qwen3.5-35B-A3B NT | 433/590 (73%) | 77/110 (70%) |
 
 ---
 

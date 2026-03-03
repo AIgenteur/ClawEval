@@ -18,11 +18,11 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 We test quantized open-source models that fit on hardware you already own. Find out which model is best for each agent role **before you commit your VRAM.** We're also testing smaller models for max context and usability — even a 16GB GPU can run capable sub-agents.
 
-| 🔴 8GB VRAM | 🟡 12–16GB VRAM | 🟢 24GB VRAM | 🔵 64–96GB VRAM |
-|---|---|---|---|
-| Qwen3.5-0.8B Q4_K_M | Qwen3.5-4B, Qwen3.5-9B | Qwen3.5-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
-| Qwen3.5-2B Q4_K_M | ~275 t/s · llama.cpp | Qwen3.5-27B Q4_K_M | GPT-OSS-120B GGUF (llama.cpp) |
-| ~275 t/s · llama.cpp | ✅ Testing | llama.cpp · SGLang · vLLM | SGLang · vLLM · llama.cpp |
+| 🔴 8GB VRAM | 🟠 12GB VRAM | 🟡 16GB VRAM | 🟢 24GB VRAM | 🔵 64–96GB VRAM |
+|---|---|---|---|---|
+| Qwen3.5-0.8B Q4_K_M | Qwen3.5-2B Q4_K_M | Qwen3.5-9B Q4_K_M | Qwen3.5-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
+| ✅ Tested | Qwen3.5-4B Q4_K_M | ✅ Testing | Qwen3.5-27B Q4_K_M | GPT-OSS-120B GGUF |
+| llama.cpp | ✅ Testing | llama.cpp | llama.cpp · SGLang · vLLM | SGLang · vLLM · llama.cpp |
 
 > 📖 **VRAM Guides:** [8–16GB Small Models](docs/results-small-vram.md) · [16GB](docs/OpenClaw%2016GB%20VRAM%20Local%20LLM%20Subagents.md) · [24GB](docs/The%2024GB%20VRAM%20Tier_%20Where%20Local%20AI%20Agents%20Get%20Serious.md) · [32GB](docs/openclaw-model-selection-32gb-tier.md) · [48GB](docs/openclaw-48gb-tier.md) · [64GB](docs/openclaw-64gb-tier.md) · [96GB](docs/openclaw-96gb-tier.md) — Which models fit, context limits, speed estimates
 
@@ -129,75 +129,75 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 > 🆕 **Testing in progress.** Qwen3.5-0.8B complete, 2B/4B/9B coming soon. [Full small model results →](docs/results-small-vram.md)
 
-| # | Agent Role | 🔴 Best 8GB | | 12–16GB *(testing)* | |
-|---|---|---|---|---|---|
-| | | **Model** | **Score** | **Model** | **Score** |
-| | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | 0.8B | 🟡 7 | — | — |
-| 2 | Input Validator | 0.8B | 🟢 10 | — | — |
-| 3 | Health Monitor | 0.8B NT | 🔴 3 | — | — |
-| 4 | Notification | 0.8B | 🟡 6 | — | — |
-| 5 | Sentiment | 0.8B Think | 🟡 6 | — | — |
-| 6 | FAQ Generation | 0.8B NT | 🔴 3 | — | — |
-| 7 | Translation | 0.8B NT | 🟢 9 | — | — |
-| 8 | Calendar | — | 🔴 0 | — | — |
-| | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | 0.8B | 🟡 6 | — | — |
-| 10 | Content Writer | 📝 Manual | 📝 5 | — | — |
-| 11 | Editor | 0.8B | 🟡 7 | — | — |
-| 12 | Content Planner | 0.8B | 🟢 10 | — | — |
-| 13 | Email Drafting | 0.8B Think | 🟡 6 | — | — |
-| 14 | Doc Summary | 0.8B NT | 🟢 8 | — | — |
-| 15 | Meeting Notes | 0.8B | 🟢 9 | — | — |
-| 16 | Social Scouting | 0.8B | 🟢 10 | — | — |
-| 17 | Social Content | 📝 Manual | 📝 5 | — | — |
-| 18 | News Aggregation | 0.8B | 🟢 10 | — | — |
-| 19 | Shopping | 0.8B Think | 🔴 4 | — | — |
-| 20 | Memory Mgmt | 0.8B | 🟢 9 | — | — |
-| 21 | RAG / Retrieval | — | 🔴 0 | — | — |
-| 22 | Data Analysis | 0.8B Think | 🔴 1 | — | — |
-| 23 | Web Scraping | 0.8B | 🟢 10 | — | — |
-| 24 | Image Description | 📝 Manual | 📝 5 | — | — |
-| 25 | Customer Support | 0.8B | 🟡 6 | — | — |
-| 26 | Lead Scoring | 0.8B | 🔴 2 | — | — |
-| 27 | Sprint Summary | 0.8B | 🔴 2 | — | — |
-| 28 | Transaction | 0.8B | 🔴 1 | — | — |
-| 29 | Home Automation | 0.8B NT | 🟢 10 | — | — |
-| 30 | Fitness Tracking | 0.8B | 🔴 3 | — | — |
-| 31 | Recipe / Cooking | — | 🔴 0 | — | — |
-| 32 | Personal Finance | 0.8B | 🔴 3 | — | — |
-| 33 | SEO Optimization | 0.8B | 🟢 9 | — | — |
-| 34 | Landing Page | 📝 Manual | 📝 5 | — | — |
-| 35 | Travel Planning | 0.8B | 🔴 4 | — | — |
-| | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | 0.8B | 🟢 8 | — | — |
-| 37 | Code Review | 0.8B NT | 🟢 10 | — | — |
-| 38 | QA / Test Writing | 0.8B | 🟢 8 | — | — |
-| 39 | Task Planning | 0.8B Think | 🟢 9 | — | — |
-| 40 | Fact-Checking | 0.8B Think | 🟡 5 | — | — |
-| 41 | Critic / Review | 📝 Manual | 📝 5 | — | — |
-| 42 | Market Research | 0.8B | 🔴 4 | — | — |
-| 43 | Synthesizer | 0.8B | 🟢 9 | — | — |
-| 44 | Curriculum Design | 0.8B | 🔴 4 | — | — |
-| 45 | Prototype Gen | 0.8B Think | 🟡 7 | — | — |
-| 46 | DevOps | 0.8B Think | 🟢 10 | — | — |
-| | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | 0.8B | 🔴 2 | — | — |
-| 48 | STEM Analysis | — | 🔴 0 | — | — |
-| 49 | Algorithm | 0.8B Think | 🟡 5 | — | — |
-| | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | 0.8B | 🟢 8 | — | — |
-| 51 | Architect | 0.8B NT | 🟢 9 | — | — |
-| 52 | Debugger | 0.8B NT | 🟢 10 | — | — |
-| 53 | Legal Review | 0.8B | 🟢 10 | — | — |
-| 54 | Medical | 0.8B | 🟢 10 | — | — |
-| 55 | Financial | 0.8B Think | 🔴 2 | — | — |
-| 56 | Security | 0.8B Think | 🟡 6 | — | — |
-| 57 | SRE / Incident | 0.8B | 🔴 2 | — | — |
-| 58 | Book Writing | 📝 Manual | 📝 5 | — | — |
-| 59 | Compliance | 0.8B | 🟢 8 | — | — |
+| # | Agent Role | 🔴 Best 8GB | | 🟠 Best 12GB | | 🟡 Best 16GB | |
+|---|---|---|---|---|---|---|---|
+| | | **Model** | **Score** | **Model** | **Score** | **Model** | **Score** |
+| | **Tier 1 — Utility** | | | | | | |
+| 1 | Router / Triage | 0.8B | 🟡 7 | — | — | — | — |
+| 2 | Input Validator | 0.8B | 🟢 10 | — | — | — | — |
+| 3 | Health Monitor | 0.8B NT | 🔴 3 | — | — | — | — |
+| 4 | Notification | 0.8B | 🟡 6 | — | — | — | — |
+| 5 | Sentiment | 0.8B Think | 🟡 6 | — | — | — | — |
+| 6 | FAQ Generation | 0.8B NT | 🔴 3 | — | — | — | — |
+| 7 | Translation | 0.8B NT | 🟢 9 | — | — | — | — |
+| 8 | Calendar | — | 🔴 0 | — | — | — | — |
+| | **Tier 2 — Moderate** | | | | | | |
+| 9 | Research Agent | 0.8B | 🟡 6 | — | — | — | — |
+| 10 | Content Writer | 📝 Manual | 📝 5 | — | — | — | — |
+| 11 | Editor | 0.8B | 🟡 7 | — | — | — | — |
+| 12 | Content Planner | 0.8B | 🟢 10 | — | — | — | — |
+| 13 | Email Drafting | 0.8B Think | 🟡 6 | — | — | — | — |
+| 14 | Doc Summary | 0.8B NT | 🟢 8 | — | — | — | — |
+| 15 | Meeting Notes | 0.8B | 🟢 9 | — | — | — | — |
+| 16 | Social Scouting | 0.8B | 🟢 10 | — | — | — | — |
+| 17 | Social Content | 📝 Manual | 📝 5 | — | — | — | — |
+| 18 | News Aggregation | 0.8B | 🟢 10 | — | — | — | — |
+| 19 | Shopping | 0.8B Think | 🔴 4 | — | — | — | — |
+| 20 | Memory Mgmt | 0.8B | 🟢 9 | — | — | — | — |
+| 21 | RAG / Retrieval | — | 🔴 0 | — | — | — | — |
+| 22 | Data Analysis | 0.8B Think | 🔴 1 | — | — | — | — |
+| 23 | Web Scraping | 0.8B | 🟢 10 | — | — | — | — |
+| 24 | Image Description | 📝 Manual | 📝 5 | — | — | — | — |
+| 25 | Customer Support | 0.8B | 🟡 6 | — | — | — | — |
+| 26 | Lead Scoring | 0.8B | 🔴 2 | — | — | — | — |
+| 27 | Sprint Summary | 0.8B | 🔴 2 | — | — | — | — |
+| 28 | Transaction | 0.8B | 🔴 1 | — | — | — | — |
+| 29 | Home Automation | 0.8B NT | 🟢 10 | — | — | — | — |
+| 30 | Fitness Tracking | 0.8B | 🔴 3 | — | — | — | — |
+| 31 | Recipe / Cooking | — | 🔴 0 | — | — | — | — |
+| 32 | Personal Finance | 0.8B | 🔴 3 | — | — | — | — |
+| 33 | SEO Optimization | 0.8B | 🟢 9 | — | — | — | — |
+| 34 | Landing Page | 📝 Manual | 📝 5 | — | — | — | — |
+| 35 | Travel Planning | 0.8B | 🔴 4 | — | — | — | — |
+| | **Tier 3 — Advanced** | | | | | | |
+| 36 | Code Generation | 0.8B | 🟢 8 | — | — | — | — |
+| 37 | Code Review | 0.8B NT | 🟢 10 | — | — | — | — |
+| 38 | QA / Test Writing | 0.8B | 🟢 8 | — | — | — | — |
+| 39 | Task Planning | 0.8B Think | 🟢 9 | — | — | — | — |
+| 40 | Fact-Checking | 0.8B Think | 🟡 5 | — | — | — | — |
+| 41 | Critic / Review | 📝 Manual | 📝 5 | — | — | — | — |
+| 42 | Market Research | 0.8B | 🔴 4 | — | — | — | — |
+| 43 | Synthesizer | 0.8B | 🟢 9 | — | — | — | — |
+| 44 | Curriculum Design | 0.8B | 🔴 4 | — | — | — | — |
+| 45 | Prototype Gen | 0.8B Think | 🟡 7 | — | — | — | — |
+| 46 | DevOps | 0.8B Think | 🟢 10 | — | — | — | — |
+| | **Tier 4 — Expert** | | | | | | |
+| 47 | Math / Logic | 0.8B | 🔴 2 | — | — | — | — |
+| 48 | STEM Analysis | — | 🔴 0 | — | — | — | — |
+| 49 | Algorithm | 0.8B Think | 🟡 5 | — | — | — | — |
+| | **Tier 5 — Senior** | | | | | | |
+| 50 | Orchestrator | 0.8B | 🟢 8 | — | — | — | — |
+| 51 | Architect | 0.8B NT | 🟢 9 | — | — | — | — |
+| 52 | Debugger | 0.8B NT | 🟢 10 | — | — | — | — |
+| 53 | Legal Review | 0.8B | 🟢 10 | — | — | — | — |
+| 54 | Medical | 0.8B | 🟢 10 | — | — | — | — |
+| 55 | Financial | 0.8B Think | 🔴 2 | — | — | — | — |
+| 56 | Security | 0.8B Think | 🟡 6 | — | — | — | — |
+| 57 | SRE / Incident | 0.8B | 🔴 2 | — | — | — | — |
+| 58 | Book Writing | 📝 Manual | 📝 5 | — | — | — | — |
+| 59 | Compliance | 0.8B | 🟢 8 | — | — | — | — |
 
-> 📊 **[Full small model Think/NoThink comparison →](docs/results-small-vram.md)** · Phase F: 339/585 (58%) · Phase G: 33/110 (30%) · ~275 t/s
+> 📊 **[Full small model Think/NoThink comparison →](docs/results-small-vram.md)** · Phase F: 339/585 (58%) · Phase G: 33/110 (30%)
 
 
 ## ☁️ Best Cloud Model Per Role
