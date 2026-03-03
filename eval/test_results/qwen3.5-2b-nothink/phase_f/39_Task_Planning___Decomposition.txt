@@ -1,0 +1,162 @@
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project Setup and Infrastructure",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T1",
+      "name": "Database Schema Design and Migration",
+      "depends_on": [],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T2",
+      "name": "PostgreSQL Installation and Schema Creation",
+      "depends_on": ["T1"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T3",
+      "name": "JWT Authentication Service Development",
+      "depends_on": ["T2"],
+      "estimated_hours": 20,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "User Registration and Login Implementation",
+      "depends_on": ["T3"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Todo CRUD Service Development",
+      "depends_on": ["T2"],
+      "estimated_hours": 24,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Todo Categories and Tags Implementation",
+      "depends_on": ["T5"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Due Date Reminder Service Implementation",
+      "depends_on": ["T5"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "API Integration and Endpoints Implementation",
+      "depends_on": ["T3", "T4", "T6", "T7"],
+      "estimated_hours": 32,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Unit Testing Framework Setup",
+      "depends_on": ["T0"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Unit Testing - Auth Module",
+      "depends_on": ["T9"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Unit Testing - Todo Module",
+      "depends_on": ["T9"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "Unit Testing - Reminder Module",
+      "depends_on": ["T9"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T13",
+      "name": "Unit Testing - API Integration",
+      "depends_on": ["T10", "T11", "T12"],
+      "estimated_hours": 24,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T14",
+      "name": "Unit Testing - Docker Deployment",
+      "depends_on": ["T13"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T15",
+      "name": "Unit Testing - CI/CD Pipeline Setup",
+      "depends_on": ["T14"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T16",
+      "name": "API Documentation Generation",
+      "depends_on": ["T8"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T17",
+      "name": "Docker Compose Configuration",
+      "depends_on": ["T14"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T18",
+      "name": "Docker Application Deployment",
+      "depends_on": ["T17"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T19",
+      "name": "CI/CD Pipeline Configuration",
+      "depends_on": ["T15", "T18"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    }
+  ],
+  "critical_path": [
+    "T0",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "T8",
+    "T13",
+    "T14",
+    "T15",
+    "T18",
+    "T19"
+  ],
+  "total_hours": 344,
+  "parallel_tracks": 2
+}

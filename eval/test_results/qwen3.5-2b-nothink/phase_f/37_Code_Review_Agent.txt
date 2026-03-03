@@ -1,0 +1,35 @@
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "No validation for discount percentage; if discount > 100, the calculated price becomes negative and triggers the zeroing logic on line 10.",
+      "fix": "Validate discount is between 0 and 100 before calculation: `if discount < 0 or discount > 100: raise ValueError('Discount must be between 0 and 100')`"
+    },
+    {
+      "line": 10,
+      "issue": "Price is set to 0 regardless of whether it was originally negative or just became negative due to discount > 100.",
+      "fix": "Only zero out the price if it is strictly less than zero: `if price < 0: price = 0`"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError if `processed` is empty (e.g., all orders were 'pending' and not added to `processed`), causing a crash.",
+      "fix": "Check if `processed` is not empty before calculating the average: `if len(processed) > 0: avg = total / len(processed)`"
+    },
+    {
+      "line": 23,
+      "issue": "Returns `len(orders)` instead of `len(processed)`, which is incorrect since `orders` is a copy of the input list.",
+      "fix": "Return `len(processed)` instead of `len(orders)`."
+    },
+    {
+      "line": 10,
+      "issue": "Mutates the input `orders` list by modifying the `order` dictionary in place, which violates the principle of immutability.",
+      "fix": "Create a new dictionary for the processed order instead of mutating the original: `processed.append({'status': 'processed', 'price': price, 'quantity': order['quantity'], 'discount': order.get('discount', 0)})`"
+    },
+    {
+      "line": 10,
+      "issue": "No type checking on `price` or `quantity`; if `order['price']` or `order['quantity']` is `None`, the calculation will raise a TypeError.",
+      "fix": "Add type checks: `if order['price'] is None or order['quantity'] is None: raise TypeError('Price or quantity must be numeric')`"
+    }
+  ],
+  "count": 5
+}

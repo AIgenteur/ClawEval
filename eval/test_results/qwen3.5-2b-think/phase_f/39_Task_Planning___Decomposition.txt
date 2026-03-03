@@ -1,0 +1,152 @@
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project Setup and Infrastructure",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T1",
+      "name": "Database Schema Design and Migration",
+      "depends_on": [],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T2",
+      "name": "PostgreSQL Installation and Schema Creation",
+      "depends_on": ["T1"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T3",
+      "name": "JWT Authentication Service Development",
+      "depends_on": ["T2"],
+      "estimated_hours": 20,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T4",
+      "name": "API Core Service Development",
+      "depends_on": ["T3"],
+      "estimated_hours": 24,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T5",
+      "name": "Todo CRUD Implementation",
+      "depends_on": ["T4"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T6",
+      "name": "Todo Categories and Tags Implementation",
+      "depends_on": ["T4"],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T7",
+      "name": "Due Date Reminder Logic Implementation",
+      "depends_on": ["T4"],
+      "estimated_hours": 10,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T8",
+      "name": "Unit Testing Framework Setup",
+      "depends_on": ["T0"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T9",
+      "name": "Unit Tests for Auth Service",
+      "depends_on": ["T8"],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T10",
+      "name": "Unit Tests for Todo Service",
+      "depends_on": ["T8"],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T11",
+      "name": "Unit Tests for Reminder Service",
+      "depends_on": ["T8"],
+      "estimated_hours": 10,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T12",
+      "name": "Integration Testing and End-to-End Validation",
+      "depends_on": ["T9", "T10", "T11"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T13",
+      "name": "API Documentation Generation (OpenAPI)",
+      "depends_on": ["T4"],
+      "estimated_hours": 10,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T14",
+      "name": "Docker Application Development and Configuration",
+      "depends_on": ["T13"],
+      "estimated_hours": 16,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T15",
+      "name": "Docker Containerization and Environment Setup",
+      "depends_on": ["T14"],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T16",
+      "name": "Docker Deployment and Service Testing",
+      "depends_on": ["T15"],
+      "estimated_hours": 10,
+      "assignable_to": "backend/devops"
+    },
+    {
+      "id": "T17",
+      "name": "CI/CD Pipeline Configuration",
+      "depends_on": ["T16", "T12"],
+      "estimated_hours": 12,
+      "assignable_to": "backend/devops"
+    }
+  ],
+  "critical_path": [
+    "T0",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "T8",
+    "T9",
+    "T10",
+    "T11",
+    "T12",
+    "T13",
+    "T14",
+    "T15",
+    "T16",
+    "T17"
+  ],
+  "total_hours": 240,
+  "parallel_tracks": 2
+}

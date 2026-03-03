@@ -1,0 +1,75 @@
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Weak Secret Key",
+      "severity": "critical",
+      "location": "Line 2: `app.secret_key = \"password123\"`",
+      "fix": "Generate a cryptographically secure random secret key using `secrets.get_random_secret_key()` and store it securely (e.g., in a database or environment variable with restricted access)."
+    },
+    {
+      "id": 2,
+      "type": "Template Injection",
+      "severity": "high",
+      "location": "Line 5: `render_template_string(f\"Results for: {q}\")`",
+      "fix": "Use parameterized templates or explicitly escape the input variable `q` before rendering to prevent SQL injection and XSS attacks."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "Line 9: `SELECT * FROM users WHERE id = {id}`",
+      "fix": "Use parameterized queries (e.g., `db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))`) to prevent SQL injection attacks."
+    },
+    {
+      "id": 4,
+      "type": "Unrestricted Pickle Deserialization",
+      "severity": "critical",
+      "location": "Line 12: `pickle.loads(data)`",
+      "fix": "Disable pickle deserialization by setting `pickle.loads` to `None` in the `__reduce__` method of the class being deserialized, or use `pickle.UnsafeLoader` with strict configuration."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "Line 15: `subprocess.check_output(cmd, shell=True)`",
+      "fix": "Avoid using `shell=True` and instead pass the command as a list of arguments: `subprocess.check_output(cmd, shell=False)`. Ensure all arguments are properly escaped."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / File Disclosure",
+      "severity": "high",
+      "location": "Line 18: `return open(path).read()`",
+      "fix": "Validate and sanitize the `path` parameter to ensure it does not contain path traversal sequences (e.g., `../`). Use `os.path.realpath()` to resolve the path before opening the file."
+    },
+    {
+      "id": 7,
+      "type": "Hardcoded Environment Variable",
+      "severity": "high",
+      "location": "Line 21: `os.environ.get(\"ADMIN_PW\", \"admin\")`",
+      "fix": "Do not hardcode secrets in environment variables. Use a secure configuration file or a dedicated secrets management system (e.g., HashiCorp Vault, AWS Secrets Manager)."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "Line 24: `return str(os.environ)`",
+      "fix": "Remove the `os.environ` dump from the debug endpoint. If debugging is required, use a secure logging mechanism that does not expose sensitive environment data."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "Line 27: `# V9: No HTTPS enforcement`",
+      "fix": "Enable HTTPS by configuring the Flask app to require SSL/TLS (e.g., `app.config['ssl_context'] = ...` or using `Flask-Security`), ensuring all data transmitted over the network is encrypted."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "Line 28: `# V10: No rate limiting`",
+      "fix": "Implement rate limiting middleware (e.g., using `Flask-Limiter`) to restrict the number of requests per IP address or user, preventing DoS attacks and abuse of the API."
+    }
+  ],
+  "count": 10
+}

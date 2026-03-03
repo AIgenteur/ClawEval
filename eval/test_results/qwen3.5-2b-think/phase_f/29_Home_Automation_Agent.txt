@@ -1,0 +1,660 @@
+```json
+[
+  {
+    "id": "rule_morning_routine_1",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "dayOfWeek": "weekday",
+        "time": "06:30:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 2
+      }
+    },
+    "actions": [
+      {
+        "type": "light",
+        "parameters": {
+          "target": "living_room",
+          "action": "turn_on",
+          "intensity": 100
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "bedroom",
+          "action": "turn_on",
+          "intensity": 100
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "hallway",
+          "action": "turn_on",
+          "intensity": 100
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_morning_routine_2",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "dayOfWeek": "weekday",
+        "time": "08:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 2
+      }
+    },
+    "actions": [
+      {
+        "type": "light",
+        "parameters": {
+          "target": "living_room",
+          "action": "turn_off",
+          "intensity": 0
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "bedroom",
+          "action": "turn_off",
+          "intensity": 0
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "hallway",
+          "action": "turn_off",
+          "intensity": 0
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "living_room",
+          "action": "turn_on",
+          "intensity": 100
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_1",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "23:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "living_room",
+          "action": "set_temperature",
+          "value": 65
+        }
+      },
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "bedroom",
+          "action": "set_temperature",
+          "value": 65
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_2",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "11:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "living_room",
+          "action": "set_temperature",
+          "value": 68
+        }
+      },
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "bedroom",
+          "action": "set_temperature",
+          "value": 68
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_thermostat_3",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "06:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "living_room",
+          "action": "set_temperature",
+          "value": 72
+        }
+      },
+      {
+        "type": "climate",
+        "parameters": {
+          "target": "bedroom",
+          "action": "set_temperature",
+          "value": 72
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_1",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_2",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_3",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_4",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_5",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_6",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_7",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_8",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_9",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_security_10",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "security",
+        "parameters": {
+          "action": "arm",
+          "mode": "phone"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_feeder_1",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "07:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 2
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "feeder",
+          "action": "turn_on"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_feeder_2",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "18:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 2
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "feeder",
+          "action": "turn_on"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_camera_1",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "cat_camera",
+          "action": "turn_on"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_pet_camera_2",
+    "trigger": {
+      "type": "geofence",
+      "parameters": {
+        "location": "outside_home",
+        "radius": 1000
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "cat_camera",
+          "action": "turn_off"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_1",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "14:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 2
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "solar_panel",
+          "action": "prioritize"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_energy_2",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "18:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "parameters": {
+          "target": "battery_backup",
+          "action": "enable"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_1",
+    "trigger": {
+      "type": "motion",
+      "parameters": {
+        "target": "hallway",
+        "time": "10:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "light",
+        "parameters": {
+          "target": "hallway",
+          "action": "turn_on",
+          "intensity": 20
+        }
+      },
+      {
+        "type": "light",
+        "parameters": {
+          "target": "hallway",
+          "action": "turn_off",
+          "intensity": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_lighting_2",
+    "trigger": {
+      "type": "time",
+      "parameters": {
+        "time": "06:00:00"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters": {
+        "totalOccupants": 0
+      }
+    },
+    "actions": [
+      {
+        "type": "light",
+        "parameters": {
+          "target": "hallway",
+          "action": "turn_off",
+          "intensity": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "rule_bob_office_1",
+    "trigger": {
+      "type": "device",
+      "parameters": {
+        "target": "computer",
+        "action": "turn_on"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "parameters

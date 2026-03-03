@@ -127,77 +127,77 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
 
-> 🆕 **Testing in progress.** Qwen3.5-0.8B complete, 2B/4B/9B coming soon. [Full small model results →](docs/results-small-vram.md)
+> 🆕 **Testing in progress.** Qwen3.5-0.8B and 2B complete, 4B/9B coming soon. [Full small model results →](docs/results-small-vram.md)
 
 | # | Agent Role | 🔴 Best 8GB | | 🟠 Best 12GB | | 🟡 Best 16GB | |
 |---|---|---|---|---|---|---|---|
 | | | **Model** | **Score** | **Model** | **Score** | **Model** | **Score** |
 | | **Tier 1 — Utility** | | | | | | |
-| 1 | Router / Triage | 0.8B | 🟡 7 | — | — | — | — |
-| 2 | Input Validator | 0.8B | 🟢 10 | — | — | — | — |
-| 3 | Health Monitor | 0.8B NT | 🔴 3 | — | — | — | — |
-| 4 | Notification | 0.8B | 🟡 6 | — | — | — | — |
-| 5 | Sentiment | 0.8B Think | 🟡 6 | — | — | — | — |
-| 6 | FAQ Generation | 0.8B NT | 🔴 3 | — | — | — | — |
-| 7 | Translation | 0.8B NT | 🟢 9 | — | — | — | — |
-| 8 | Calendar | — | 🔴 0 | — | — | — | — |
+| 1 | Router / Triage | 0.8B | 🟡 7 | 2B | 🟢 9 | — | — |
+| 2 | Input Validator | 0.8B | 🟢 10 | 2B | 🟢 10 | — | — |
+| 3 | Health Monitor | 0.8B NT | 🔴 3 | 2B | 🔴 3 | — | — |
+| 4 | Notification | 0.8B | 🟡 6 | 2B | 🟢 9 | — | — |
+| 5 | Sentiment | 0.8B Think | 🟡 6 | 2B | 🟢 8 | — | — |
+| 6 | FAQ Generation | 0.8B NT | 🔴 3 | 2B | 🟡 5 | — | — |
+| 7 | Translation | 0.8B NT | 🟢 9 | 2B | 🟡 7 | — | — |
+| 8 | Calendar | — | 🔴 0 | — | 🔴 0 | — | — |
 | | **Tier 2 — Moderate** | | | | | | |
-| 9 | Research Agent | 0.8B | 🟡 6 | — | — | — | — |
-| 10 | Content Writer | 📝 Manual | 📝 5 | — | — | — | — |
-| 11 | Editor | 0.8B | 🟡 7 | — | — | — | — |
-| 12 | Content Planner | 0.8B | 🟢 10 | — | — | — | — |
-| 13 | Email Drafting | 0.8B Think | 🟡 6 | — | — | — | — |
-| 14 | Doc Summary | 0.8B NT | 🟢 8 | — | — | — | — |
-| 15 | Meeting Notes | 0.8B | 🟢 9 | — | — | — | — |
-| 16 | Social Scouting | 0.8B | 🟢 10 | — | — | — | — |
-| 17 | Social Content | 📝 Manual | 📝 5 | — | — | — | — |
-| 18 | News Aggregation | 0.8B | 🟢 10 | — | — | — | — |
-| 19 | Shopping | 0.8B Think | 🔴 4 | — | — | — | — |
-| 20 | Memory Mgmt | 0.8B | 🟢 9 | — | — | — | — |
-| 21 | RAG / Retrieval | — | 🔴 0 | — | — | — | — |
-| 22 | Data Analysis | 0.8B Think | 🔴 1 | — | — | — | — |
-| 23 | Web Scraping | 0.8B | 🟢 10 | — | — | — | — |
-| 24 | Image Description | 📝 Manual | 📝 5 | — | — | — | — |
-| 25 | Customer Support | 0.8B | 🟡 6 | — | — | — | — |
-| 26 | Lead Scoring | 0.8B | 🔴 2 | — | — | — | — |
-| 27 | Sprint Summary | 0.8B | 🔴 2 | — | — | — | — |
-| 28 | Transaction | 0.8B | 🔴 1 | — | — | — | — |
-| 29 | Home Automation | 0.8B NT | 🟢 10 | — | — | — | — |
-| 30 | Fitness Tracking | 0.8B | 🔴 3 | — | — | — | — |
-| 31 | Recipe / Cooking | — | 🔴 0 | — | — | — | — |
-| 32 | Personal Finance | 0.8B | 🔴 3 | — | — | — | — |
-| 33 | SEO Optimization | 0.8B | 🟢 9 | — | — | — | — |
-| 34 | Landing Page | 📝 Manual | 📝 5 | — | — | — | — |
-| 35 | Travel Planning | 0.8B | 🔴 4 | — | — | — | — |
+| 9 | Research Agent | 0.8B | 🟡 6 | 2B Think | 🟢 9 | — | — |
+| 10 | Content Writer | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 11 | Editor | 0.8B | 🟡 7 | 2B | 🟡 7 | — | — |
+| 12 | Content Planner | 0.8B | 🟢 10 | 2B | 🟢 10 | — | — |
+| 13 | Email Drafting | 0.8B Think | 🟡 6 | 2B | 🟢 8 | — | — |
+| 14 | Doc Summary | 0.8B NT | 🟢 8 | 2B Think | 🟢 9 | — | — |
+| 15 | Meeting Notes | 0.8B | 🟢 9 | 2B | 🟢 9 | — | — |
+| 16 | Social Scouting | 0.8B | 🟢 10 | 2B | 🟢 10 | — | — |
+| 17 | Social Content | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 18 | News Aggregation | 0.8B | 🟢 10 | 2B | 🟢 10 | — | — |
+| 19 | Shopping | 0.8B Think | 🔴 4 | 2B NT | 🔴 2 | — | — |
+| 20 | Memory Mgmt | 0.8B | 🟢 9 | 2B | 🟢 9 | — | — |
+| 21 | RAG / Retrieval | — | 🔴 0 | — | 🔴 0 | — | — |
+| 22 | Data Analysis | 0.8B Think | 🔴 1 | 2B Think | 🔴 3 | — | — |
+| 23 | Web Scraping | 0.8B | 🟢 10 | 2B | 🟢 9 | — | — |
+| 24 | Image Description | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 25 | Customer Support | 0.8B | 🟡 6 | 2B | 🟡 7 | — | — |
+| 26 | Lead Scoring | 0.8B | 🔴 2 | 2B | 🔴 4 | — | — |
+| 27 | Sprint Summary | 0.8B | 🔴 2 | 2B | 🔴 4 | — | — |
+| 28 | Transaction | 0.8B | 🔴 1 | 2B | 🟢 9 | — | — |
+| 29 | Home Automation | 0.8B NT | 🟢 10 | 2B NT | 🟢 9 | — | — |
+| 30 | Fitness Tracking | 0.8B | 🔴 3 | 2B Think | 🔴 4 | — | — |
+| 31 | Recipe / Cooking | — | 🔴 0 | — | 🔴 0 | — | — |
+| 32 | Personal Finance | 0.8B | 🔴 3 | 2B | 🔴 4 | — | — |
+| 33 | SEO Optimization | 0.8B | 🟢 9 | 2B | 🟢 9 | — | — |
+| 34 | Landing Page | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 35 | Travel Planning | 0.8B | 🔴 4 | 2B | 🟡 6 | — | — |
 | | **Tier 3 — Advanced** | | | | | | |
-| 36 | Code Generation | 0.8B | 🟢 8 | — | — | — | — |
-| 37 | Code Review | 0.8B NT | 🟢 10 | — | — | — | — |
-| 38 | QA / Test Writing | 0.8B | 🟢 8 | — | — | — | — |
-| 39 | Task Planning | 0.8B Think | 🟢 9 | — | — | — | — |
-| 40 | Fact-Checking | 0.8B Think | 🟡 5 | — | — | — | — |
-| 41 | Critic / Review | 📝 Manual | 📝 5 | — | — | — | — |
-| 42 | Market Research | 0.8B | 🔴 4 | — | — | — | — |
-| 43 | Synthesizer | 0.8B | 🟢 9 | — | — | — | — |
-| 44 | Curriculum Design | 0.8B | 🔴 4 | — | — | — | — |
-| 45 | Prototype Gen | 0.8B Think | 🟡 7 | — | — | — | — |
-| 46 | DevOps | 0.8B Think | 🟢 10 | — | — | — | — |
+| 36 | Code Generation | 0.8B | 🟢 8 | 2B | 🟢 10 | — | — |
+| 37 | Code Review | 0.8B NT | 🟢 10 | 2B | 🟢 10 | — | — |
+| 38 | QA / Test Writing | 0.8B | 🟢 8 | 2B | 🟢 8 | — | — |
+| 39 | Task Planning | 0.8B Think | 🟢 9 | 2B Think | 🟢 10 | — | — |
+| 40 | Fact-Checking | 0.8B Think | 🟡 5 | 2B | 🟡 6 | — | — |
+| 41 | Critic / Review | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 42 | Market Research | 0.8B | 🔴 4 | 2B | 🔴 3 | — | — |
+| 43 | Synthesizer | 0.8B | 🟢 9 | 2B NT | 🟢 9 | — | — |
+| 44 | Curriculum Design | 0.8B | 🔴 4 | 2B | 🟡 7 | — | — |
+| 45 | Prototype Gen | 0.8B Think | 🟡 7 | 2B NT | 🟡 7 | — | — |
+| 46 | DevOps | 0.8B Think | 🟢 10 | 2B | 🟢 9 | — | — |
 | | **Tier 4 — Expert** | | | | | | |
-| 47 | Math / Logic | 0.8B | 🔴 2 | — | — | — | — |
-| 48 | STEM Analysis | — | 🔴 0 | — | — | — | — |
-| 49 | Algorithm | 0.8B Think | 🟡 5 | — | — | — | — |
+| 47 | Math / Logic | 0.8B | 🔴 2 | 2B | 🔴 4 | — | — |
+| 48 | STEM Analysis | — | 🔴 0 | 2B | 🔴 2 | — | — |
+| 49 | Algorithm | 0.8B Think | 🟡 5 | — | 🔴 0 | — | — |
 | | **Tier 5 — Senior** | | | | | | |
-| 50 | Orchestrator | 0.8B | 🟢 8 | — | — | — | — |
-| 51 | Architect | 0.8B NT | 🟢 9 | — | — | — | — |
-| 52 | Debugger | 0.8B NT | 🟢 10 | — | — | — | — |
-| 53 | Legal Review | 0.8B | 🟢 10 | — | — | — | — |
-| 54 | Medical | 0.8B | 🟢 10 | — | — | — | — |
-| 55 | Financial | 0.8B Think | 🔴 2 | — | — | — | — |
-| 56 | Security | 0.8B Think | 🟡 6 | — | — | — | — |
-| 57 | SRE / Incident | 0.8B | 🔴 2 | — | — | — | — |
-| 58 | Book Writing | 📝 Manual | 📝 5 | — | — | — | — |
-| 59 | Compliance | 0.8B | 🟢 8 | — | — | — | — |
+| 50 | Orchestrator | 0.8B | 🟢 8 | 2B | 🟢 8 | — | — |
+| 51 | Architect | 0.8B NT | 🟢 9 | 2B | 🟢 10 | — | — |
+| 52 | Debugger | 0.8B NT | 🟢 10 | 2B | 🟢 8 | — | — |
+| 53 | Legal Review | 0.8B | 🟢 10 | 2B | 🟢 10 | — | — |
+| 54 | Medical | 0.8B | 🟢 10 | 2B NT | 🟢 10 | — | — |
+| 55 | Financial | 0.8B Think | 🔴 2 | 2B | 🟢 8 | — | — |
+| 56 | Security | 0.8B Think | 🟡 6 | 2B Think | 🟢 10 | — | — |
+| 57 | SRE / Incident | 0.8B | 🔴 2 | 2B Think | 🔴 3 | — | — |
+| 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 | — | — |
+| 59 | Compliance | 0.8B | 🟢 8 | 2B | 🟢 8 | — | — |
 
-> 📊 **[Full small model Think/NoThink comparison →](docs/results-small-vram.md)** · Phase F: 339/585 (58%) · Phase G: 33/110 (30%)
+> 📊 **[Full small model Think/NoThink comparison →](docs/results-small-vram.md)** · Phase F: 392/590 (66%) · Phase G: 52/110 (47%)
 
 
 ## ☁️ Best Cloud Model Per Role

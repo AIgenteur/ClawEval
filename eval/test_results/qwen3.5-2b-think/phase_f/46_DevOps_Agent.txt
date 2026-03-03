@@ -1,0 +1,65 @@
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Docker Compose version '2' is deprecated; version '3' is the current standard.",
+      "fix": "Change `version: '2'` to `version: '3'`."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using 'latest' tag is non-deterministic and may lead to security vulnerabilities or compatibility issues.",
+      "fix": "Specify a specific version tag, e.g., `image: node:18`."
+    },
+    {
+      "line": "environment:\n      DB_PASSWORD: supersecret123",
+      "problem": "Hardcoded plaintext password in environment variables is insecure.",
+      "fix": "Use Docker secrets to store the password and reference it in the service configuration."
+    },
+    {
+      "line": "environment:\n      NODE_ENV: development",
+      "problem": "NODE_ENV should be 'production' for a production-ready deployment.",
+      "fix": "Change `NODE_ENV: development` to `NODE_ENV: production`."
+    },
+    {
+      "line": "volumes:\n      - .:/app",
+      "problem": "Mounting the entire local filesystem (`.`) is unnecessary and can cause performance issues or data loss if the host directory changes.",
+      "fix": "Mount only the necessary directory, e.g., `volumes:\n      - /app:/app`."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Setting `restart: no` is dangerous in production as it can lead to container crashes and data loss.",
+      "fix": "Change `restart: no` to `restart: unless-stopped` or `restart: always`."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is End-of-Life (EOL) and no longer receives security updates.",
+      "fix": "Upgrade to a supported version, e.g., `image: mysql:8.0`."
+    },
+    {
+      "line": "ports:\n      - \"3306:3306\"",
+      "problem": "Exposing MySQL port 3306 publicly exposes the database to unauthorized access.",
+      "fix": "Restrict the port to internal use, e.g., `ports:\n      - \"13306:3306\"` (assuming internal network) or remove the port mapping entirely."
+    },
+    {
+      "line": "volumes:\n      - /tmp/mysql-data:/var/lib/mysql",
+      "problem": "Mounting `/tmp` is unsuitable for persistent data as it is typically cleaned on container restart.",
+      "fix": "Use a dedicated volume path, e.g., `volumes:\n      - mysql-data:/var/lib/mysql`."
+    },
+    {
+      "line": "ports:\n      - \"6379:6379\"",
+      "problem": "Exposing Redis port 6379 publicly is insecure.",
+      "fix": "Restrict the port to internal use, e.g., `ports:\n      - \"16379:6379\"`."
+    },
+    {
+      "line": "environment:\n      MYSQL_ROOT_PASSWORD: supersecret123",
+      "problem": "Hardcoded plaintext password for root access in environment variables is insecure.",
+      "fix": "Use Docker secrets to store the password and reference it in the service configuration."
+    },
+    {
+      "line": "image: redis",
+      "problem": "Using the default `redis` image without authentication is insecure.",
+      "fix": "Use a specific image with authentication enabled, e.g., `image: redis:7-alpine`."
+    }
+  ],
+  "count": 12
+}

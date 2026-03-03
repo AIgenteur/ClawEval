@@ -1,0 +1,69 @@
+{
+  "architecture": {
+    "components": [
+      "Nginx (Reverse Proxy & Load Balancer)",
+      "Redis (In-Memory Cache & Session Store)",
+      "PostgreSQL (Primary Database)",
+      "Elasticsearch (Analytics & Search)",
+      "AWS S3 (Object Storage for Expirable Links)",
+      "AWS Lambda (Event-Driven Functions)",
+      "AWS CloudFront (CDN)"
+    ],
+    "database": {
+      "primary": "PostgreSQL",
+      "justification": "Primary source of truth for link metadata, expiration tracking, and audit logs. Supports complex queries for analytics and GDPR compliance."
+    },
+    "cache": {
+      "type": "Redis",
+      "strategy": "Write-Through",
+      "invalidation": "TTL-based expiration + Event-driven invalidation on expiration events"
+    },
+    "hash_strategy": {
+      "algorithm": "SHA-256",
+      "length": 64,
+      "collision_handling": "Deterministic mapping to prevent hash collisions; collision resolution handled via deterministic fallback to secondary hash"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "Read-only replicas for analytics and search; read replicas for high-traffic read paths",
+    "write_path": "Write to primary DB -> Cache -> Lambda -> CDN -> Nginx",
+    "horizontal_scaling": "Nginx HA (HAProxy), Redis Cluster, PostgreSQL Replication (Master-Slave), Lambda Auto-scaling"
+  },
+  "reliability": {
+    "uptime_strategy": "99.99% SLA via multi-AZ deployment and automated failover",
+    "failover": "Nginx health checks trigger automatic failover to secondary instances; Redis cluster failover; PostgreSQL failover via replication",
+    "data_replication": "PostgreSQL primary-to-replica replication for 99.99% uptime; S3 cross-region replication for link data"
+  },
+  "compliance": {
+    "gdpr_deletion": "Real-time deletion via PostgreSQL trigger; S3 bucket versioning enabled for audit trail; immutable logs for 7 years",
+    "data_retention": "Links retained for 30 days; analytics data retained for 90 days; all other data purged after 7 years",
+    "analytics_separation": "Elasticsearch instance isolated from primary DB; separate tenant for analytics; no PII stored in analytics"
+  },
+  "cost_estimate": {
+    "monthly_total": 5000,
+    "breakdown": {
+      "compute": 2500,
+      "database": 1500,
+      "cache": 800,
+      "cdn": 500,
+      "other": 200
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token Bucket Algorithm",
+    "limits": "1000 requests per second per IP; 10000 requests per minute per user; 10000 requests per hour per domain"
+  },
+  "monitoring": {
+    "metrics": [
+      "Request Latency (p50, p95, p99)",
+      "Error Rate",
+      "Throughput (RPS)",
+      "Cache Hit Rate",
+      "GDPR Deletion Success Rate",
+      "Link Expiration Rate"
+    ],
+    "alerting": "Real-time dashboards via Prometheus/Grafana; PagerDuty alerts for latency > 500ms, error rate > 1%, or uptime drops below 99.9%"
+  }
+}

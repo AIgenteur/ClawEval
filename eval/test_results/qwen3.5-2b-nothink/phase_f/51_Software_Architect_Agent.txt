@@ -1,0 +1,68 @@
+{
+  "components": [
+    {
+      "name": "Message Queue",
+      "technology": "Apache Kafka",
+      "purpose": "High-throughput buffering and partitioning of real-time message streams for 1M concurrent users.",
+      "scaling_strategy": "Dynamic partitioning based on message volume and auto-scaling clusters to handle spikes without manual intervention."
+    },
+    {
+      "name": "Message Processing Engine",
+      "technology": "Apache Flink",
+      "purpose": "Real-time event processing for message routing, encryption, and offline status updates.",
+      "scaling_strategy": "Stateful processing with checkpointing to ensure low latency and fault tolerance across regions."
+    },
+    {
+      "name": "Message Storage",
+      "technology": "Cassandra",
+      "purpose": "Persistent storage for message history, metadata, and offline tracking.",
+      "scaling_strategy": "Horizontal scaling via sharding and replication factor of 3 to handle write-heavy workloads."
+    },
+    {
+      "name": "File Storage",
+      "technology": "MinIO",
+      "purpose": "Secure object storage for file attachments (up to 50MB) with encryption at rest.",
+      "scaling_strategy": "Object storage scaling with lifecycle policies to manage cold storage costs."
+    },
+    {
+      "name": "Database",
+      "technology": "PostgreSQL",
+      "purpose": "Relational storage for user profiles, group metadata, and audit logs.",
+      "scaling_strategy": "Read replicas for query offloading and sharding for high-traffic user data."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "AWS KMS / Azure Key Vault",
+      "purpose": "End-to-end encryption for messages and files using AES-256.",
+      "scaling_strategy": "Centralized key management with automated rotation and regional key isolation."
+    },
+    {
+      "name": "Load Balancer",
+      "technology": "AWS ALB / Kubernetes Ingress",
+      "purpose": "Traffic distribution and SSL termination.",
+      "scaling_strategy": "Layer 7 load balancing with health checks and automatic routing to healthy instances."
+    },
+    {
+      "name": "Notification Service",
+      "technology": "AWS SNS / Azure Service Bus",
+      "purpose": "Delivery of online/offline status updates and read receipt acknowledgments.",
+      "scaling_strategy": "Event-driven architecture with decoupling to handle bursty traffic."
+    }
+  ],
+  "data_flow": "User sends message -> Load Balancer -> Kafka -> Flink (Encryption + Offline Check) -> Cassandra (History) -> PostgreSQL (User Profile) -> Notification Service -> User. Files are uploaded to MinIO -> Kafka -> Flink -> Storage -> User.",
+  "infrastructure": {
+    "cloud": "AWS (Primary) / Azure (Secondary)",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$2.5M",
+  "bottlenecks": [
+    "Kafka partitioning limits under extreme message volume spikes.",
+    "Cassandra write throughput may saturate during peak group chat activity.",
+    "Encryption processing adds latency if not optimized with hardware offloading."
+  ],
+  "tradeoffs": [
+    "High availability requires significant infrastructure investment.",
+    "End-to-end encryption adds computational overhead and key management complexity.",
+    "Horizontal scaling introduces network latency and potential data consistency challenges."
+  ]
+}

@@ -1,0 +1,353 @@
+```json
+[
+  {
+    "rule_id": "R001",
+    "name": "Morning Light Routine",
+    "trigger": {
+      "type": "time",
+      "value": "06:30:00",
+      "condition": "weekday"
+    },
+    "conditions": {
+      "type": "occupancy",
+      "value": "2 occupants"
+    },
+    "actions": [
+      {
+        "type": "light",
+        "target": "living_room",
+        "action": "turn_on",
+        "parameters": {
+          "brightness": "100%",
+          "delay": "30s"
+        }
+      },
+      {
+        "type": "light",
+        "target": "bedroom",
+        "action": "turn_on",
+        "parameters": {
+          "brightness": "50%",
+          "delay": "30s"
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R002",
+    "name": "Thermostat Occupancy Logic",
+    "trigger": {
+      "type": "time",
+      "value": "11:00:00",
+      "condition": "weekday"
+    },
+    "conditions": {
+      "type": "occupancy",
+      "value": "2 occupants"
+    },
+    "actions": [
+      {
+        "type": "climate",
+        "target": "main_heater",
+        "action": "set_temperature",
+        "parameters": {
+          "target": "72",
+          "unit": "fahrenheit"
+        }
+      },
+      {
+        "type": "climate",
+        "target": "main_cooler",
+        "action": "set_temperature",
+        "parameters": {
+          "target": "65",
+          "unit": "fahrenheit"
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R003",
+    "name": "Security Geofencing",
+    "trigger": {
+      "type": "phone",
+      "action": "geofence_enter",
+      "parameters": {
+        "location": "outside_house",
+        "radius": "1000m"
+      }
+    },
+    "conditions": {
+      "type": "occupancy",
+      "value": "0 occupants"
+    },
+    "actions": [
+      {
+        "type": "security",
+        "target": "all",
+        "action": "arm",
+        "parameters": {
+          "mode": "full"
+        }
+      },
+      {
+        "type": "security",
+        "target": "phone",
+        "action": "send_message",
+        "parameters": {
+          "text": "You are now outside the house. Security is armed."
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R004",
+    "name": "Pet Feeder and Camera",
+    "trigger": {
+      "type": "time",
+      "value": "07:00:00",
+      "condition": "weekday"
+    },
+    "conditions": {
+      "type": "occupancy",
+      "value": "2 occupants"
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "auto_feeder",
+        "action": "feed",
+        "parameters": {
+          "amount": "1 cup"
+        }
+      },
+      {
+        "type": "device",
+        "target": "cat_camera",
+        "action": "turn_on",
+        "parameters": {
+          "recording": true
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R005",
+    "name": "Solar Priority & Battery Backup",
+    "trigger": {
+      "type": "time",
+      "value": "14:00:00",
+      "condition": "weekday"
+    },
+    "conditions": {
+      "type": "energy",
+      "value": "peak_demand"
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "solar_panel",
+        "action": "maximize_output",
+        "parameters": {
+          "priority": true
+        }
+      },
+      {
+        "type": "device",
+        "target": "battery_backup",
+        "action": "charge",
+        "parameters": {
+          "priority": true
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R006",
+    "name": "Motion Hallway Lighting",
+    "trigger": {
+      "type": "device",
+      "action": "motion_detected",
+      "parameters": {
+        "location": "hallway"
+      }
+    },
+    "conditions": {
+      "type": "time",
+      "value": "10:00:00",
+      "condition": "weekday"
+    },
+    "actions": [
+      {
+        "type": "light",
+        "target": "hallway",
+        "action": "turn_on",
+        "parameters": {
+          "brightness": "20%",
+          "delay": "10s"
+        }
+      },
+      {
+        "type": "light",
+        "target": "hallway",
+        "action": "turn_off",
+        "parameters": {
+          "delay": "5s"
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R007",
+    "name": "Bob's Office Environment",
+    "trigger": {
+      "type": "device",
+      "action": "device_turned_on",
+      "parameters": {
+        "location": "office",
+        "device": "computer"
+      }
+    },
+    "conditions": {
+      "type": "device",
+      "action": "device_turned_off",
+      "parameters": {
+        "location": "office",
+        "device": "computer"
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "desk_lamp",
+        "action": "turn_on",
+        "parameters": {
+          "brightness": "100%"
+        }
+      },
+      {
+        "type": "climate",
+        "target": "office_ac",
+        "action": "set_temperature",
+        "parameters": {
+          "target": "70",
+          "unit": "fahrenheit"
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R008",
+    "name": "Laundry Cycle Notification",
+    "trigger": {
+      "type": "device",
+      "action": "cycle_completed",
+      "parameters": {
+        "location": "laundry_room",
+        "device": "washer"
+      }
+    },
+    "conditions": {
+      "type": "device",
+      "action": "cycle_completed",
+      "parameters": {
+        "location": "laundry_room",
+        "device": "dryer"
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "phone",
+        "action": "send_message",
+        "parameters": {
+          "text": "Your laundry cycle is complete. Please proceed."
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R009",
+    "name": "Water Leak Emergency",
+    "trigger": {
+      "type": "device",
+      "action": "leak_detected",
+      "parameters": {
+        "location": "basement"
+      }
+    },
+    "conditions": {
+      "type": "device",
+      "action": "leak_detected",
+      "parameters": {
+        "location": "basement"
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "main_valve",
+        "action": "shut_off",
+        "parameters": {
+          "priority": true
+        }
+      },
+      {
+        "type": "device",
+        "target": "phone",
+        "action": "send_message",
+        "parameters": {
+          "text": "URGENT: Water leak detected in basement. Shutting off main valve."
+        }
+      }
+    ]
+  },
+  {
+    "rule_id": "R010",
+    "name": "Guest Mode",
+    "trigger": {
+      "type": "device",
+      "action": "device_turned_on",
+      "parameters": {
+        "location": "front_door",
+        "device": "guest_wifi"
+      }
+    },
+    "conditions": {
+      "type": "device",
+      "action": "device_turned_on",
+      "parameters": {
+        "location": "front_door",
+        "device": "guest_wifi"
+      }
+    },
+    "actions": [
+      {
+        "type": "device",
+        "target": "guest_wifi",
+        "action": "enable",
+        "parameters": {
+          "password": "temp_code"
+        }
+      },
+      {
+        "type": "device",
+        "target": "thermostat",
+        "action": "set_temperature",
+        "parameters": {
+          "target": "72",
+          "unit": "fahrenheit"
+        }
+      },
+      {
+        "type": "device",
+        "target": "front_door",
+        "action": "set_code",
+        "parameters": {
+          "code": "temp_code"
+        }
+      }
+    ]
+  }
+]
+```

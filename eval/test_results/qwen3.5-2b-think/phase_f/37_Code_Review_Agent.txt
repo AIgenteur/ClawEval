@@ -1,0 +1,35 @@
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "No validation for discount percentage; if discount > 100, the price calculation becomes negative or incorrect.",
+      "fix": "Add a check: if discount > 100, set discount = 100 before calculation."
+    },
+    {
+      "line": 10,
+      "issue": "Price is set to 0 regardless of whether it was originally negative or not; this logic is flawed.",
+      "fix": "Only set price to 0 if the original calculated price was negative."
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError if no orders are processed (i.e., no orders were pending).",
+      "fix": "Add a check: if len(processed) == 0, set average to 0."
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed), which may include orders that were not processed.",
+      "fix": "Change the return statement to return len(processed)."
+    },
+    {
+      "line": 10,
+      "issue": "Mutates the input 'orders' list by modifying 'order' objects in place, which is a side effect.",
+      "fix": "Create a copy of the order dictionary before modifying it, or use a separate list for processed orders."
+    },
+    {
+      "line": 8,
+      "issue": "No type checking on 'price' or 'quantity'; if they are None, the multiplication will raise an error.",
+      "fix": "Add a check: if price or quantity is None, set price to 0 before calculation."
+    }
+  ],
+  "count": 5
+}

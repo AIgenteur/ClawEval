@@ -1,0 +1,124 @@
+```python
+import pytest
+from calculate_tax import calculate_tax
+
+def test_zero_income():
+    """Test case for zero income."""
+    tax_amount, effective_rate = calculate_tax(0, 'single')
+    assert tax_amount == 0.0
+    assert effective_rate == 0.0
+
+def test_typical_income_single():
+    """Test case for typical income in single bracket."""
+    tax_amount, effective_rate = calculate_tax(10000, 'single')
+    assert tax_amount == 1000.0
+    assert effective_rate == 10.0
+
+def test_typical_income_married():
+    """Test case for typical income in married bracket."""
+    tax_amount, effective_rate = calculate_tax(10000, 'married')
+    assert tax_amount == 1000.0
+    assert effective_rate == 10.0
+
+def test_high_income_single():
+    """Test case for high income in single bracket."""
+    tax_amount, effective_rate = calculate_tax(1000000, 'single')
+    assert tax_amount == 370000.0
+    assert effective_rate == 37.0
+
+def test_high_income_married():
+    """Test case for high income in married bracket."""
+    tax_amount, effective_rate = calculate_tax(1000000, 'married')
+    assert tax_amount == 370000.0
+    assert effective_rate == 37.0
+
+def test_invalid_filing_status_single():
+    """Test case for invalid filing status 'single'."""
+    with pytest.raises(ValueError):
+        calculate_tax(10000, 'invalid_status')
+
+def test_invalid_filing_status_married():
+    """Test case for invalid filing status 'married'."""
+    with pytest.raises(ValueError):
+        calculate_tax(10000, 'invalid_status')
+
+def test_negative_income():
+    """Test case for negative income."""
+    with pytest.raises(ValueError):
+        calculate_tax(-100, 'single')
+
+def test_invalid_filing_status_type():
+    """Test case for invalid filing status type (e.g., string instead of string)."""
+    with pytest.raises(ValueError):
+        calculate_tax(10000, 'single')
+
+def test_bracket_boundary_single_low():
+    """Test case for income exactly at the start of a bracket."""
+    tax_amount, effective_rate = calculate_tax(11600, 'single')
+    assert tax_amount == 1160.0
+    assert effective_rate == 10.0
+
+def test_bracket_boundary_single_high():
+    """Test case for income exactly at the end of a bracket."""
+    tax_amount, effective_rate = calculate_tax(191950, 'single')
+    assert tax_amount == 191950.0
+    assert effective_rate == 24.0
+
+def test_bracket_boundary_married_low():
+    """Test case for income exactly at the start of a bracket."""
+    tax_amount, effective_rate = calculate_tax(23200, 'married')
+    assert tax_amount == 2320.0
+    assert effective_rate == 10.0
+
+def test_bracket_boundary_married_high():
+    """Test case for income exactly at the end of a bracket."""
+    tax_amount, effective_rate = calculate_tax(383900, 'married')
+    assert tax_amount == 383900.0
+    assert effective_rate == 24.0
+
+def test_bracket_boundary_single_middle():
+    """Test case for income exactly at the middle of a bracket."""
+    tax_amount, effective_rate = calculate_tax(100525, 'single')
+    assert tax_amount == 100525.0
+    assert effective_rate == 22.0
+
+def test_bracket_boundary_married_middle():
+    """Test case for income exactly at the middle of a bracket."""
+    tax_amount, effective_rate = calculate_tax(201050, 'married')
+    assert tax_amount == 201050.0
+    assert effective_rate == 22.0
+
+def test_bracket_boundary_single_inf():
+    """Test case for income at infinity (should use highest bracket)."""
+    tax_amount, effective_rate = calculate_tax(float('inf'), 'single')
+    assert tax_amount == 370000.0
+    assert effective_rate == 37.0
+
+def test_bracket_boundary_married_inf():
+    """Test case for income at infinity (should use highest bracket)."""
+    tax_amount, effective_rate = calculate_tax(float('inf'), 'married')
+    assert tax_amount == 370000.0
+    assert effective_rate == 37.0
+
+def test_bracket_boundary_single_zero():
+    """Test case for income exactly at the first bracket limit."""
+    tax_amount, effective_rate = calculate_tax(11600, 'single')
+    assert tax_amount == 1160.0
+    assert effective_rate == 10.0
+
+def test_bracket_boundary_married_zero():
+    """Test case for income exactly at the first bracket limit."""
+    tax_amount, effective_rate = calculate_tax(23200, 'married')
+    assert tax_amount == 2320.0
+    assert effective_rate == 10.0
+
+def test_bracket_boundary_single_negative():
+    """Test case for income exactly at the first bracket limit with negative income."""
+    with pytest.raises(ValueError):
+        calculate_tax(11600, 'single')
+
+def test_bracket_boundary_married_negative():
+    """Test case for income exactly at the first bracket limit with negative income."""
+    with pytest.raises(ValueError):
+        calculate_tax(23200, 'married')
+```

@@ -1,0 +1,153 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnostics & Root Cause Identification",
+      "agents": [
+        {
+          "agent": "log_analyzer",
+          "input": "System logs from all services during outage window",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "metric_checker",
+          "input": "Prometheus/Grafana metrics for critical services",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "db_checker",
+          "input": "Database connection pool status and lock wait times",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "config_auditor",
+          "input": "Recent configuration changes and deployment history",
+          "timeout_seconds": 30
+        }
+      ],
+      "parallel": true,
+      "gate": "At least one diagnostic agent must return a non-zero error rate or critical warning to proceed"
+    },
+    {
+      "phase": 2,
+      "name": "Dependency Analysis & Rollback Preparation",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": "Service dependency graph from phase 1",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "rollback_agent",
+          "input": "Current state of services identified in phase 1",
+          "timeout_seconds": 20
+        }
+      ],
+      "parallel": false,
+      "gate": "Rollback agent must successfully identify a viable rollback point and confirm no critical dependencies are blocked"
+    },
+    {
+      "phase": 3,
+      "name": "Execution & Verification",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "Rollback command execution",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "db_checker",
+          "input": "Post-rollback database health check",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "metric_checker",
+          "input": "Service metrics post-rollback",
+          "timeout_seconds": 15
+        }
+      ],
+      "parallel": false,
+      "gate": "All post-rollback checks must pass (no errors, metrics within normal range)"
+    },
+    {
+      "phase": 4,
+      "name": "Customer Communication & Status Update",
+      "agents": [
+        {
+          "agent": "customer_communicator",
+          "input": "Final status report from execution phase",
+          "timeout_seconds": 10
+        },
+        {
+          "agent": "notification_agent",
+          "input": "Alerts to PagerDuty/Slack regarding the incident",
+          "timeout_seconds": 10
+        }
+      ],
+      "parallel": false,
+      "gate": "Notification agents must successfully send status updates to all affected customers and trigger PagerDuty alerts"
+    },
+    {
+      "phase": 5,
+      "name": "Escalation & Long-term Review",
+      "agents": [
+        {
+          "agent": "incident_reporter",
+          "input": "Updated incident ticket with root cause and resolution",
+          "timeout_seconds": 10
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "Resource utilization analysis post-outage",
+          "timeout_seconds": 10
+        }
+      ],
+      "parallel": false,
+      "gate": "Incident ticket must be updated and capacity planner must identify root cause to prevent recurrence"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "All diagnostic agents in phase 1 must return a non-zero error rate or critical warning",
+      "if_true": "go to phase 2",
+      "if_false": "go to phase 1"
+    },
+    {
+      "after_phase": 2,
+      "condition": "Rollback agent must successfully identify a viable rollback point and confirm no critical dependencies are blocked",
+      "if_true": "go to phase 3",
+      "if_false": "go to phase 2"
+    },
+    {
+      "after_phase": 3,
+      "condition": "All post-rollback checks (db_checker, metric_checker) must pass",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 3"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Notification agents must successfully send status updates to all affected customers and trigger PagerDuty alerts",
+      "if_true": "go to phase 5",
+      "if_false": "go to phase 4"
+    },
+    {
+      "after_phase": 5,
+      "condition": "Incident ticket must be updated and capacity planner must identify root cause to prevent recurrence",
+      "if_true": "Incident closed",
+      "if_false": "go to phase 5"
+    }
+  ],
+  "escalation": {
+    "trigger": "If any agent in phase 1 returns a critical error rate exceeding 50% or if the rollback fails in phase 3",
+    "action": "Immediately escalate to on-call SRE team via PagerDuty and notify the customer communication lead"
+  },
+  "total_phases": 5,
+  "max_time_minutes": 30,
+  "rollback_conditions": [
+    "Critical database lock detected in phase 1",
+    "Rollback agent fails to execute in phase 2",
+    "Post-rollback database health check fails in phase 3",
+    "Customer outage persists for more than 30 minutes after rollback in phase 4"
+  ]
+}

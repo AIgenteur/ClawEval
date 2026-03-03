@@ -1,0 +1,64 @@
+{
+  "components": [
+    {
+      "name": "Message Queue",
+      "technology": "Apache Kafka",
+      "purpose": "High-throughput buffering and partitioning for real-time message delivery",
+      "scaling_strategy": "Dynamic partitioning based on message volume and auto-scaling clusters"
+    },
+    {
+      "name": "Message Processing Engine",
+      "technology": "Apache Flink",
+      "purpose": "Real-time event processing for message routing, encryption, and read receipt generation",
+      "scaling_strategy": "Stateful processing with checkpointing across multiple nodes"
+    },
+    {
+      "name": "Message Storage",
+      "technology": "Ceph Object Storage",
+      "purpose": "Persistent storage for message history and file attachments",
+      "scaling_strategy": "Horizontal scaling via object storage tiering and replication"
+    },
+    {
+      "name": "Database Layer",
+      "technology": "PostgreSQL with TimescaleDB",
+      "purpose": "Relational storage for user profiles, group metadata, and audit logs",
+      "scaling_strategy": "Read replicas and sharding by user ID"
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "AWS KMS + Signal Protocol",
+      "purpose": "End-to-end encryption for messages and file attachments",
+      "scaling_strategy": "Asymmetric encryption for key management, symmetric for payload"
+    },
+    {
+      "name": "File Storage",
+      "technology": "MinIO",
+      "purpose": "Secure object storage for file attachments",
+      "scaling_strategy": "Tiered storage with lifecycle policies for cold data"
+    },
+    {
+      "name": "Group Chat Manager",
+      "technology": "Redis Cluster",
+      "purpose": "Real-time group state synchronization and membership tracking",
+      "scaling_strategy": "Cluster expansion for high concurrency group operations"
+    }
+  ],
+  "data_flow": "User sends message -> Kafka buffer -> Flink processes -> Encrypts payload -> Pushes to message queue -> Kafka replicates to storage -> Database logs metadata -> File storage stores attachment -> Read receipts generated via Flink -> User receives encrypted message",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$2.5M",
+  "bottlenecks": [
+    "Kafka partitioning limits under 1M concurrent messages without tuning",
+    "Encryption key rotation latency during peak traffic",
+    "File attachment upload latency exceeding 50MB threshold",
+    "Database write contention during group chat updates"
+  ],
+  "tradeoffs": [
+    "High latency in file attachment uploads due to object storage transfer limits",
+    "Complexity in maintaining 99.99% uptime SLA with multi-region redundancy",
+    "GDPR compliance requires additional legal review and data residency controls",
+    "End-to-end encryption adds processing overhead and key management complexity"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Weak Secret Key",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Generate a cryptographically secure random secret key (e.g., using `secrets` module) and store it in a secure location (e.g., environment variable or database) rather than hardcoding it in the source code."
+    },
+    {
+      "id": 2,
+      "type": "Unsanitized Template Injection",
+      "severity": "high",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Escape the user input `q` before rendering the template to prevent SQL injection and XSS attacks."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries or ORM objects to prevent SQL injection when querying the database."
+    },
+    {
+      "id": 4,
+      "type": "Unrestricted Pickle Deserialization",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Disable pickle deserialization in the application or use a sandboxed environment (like `safe-pickle` or `pysafe`) to prevent arbitrary code execution."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid using `shell=True` and instead pass the command as a list of arguments to prevent shell injection attacks."
+    },
+    {
+      "id": 6,
+      "type": "Unrestricted File Reading",
+      "severity": "high",
+      "location": "return open(path).read()",
+      "fix": "Validate and sanitize the file path to ensure it only contains allowed characters and does not access sensitive system directories."
+    },
+    {
+      "id": 7,
+      "type": "Hardcoded Environment Variable",
+      "severity": "high",
+      "location": "os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Store sensitive configuration values in a secure environment variable or a secrets manager, and do not hardcode them in the application code."
+    },
+    {
+      "id": 8,
+      "type": "Exposure of Sensitive Environment Data",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Restrict access to `os.environ` by adding a `@app.permission` decorator or using a secure context manager to ensure only authorized users can view sensitive data."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "No HTTPS enforcement",
+      "fix": "Enable HTTPS (SSL/TLS) for all endpoints to encrypt data in transit and protect against man-in-the-middle attacks."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "No rate limiting",
+      "fix": "Implement rate limiting middleware to prevent abuse, such as DDoS attacks or brute-force login attempts, by tracking request counts per IP address or user."
+    }
+  ],
+  "count": 10
+}

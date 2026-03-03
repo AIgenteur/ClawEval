@@ -1,0 +1,28 @@
+```python
+from collections import OrderedDict
+
+def lru_cache(capacity):
+    """
+    Returns an LRU cache with the specified capacity.
+    Operations are O(1).
+    """
+    cache = OrderedDict()
+    
+    def get(key):
+        if key in cache:
+            cache.move_to_end(key)  # Move to end = most recently used
+        else:
+            cache.move_to_end(key)  # Treat as least recently used
+        return cache[key]
+    
+    def put(key, value):
+        if key in cache:
+            cache.move_to_end(key)  # Update position
+        else:
+            cache[key] = value
+            if len(cache) > capacity:
+                # Remove least recently used (first item)
+                cache.popitem(last=False)
+    
+    return cache
+```
