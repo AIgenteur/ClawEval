@@ -48,6 +48,9 @@ def call_llm(messages, base_url, model, max_tokens=4000, timeout=120, extra_body
 
 def _clean_json_text(text):
     """Clean common JSON issues from LLM output before parsing."""
+    # Strip JS-style comments: // ... and /* ... */
+    text = re.sub(r'//[^\n]*', '', text)
+    text = re.sub(r'/\*.*?\*/', '', text, flags=re.DOTALL)
     # Strip number suffixes: 1547M → 1547, 2.3B → 2.3, 500K → 500
     text = re.sub(r'(\d+(?:\.\d+)?)\s*[MBKmbk]\b', r'\1', text)
     # Fix trailing commas before } or ]

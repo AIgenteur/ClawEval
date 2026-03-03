@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Docker Compose version '2' is outdated. Use '3.8' or later (current stable version as of 2023-10).",
+      "fix": "version: '3.8'"
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "'latest' tag is non-deterministic and may lead to unexpected behavior or security vulnerabilities due to unpatched dependencies.",
+      "fix": "Use a specific version tag (e.g., `node:18-lts`) or pin to a specific commit hash."
+    },
+    {
+      "line": "environment: DB_PASSWORD: supersecret123",
+      "problem": "Plaintext password in environment variables is insecure. Should use Docker secrets or external secret management (e.g., Vault, AWS Secrets Manager).",
+      "fix": "Use Docker secrets (e.g., `docker run --env-file secrets.env`) or external secret management."
+    },
+    {
+      "line": "environment: NODE_ENV: development",
+      "problem": "NODE_ENV should be 'production' for production environments to enforce stricter security and performance settings.",
+      "fix": "Set `NODE_ENV: production` (or remove entirely if not needed)."
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Source volume mount (`.:/app`) is unsafe for production. Bind mounts can expose files to the host system.",
+      "fix": "Use named volumes or a dedicated data directory (e.g., `./app:/app`)."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Should be `unless-stopped` or `always` for production services to ensure reliability.",
+      "fix": "Set `restart: unless-stopped` (or `always` if container must always restart)."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is end-of-life (EOL) and unsupported. Use a newer version (e.g., `mysql:8.0`).",
+      "fix": "Upgrade to `mysql:8.0` or later."
+    },
+    {
+      "line": "- 3306:3306",
+      "problem": "Exposing MySQL port `3306` publicly is insecure. Restrict access via firewall/network policies.",
+      "fix": "Use a private network or restrict access to trusted IPs."
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp is volatile and will be lost on host reboot. Use named volumes for persistence.",
+      "fix": "Use a named volume (e.g., `./mysql-data:/var/lib/mysql`)."
+    },
+    {
+      "line": "- 6379:6379",
+      "problem": "Exposing Redis port `6379` publicly is insecure. Add authentication (e.g., `password: redis-secret`) and restrict access.",
+      "fix": "Add `password: redis-secret` and restrict network access."
+    }
+  ],
+  "count": 9
+}
+```

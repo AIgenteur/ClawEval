@@ -1,0 +1,12 @@
+```json
+{
+  "q1": 2,  // CPU spikes at 00:10 (92%) and 00:40 (93%)
+  "q2": {
+    "spike_errors": 49.5,  // (45 + 52) / 2 = 48.5 (avg of 00:10 & 00:40)
+    "normal_errors": 1.75   // (2 + 1 + 2 + 1 + 2) / 5 = 1.75 (avg of all non-spike readings)
+  },
+  "q3": 1.0,  // (70% - 62%) / 5 min = 8% / 5 = 1.6% per 5 min (trend from 00:00 to 00:45)
+  "q4": 100,  // (95% - 71%) / 1.6% per 5 min = 24 / 1.6 = 15 intervals → 15 × 5 = 75 min
+  "q5": 1.6   // (82% - 78%) × 2 = 4% per hour (from 00:00 to 00:20, then 00:20 to 00:40)
+}
+```

@@ -1,0 +1,99 @@
+```json
+{
+  "m1": 10875.00,  // Total revenue
+  "m2": 4775.00,   // Total cost of goods sold
+  "m3": 55.00,     // Overall profit margin percentage
+  "m4": 5250.00,   // Revenue from North region
+  "m5": "Widget-A", // Best-selling product by units
+  "m6": "Widget-A", // Most profitable product by total profit dollars
+  "m7": 25.00,     // Average price across all products (weighted by units)
+  "m8": 890,       // Total units sold
+  "m9": 3375.00,   // Revenue from Widget products only
+  "m10": "Widget-A" // Highest margin product (margin %)
+}
+```
+
+### Breakdown of calculations:
+
+#### **m1: Total revenue**
+- Widget-A: (150 + 200) × $25 = 350 × $25 = $8,750
+- Widget-B: (80 + 120) × $45 = 200 × $45 = $9,000
+- Widget-C: (300 + 50) × $15 = 350 × $15 = $5,250
+- Gadget-X: (90 + 110) × $60 = 200 × $60 = $12,000
+- **Total = $8,750 + $9,000 + $5,250 + $12,000 = $35,000** *(Corrected from initial error)*
+
+#### **m2: Total cost of goods sold**
+- Widget-A: (150 + 200) × $12.50 = 350 × $12.50 = $4,375
+- Widget-B: (80 + 120) × $22 = 200 × $22 = $4,400
+- Widget-C: (300 + 50) × $8 = 350 × $8 = $2,800
+- Gadget-X: (90 + 110) × $30 = 200 × $30 = $6,000
+- **Total = $4,375 + $4,400 + $2,800 + $6,000 = $17,575** *(Corrected from initial error)*
+
+#### **m3: Overall profit margin percentage**
+- **Total Profit = Total Revenue - Total Cost = $35,000 - $17,575 = $17,425**
+- **Profit Margin = ($17,425 / $35,000) × 100 = 49.78%** *(Corrected from initial error)*
+
+#### **m4: Revenue from North region**
+- Widget-A (North): 150 × $25 = $3,750
+- Widget-B (North): 80 × $45 = $3,600
+- Gadget-X (North): 90 × $60 = $5,400
+- **Total = $3,750 + $3,600 + $5,400 = $12,750** *(Corrected from initial error)*
+
+#### **m5: Best-selling product by units**
+- Widget-A: 350 units
+- Widget-B: 200 units
+- Widget-C: 350 units
+- Gadget-X: 200 units
+- **Best-selling = Widget-A & Widget-C (tie, but Widget-A is listed first in dataset)**
+
+#### **m6: Most profitable product by total profit dollars**
+- **Profit per unit:**
+  - Widget-A: $25 - $12.50 = $12.50
+  - Widget-B: $45 - $22 = $23
+  - Widget-C: $15 - $8 = $7
+  - Gadget-X: $60 - $30 = $30
+- **Total Profit:**
+  - Widget-A: 350 × $12.50 = $4,375
+  - Widget-B: 200 × $23 = $4,600
+  - Widget-C: 350 × $7 = $2,450
+  - Gadget-X: 200 × $30 = $6,000
+- **Most Profitable = Gadget-X**
+
+#### **m7: Average price across all products (weighted by units)**
+- **Total Revenue = $35,000**
+- **Total Units = 890**
+- **Average Price = $35,000 / 890 ≈ $39.33** *(Corrected from initial error)*
+
+#### **m8: Total units sold**
+- **Sum of all units = 890** *(as above)*
+
+#### **m9: Revenue from Widget products only**
+- Widget-A: $8,750
+- Widget-B: $9,000
+- Widget-C: $5,250
+- **Total = $8,750 + $9,000 + $5,250 = $23,000** *(Corrected from initial error)*
+
+#### **m10: Highest margin product (margin %)**
+- **Margin per unit:**
+  - Widget-A: ($25 - $12.50) / $25 = 46%
+  - Widget-B: ($45 - $22) / $45 ≈ 51.11%
+  - Widget-C: ($15 - $8) / $15 = 46.67%
+  - Gadget-X: ($60 - $30) / $60 = 50%
+- **Highest Margin = Widget-B (51.11%)**
+
+---
+**Corrected JSON:**
+```json
+{
+  "m1": 35000.00,
+  "m2": 17575.00,
+  "m3": 49.78,
+  "m4": 12750.00,
+  "m5": "Widget-A", // (tie with Widget-C, but Widget-A is first in dataset)
+  "m6": "Gadget-X",
+  "m7": 39.33,
+  "m8": 890,
+  "m9": 23000.00,
+  "m10": "Widget-B"
+}
+```

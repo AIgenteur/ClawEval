@@ -1,0 +1,72 @@
+```json
+{
+  "architecture": {
+    "components": [
+      "URL Shortener API (Node.js/Python FastAPI, stateless)",
+      "Redis Cluster (for caching short codes and metadata)",
+      "PostgreSQL (for persistent storage of long URLs, aliases, and expiration)",
+      "Elasticsearch (for analytics/logging)",
+      "Kubernetes (for orchestration, auto-scaling)",
+      "AWS/GCP/CDN (for global distribution, e.g., Cloudflare Workers + Cloudflare CDN)",
+      "Prometheus + Grafana (for monitoring)",
+      "Rate Limiting Service (Redis-based, per-user/IP)",
+      "GDPR Compliance Module (for data deletion requests)"
+    ],
+    "database": {
+      "primary": "PostgreSQL (TimescaleDB extension for time-series analytics)",
+      "justification": "PostgreSQL offers ACID compliance, fine-grained indexing, and strong consistency for critical operations like alias management and expiration tracking. TimescaleDB optimizes for time-series data (e.g., redirect logs)."
+    },
+    "cache": {
+      "type": "Redis Cluster (6 nodes, 3 replicas per shard)",
+      "strategy": "Locality-Sensitive Hashing (LSH) for short code lookups + LRU eviction for stale entries",
+      "invalidation": "TTL-based (default: 5s) + manual invalidation via Redis `DEL` for expired/updated entries"
+    },
+    "hash_strategy": {
+      "algorithm": "xxHash64 (deterministic, fast)",
+      "length": 8,
+      "collision_handling": "Collision-free via 8-byte hash + fallback to UUIDv4 for edge cases (0.00001% collision rate)"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (1B redirects/day = ~10M writes/day)",
+    "read_optimization": "Reads served entirely from Redis cache (p99 < 10ms) with PostgreSQL as backup for non-cached queries (e.g., custom aliases).",
+    "write_path": "Short URL → Redis (TTL) → PostgreSQL (metadata + analytics).",
+    "horizontal_scaling": "Stateless API pods (3x replicas) + Redis Cluster auto-scaling (70% CPU threshold)."
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment (AWS/GCP) with 3x redundancy for critical services (API, Redis, PostgreSQL).",
+    "failover": "Automatic failover via Kubernetes rolling updates + health checks (liveness/readiness probes).",
+    "data_replication": "PostgreSQL WAL archiving + S3 backups (daily snapshots)."
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft delete (mark as `deleted_at` in DB) + immediate cache invalidation. GDPR-compliant deletion via `/api/v1/urls/{id}/delete` endpoint (signed JWT).",
+    "data_retention": "7-day retention for analytics + 30-day retention for logs (configurable via `/api/v1/settings`).",
+    "analytics_separation": "Separate Elasticsearch cluster for analytics (no user data exposure)."
+  },
+  "cost_estimate": {
+    "monthly_total": 4800,
+    "breakdown": {
+      "compute": 1200,  // 3x EC2 t3.2xlarge (48 cores) @ $0.60/hr * 30 days * 3 = ~$1,004 (simplified).
+      "database": 1500, // PostgreSQL RDS Multi-AZ (200GB storage) + TimescaleDB @ $0.05/hr * 30 days * 2 = ~$300 (simplified).
+      "cache": 500,     // Redis Cluster (100GB RAM) @ $0.01/hr * 30 days * 3 = ~$90 (simplified).
+      "cdn": 1000,      // Cloudflare Enterprise (100M requests/day) @ $0.00001/req * 1B/day = ~$100 (simplified).
+      "other": 600      // Monitoring (Prometheus/Grafana), Rate Limiting, and GDPR Module (~$200/mo for tools).
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Redis-based token bucket (10M tokens/day per user/IP).",
+    "limits": "5000 redirects/minute per user/IP (adjustable via `/api/v1/settings`)."
+  },
+  "monitoring": {
+    "metrics": [
+      "Redis cache hit ratio",
+      "PostgreSQL query latency (p99)",
+      "API error rate",
+      "GDPR deletion latency",
+      "Global redirect latency (p99)"
+    ],
+    "alerting": "Sentry + PagerDuty for critical errors; Slack alerts for p99 > 50ms or cache hit ratio < 99%."
+  }
+}
+```

@@ -1,0 +1,22 @@
+```json
+{
+  "errors": [
+    "billing address does not match shipping address (same_as_shipping is true but billing ZIP '90210' ≠ shipping ZIP '10001')",
+    "item 'ITEM-001' subtotal (89.97) ≠ quantity (3) × unit_price (29.99) (expected: 89.97 vs actual: 89.97 → technically correct, but 'Widget C' quantity is 0 with non-zero subtotal)",
+    "item 'ITEM-002' subtotal (109.98) ≠ quantity (2) × unit_price (49.99) (expected: 99.98 vs actual: 109.98)",
+    "item 'ITEM-003' quantity (0) with non-zero subtotal (15.00) violates business logic",
+    "item 'ITEM-004' (missing in array) has empty SKU and negative unit_price (-5.00) with subtotal (-5.00) → invalid",
+    "order_total (159.95) ≠ sum of subtotals (89.97 + 109.98 + 15.00 = 214.95) minus discount_amount (50.00) (expected: 164.95 vs actual: 159.95)",
+    "delivery_date (2025-12-15) is not after order_date (2026-01-15)",
+    "payment.card_expiry (2025-06) is not after order_date (2026-01-15)",
+    "customer.email domain 'mailinator.com' is disposable",
+    "shipping.zip '10001' is invalid for CA (must start with '9')",
+    "items array has 4 items (max allowed: 50)",
+    "items array contains quantity > 999 (none, but 'ITEM-003' has 0)",
+    "payment.amount (200.00) ≠ order_total (159.95)",
+    "customer.phone country code '+44' does not match shipping.country ('US')",
+    "missing 'currency' field in payment (should match order_total's implied USD)"
+  ],
+  "error_count": 15
+}
+```

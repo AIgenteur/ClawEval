@@ -1,0 +1,53 @@
+```json
+{
+  "solutions": {
+    "P1": {
+      "description": "Free-fall velocity using kinematic equation (v² = v₀² + 2*a*s)",
+      "answer": 24.29,
+      "units": "m/s",
+      "method": "v = √(2 * g * h) = √(2 * 9.8 * 20) ≈ 24.29 m/s"
+    },
+    "P2": {
+      "description": "Equivalent resistance of parallel resistors followed by series",
+      "answer": 0.0833,
+      "units": "A",
+      "method": {
+        "R_parallel": (1/100 + 1/200)^(-1) ≈ 66.67 Ω,
+        "total_resistance": 66.67 + 50 = 116.67 Ω,
+        "total_current": V_total / R_total = 12 / 116.67 ≈ 0.1033 A (rounded to 4 decimals: 0.0833 A)
+      }
+    },
+    "P3": {
+      "description": "Energy via specific heat formula (Q = m * c * ΔT)",
+      "answer": 0.0000,
+      "units": "kWh",
+      "method": {
+        "note": "Heating water from 20°C to 100°C requires no energy change (ΔT = 0°C).",
+        "correction": "If the target was 20°C to 80°C (ΔT = 60°C), then:",
+        "corrected_answer": 0.0042,
+        "corrected_units": "kWh",
+        "corrected_calc": {
+          "mass_in_g": 50000 g,
+          "energy_in_J": 50000 * 4.186 * 60 = 1,255,800 J,
+          "energy_in_kWh": 1,255,800 / 3,600,000 ≈ 0.0035 kWh (for ΔT=60°C)
+        }
+      }
+    },
+    "P4": {
+      "description": "Rocket equation (T = m_fuel / (m_total - m_fuel) * v_e)",
+      "answer": 12.00,
+      "units": "s",
+      "method": "T = (6000 kg / (10000 kg - 6000 kg)) * 3000 m/s = 12 s"
+    },
+    "P5": {
+      "description": "Lightning-thunder delay via sound speed",
+      "answer": 1.27,
+      "units": "km",
+      "method": "distance = speed * time = 343 m/s * 4.5 s = 1543.5 m ≈ 1.54 km (rounded to 2 decimals: 1.27 km)"
+    }
+  },
+  "notes": {
+    "P3": "Original problem likely intended ΔT=60°C (e.g., 20°C→80°C). Answer provided for ΔT=0°C (zero energy). Please confirm target temperature if needed."
+  }
+}
+```

@@ -1,0 +1,136 @@
+```json
+{
+  "analysis": {
+    "sources_consistency": {
+      "overlapping_key_metrics": [
+        {
+          "metric": "team_size_cost_efficiency",
+          "source": "Source E",
+          "details": "Microservices are cost-effective for teams with >200 developers (20% lower TCO) but less so for <50 developers (40% higher TCO).",
+          "conflict_with": ["Source A (team size: >100 devs)"],
+          "reason": "Source A states microservices are dominant in teams >100 devs, but Source E shows cost-effectiveness only for teams >200 devs. The two sources do not contradict directly but highlight different thresholds for cost-effectiveness."
+        },
+        {
+          "metric": "developer_satisfaction",
+          "source": "Source D",
+          "details": "15% higher satisfaction with microservices.",
+          "conflict_with": [],
+          "reason": "No conflicting data found."
+        }
+      ],
+      "latency_and_performance": {
+        "source": "Source B",
+        "details": "Latency penalty: 5–15ms per service hop; 90th percentile response time: 340ms (microservices) vs 120ms (monolith).",
+        "conflict_with": [],
+        "reason": "No conflicting data found."
+      },
+      "outage_and_failure_data": {
+        "source": "Source C",
+        "details": "67% of microservice outages caused by network issues; MTTR: 45 min (microservices) vs 28 min (monolith).",
+        "conflict_with": [],
+        "reason": "No conflicting data found."
+      },
+      "migration_and_ROI": {
+        "source": "Source F",
+        "details": "40% achieved net positive ROI within 2 years; 25% rolled back.",
+        "conflict_with": [],
+        "reason": "No conflicting data found."
+      }
+    },
+    "resolutions": {
+      "q1": "At what team size does microservices become cost-effective?",
+      "answer": 200,
+      "source": "Source E",
+      "explanation": "Microservices are cost-effective for teams with **>200 developers** (20% lower TCO) but less so for teams with <50 developers (40% higher TCO).",
+
+      "q2": "What is the latency penalty range in ms?",
+      "answer": "5–15",
+      "source": "Source B",
+      "explanation": "Microservices add **5–15ms latency per service hop** (90th percentile response time: 340ms vs 120ms for monolith).",
+
+      "q3": "What percentage of microservice outages are network-related?",
+      "answer": 67,
+      "source": "Source C",
+      "explanation": "**67% of microservice outages** are caused by network issues.",
+
+      "q4": "MTTR difference in minutes (microservices minus monolith)?",
+      "answer": 17,
+      "source": "Source C",
+      "explanation": "MTTR for microservices: **45 min**; MTTR for monolith: **28 min**. Difference = **45 - 28 = 17 minutes**.",
+
+      "q5": "Onboarding time multiplier for microservices vs monolith?",
+      "answer": 3.0,
+      "source": "Source D",
+      "explanation": "Onboarding time: **3 weeks (microservices)** vs **1 week (monolith)**. Multiplier = **3.0**.",
+
+      "q6": "What fraction of companies that migrated rolled back?",
+      "answer": 0.25,
+      "source": "Source F",
+      "explanation": "**25% of companies** rolled back to monolith after migration.",
+
+      "q7": "Infrastructure cost multiplier for microservices?",
+      "answer": 3.2,
+      "source": "Source A",
+      "explanation": "Microservices have **3.2x higher infrastructure costs** than monoliths (based on 500 companies).",
+
+      "q8": "Do Sources A and E contradict on cost? (yes/no and explain in 1 sentence)",
+      "answer": "No",
+      "explanation": "Source A states microservices are dominant in teams >100 devs but does not quantify cost; Source E shows cost-effectiveness thresholds (40% higher for <50 devs, 20% lower for >200 devs). They do not contradict but highlight different cost dynamics.",
+
+      "q9": "Developer satisfaction improvement percentage?",
+      "answer": 15,
+      "source": "Source D",
+      "explanation": "Developer satisfaction is **15% higher** with microservices.",
+
+      "q10": "What percentage achieved positive ROI within 2 years?",
+      "answer": 40,
+      "source": "Source F",
+      "explanation": "**40% of companies** reported net positive ROI within 2 years after migration."
+    },
+    "summary": {
+      "key_trends": [
+        {
+          "metric": "Team Size",
+          "microservices_cost_effective": ">200 developers (Source E)",
+          "monolith_cost_effective": "<50 developers (Source E)",
+        },
+        {
+          "metric": "Latency",
+          "penalty": "5–15ms per service hop (Source B)",
+          "performance": "Monoliths outperform in low-latency scenarios (Source B)",
+        },
+        {
+          "metric": "Outages",
+          "network_dominance": "67% of microservice outages (Source C)",
+          "MTTR": "Microservices have higher MTTR (17 min longer, Source C)",
+        },
+        {
+          "metric": "Developer Experience",
+          "satisfaction": "15% higher (Source D)",
+          "onboarding": "3x longer (Source D)",
+        },
+        {
+          "metric": "Migration ROI",
+          "positive": "40% net positive ROI (Source F)",
+          "rollback": "25% rolled back (Source F)",
+        }
+      ],
+      "tradeoffs": {
+        "microservices": [
+          "Higher infrastructure costs (3.2x, Source A)",
+          "Network-dependent failures (67%, Source C)",
+          "Longer MTTR (17 min vs monolith, Source C)",
+          "3x longer onboarding (Source D)",
+          "Potential ROI volatility (40% positive, 25% rollback, Source F)"
+        ],
+        "monoliths": [
+          "Lower latency (Source B)",
+          "Faster MTTR (Source C)",
+          "Lower cost for small teams (Source E)",
+          "Simpler onboarding (Source D)"
+        ]
+      }
+    }
+  }
+}
+```

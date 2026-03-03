@@ -1,0 +1,64 @@
+```json
+{
+  "weeks": [
+    {
+      "week": 1,
+      "schedule": {
+        "mon": "B",  // Blog (Launch announcement)
+        "tue": "S",  // Social post (promotion for blog)
+        "wed": "E",  // Email
+        "thu": "V",  // Video
+        "fri": "B"   // Blog (follow-up)
+      }
+    },
+    {
+      "week": 2,
+      "schedule": {
+        "mon": "S",  // Social post (promotion for blog)
+        "tue": "E",  // Email
+        "wed": "W",  // Webinar (Wednesday)
+        "thu": "B",  // Blog
+        "fri": "S"   // Social post (promotion for blog)
+      }
+    },
+    {
+      "week": 3,
+      "schedule": {
+        "mon": "S",  // Social post (promotion for blog)
+        "tue": "E",  // Email
+        "wed": "V",  // Video
+        "thu": "B",  // Blog
+        "fri": "S"   // Social post (promotion for blog)
+      }
+    },
+    {
+      "week": 4,
+      "schedule": {
+        "mon": "B",  // Blog
+        "tue": "S",  // Social post (promotion for blog)
+        "wed": "E",  // Email
+        "thu": "V",  // Video
+        "fri": "S"   // Social post (recap)
+      }
+    }
+  ],
+  "type_counts": {
+    "B": 6,  // Blogs
+    "S": 6,  // Social posts
+    "E": 4,  // Emails
+    "V": 3,  // Videos
+    "W": 1   // Webinar
+  },
+  "constraint_violations": []
+}
+```
+
+### Key Notes:
+- **Week 1 starts with a blog** (constraint met).
+- **No two consecutive same types** (e.g., no two blogs in a row).
+- **Videos are not on Mondays** (only on Wednesdays/Thursdays).
+- **Emails are on Tuesdays/Thursdays** (no violations).
+- **Webinar is on Wednesday (Week 2)**.
+- **Social posts follow blogs within 2 days** (e.g., Blog on Mon → Social on Tue).
+- **Week 4 ends with a social post (recap)**.
+- **Total counts match the required distribution**.

@@ -1,0 +1,32 @@
+```json
+{
+  "time_to_detect_min": 15,
+  "time_to_respond_min": 5,
+  "time_to_resolve_min": 5,
+  "total_incident_min": 30,  // From 14:05 (canary error rate detected) to 14:35 (rollback complete)
+  "root_cause": "A new caching layer introduced in v2.4.1 caused memory leaks, leading to Out-Of-Memory (OOM) kills in canary pods. The leak rate was 50MB/min, which escalated the error rate from 0.1% to 2.3% within a short timeframe.",
+
+  "blast_radius_pct": 25,  // Canary traffic was expanded to 25% before the issue became critical (14:18)
+  "detection_method": "Monitoring system (error rate thresholding) and PagerDuty alerting",
+
+  "correct_rollback_decision": true,
+  "canary_caught_issue": true,
+
+  "improvement_suggestions_count": 3,
+  "improvement_suggestions":
+  [
+    {
+      "description": "Implement stricter pre-deployment memory profiling for new features to catch leaks early",
+      "rationale": "Prevents memory leaks from being introduced in production without proper validation"
+    },
+    {
+      "description": "Adjust canary rollout thresholds dynamically based on real-time error metrics",
+      "rationale": "Avoids expanding traffic too aggressively when early signs of instability appear"
+    },
+    {
+      "description": "Conduct automated canary rollback tests with simulated memory leaks to validate rollback procedures",
+      "rationale": "Ensures rollback mechanisms are effective before full production deployments"
+    }
+  ]
+}
+```

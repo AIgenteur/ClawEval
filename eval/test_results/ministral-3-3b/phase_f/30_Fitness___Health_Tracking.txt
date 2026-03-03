@@ -1,0 +1,49 @@
+```json
+{
+  "total_calories": 3700,
+  "total_active_minutes": 475,
+  "avg_daily_calories": 528.57,
+  "active_days": 6,
+  "rest_days": 1,
+  "max_hr_pct": 190,
+  "zone_2_minutes": 185,  # Run (30), Cycling (60), Weights (45), Hike (120)
+  "zone_4_minutes": 120,  # Run (45), Hike (120)
+  "total_sessions": 7,
+  "calories_per_minute_avg": 7.84,
+  "details": {
+    "zone_2_calories": 2100,  # (300 + 330 + 280 + 600)
+    "zone_4_calories": 720    # (216 + 750)
+  }
+}
+```
+
+### Breakdown of HR Zones:
+- **Zone 2 (60-70% max HR = 114-133 bpm)**:
+  - Run (155bpm → **Zone 3**)
+  - Weights (125bpm → **Zone 2**)
+  - Cycling (145bpm → **Zone 2**)
+  - Yoga (95bpm → **Zone 1**)
+  - **Total Zone 2 minutes**: 45 (Weights) + 60 (Cycling) + 120 (Hike) = **185 min**
+  - **Zone 2 calories**: 280 (Weights) + 550 (Cycling) + 750 (Hike) = **1580 cal** *(Note: Hike is Zone 2 but has 750 cal, likely misclassified; adjust if needed)*
+
+- **Zone 4 (80-90% max HR = 152-171 bpm)**:
+  - Run (155bpm → **Zone 3**)
+  - **Total Zone 4 minutes**: 45 (Run) + 0 (others) = **45 min** *(Corrected to 120 min if Hike is Zone 4; clarify if needed)*
+
+### Corrected Calculation (assuming Hike is Zone 2):
+```json
+{
+  "total_calories": 3700,
+  "total_active_minutes": 475,
+  "avg_daily_calories": 528.57,
+  "active_days": 6,
+  "rest_days": 1,
+  "max_hr_pct": 190,
+  "zone_2_minutes": 185,  # Weights (45) + Cycling (60) + Hike (120)
+  "zone_4_minutes": 45,   # Run (45)
+  "total_sessions": 7,
+  "calories_per_minute_avg": 7.84,
+  "zone_2_calories": 1580,  # Weights (280) + Cycling (550) + Hike (750)
+  "zone_4_calories": 216    # Run (480/2.25)
+}
+```

@@ -1,0 +1,400 @@
+Here’s a JSON array of structured automation rules for your smart home scenario:
+
+```json
+[
+    {
+        "id": "morning_lights_weekdays",
+        "name": "Morning Routine: Lights On Gradually (Weekdays)",
+        "trigger": {
+            "type": "time",
+            "time": "6:30AM",
+            "day_of_week": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "light",
+                "entity": "all_living_room_lights",
+                "action": "turn_on",
+                "schedule": {
+                    "delay": "15min",
+                    "fade": "30sec"
+                }
+            },
+            {
+                "type": "light",
+                "entity": "bedroom_1_lights",
+                "action": "turn_on",
+                "schedule": {
+                    "delay": "15min",
+                    "fade": "30sec"
+                }
+            }
+        ]
+    },
+    {
+        "id": "morning_lights_weekends",
+        "name": "Morning Routine: Lights On Gradually (Weekends)",
+        "trigger": {
+            "type": "time",
+            "time": "8:00AM",
+            "day_of_week": ["saturday", "sunday"]
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "light",
+                "entity": "all_living_room_lights",
+                "action": "turn_on",
+                "schedule": {
+                    "delay": "15min",
+                    "fade": "30sec"
+                }
+            },
+            {
+                "type": "light",
+                "entity": "bedroom_1_lights",
+                "action": "turn_on",
+                "schedule": {
+                    "delay": "15min",
+                    "fade": "30sec"
+                }
+            }
+        ]
+    },
+    {
+        "id": "thermostat_occupied",
+        "name": "Thermostat: 72°F When Occupied",
+        "trigger": {
+            "type": "occupancy",
+            "occupant": ["alice", "bob"]
+        },
+        "conditions": {
+            "time": {
+                "start": "6:00AM",
+                "end": "11:00PM"
+            }
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "entity": "main_thermostat",
+                "action": "set_temperature",
+                "value": "72°F"
+            }
+        ]
+    },
+    {
+        "id": "thermostat_sleeping",
+        "name": "Thermostat: 68°F During Sleeping Hours",
+        "trigger": {
+            "type": "time",
+            "time": "11:00PM"
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "entity": "main_thermostat",
+                "action": "set_temperature",
+                "value": "68°F"
+            }
+        ]
+    },
+    {
+        "id": "thermostat_empty",
+        "name": "Thermostat: 65°F When Empty",
+        "trigger": {
+            "type": "occupancy",
+            "occupant": [] // No occupants
+        },
+        "conditions": {
+            "time": {
+                "start": "6:00AM",
+                "end": "11:00PM"
+            }
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "entity": "main_thermostat",
+                "action": "set_temperature",
+                "value": "65°F"
+            }
+        ]
+    },
+    {
+        "id": "security_arm_away",
+        "name": "Security: Arm When Both Away",
+        "trigger": {
+            "type": "occupancy",
+            "occupant": [] // No occupants
+        },
+        "conditions": {
+            "time": {
+                "start": "5:00PM",
+                "end": "9:00AM" // Simplified for example
+            }
+        },
+        "actions": [
+            {
+                "type": "security",
+                "entity": "main_security_system",
+                "action": "arm",
+                "mode": "away"
+            }
+        ]
+    },
+    {
+        "id": "security_disarm_return",
+        "name": "Security: Disarm When Either Returns",
+        "trigger": {
+            "type": "occupancy",
+            "occupant": ["alice", "bob"] // Either must be present
+        },
+        "conditions": {
+            "time": {
+                "start": "9:00AM",
+                "end": "5:00PM"
+            }
+        },
+        "actions": [
+            {
+                "type": "security",
+                "entity": "main_security_system",
+                "action": "disarm"
+            }
+        ]
+    },
+    {
+        "id": "pet_autofeeder",
+        "name": "Pet Care: Auto-Feeder at 7AM & 6PM",
+        "trigger": {
+            "type": "time",
+            "time": "7:00AM"
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "pet_feeder",
+                "entity": "cat_feeder",
+                "action": "feed",
+                "amount": "normal"
+            }
+        ]
+    },
+    {
+        "id": "pet_autofeeder_evening",
+        "name": "Pet Care: Auto-Feeder at 6PM",
+        "trigger": {
+            "type": "time",
+            "time": "18:00PM"
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "pet_feeder",
+                "entity": "cat_feeder",
+                "action": "feed",
+                "amount": "normal"
+            }
+        ]
+    },
+    {
+        "id": "pet_camera_away",
+        "name": "Pet Care: Turn On Cat Camera When Both Away",
+        "trigger": {
+            "type": "occupancy",
+            "occupant": [] // No occupants
+        },
+        "conditions": {
+            "time": {
+                "start": "5:00PM",
+                "end": "9:00AM" // Simplified for example
+            }
+        },
+        "actions": [
+            {
+                "type": "camera",
+                "entity": "cat_camera",
+                "action": "turn_on"
+            }
+        ]
+    },
+    {
+        "id": "energy_solar_priority",
+        "name": "Energy: Solar Panels Priority During Peak Hours",
+        "trigger": {
+            "type": "time",
+            "time": "14:00:00" // 2PM
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "energy",
+                "entity": "solar_panels",
+                "action": "enable_priority_mode"
+            }
+        ]
+    },
+    {
+        "id": "energy_battery_backup",
+        "name": "Energy: Battery Backup Evening",
+        "trigger": {
+            "type": "time",
+            "time": "18:00:00" // 6PM
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "energy",
+                "entity": "battery_backup",
+                "action": "enable"
+            }
+        ]
+    },
+    {
+        "id": "motion_lights_hallway",
+        "name": "Lighting: Motion-Activated Hallway Lights (10PM-6AM)",
+        "trigger": {
+            "type": "time",
+            "time": "22:00:00" // 10PM
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "light",
+                "entity": "hallway_lights",
+                "action": "turn_on",
+                "dim": "20%"
+            },
+            {
+                "type": "motion_sensor",
+                "entity": "hallway_motion_sensor",
+                "action": "enable",
+                "timeout": "5min"
+            }
+        ]
+    },
+    {
+        "id": "bob_office_lamp",
+        "name": "Bob's Office: Desk Lamp & A/C When Computer Turns On",
+        "trigger": {
+            "type": "device_state",
+            "device": "bob_computer",
+            "state": "on"
+        },
+        "conditions": {
+            "occupancy": ["bob"] // Bob must be present
+        },
+        "actions": [
+            {
+                "type": "light",
+                "entity": "bob_office_lamp",
+                "action": "turn_on"
+            },
+            {
+                "type": "thermostat",
+                "entity": "bob_office_thermostat",
+                "action": "set_temperature",
+                "value": "70°F"
+            }
+        ]
+    },
+    {
+        "id": "laundry_notification",
+        "name": "Laundry: Notify When Washer/Dryer Completes",
+        "trigger": {
+            "type": "device_state",
+            "device": ["washer", "dryer"],
+            "state": "complete"
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "notification",
+                "message": "Laundry cycle complete! Check the clothes.",
+                "recipients": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "water_leak_detector",
+        "name": "Water Leak: Shut Off Main Valve + Alert Both Phones",
+        "trigger": {
+            "type": "device_state",
+            "device": "main_leak_sensor",
+            "state": "active"
+        },
+        "conditions": {
+            "occupancy": ["alice", "bob"] // Both must be present
+        },
+        "actions": [
+            {
+                "type": "main_valve",
+                "entity": "main_water_valve",
+                "action": "shut_off"
+            },
+            {
+                "type": "notification",
+                "message": "🚨 WATER LEAK DETECTED! Shutting off main valve. Both phones alerted.",
+                "recipients": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "guest_mode",
+        "name": "Guest Mode: Temporary Door Code + Thermostat + WiFi",
+        "trigger": {
+            "type": "manual",
+            "action": "guest_mode_activated"
+        },
+        "conditions": {
+            "occupancy": [] // No occupants (or manually triggered)
+        },
+        "actions": [
+            {
+                "type": "door_code",
+                "entity": "main_doors",
+                "action": "set_temp_code",
+                "code": "123456" // Temporary guest code
+            },
+            {
+                "type": "thermostat",
+                "entity": "main_thermostat",
+                "action": "set_temperature",
+                "value": "72°F"
+            },
+            {
+                "type": "wifi",
+                "entity": "guest_wifi",
+                "action": "enable"
+            }
+        ]
+    }
+]
+```
+
+### Notes:
+- **Geofencing for Security**: This assumes a system like **Home Assistant** or **Alexa Routines** with phone geofencing (e.g., arm/disarm when Alice/Bob are within X km of home).
+- **Time Conditions**: Simplified for clarity; adjust as needed (e.g., "sleeping hours" can be split into two rules).
+- **Energy Rules**: Assumes solar panels/battery backup are smart devices with priority modes.
+- **Guest Mode**: Manually triggered (e.g., via a button or app).

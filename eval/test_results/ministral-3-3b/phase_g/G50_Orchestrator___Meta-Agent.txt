@@ -1,0 +1,103 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnostic Phase",
+      "agents": [
+        {"agent": "log_analyzer", "input": {"file_patterns": ["production_*.log", "error_*.log"], "time_window": "last_5_minutes"}, "timeout_seconds": 30},
+        {"agent": "metric_checker", "input": {"query": ["service_upstream_latency", "error_rate"], "thresholds": {"latency": 0.5, "error_rate": 0.01}}, "timeout_seconds": 20},
+        {"agent": "dependency_mapper", "input": {"service_name": "production_service"}, "timeout_seconds": 15}
+      ],
+      "parallel": true,
+      "gate": "diagnostic_results_available AND no_immediate_critical_failure_detected"
+    },
+    {
+      "phase": 2,
+      "name": "Notification and Dependency Assessment",
+      "agents": [
+        {"agent": "notification_agent", "input": {"channels": ["slack", "pagerduty"], "message": "Initial outage detected. Running diagnostics."}, "timeout_seconds": 10},
+        {"agent": "db_checker", "input": {"service": "production_service_db"}, "timeout_seconds": 10},
+        {"agent": "capacity_planner", "input": {"service": "production_service"}, "timeout_seconds": 10}
+      ],
+      "parallel": true,
+      "gate": "db_health_stable AND no_resource_pressure_exceeding_thresholds"
+    },
+    {
+      "phase": 3,
+      "name": "Customer Communication and Rollback Prep",
+      "agents": [
+        {"agent": "customer_communicator", "input": {"affected_customers": "all_users", "message": "Service outage detected. Status update in progress."}, "timeout_seconds": 15},
+        {"agent": "config_auditor", "input": {"time_window": "last_24_hours"}, "timeout_seconds": 10}
+      ],
+      "parallel": true,
+      "gate": "customer_notified AND no_recent_config_changes_detected"
+    },
+    {
+      "phase": 4,
+      "name": "Remediation and Rollback Execution",
+      "agents": [
+        {"agent": "rollback_agent", "input": {"service": "production_service", "rollback_depth": 1}, "timeout_seconds": 20},
+        {"agent": "incident_reporter", "input": {"service": "production_service", "status": "in_progress"}, "timeout_seconds": 10}
+      ],
+      "parallel": true,
+      "gate": "rollback_complete AND no_dependency_breakdowns_detected"
+    },
+    {
+      "phase": 5,
+      "name": "Verification and Final Checks",
+      "agents": [
+        {"agent": "log_analyzer", "input": {"file_patterns": ["production_*.log"], "time_window": "last_10_minutes"}, "timeout_seconds": 20},
+        {"agent": "metric_checker", "input": {"query": ["service_upstream_latency", "error_rate"], "thresholds": {"latency": 0.1, "error_rate": 0.001}}, "timeout_seconds": 15}
+      ],
+      "parallel": true,
+      "gate": "all_metrics_normal AND no_new_errors_detected"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "db_health_stable AND no_resource_pressure_exceeding_thresholds AND no_recent_config_changes_detected",
+      "if_true": "go to phase 3",
+      "if_false": "go to phase 2 (re-run dependency assessment)"
+    },
+    {
+      "after_phase": 4,
+      "condition": "rollback_complete AND no_dependency_breakdowns_detected AND all_metrics_normal",
+      "if_true": "go to phase 5",
+      "if_false": "go to phase 4 (re-run rollback with adjustments)"
+    }
+  ],
+  "escalation": {
+    "trigger": {
+      "time_based": {
+        "phase": 4,
+        "max_duration": 15,
+        "message": "Service rollback in progress for 15 minutes without improvement. Escalating to SRE team."
+      }
+    },
+    "action": {
+      "notification_agent": {
+        "input": {
+          "channels": ["pagerduty", "slack"],
+          "message": "Escalation: Production service rollback timeout. Immediate SRE intervention required."
+        }
+      },
+      "incident_reporter": {
+        "input": {
+          "service": "production_service",
+          "status": "escalated",
+          "priority": "high"
+        }
+      }
+    }
+  },
+  "total_phases": 5,
+  "max_time_minutes": 30,
+  "rollback_conditions": [
+    "service_metrics_stable_for_5_minutes",
+    "no_dependency_breakdowns_detected",
+    "customer_communication_complete"
+  ]
+}
+```

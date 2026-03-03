@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use environment variables or a secure secrets manager to store the secret key, e.g., `os.getenv('SECRET_KEY')` and set it securely in production."
+    },
+    {
+      "id": 2,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries to prevent SQL injection: `db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))`."
+    },
+    {
+      "id": 3,
+      "type": "Pickle Deserialization Vulnerability (RCE)",
+      "severity": "critical",
+      "location": "obj = pickle.loads(data)",
+      "fix": "Avoid using `pickle.loads()` for untrusted input. Use safer alternatives like JSON or implement strict validation for serialized data."
+    },
+    {
+      "id": 4,
+      "type": "Command Injection (Shell Command Execution)",
+      "severity": "critical",
+      "location": "result = subprocess.check_output(cmd, shell=True)",
+      "fix": "Sanitize the input and avoid `shell=True`. Use `subprocess.run(cmd.split(), capture_output=True)` or similar for safer command execution."
+    },
+    {
+      "id": 5,
+      "type": "Directory Traversal (File Path Manipulation)",
+      "severity": "critical",
+      "location": "open(path).read()",
+      "fix": "Validate and sanitize the `path` parameter to prevent directory traversal attacks. Use absolute paths or restrict allowed directories."
+    },
+    {
+      "id": 6,
+      "type": "Insecure Password Storage (Plaintext Comparison)",
+      "severity": "high",
+      "location": "pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Use secure password hashing (e.g., bcrypt, Argon2) and never store plaintext passwords. Avoid hardcoding or environment variables for sensitive data."
+    },
+    {
+      "id": 7,
+      "type": "Information Disclosure (Environment Variables Leak)",
+      "severity": "high",
+      "location": "return str(os.environ)",
+      "fix": "Restrict access to sensitive environment variables. Return only non-sensitive data or use secure logging mechanisms."
+    },
+    {
+      "id": 8,
+      "type": "Insecure Direct Object Reference (IDOR) + No Authentication",
+      "severity": "high",
+      "location": "/user/<id> endpoint (no auth check)",
+      "fix": "Implement authentication/authorization checks (e.g., JWT, session tokens) before accessing user data."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "No HTTPS enforcement (V9)",
+      "fix": "Enforce HTTPS in production using `app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0` and `app.run(ssl_context='adhoc')` (or use a proper certificate)."
+    },
+    {
+      "id": 10,
+      "type": "Unrestricted Request Volume (No Rate Limiting)",
+      "severity": "medium",
+      "location": "No rate limiting (V10)",
+      "fix": "Implement rate limiting (e.g., Flask-Limiter) to prevent brute-force attacks or DDoS. Example: `from flask_limiter import Limiter; limiter = Limiter(app, key_func=get_remote_address).rate_limit('5 per minute').add_endpoint('/search')`."
+    }
+  ],
+  "count": 10
+}
+```

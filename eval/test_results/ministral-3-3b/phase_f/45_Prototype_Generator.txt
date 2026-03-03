@@ -1,0 +1,91 @@
+```python
+from flask import Flask, request, jsonify
+from dataclasses import dataclass
+from typing import List, Optional
+
+app = Flask(__name__)
+
+@app.route('/books', methods=['GET'])
+def list_books():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
+    books = _in_memory_books
+    total = len(books)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_books = books[start:end]
+    return jsonify({
+        'books': paginated_books,
+        'page': page,
+        'per_page': per_page,
+        'total': total,
+        'total_pages': (total + per_page - 1) // per_page
+    })
+
+@app.route('/books/<int:id>', methods=['GET'])
+def get_book(id):
+    book = next((b for b in _in_memory_books if b['id'] == id), None)
+    if not book:
+        return jsonify({'error': 'Book not found'}), 404
+    return jsonify(book)
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    data = request.get_json()
+    if not all(k in data for k in ['title', 'author', 'isbn', 'price']):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        price = float(data['price'])
+    except ValueError:
+        return jsonify({'error': 'Invalid price format'}), 422
+
+    new_book = {
+        'id': len(_in_memory_books) + 1,
+        'title': data['title'],
+        'author': data['author'],
+        'isbn': data['isbn'],
+        'price': price
+    }
+    _in_memory_books.append(new_book)
+    return jsonify(new_book), 201
+
+@app.route('/books/<int:id>', methods=['PUT'])
+def update_book(id):
+    book = next((b for b in _in_memory_books if b['id'] == id), None)
+    if not book:
+        return jsonify({'error': 'Book not found'}), 404
+
+    data = request.get_json()
+    if not all(k in data for k in ['title', 'author', 'isbn', 'price']):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        price = float(data['price'])
+    except ValueError:
+        return jsonify({'error': 'Invalid price format'}), 422
+
+    book.update({
+        'title': data['title'],
+        'author': data['author'],
+        'isbn': data['isbn'],
+        'price': price
+    })
+    return jsonify(book)
+
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    global _in_memory_books
+    book = next((b for b in _in_memory_books if b['id'] == id), None)
+    if not book:
+        return jsonify({'error': 'Book not found'}), 404
+
+    _in_memory_books = [b for b in _in_memory_books if b['id'] != id]
+    return jsonify({'message': 'Book deleted successfully'}), 200
+
+# In-memory "database"
+_in_memory_books = []
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
