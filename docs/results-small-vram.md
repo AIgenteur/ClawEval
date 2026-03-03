@@ -116,34 +116,59 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (local server).
 
 ## 📐 Max Context Per VRAM Tier
 
-All models Q4_K_M, Flash Attention on, native max 262,144 tokens (256K).
+**GPU**: RTX 3090 (24 GB) | **FA**: On | **Quant**: Q4_K_M | **Native max**: 262,144 tokens
 
-Context is capped at native max. If native max fits at a lower VRAM tier, higher tiers are marked ✅ (same).
+Context capped at native max. If native max fits at a lower VRAM tier, higher tiers show ✅ (skipped).
 
-### f16 KV Cache
+### Quick Summary — q8_0 KV (recommended)
 
-| Model | File Size | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
-|-------|----------|-----------|------|-------|-------|-------|
-| Qwen3.5-0.8B | 0.5 GB | 1,343 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
-| Qwen3.5-2B | 1.3 GB | 2,061 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
-| Qwen3.5-4B | 2.7 GB | 3,501 MiB | 150,000 | **262,144** ⭐ | ✅ | ✅ |
-| Qwen3.5-9B | 5.7 GB | 5,765 MiB | 77,500 | 202,500 | **262,144** ⭐ | ✅ |
+| Model | File | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
+|-------|------|-----------|------|-------|-------|-------|
+| **Qwen3.5-0.8B** | 0.5 GB | 1,343 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
+| **Qwen3.5-2B** | 1.3 GB | 2,061 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
+| **Ministral-3-3B** | 2.1 GB | 2,665 MiB | 100K | 172K | 245K | **262K ⭐** |
+| **Qwen3.5-4B** | 2.7 GB | 3,501 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
+| **Ministral-3-8B** | 5.2 GB | 5,307 MiB | 40K | 97K | 152K | 257K |
+| **Qwen3.5-9B** | 5.7 GB | 5,765 MiB | 145K | **262K ⭐** | ✅ | ✅ |
+| **Ministral-3-14B** | 8.2 GB | 8,149 MiB | ❌ | 50K | 97K | 187K |
 
-### q8_0 KV Cache
+⭐ = native max reached | ✅ = same (skipped)
 
-| Model | File Size | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
-|-------|----------|-----------|------|-------|-------|-------|
-| Qwen3.5-0.8B | 0.5 GB | 1,343 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
-| Qwen3.5-2B | 1.3 GB | 2,061 MiB | **262,144** ⭐ | ✅ | ✅ | ✅ |
-| Qwen3.5-4B | 2.7 GB | 3,501 MiB | 250,000 | **262,144** ⭐ | ✅ | ✅ |
-| Qwen3.5-9B | 5.7 GB | 5,765 MiB | 145,000 | **262,144** ⭐ | ✅ | ✅ |
+### Quick Summary — f16 KV
 
-⭐ = native max (262K) reached &nbsp; ✅ = same (fits at lower tier)
+| Model | File | Base VRAM | 8 GB | 12 GB | 16 GB | 24 GB |
+|-------|------|-----------|------|-------|-------|-------|
+| **Qwen3.5-0.8B** | 0.5 GB | 1,343 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
+| **Qwen3.5-2B** | 1.3 GB | 2,061 MiB | **262K ⭐** | ✅ | ✅ | ✅ |
+| **Ministral-3-3B** | 2.1 GB | 2,665 MiB | 52K | 92K | 132K | 207K |
+| **Qwen3.5-4B** | 2.7 GB | 3,501 MiB | 150K | **262K ⭐** | ✅ | ✅ |
+| **Ministral-3-8B** | 5.2 GB | 5,307 MiB | 20K | 50K | 82K | 140K |
+| **Qwen3.5-9B** | 5.7 GB | 5,765 MiB | 77K | 202K | **262K ⭐** | ✅ |
+| **Ministral-3-14B** | 8.2 GB | 8,149 MiB | ❌ | 25K | 52K | 100K |
 
-### Per-Model Details
+### Architecture Impact on Context Length
 
-<details>
-<summary><b>Qwen3.5-0.8B</b> — File: 0.5 GB · Base VRAM: 1,343 MiB</summary>
+Qwen3.5 uses a **hybrid DeltaNet + Attention** architecture (only 1 in 4 layers uses full attention), resulting in dramatically lower KV cache cost per token compared to Ministral's standard Transformer attention:
+
+| Model | KV Cost (q8_0) per 1K tokens | Architecture |
+|-------|------------------------------|-------------|
+| Qwen3.5-0.8B | ~7 MiB | Hybrid DeltaNet |
+| Qwen3.5-2B | ~8 MiB | Hybrid DeltaNet |
+| Qwen3.5-4B | ~18 MiB | Hybrid DeltaNet |
+| Qwen3.5-9B | ~33 MiB | Hybrid DeltaNet |
+| Ministral-3-3B | ~55 MiB | Standard Attention |
+| Ministral-3-8B | ~73 MiB | Standard Attention |
+| Ministral-3-14B | ~113 MiB | Standard Attention |
+
+> Qwen3.5 models achieve **3-6× more context** than equivalently-sized Ministral models at the same VRAM budget, purely due to the hybrid architecture.
+
+---
+
+### Detailed Results — Qwen3.5
+
+#### Qwen3.5-0.8B
+
+**File**: 0.5 GB | **Base VRAM**: 1,343 MiB
 
 | VRAM Budget | f16 KV | q8_0 KV |
 |------------|--------|--------|
@@ -152,10 +177,9 @@ Context is capped at native max. If native max fits at a lower VRAM tier, higher
 | 16GB | ✅ | ✅ |
 | 24GB | ✅ | ✅ |
 
-</details>
+#### Qwen3.5-2B
 
-<details>
-<summary><b>Qwen3.5-2B</b> — File: 1.3 GB · Base VRAM: 2,061 MiB</summary>
+**File**: 1.3 GB | **Base VRAM**: 2,061 MiB
 
 | VRAM Budget | f16 KV | q8_0 KV |
 |------------|--------|--------|
@@ -164,22 +188,20 @@ Context is capped at native max. If native max fits at a lower VRAM tier, higher
 | 16GB | ✅ | ✅ |
 | 24GB | ✅ | ✅ |
 
-</details>
+#### Qwen3.5-4B
 
-<details>
-<summary><b>Qwen3.5-4B</b> — File: 2.7 GB · Base VRAM: 3,501 MiB</summary>
+**File**: 2.7 GB | **Base VRAM**: 3,501 MiB
 
 | VRAM Budget | f16 KV | q8_0 KV |
 |------------|--------|--------|
 | 8GB | 150,000 | 250,000 |
-| 12GB | 262,144 ⭐ | **262,144** ⭐ |
+| 12GB | 262,144 ⭐ | 262,144 ⭐ |
 | 16GB | ✅ | ✅ |
 | 24GB | ✅ | ✅ |
 
-</details>
+#### Qwen3.5-9B
 
-<details>
-<summary><b>Qwen3.5-9B</b> — File: 5.7 GB · Base VRAM: 5,765 MiB</summary>
+**File**: 5.7 GB | **Base VRAM**: 5,765 MiB
 
 | VRAM Budget | f16 KV | q8_0 KV |
 |------------|--------|--------|
@@ -188,7 +210,42 @@ Context is capped at native max. If native max fits at a lower VRAM tier, higher
 | 16GB | 262,144 ⭐ | ✅ |
 | 24GB | ✅ | ✅ |
 
-</details>
+---
+
+### Detailed Results — Ministral 3
+
+#### Ministral-3-3B
+
+**File**: 2.1 GB | **Base VRAM**: 2,665 MiB
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 52,500 | 100,000 |
+| 12GB | 92,500 | 172,500 |
+| 16GB | 132,500 | 245,000 |
+| 24GB | 207,500 | 262,144 ⭐ |
+
+#### Ministral-3-8B
+
+**File**: 5.2 GB | **Base VRAM**: 5,307 MiB
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | 20,000 | 40,000 |
+| 12GB | 50,000 | 97,500 |
+| 16GB | 82,500 | 152,500 |
+| 24GB | 140,000 | 257,500 |
+
+#### Ministral-3-14B
+
+**File**: 8.2 GB | **Base VRAM**: 8,149 MiB
+
+| VRAM Budget | f16 KV | q8_0 KV |
+|------------|--------|--------|
+| 8GB | ❌ | ❌ |
+| 12GB | 25,000 | 50,000 |
+| 16GB | 52,500 | 97,500 |
+| 24GB | 100,000 | 187,500 |
 
 ---
 
