@@ -42,7 +42,7 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (RTX 3090 / RTX
 | 32 | Personal Finance | ⬛ 0 | 🔴 4 | 🟡 7 | 🔴 4 |
 | 33 | SEO Optimization | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
 | 34 | Landing Page | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 35 | Travel Planning | 🔴 0 | 🟡 7 | ⬛ 0 | 🟡 7 |
+| 35 | Travel Planning | ⬛ 0 | 🟡 7 | ⬛ 0 | 🟡 7 |
 | | **Tier 3 — Advanced** | | | | |
 | 36 | Code Generation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 37 | Code Review | 🟢 8 | 🟢 10 | 🟢 10 | 🟢 8 |
@@ -73,7 +73,7 @@ All tested with Q4_K_M quantization, KV cache q8_0, on llama.cpp (RTX 3090 / RTX
 
 ### Notes
 
-- ⬛ **Thinking overflow:** llama.cpp has no `thinking_budget`, so thinking models can consume all tokens on reasoning before outputting an answer. 35B-Think: 5 overflows (#3, #13, #27, #32, #42), 27B-Think: 3 overflows (#3, #8, #27). These scores would be higher on vLLM/SGLang with proper budget control.
+- ⬛ **Thinking overflow:** llama.cpp has no `thinking_budget`, so thinking models can consume all tokens on reasoning before outputting an answer. 35B-Think: 6 overflows (#3, #13, #27, #32, #35, #42), 27B-Think: 4 overflows (#3, #8, #27, #35). These scores would be higher on vLLM/SGLang with proper budget control.
 - 📝 Manual review tests default to 5/10 pending human review
 - 🔄 **Think vs NoThink tradeoffs:** Thinking helps on Shopping (10 vs 4), Math/Logic (6 vs 4), and RAG (6 vs 4). NoThink avoids overthinking on Recipe (9 vs 0), Market Research (7 vs 0), and Travel (7 vs 0)
 - **27B dense vs 35B MoE (both nothink):** Very close overall. 27B beats 35B on RAG (6 vs 4), Lead Scoring (10 vs 8), SRE (6 vs 3), Market Research (8 vs 7). 35B wins on Recipe (9 vs 2), Code Review (10 vs 8), QA (10 vs 8)
