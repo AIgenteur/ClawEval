@@ -1,0 +1,119 @@
+```json
+{
+  "architecture": {
+    "components": [
+      {
+        "name": "API Gateway",
+        "role": "Handles HTTP requests, routing, rate limiting, and authentication. Acts as the entry point for all traffic."
+      },
+      {
+        "name": "URL Shortener Service",
+        "role": "Core service for generating short URLs, handling custom aliases, and enforcing expiration rules."
+      },
+      {
+        "name": "Redirect Service",
+        "role": "Handles redirect logic, validates URLs, and manages cache invalidation."
+      },
+      {
+        "name": "Distributed Cache (Redis Cluster)",
+        "role": "Caches redirect mappings and metadata to reduce database load."
+      },
+      {
+        "name": "Primary Database (ScyllaDB)",
+        "role": "Stores URL mappings, metadata, and user data with high write throughput."
+      },
+      {
+        "name": "Secondary Database (Cassandra)",
+        "role": "Replicates critical data for failover and read scaling."
+      },
+      {
+        "name": "CDN (Cloudflare)",
+        "role": "Serves static redirects globally, reduces latency, and handles DDoS protection."
+      },
+      {
+        "name": "Monitoring & Alerting (Prometheus + Grafana)",
+        "role": "Tracks performance, errors, and triggers alerts for anomalies."
+      },
+      {
+        "name": "GDPR Compliance Service",
+        "role": "Handles data deletion requests and audits."
+      }
+    ],
+    "database": {
+      "primary": "ScyllaDB (Cassandra-compatible, high-throughput NoSQL)",
+      "justification": "Optimized for 10M writes/day with sub-50ms latency. Linear scalability, tunable consistency, and high availability. Supports time-series data for expiration tracking."
+    },
+    "cache": {
+      "type": "Redis Cluster (multi-region)",
+      "strategy": "Multi-level caching: CDN (Cloudflare) for redirects, Redis for metadata (e.g., expiration, custom aliases), and database for persistence.",
+      "invalidation": "Time-based TTL for expired URLs, event-based invalidation for deletions/updates (pub/sub in Redis). CDN cache invalidation via API."
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 + SHA-256 (truncated)",
+      "length": 8,
+      "collision_handling": "SHA-256 hash truncated to 8 chars (62^8 = 218 trillion possible URLs). Collisions resolved via append-only counter (e.g., `abc1234` → `abc1234_1`). Custom aliases checked against a separate hash (e.g., `myalias` → `abc1234`)."
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (1B reads/day, 10M writes/day)",
+    "read_optimization": "99% of reads served from CDN/Redis cache. Database reads partitioned by hash range (ScyllaDB). Secondary Cassandra DB for read scaling.",
+    "write_path": "API Gateway → URL Shortener Service → Redis (cache write) → ScyllaDB (persist) → Cassandra (replicate). Async replication to Cassandra.",
+    "horizontal_scaling": "Stateless services (API Gateway, Redirect Service) scaled via Kubernetes HPA (Horizontal Pod Autoscaler) with CPU/memory metrics. Database nodes scaled via ScyllaDB/Cassandra auto-scaling policies. Redis Cluster scales via sharding."
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-region deployment (AWS us-east-1, eu-west-1, ap-northeast-1) with active-active replication. 99.99% uptime via 5x9s SLA (AWS + custom monitoring).",
+    "failover": "Automatic failover for:
+      - Database: ScyllaDB/Cassandra hinted handoff + manual repair.
+      - Redis: Cluster rebalancing + failover nodes.
+      - Services: Kubernetes pod auto-restart + replacement.
+      - CDN: Cloudflare failover to secondary regions.",
+    "data_replication": "ScyllaDB → Cassandra async replication (RPO < 1s). Redis Cluster cross-region replication (streaming). CDN edge caches stale for 5s (TTL) with sync via API."
+  },
+  "compliance": {
+    "gdpr_deletion": "GDPR-compliant deletion:
+      - API endpoint `/delete` with JWT validation.
+      - ScyllaDB/Cassandra TTL for expired URLs (auto-delete after 30 days).
+      - Redis keys purged via Lua script.
+      - CDN cache invalidation via API.
+      - Audit logs stored encrypted (immutable) for 7 years.",
+    "data_retention": "URL data retained for 30 days post-expiration (configurable). User data (if any) retained per GDPR (25+ years).",
+    "analytics_separation": "Analytics (e.g., click counts) stored in a separate ScyllaDB table with no PII. Encrypted at rest. Access controlled via IAM policies."
+  },
+    "cost_estimate": {
+      "monthly_total": 4800,
+      "breakdown": {
+        "compute": 1200,  // AWS EC2 (t3.xlarge for services) + Kubernetes (~$800) + load balancers (~$400)
+        "database": 800,  // ScyllaDB (managed) + Cassandra (~$600) + S3 for backups (~$200)
+        "cache": 500,     // Redis Cluster (multi-region) (~$500)
+        "cdn": 1200,      // Cloudflare Pro (~$1000) + AWS CloudFront (~$200)
+        "other": 1100     // Monitoring (Prometheus/Grafana), DNS, networking, GDPR logs (~$1100)
+      },
+      "fits_budget": true
+    },
+    "rate_limiting": {
+      "strategy": "Token bucket algorithm per IP/user (Redis-backed).",
+      "limits": {
+        "default": "1000 requests/minute (global), 1000 redirects/second per IP",
+        "custom_aliases": "50 requests/minute (prevent abuse)",
+        "admin_actions": "10 requests/minute (delete/expire)"
+      }
+    },
+    "monitoring": {
+      "metrics": [
+        "Redirect latency (p99, p95, p50)",
+        "Cache hit/miss ratio (Redis/CDN)",
+        "Database read/write latency/throughput",
+        "Error rates (5xx, 4xx)",
+        "GDPR deletion requests",
+        "Traffic spikes (10x threshold alerts)",
+        "CDN cache efficiency",
+        "Service uptime (per region)"
+      ],
+      "alerting": "Prometheus Alertmanager with:
+        - PagerDuty integration for critical errors (uptime < 99.99%).
+        - Slack alerts for latency spikes (>50ms p99) or cache misses (>10%).
+        - Auto-scaling triggers for CPU > 70% or memory > 80%."
+    }
+  }
+}
+```

@@ -1,0 +1,32 @@
+```json
+{
+  "time_to_detect_min": 15,  // From 14:00 (deployment) to 14:15 (error rate jumps to 2.3%)
+  "time_to_respond_min": 2,  // From 14:18 (error spike) to 14:20 (PagerDuty alert + engineer notified)
+  "time_to_resolve_min": 5,  // From 14:32 (rollback initiated) to 14:35 (rollback complete)
+  "total_incident_min": 35,  // From 14:00 (deployment) to 14:35 (rollback complete)
+  "root_cause": "Memory leak in the new caching layer introduced in v2.4.1, causing OOM (Out-of-Memory) kills in canary pods. The caching layer was leaking ~50MB per minute, leading to resource exhaustion.",
+  "blast_radius_pct": 25,   // The issue was caught in the canary phase (25% traffic), preventing full deployment impact.
+  "detection_method": "Automated monitoring (error rate tracking) + PagerDuty alerting system triggered by the spike in error rate.",
+  "correct_rollback_decision": true,
+  "canary_caught_issue": true,
+  "improvement_suggestions_count": 3,
+  "improvement_suggestions": [
+    {
+      "suggestion": "Implement stricter memory monitoring and alerts for canary deployments, especially for new caching layers or major changes.",
+      "rationale": "The leak was detected late (14:18) despite the canary phase. Proactive memory monitoring could have caught the issue earlier."
+    },
+    {
+      "suggestion": "Add automated memory profiling or leak detection tools to canary environments to identify resource leaks in real-time.",
+      "rationale": "The manual discovery of the leak (14:30) introduced delay. Automated tools could have accelerated root cause analysis."
+    },
+    {
+      "suggestion": "Enforce canary rollback thresholds for memory usage (e.g., trigger rollback if OOM kills exceed X% in canary pods).",
+      "rationale": "The rollback was initiated manually (14:32). Automated memory-based rollback criteria could have reduced human intervention time."
+    },
+    {
+      "suggestion": "Conduct post-mortem reviews for all canary failures, even minor ones, to identify patterns or recurring issues (e.g., memory leaks in caching layers).",
+      "rationale": "This incident could have been prevented if past memory-related issues were documented and mitigated proactively."
+    }
+  ]
+}
+```

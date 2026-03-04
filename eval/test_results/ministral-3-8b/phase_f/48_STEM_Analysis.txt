@@ -1,0 +1,125 @@
+```json
+{
+  "solutions": [
+    {
+      "problem": "P1",
+      "description": "A 5kg ball is dropped from 20m. What is its velocity just before hitting the ground? (g=9.8 m/s², ignore air resistance, answer in m/s, round to 2 decimal)",
+      "solution": {
+        "equation": "v = sqrt(2 * g * h)",
+        "substituted_values": {
+          "g": 9.8,
+          "h": 20
+        },
+        "calculation": "v = sqrt(2 * 9.8 * 20) = sqrt(392) ≈ 19.799",
+        "answer": 19.80
+      }
+    },
+    {
+      "problem": "P2",
+      "description": "A circuit has R1=100Ω and R2=200Ω in parallel, connected in series with R3=50Ω. Total voltage = 12V. What is the total current? (in amps, round to 4 decimal)",
+      "solution": {
+        "steps": [
+          {
+            "description": "Calculate equivalent resistance of R1 and R2 in parallel",
+            "equation": "R_parallel = (R1 * R2) / (R1 + R2)",
+            "substituted_values": {
+              "R1": 100,
+              "R2": 200
+            },
+            "calculation": "R_parallel = (100 * 200) / (100 + 200) = 20000 / 300 ≈ 66.6667 Ω"
+          },
+          {
+            "description": "Calculate total resistance (R_parallel + R3)",
+            "substituted_values": {
+              "R_parallel": 66.6667,
+              "R3": 50
+            },
+            "calculation": "R_total = 66.6667 + 50 = 116.6667 Ω"
+          },
+          {
+            "description": "Calculate total current using Ohm's Law",
+            "equation": "I_total = V_total / R_total",
+            "substituted_values": {
+              "V_total": 12,
+              "R_total": 116.6667
+            },
+            "calculation": "I_total = 12 / 116.6667 ≈ 0.1029 amps"
+          }
+        ],
+        "answer": 0.1029
+      }
+    },
+    {
+      "problem": "P3",
+      "description": "How much energy (kWh) does it take to heat 50 liters of water from 20°C to 100°C? (specific heat = 4.186 J/g·°C, round to 2 decimal)",
+      "solution": {
+        "steps": [
+          {
+            "description": "Convert volume of water to mass (1 liter ≈ 1 kg)",
+            "calculation": "mass = 50 kg"
+          },
+          {
+            "description": "Calculate temperature change",
+            "calculation": "ΔT = 100°C - 20°C = 80°C"
+          },
+          {
+            "description": "Calculate energy in Joules",
+            "equation": "E = mass * specific_heat * ΔT",
+            "substituted_values": {
+              "mass": 50000,  // grams
+              "specific_heat": 4.186,
+              "ΔT": 80
+            },
+            "calculation": "E = 50000 * 4.186 * 80 = 16,744,000 J"
+          },
+          {
+            "description": "Convert Joules to kWh",
+            "calculation": "1 kWh = 3,600,000 J, so E = 16,744,000 / 3,600,000 ≈ 4.6511 kWh"
+          }
+        ],
+        "answer": 4.65
+      }
+    },
+    {
+      "problem": "P4",
+      "description": "A rocket burns fuel at 50 kg/s with exhaust velocity 3000 m/s. Initial mass 10,000 kg, fuel mass 6,000 kg. What is the burn time? (seconds)",
+      "solution": {
+        "steps": [
+          {
+            "description": "Determine burn time using fuel mass and burn rate",
+            "equation": "burn_time = fuel_mass / burn_rate",
+            "substituted_values": {
+              "fuel_mass": 6000,
+              "burn_rate": 50
+            },
+            "calculation": "burn_time = 6000 / 50 = 120 seconds"
+          }
+        ],
+        "answer": 120
+      }
+    },
+    {
+      "problem": "P5",
+      "description": "Sound travels at 343 m/s in air. If you see lightning and hear thunder 4.5 seconds later, how far away was the strike? (in km, round to 2 decimal)",
+      "solution": {
+        "steps": [
+          {
+            "description": "Calculate distance using speed of sound and time delay",
+            "equation": "distance = speed_of_sound * time_delay",
+            "substituted_values": {
+              "speed_of_sound": 343,
+              "time_delay": 4.5
+            },
+            "calculation": "distance = 343 * 4.5 = 1543.5 meters"
+          },
+          {
+            "description": "Convert meters to kilometers",
+            "calculation": "1543.5 / 1000 = 1.54 km"
+          }
+        ],
+        "answer": 1.54
+      }
+    }
+  ]
+}
+```

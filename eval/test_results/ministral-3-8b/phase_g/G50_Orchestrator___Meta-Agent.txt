@@ -1,0 +1,215 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnostics & Notification",
+      "agents": [
+        {
+          "agent": "log_analyzer",
+          "input": {
+            "log_paths": ["/var/log/service/*.log", "/var/log/containers/*.log"],
+            "time_window": "last_30_minutes",
+            "error_patterns": ["timeout", "connection_refused", "out_of_memory"]
+          },
+          "timeout_seconds": 180
+        },
+        {
+          "agent": "metric_checker",
+          "input": {
+            "metrics": ["http_requests", "error_rate", "latency_p99", "cpu_usage"],
+            "time_window": "last_15_minutes",
+            "thresholds": {
+              "error_rate": 0.9,
+              "latency_p99": 10000,
+              "cpu_usage": 90
+            }
+          },
+          "timeout_seconds": 120
+        },
+        {
+          "agent": "db_checker",
+          "input": {
+            "checks": ["connection_pool", "query_latency", "locks", "replication_lag"],
+            "time_window": "last_5_minutes"
+          },
+          "timeout_seconds": 150
+        },
+        {
+          "agent": "capacity_planner",
+          "input": {
+            "resources": ["cpu", "memory", "disk_io"],
+            "thresholds": {
+              "cpu": 85,
+              "memory": 90,
+              "disk_io": 95
+            }
+          },
+          "timeout_seconds": 100
+        },
+        {
+          "agent": "config_auditor",
+          "input": {
+            "config_files": ["/etc/service/config.yaml", "/etc/service/overrides.conf"],
+            "time_window": "last_1_hour"
+          },
+          "timeout_seconds": 120
+        }
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete successfully or timeout. At least one critical issue must be identified (error_rate > 0.9 OR latency_p99 > 10s OR memory > 90% OR config_changes_detected). Notification must be sent to team channel."
+    },
+    {
+      "phase": 2,
+      "name": "Dependency Mapping & Escalation Check",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": {
+            "service_name": "affected_service",
+            "depth": 2,
+            "critical_threshold": 0.7
+          },
+          "timeout_seconds": 180
+        }
+      ],
+      "parallel": false,
+      "gate": "Dependency map must be generated. If critical dependencies (impact_score > 0.7) are found, escalation must be triggered if outage duration exceeds 5 minutes."
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Analysis & Customer Communication",
+      "agents": [
+        {
+          "agent": "incident_reporter",
+          "input": {
+            "summary": "Production outage detected in {service_name}",
+            "severity": "high",
+            "initial_analysis": "{diagnostic_results}"
+          },
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "customer_communicator",
+          "input": {
+            "message": "We are experiencing a production issue with {service_name}. Our team is working on it. Expected resolution time: {estimated_time}.",
+            "affected_customers": ["customer_list_from_incident"],
+            "status": "investigating"
+          },
+          "timeout_seconds": 90
+        }
+      ],
+      "parallel": true,
+      "gate": "Incident ticket created and customer notification sent. Root cause must be identified (e.g., config_change, resource_exhaustion, db_issue)."
+    },
+    {
+      "phase": 4,
+      "name": "Remediation",
+      "agents": [],
+      "parallel": false,
+      "gate": "One of the following must be true:
+              - If config_change: Run config_auditor to revert changes (if possible)
+              - If resource_exhaustion: Trigger capacity_planner to scale resources
+              - If db_issue: Run db_checker to resolve locks/queries
+              - If dependency_issue: Notify dependent services via notification_agent
+              Remediation must be attempted within 10 minutes of phase completion."
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Post-Mortem",
+      "agents": [
+        {
+          "agent": "metric_checker",
+          "input": {
+            "metrics": ["http_requests", "error_rate", "latency_p99"],
+            "time_window": "last_2_minutes",
+            "thresholds": {
+              "error_rate": 0.1,
+              "latency_p99": 500
+            }
+          },
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "log_analyzer",
+          "input": {
+            "log_paths": ["/var/log/service/*.log"],
+            "time_window": "last_2_minutes",
+            "error_patterns": ["timeout", "connection_refused"]
+          },
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "customer_communicator",
+          "input": {
+            "message": "The issue has been resolved. Service is back to normal. Thank you for your patience.",
+            "affected_customers": ["customer_list_from_incident"],
+            "status": "resolved"
+          },
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": true,
+      "gate": "All metrics and logs must show normal operation (error_rate < 0.1 AND latency_p99 < 500ms). Customer notification sent."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "error_rate > 0.9 AND latency_p99 > 10s AND memory > 90%",
+      "if_true": "go to phase 4 with remediation: 'resource_exhaustion'",
+      "if_false": "go to phase 3 for further analysis"
+    },
+    {
+      "after_phase": 2,
+      "condition": "critical_dependencies_found AND outage_duration > 5_minutes",
+      "if_true": "trigger_escalation: 'escalate_to_oncall_team'",
+      "if_false": "proceed_to_phase_3"
+    },
+    {
+      "after_phase": 3,
+      "condition": "root_cause == 'config_change' AND changes_reversible",
+      "if_true": "go to phase 4 with remediation: 'revert_config_changes'",
+      "if_false": "go to phase 4 with remediation: 'manual_intervention_required'"
+    }
+  ],
+  "escalation": {
+    "trigger": {
+      "time_based": {
+        "duration": "5_minutes",
+        "condition": "outage_duration > 5_minutes AND critical_dependencies_found",
+        "action": "notify_oncall_team_via_pagerduty"
+      },
+      "severity_based": {
+        "condition": "error_rate > 0.99 OR latency_p99 > 20s",
+        "action": "notify_oncall_team_via_slack_and_email"
+      }
+    },
+    "action": {
+      "notification_agent": {
+        "message": "Critical outage detected in {service_name}. Duration: {duration}. Impact: {impact_score}. Root cause: {root_cause}.",
+        "recipients": ["oncall_team", "sre_team", "engineering_lead"]
+      }
+    }
+  },
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    {
+      "condition": "outage_duration > 15_minutes AND error_rate > 0.9 AND latency_p99 > 10s",
+      "action": "rollback_to_previous_deployment_version",
+      "validation": "verify_metrics_improved_after_rollback"
+    },
+    {
+      "condition": "db_checker_detects_severe_locks OR replication_lag > 10_minutes",
+      "action": "restart_database_service",
+      "validation": "check_db_health_after_restart"
+    },
+    {
+      "condition": "config_auditor_detects_critical_misconfiguration AND changes_recently_applied",
+      "action": "revert_config_changes",
+      "validation": "verify_config_compliance_after_revert"
+    }
+  ]
+}
+```

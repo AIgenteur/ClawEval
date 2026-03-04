@@ -1,0 +1,65 @@
+```json
+{
+  "answers": {
+    "q1": {
+      "team_size_threshold": 200,
+      "explanation": "Source E indicates microservices become cost-effective for teams with **>200 developers** (20% lower TCO), while Source A shows higher adoption (>100 devs) but doesn’t specify cost break-even. Source E’s data suggests the inflection point is at **200+** for cost savings."
+    },
+    "q2": {
+      "latency_penalty_range_ms": "5–15",
+      "source": "Source B (performance study)"
+    },
+    "q3": {
+      "network_related_outages_percentage": 67,
+      "source": "Source C (failure analysis)"
+    },
+    "q4": {
+      "mttr_difference_minutes": 17,
+      "calculation": "45 (microservices) – 28 (monolith) = 17",
+      "source": "Source C"
+    },
+    "q5": {
+      "onboarding_time_multiplier": 3.0,
+      "explanation": "Microservices: 3 weeks vs monolith: 1 week → 3x longer",
+      "source": "Source D"
+    },
+    "q6": {
+      "rolled_back_fraction": 0.25,
+      "source": "Source F"
+    },
+    "q7": {
+      "infrastructure_cost_multiplier": 3.2,
+      "source": "Source A"
+    },
+    "q8": {
+      "contradiction": "no",
+      "explanation": "Source A (3.2x higher cost) aligns with Source E’s finding that microservices are **more expensive for smaller teams** (<50 devs: 40% higher TCO). Both agree on higher costs for smaller teams but diverge on scale (A lacks TCO breakdown by team size)."
+    },
+    "q9": {
+      "developer_satisfaction_improvement_percentage": 15,
+      "source": "Source D"
+    },
+    "q10": {
+      "positive_roi_within_2_years_percentage": 40,
+      "source": "Source F"
+    }
+  },
+  "metadata": {
+    "sources_used": ["A", "B", "C", "D", "E", "F"],
+    "conflicts_noted": [
+      {
+        "between": ["A", "E"],
+        "issue": "A lacks granularity on cost by team size; E provides TCO thresholds but no direct latency/MTTR context."
+      },
+      {
+        "between": ["D", "C"],
+        "issue": "Developer satisfaction (D) is subjective; failure analysis (C) shows trade-offs (network issues, MTTR)."
+      }
+    ],
+    "assumptions": [
+      "Q1’s ‘cost-effective’ assumes TCO (not just infrastructure) and ignores non-monetary factors (e.g., scalability).",
+      "Q8’s ‘contradiction’ is contextual—both sources agree on higher costs for smaller teams but differ on scale."
+    ]
+  }
+}
+```

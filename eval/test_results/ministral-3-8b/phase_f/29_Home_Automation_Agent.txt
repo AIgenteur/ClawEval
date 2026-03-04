@@ -1,0 +1,387 @@
+Here’s a structured JSON array of automation rules covering all 10 requirements for your smart home scenario:
+
+```json
+[
+    {
+        "id": "morning_routine",
+        "name": "Morning Routine",
+        "trigger": {
+            "type": "time",
+            "time": "06:30:00",
+            "days": ["mon", "tue", "wed", "thu", "fri"]
+        },
+        "conditions": {
+            "weekday": true,
+            "occupants_present": false
+        },
+        "actions": [
+            {
+                "type": "light",
+                "action": "gradual_on",
+                "devices": ["living_room_lights", "kitchen_lights", "hallway_lights"],
+                "duration": "15min",
+                "intensity": "50%"
+            },
+            {
+                "type": "notification",
+                "message": "Morning routine activated (weekday)",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "morning_routine_weekend",
+        "name": "Morning Routine (Weekend)",
+        "trigger": {
+            "type": "time",
+            "time": "08:00:00",
+            "days": ["sat", "sun"]
+        },
+        "conditions": {
+            "weekend": true,
+            "occupants_present": false
+        },
+        "actions": [
+            {
+                "type": "light",
+                "action": "gradual_on",
+                "devices": ["living_room_lights", "kitchen_lights"],
+                "duration": "10min",
+                "intensity": "70%"
+            },
+            {
+                "type": "notification",
+                "message": "Morning routine activated (weekend)",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "thermostat_occupied",
+        "name": "Thermostat (Occupied)",
+        "trigger": {
+            "type": "occupancy",
+            "sensor": ["motion_sensor_living_room", "motion_sensor_kitchen"]
+        },
+        "conditions": {
+            "occupants_present": true,
+            "time": { "before": "23:00:00", "after": "06:00:00" }
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "action": "set_temp",
+                "value": "72°F"
+            }
+        ]
+    },
+    {
+        "id": "thermostat_sleeping",
+        "name": "Thermostat (Sleeping)",
+        "trigger": {
+            "type": "time",
+            "time": "23:00:00"
+        },
+        "conditions": {
+            "bedroom_occupancy": true,
+            "time": { "before": "06:00:00" }
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "action": "set_temp",
+                "value": "68°F"
+            }
+        ]
+    },
+    {
+        "id": "thermostat_empty",
+        "name": "Thermostat (Empty)",
+        "trigger": {
+            "type": "time",
+            "time": "18:00:00"
+        },
+        "conditions": {
+            "occupants_present": false,
+            "time": { "before": "06:00:00" }
+        },
+        "actions": [
+            {
+                "type": "thermostat",
+                "action": "set_temp",
+                "value": "65°F"
+            }
+        ]
+    },
+    {
+        "id": "security_arm",
+        "name": "Security (Arm System)",
+        "trigger": {
+            "type": "geofence",
+            "action": "both_outside",
+            "radius": "1mile"
+        },
+        "conditions": {
+            "time": { "after": "07:00:00", "before": "22:00:00" } // Optional: Avoid arming during work hours
+        },
+        "actions": [
+            {
+                "type": "security",
+                "action": "arm",
+                "mode": "home"
+            },
+            {
+                "type": "notification",
+                "message": "Security armed (both away)",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "security_disarm",
+        "name": "Security (Disarm System)",
+        "trigger": {
+            "type": "geofence",
+            "action": "either_inside",
+            "radius": "1mile"
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "security",
+                "action": "disarm"
+            },
+            {
+                "type": "notification",
+                "message": "Security disarmed ({{occupant}} returned)",
+                "to": ["alice_phone", "bob_phone"],
+                "dynamic": true
+            }
+        ]
+    },
+    {
+        "id": "pet_feeder",
+        "name": "Pet Auto-Feeder",
+        "trigger": {
+            "type": "time",
+            "times": ["07:00:00", "18:00:00"]
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "pet_feeder",
+                "action": "feed",
+                "amount": "100g"
+            },
+            {
+                "type": "notification",
+                "message": "Cat fed at {{time}}",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "pet_camera_active",
+        "name": "Pet Camera (Both Away)",
+        "trigger": {
+            "type": "geofence",
+            "action": "both_outside",
+            "radius": "1mile"
+        },
+        "conditions": {
+            "time": { "after": "08:00:00", "before": "18:00:00" } // Optional: Avoid nighttime
+        },
+        "actions": [
+            {
+                "type": "camera",
+                "action": "enable",
+                "device": "cat_camera"
+            },
+            {
+                "type": "notification",
+                "message": "Cat camera activated (both away)",
+                "to": ["alice_phone"]
+            }
+        ]
+    },
+    {
+        "id": "solar_energy_priority",
+        "name": "Solar Energy Priority",
+        "trigger": {
+            "type": "time",
+            "time_range": ["14:00:00", "19:00:00"]
+        },
+        "conditions": {
+            "solar_generation": { "above": "50%" }
+        },
+        "actions": [
+            {
+                "type": "energy",
+                "action": "prioritize_solar",
+                "devices": ["pool_pump", "garage_door"]
+            },
+            {
+                "type": "notification",
+                "message": "Solar energy in use (peak hours)",
+                "to": ["bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "battery_backup_evening",
+        "name": "Battery Backup (Evening)",
+        "trigger": {
+            "type": "time",
+            "time": "20:00:00"
+        },
+        "conditions": {
+            "solar_generation": { "below": "20%" }
+        },
+        "actions": [
+            {
+                "type": "energy",
+                "action": "switch_to_battery",
+                "devices": ["living_room_lights", "kitchen_lights"]
+            },
+            {
+                "type": "notification",
+                "message": "Switched to battery backup",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    },
+    {
+        "id": "hallway_motion_lights",
+        "name": "Hallway Motion Lights",
+        "trigger": {
+            "type": "motion",
+            "sensor": "hallway_motion_sensor"
+        },
+        "conditions": {
+            "time": { "before": "06:00:00", "after": "22:00:00" }
+        },
+        "actions": [
+            {
+                "type": "light",
+                "action": "turn_on",
+                "devices": ["hallway_lights"],
+                "intensity": "20%"
+            },
+            {
+                "type": "timer",
+                "action": "set",
+                "duration": "300s" // 5 minutes
+            }
+        ]
+    },
+    {
+        "id": "bob_office_automation",
+        "name": "Bob's Office Automation",
+        "trigger": {
+            "type": "device_state",
+            "device": "bob_computer",
+            "state": "on"
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "light",
+                "action": "turn_on",
+                "devices": ["bob_desk_lamp"]
+            },
+            {
+                "type": "thermostat",
+                "action": "set_temp",
+                "value": "70°F",
+                "zone": "bob_office"
+            }
+        ]
+    },
+    {
+        "id": "laundry_notification",
+        "name": "Laundry Cycle Complete",
+        "trigger": {
+            "type": "device_state",
+            "device": ["washer", "dryer"],
+            "state": "idle"
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "notification",
+                "message": "Laundry cycle complete ({{device}})",
+                "to": ["alice_phone", "bob_phone"],
+                "dynamic": true
+            },
+            {
+                "type": "light",
+                "action": "turn_on",
+                "devices": ["laundry_room_lights"],
+                "duration": "1min"
+            }
+        ]
+    },
+    {
+        "id": "water_leak_shutdown",
+        "name": "Water Leak Emergency Shutdown",
+        "trigger": {
+            "type": "sensor_alert",
+            "sensor": "water_leak_detector",
+            "state": "active"
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "valve",
+                "action": "shut_off",
+                "device": "main_water_valve"
+            },
+            {
+                "type": "notification",
+                "message": "EMERGENCY: Water leak detected! Valve shut off.",
+                "to": ["alice_phone", "bob_phone", "emergency_contact"],
+                "urgency": "high"
+            }
+        ]
+    },
+    {
+        "id": "guest_mode_activate",
+        "name": "Guest Mode Activation",
+        "trigger": {
+            "type": "manual",
+            "action": "guest_mode_on"
+        },
+        "conditions": {},
+        "actions": [
+            {
+                "type": "lock",
+                "action": "set_code",
+                "device": "front_door",
+                "code": "TEMPORARY_CODE_1234",
+                "expiry": "24h"
+            },
+            {
+                "type": "thermostat",
+                "action": "set_temp",
+                "value": "72°F"
+            },
+            {
+                "type": "wifi",
+                "action": "enable_guest_network"
+            },
+            {
+                "type": "notification",
+                "message": "Guest mode activated (code: {{code}})",
+                "to": ["alice_phone", "bob_phone"]
+            }
+        ]
+    }
+]
+```
+
+### Key Notes:
+1. **Dynamic Placeholders**: `{{occupant}}`, `{{time}}`, `{{device}}`, and `{{code}}` are placeholders for real-time values (e.g., Alice/Bob’s name).
+2. **Geofencing**: Assumes a smart home platform (e.g., Home Assistant, Google Home) with geofencing capabilities.
+3. **Energy**: Solar/battery logic assumes integration with a smart inverter or energy monitor.
+4. **Water Leak**: Triggers immediate shutdown + alerts (prioritize safety).
+5. **Guest Mode**: Temporary door code (e.g., via August or Schlage locks) + WiFi isolation.

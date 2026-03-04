@@ -1,0 +1,74 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+        self.stats = {
+            'hits': 0,
+            'misses': 0,
+            'evictions': 0,
+            'expirations': 0
+        }
+
+    def _clean_expired(self):
+        current_time = time.time()
+        expired_keys = [key for key, (value, _, _) in self.cache.items() if current_time > self.cache[key][2]]
+        for key in expired_keys:
+            del self.cache[key]
+            self.stats['expirations'] += 1
+
+    def get(self, key: str) -> any:
+        self._clean_expired()
+        if key not in self.cache:
+            self.stats['misses'] += 1
+            return None
+        value, _, _ = self.cache[key]
+        del self.cache[key]
+        self.cache[key] = (value, 0, None)  # Reset usage counter
+        self.stats['hits'] += 1
+        return value
+
+    def put(self, key: str, value: any, ttl: float = None):
+        self._clean_expired()
+        if key in self.cache:
+            del self.cache[key]
+        if ttl is not None:
+            expiration = time.time() + ttl
+        else:
+            expiration = None
+        self.cache[key] = (value, 0, expiration)
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last=False)
+            self.stats['evictions'] += 1
+
+    def delete(self, key: str) -> bool:
+        self._clean_expired()
+        if key in self.cache:
+            del self.cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        self._clean_expired()
+        return len(self.cache)
+
+    def get_stats(self) -> dict:
+        self._clean_expired()
+        return self.stats.copy()
+
+    def keys(self) -> list:
+        self._clean_expired()
+        return list(self.cache.keys())
+
+    def clear(self) -> None:
+        self.cache.clear()
+        self.stats = {
+            'hits': 0,
+            'misses': 0,
+            'evictions': 0,
+            'expirations': 0
+        }
+```

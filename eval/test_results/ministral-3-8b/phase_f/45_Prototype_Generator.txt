@@ -1,0 +1,89 @@
+```python
+from flask import Flask, request, jsonify
+from dataclasses import dataclass
+from typing import List, Dict, Optional
+from uuid import uuid4
+
+app = Flask(__name__)
+
+@dataclass
+class Book:
+    id: str
+    title: str
+    author: str
+    isbn: str
+    price: float
+
+books_db: List[Book] = []
+
+def validate_book_data(data: Dict) -> bool:
+    required_fields = {'title', 'author', 'isbn', 'price'}
+    if not required_fields.issubset(data.keys()):
+        return False
+    try:
+        float(data['price'])
+    except ValueError:
+        return False
+    return True
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_books = [book.__dict__ for book in books_db[start:end]]
+    return jsonify(paginated_books)
+
+@app.route('/books/<id>', methods=['GET'])
+def get_book(id: str):
+    book = next((book for book in books_db if book.id == id), None)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+    return jsonify(book.__dict__)
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    data = request.get_json()
+    if not data or not validate_book_data(data):
+        return jsonify({"error": "Invalid book data"}), 422
+
+    book_id = str(uuid4())
+    new_book = Book(
+        id=book_id,
+        title=data['title'],
+        author=data['author'],
+        isbn=data['isbn'],
+        price=float(data['price'])
+    )
+    books_db.append(new_book)
+    return jsonify(new_book.__dict__), 201
+
+@app.route('/books/<id>', methods=['PUT'])
+def update_book(id: str):
+    book = next((book for book in books_db if book.id == id), None)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+
+    data = request.get_json()
+    if not data or not validate_book_data(data):
+        return jsonify({"error": "Invalid book data"}), 422
+
+    book.title = data['title']
+    book.author = data['author']
+    book.isbn = data['isbn']
+    book.price = float(data['price'])
+    return jsonify(book.__dict__)
+
+@app.route('/books/<id>', methods=['DELETE'])
+def delete_book(id: str):
+    global books_db
+    initial_length = len(books_db)
+    books_db = [book for book in books_db if book.id != id]
+    if len(books_db) == initial_length:
+        return jsonify({"error": "Book not found"}), 404
+    return jsonify({"message": "Book deleted"}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

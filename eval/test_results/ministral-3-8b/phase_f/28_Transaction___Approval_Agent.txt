@@ -1,0 +1,29 @@
+```json
+{
+  "1": "APPROVE",
+  "2": "REJECT",
+  "3": "APPROVE",
+  "4": "REJECT",
+  "5": "REJECT",
+  "6": "REJECT",
+  "7": "REJECT",
+  "8": "REJECT",
+  "9": "REJECT",
+  "10": "REJECT"
+}
+```
+
+### Explanation:
+- **Transaction 1 ($450 at Amazon.com)**: Within limits, no issues → **APPROVE**.
+- **Transaction 2 ($2,500 at Dell.com)**: >$2,000 → requires manager approval (assumed denied) → **REJECT**.
+- **Transaction 3 ($150 at Starbucks)**: No issues → **APPROVE**.
+- **Transaction 4 ($3,000.00 at BestBuy.com)**: Round-dollar amount >$1,000 → **REJECT**.
+- **Transaction 5 ($800 at Amazon.com)**: Same merchant as Transaction 1 within 1 hour → **REJECT**.
+- **Transaction 6 (€1,200 at Booking.com)**: International transaction outside business hours (3:00 PM local) → **REJECT**.
+- **Transaction 7 ($5,100 at Apple.com)**: Exceeds max single transaction ($5,000) → **REJECT**.
+- **Transaction 8 ($450 at Amazon.com)**: Same merchant as Transaction 5 within 1 hour → **REJECT**.
+- **Transaction 9 ($2,000.00 at NewEgg.com)**: Round-dollar amount >$1,000 → **REJECT**.
+- **Transaction 10 (€500 at Ryanair.com)**: International transaction outside business hours (9:30 PM local) → **REJECT**.
+
+### Daily Total Check:
+- Approved transactions so far: $450 + $150 = **$600** (well below $10,000 limit). No impact on other rejections.

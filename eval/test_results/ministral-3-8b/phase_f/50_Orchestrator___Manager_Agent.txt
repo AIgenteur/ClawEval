@@ -1,0 +1,94 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "agent": "data_analyst",
+      "action": "Analyze Q3 earnings data, prepare key metrics, and identify top 3-5 highlights for the blog post and newsletter.",
+      "depends_on": [],
+      "input_from": ["Q3 earnings report"]
+    },
+    {
+      "id": "T2",
+      "agent": "writer",
+      "action": "Draft the blog post based on data analysis (T1), focusing on narrative, audience engagement, and key takeaways.",
+      "depends_on": ["T1"],
+      "input_from": ["Q3 earnings highlights"]
+    },
+    {
+      "id": "T3",
+      "agent": "seo",
+      "action": "Optimize blog post draft (T2) for SEO: keywords, meta tags, readability, and internal/external links.",
+      "depends_on": ["T2"],
+      "input_from": ["Blog post draft"]
+    },
+    {
+      "id": "T4",
+      "agent": "editor",
+      "action": "Edit and refine the SEO-optimized blog post (T3) for clarity, tone, and accuracy.",
+      "depends_on": ["T3"],
+      "input_from": ["SEO-optimized draft"]
+    },
+    {
+      "id": "T5",
+      "agent": "designer",
+      "action": "Create social media graphics (e.g., infographics, highlights) based on Q3 earnings data (T1) and blog post (T4).",
+      "depends_on": ["T4"],
+      "input_from": ["Q3 earnings highlights", "Final blog post"]
+    },
+    {
+      "id": "T6",
+      "agent": "web_publisher",
+      "action": "Publish the edited blog post (T4) on the company website with proper categorization and tags.",
+      "depends_on": ["T4"],
+      "input_from": ["Final blog post"]
+    },
+    {
+      "id": "T7",
+      "agent": "social_media",
+      "action": "Write social media captions and schedule posts (parallel to T8). Use graphics from T5.",
+      "depends_on": ["T5"],
+      "input_from": ["Social media graphics", "Blog post highlights"]
+    },
+    {
+      "id": "T8",
+      "agent": "email_marketing",
+      "action": "Draft email newsletter summary (parallel to T7) with key Q3 earnings highlights and blog post link.",
+      "depends_on": ["T1", "T4"],
+      "input_from": ["Q3 earnings highlights", "Final blog post"]
+    },
+    {
+      "id": "T9",
+      "agent": "email_marketing",
+      "action": "Send the finalized email newsletter (T8) to subscribers after approval.",
+      "depends_on": ["T8"],
+      "input_from": ["Email draft"]
+    }
+  ],
+  "execution_order": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"],
+  "parallel_groups": [
+    ["T7", "T8"],  // Social media and email can run in parallel
+    ["T9"]        // Sequential after T8
+  ],
+  "notes": {
+    "agent_constraints": {
+      "data_analyst": 1,
+      "writer": 1,
+      "seo": 1,
+      "editor": 1,
+      "designer": 1,
+      "web_publisher": 1,
+      "social_media": 1,
+      "email_marketing": 2
+    },
+    "total_tasks": 9,
+    "rules_compliance": {
+      "data_before_writing": "T1 → T2",
+      "writing_before_editing": "T2 → T3 → T4",
+      "seo_before_publishing": "T3 → T6",
+      "social_email_parallel": "T7 || T8",
+      "designer_after_content": "T5 depends on T4"
+    }
+  }
+}
+```

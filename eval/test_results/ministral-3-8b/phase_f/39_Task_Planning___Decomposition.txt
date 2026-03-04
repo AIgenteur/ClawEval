@@ -1,0 +1,170 @@
+```json
+{
+  "project": "Build a REST API for a todo app with user authentication",
+  "tasks": [
+    {
+      "id": "DB1",
+      "name": "Set up PostgreSQL database schema (users, todos, categories/tags)",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Core database structure for all other features"
+    },
+    {
+      "id": "AUTH1",
+      "name": "Implement user registration and login (JWT)",
+      "depends_on": ["DB1"],
+      "estimated_hours": 12,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Authentication is prerequisite for protected endpoints"
+    },
+    {
+      "id": "CRUD1",
+      "name": "Implement basic todo CRUD operations (unauthenticated)",
+      "depends_on": ["DB1"],
+      "estimated_hours": 10,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Public endpoints for basic functionality"
+    },
+    {
+      "id": "TAGS1",
+      "name": "Implement todo categories/tags",
+      "depends_on": ["DB1", "AUTH1"],
+      "estimated_hours": 8,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Requires auth for protected tag operations"
+    },
+    {
+      "id": "REMINDERS1",
+      "name": "Implement due date reminders (basic cron job)",
+      "depends_on": ["DB1", "AUTH1"],
+      "estimated_hours": 6,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Requires auth for user-specific reminders"
+    },
+    {
+      "id": "PROTECTED1",
+      "name": "Add JWT protection to all endpoints",
+      "depends_on": ["AUTH1", "CRUD1", "TAGS1", "REMINDERS1"],
+      "estimated_hours": 4,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "All CRUD operations become protected"
+    },
+    {
+      "id": "TEST1",
+      "name": "Write unit tests for authentication",
+      "depends_on": ["AUTH1"],
+      "estimated_hours": 6,
+      "assignable_to": ["backend"],
+      "notes": "Parallel track - can start early"
+    },
+    {
+      "id": "TEST2",
+      "name": "Write unit tests for CRUD operations",
+      "depends_on": ["CRUD1", "PROTECTED1"],
+      "estimated_hours": 8,
+      "assignable_to": ["backend"],
+      "notes": "Requires protected endpoints to be implemented"
+    },
+    {
+      "id": "TEST3",
+      "name": "Write unit tests for categories/tags",
+      "depends_on": ["TAGS1"],
+      "estimated_hours": 5,
+      "assignable_to": ["backend"],
+      "notes": "Parallel track"
+    },
+    {
+      "id": "TEST4",
+      "name": "Write unit tests for reminders",
+      "depends_on": ["REMINDERS1"],
+      "estimated_hours": 4,
+      "assignable_to": ["backend"],
+      "notes": "Parallel track"
+    },
+    {
+      "id": "DOCS1",
+      "name": "Generate OpenAPI documentation",
+      "depends_on": ["AUTH1", "CRUD1", "TAGS1", "REMINDERS1", "PROTECTED1"],
+      "estimated_hours": 5,
+      "assignable_to": ["backend", "fullstack"],
+      "notes": "Can be done in parallel with testing"
+    },
+    {
+      "id": "RATELIMIT1",
+      "name": "Implement rate limiting",
+      "depends_on": ["AUTH1", "PROTECTED1"],
+      "estimated_hours": 4,
+      "assignable_to": ["backend"],
+      "notes": "Requires auth system to be complete"
+    },
+    {
+      "id": "DOCKER1",
+      "name": "Containerize application with Docker",
+      "depends_on": ["PROTECTED1", "TEST2", "TEST3", "TEST4", "RATELIMIT1"],
+      "estimated_hours": 8,
+      "assignable_to": ["backend", "devops", "fullstack"],
+      "notes": "Requires all core features to be working"
+    },
+    {
+      "id": "CI1",
+      "name": "Set up CI pipeline (testing, linting)",
+      "depends_on": ["TEST1", "TEST2", "TEST3", "TEST4"],
+      "estimated_hours": 6,
+      "assignable_to": ["devops", "fullstack"],
+      "notes": "Parallel track - can start when tests are ready"
+    },
+    {
+      "id": "CD1",
+      "name": "Set up CD pipeline (deployment to staging)",
+      "depends_on": ["DOCKER1", "CI1"],
+      "estimated_hours": 6,
+      "assignable_to": ["devops", "fullstack"],
+      "notes": "Requires Docker and CI to be complete"
+    },
+    {
+      "id": "FINALTEST1",
+      "name": "Integration testing and final QA",
+      "depends_on": ["CD1"],
+      "estimated_hours": 8,
+      "assignable_to": ["backend", "devops"],
+      "notes": "Final validation of all components"
+    }
+  ],
+  "critical_path": [
+    "DB1",
+    "AUTH1",
+    "CRUD1",
+    "PROTECTED1",
+    "DOCKER1",
+    "CI1",
+    "CD1",
+    "FINALTEST1"
+  ],
+  "total_hours": 100,
+  "parallel_tracks": 3,
+  "notes": {
+    "parallel_tracks_description": [
+      {
+        "track": "1",
+        "tasks": ["TEST1", "TEST3", "RATELIMIT1", "DOCS1"]
+      },
+      {
+        "track": "2",
+        "tasks": ["TEST2", "TEST4"]
+      },
+      {
+        "track": "3",
+        "tasks": ["CI1"]
+      }
+    ],
+    "dependencies_justification": {
+      "database_first": "All features require database schema",
+      "auth_before_protected": "Protected endpoints depend on auth system",
+      "docker_last": "Requires complete working application",
+      "ci_after_tests": "CI needs test coverage to be meaningful",
+      "docs_parallel": "Can be generated independently of testing pace"
+    }
+  }
+}
+```

@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Docker Compose version '2' is outdated (latest stable is '3.8' or higher).",
+      "fix": "Change to `version: '3.8'` or higher."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "'latest' tag is non-deterministic and may break unexpectedly.",
+      "fix": "Use a specific version (e.g., `node:18-alpine` or `node:20`)."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Plaintext database password exposed in environment variables (security risk).",
+      "fix": "Use Docker secrets or a secrets management tool (e.g., `env_file` or `external secrets`)."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "NODE_ENV should be 'production' for security and stability in production.",
+      "fix": "Change to `NODE_ENV: production`."
+    },
+    {
+      "line": "volumes:\n      - .:/app",
+      "problem": "Source volume mount (.:/app) is unsafe in production (exposes host files).",
+      "fix": "Use a dedicated directory (e.g., `/app` or a named volume) or restrict permissions."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Restart policy 'no' means containers won’t restart on failure (unreliable).",
+      "fix": "Use `restart: unless-stopped` or `restart: always`."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is end-of-life (EOL) and unsupported.",
+      "fix": "Upgrade to a supported version (e.g., `mysql:8.0`)."
+    },
+    {
+      "line": "ports:\n      - \"3306:3306\"",
+      "problem": "MySQL port 3306 is exposed publicly (security risk).",
+      "fix": "Remove public exposure or restrict access (e.g., use `network_mode: host` or internal networking)."
+    },
+    {
+      "line": "volumes:\n      - /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp is ephemeral storage (data will be lost on reboot).",
+      "fix": "Use a dedicated directory (e.g., `/var/lib/mysql-data`) or a named volume."
+    },
+    {
+      "line": "ports:\n      - \"6379:6379\"",
+      "problem": "Redis port 6379 is exposed publicly (security risk) and no authentication is configured.",
+      "fix": "Remove public exposure or restrict access. Add `command: redis-server --requirepass 'securepassword'` to enable auth."
+    }
+  ],
+  "count": 10
+}
+```
