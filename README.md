@@ -78,7 +78,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 25 | Customer Support | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
 | 26 | Lead Scoring | Qwen3.5-27B NT | 🟢 10 | Qwen3.5-122B-A10B / GPT-OSS | 🟢 8 |
 | 27 | Sprint Summary | Qwen3.5-27B NT | 🟡 7 | Qwen3.5-122B-A10B Think | 🟢 10 |
-| 28 | Transaction | Qwen3.5-35B-A3B NT | 🟢 9 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
+| 28 | Transaction | Qwen3.5-27B Think | 🟢 10 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
 | 29 | Home Automation | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B Think | 🟢 10 |
 | 30 | Fitness Tracking | Qwen3.5-27B NT / Think | 🟢 9 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 9 |
 | 31 | Recipe / Cooking | Qwen3.5-35B-A3B NT | 🟢 9 | GPT-OSS-120B | 🟢 9 |
