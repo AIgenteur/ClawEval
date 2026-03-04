@@ -81,7 +81,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 28 | Transaction | Qwen3.5-27B Think | 🟢 10 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
 | 29 | Home Automation | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B Think | 🟢 10 |
 | 30 | Fitness Tracking | Qwen3.5-27B NT / Think | 🟢 9 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 9 |
-| 31 | Recipe / Cooking | Qwen3.5-35B-A3B NT | 🟢 9 | GPT-OSS-120B | 🟢 9 |
+| 31 | Recipe / Cooking | Qwen3.5-35B-A3B Think | 🟢 10 | GPT-OSS-120B | 🟢 9 |
 | 32 | Personal Finance | Qwen3.5-27B Think | 🟡 7 | Qwen3.5-122B-A10B Think | 🟡 7 |
 | 33 | SEO Optimization | Qwen3.5-27B NT / 35B-A3B NT | 🟢 9 | Qwen3.5-122B-A10B NT | 🟢 9 |
 | 34 | Landing Page | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
@@ -110,7 +110,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 54 | Medical | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B | 🟢 9 |
 | 55 | Financial | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT | 🟢 10 |
 | 56 | Security | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B | 🟢 10 |
-| 57 | SRE / Incident | Qwen3.5-27B NT | 🟡 6 | Qwen3.5-122B-A10B / GPT-OSS | 🟡 6 |
+| 57 | SRE / Incident | Qwen3.5-35B-A3B Think | 🟡 7 | Qwen3.5-122B-A10B / GPT-OSS | 🟡 6 |
 | 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
 | 59 | Compliance | Qwen3.5-27B NT | 🟢 9 | GPT-OSS-120B | 🟢 8 |
 
