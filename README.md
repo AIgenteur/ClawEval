@@ -40,6 +40,8 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | OpenRouter, Alibaba, and other affordable providers | Open-source models via API | 🔜 Coming soon |
 
 
+> 📄 **[OpenClaw Backend: Local on 3090 — The Complete Guide (PDF)](docs/OpenClaw_Backend_Local_on_3090.pdf)** — An interactive walkthrough of running the full OpenClaw backend locally on an RTX 3090. Covers setup, model selection, and performance tips with step-by-step calls to action.
+
 ## 🏆 Best Model Per Role — Which One Should You Run?
 
 🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
