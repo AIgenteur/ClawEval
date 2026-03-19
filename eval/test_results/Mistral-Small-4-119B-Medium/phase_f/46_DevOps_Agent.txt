@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Using outdated version '2' of Docker Compose. Version 2 is not recommended and lacks modern features.",
+      "fix": "Update to version '3.8' or higher (latest stable version)."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using 'latest' tag which is non-deterministic and can lead to unexpected updates.",
+      "fix": "Specify a concrete version tag (e.g., 'node:18-alpine')."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password is hardcoded in plaintext, which is a security risk.",
+      "fix": "Use Docker secrets or environment files with proper secrets management."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "Running in development mode in production is insecure and not recommended.",
+      "fix": "Set NODE_ENV to 'production' for production deployments."
+    },
+    {
+      "line": "volumes: - .:/app",
+      "problem": "Mounting the current directory into the container is unsafe for production.",
+      "fix": "Use a dedicated volume or build a proper image with dependencies."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Using 'no' for restart policy means containers won't auto-restart after failure.",
+      "fix": "Use 'unless-stopped' or 'always' for better reliability."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is end-of-life (EOL) and no longer receives security updates.",
+      "fix": "Use a supported version like 'mysql:8.0' or 'mysql:5.7'."
+    },
+    {
+      "line": "ports: - '3306:3306'",
+      "problem": "Exposing MySQL port publicly increases attack surface.",
+      "fix": "Remove the port mapping or restrict access to trusted networks."
+    },
+    {
+      "line": "volumes: - /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp directory is cleared on system reboot, risking data loss.",
+      "fix": "Use a dedicated volume or persistent storage path outside /tmp."
+    },
+    {
+      "line": "ports: - '6379:6379'",
+      "problem": "Exposing Redis port publicly without authentication is insecure.",
+      "fix": "Remove the port mapping or configure Redis authentication and restrict access."
+    }
+  ],
+  "count": 10
+}
+```

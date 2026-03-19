@@ -1,0 +1,78 @@
+```json
+{
+  "architecture": {
+    "components": [
+      "Load Balancer (NGINX/HAProxy)",
+      "API Gateway (Kong/Envoy)",
+      "Application Servers (Node.js/Python)",
+      "URL Shortener Service (Custom)",
+      "Key Generation Service",
+      "Custom Alias Service",
+      "Expiration Service",
+      "Metadata Service (for analytics)",
+      "CDN (Cloudflare/Akamai)",
+      "Message Queue (Kafka/RabbitMQ)",
+      "Object Storage (S3-compatible)",
+      "Distributed Tracing (Jaeger)",
+      "Metrics Collection (Prometheus/Grafana)"
+    ],
+    "database": {
+      "primary": "Amazon Aurora PostgreSQL (Multi-AZ)",
+      "justification": "Aurora PostgreSQL provides high availability, low latency (<50ms p99), and supports custom aliases with JSON fields. Multi-AZ deployment ensures 99.99% uptime. Cost-effective for the scale."
+    },
+    "cache": {
+      "type": "Redis Cluster (Cluster Mode)",
+      "strategy": "Cache-aside (Lazy Loading) with write-through for critical paths",
+      "invalidation": "TTL-based + explicit invalidation via pub/sub for alias updates/expirations"
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 (a-zA-Z0-9) with SHA-256 + MurmurHash3",
+      "length": 7,
+      "collision_handling": "Database-level check with exponential backoff and retry"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (1B redirects / 10M writes daily)",
+    "read_optimization": "Read replicas for Aurora PostgreSQL, Redis Cluster for hot URLs, CDN for static assets",
+    "write_path": "Async writes to Aurora via message queue (Kafka) to decouple from user-facing latency",
+    "horizontal_scaling": "Auto-scaling groups for API servers (Kubernetes), sharded Redis Cluster, Aurora read replicas"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ Aurora PostgreSQL, Redis Cluster with replication, Kubernetes with pod anti-affinity",
+    "failover": "Automatic failover for Aurora PostgreSQL (RPO < 1s), Redis Cluster failover (RPO < 1s)",
+    "data_replication": "Aurora PostgreSQL synchronous replication, Redis Cluster asynchronous replication"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft deletion flag in DB + async deletion via message queue (Kafka). Metadata separated from URLs for faster deletion.",
+    "data_retention": "Default 5 years (configurable), with automatic archival to S3 after 1 year for cold storage",
+    "analytics_separation": "Analytics data stored in separate PostgreSQL schema with restricted access. No PII in analytics."
+  },
+  "cost_estimate": {
+    "monthly_total": 4800,
+    "breakdown": {
+      "compute": 1200,
+      "database": 1800,
+      "cache": 600,
+      "cdn": 300,
+      "other": 900
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket per IP + sliding window per user (for authenticated users)",
+    "limits": "1000 requests/minute per IP, 100 requests/minute per user"
+  },
+  "monitoring": {
+    "metrics": [
+      "p99 redirect latency",
+      "error rate (5xx, 4xx)",
+      "cache hit ratio",
+      "database connection pool usage",
+      "queue depth (Kafka)",
+      "Redis memory usage",
+      "CDN cache hit ratio"
+    ],
+    "alerting": "PagerDuty integration with escalation policies for SLA breaches (p99 > 50ms, error rate > 0.1%)"
+  }
+}
+```

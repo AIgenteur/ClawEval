@@ -1,0 +1,115 @@
+```python
+from flask import Flask, request, jsonify
+from dataclasses import dataclass
+from typing import List, Dict, Optional
+import uuid
+
+app = Flask(__name__)
+
+@dataclass
+class Book:
+    id: str
+    title: str
+    author: str
+    isbn: str
+    price: float
+
+books_db: Dict[str, Book] = {}
+
+def validate_book_data(data: dict, required_fields: List[str]) -> Optional[str]:
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return f"Missing required field: {field}"
+    try:
+        float(data['price'])
+    except (ValueError, TypeError):
+        return "Price must be a valid number"
+    return None
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    start = (page - 1) * per_page
+    end = start + per_page
+    books = list(books_db.values())[start:end]
+    return jsonify([{
+        'id': book.id,
+        'title': book.title,
+        'author': book.author,
+        'isbn': book.isbn,
+        'price': book.price
+    } for book in books])
+
+@app.route('/books/<book_id>', methods=['GET'])
+def get_book(book_id):
+    book = books_db.get(book_id)
+    if not book:
+        return jsonify({'error': 'Book not found'}), 404
+    return jsonify({
+        'id': book.id,
+        'title': book.title,
+        'author': book.author,
+        'isbn': book.isbn,
+        'price': book.price
+    })
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    data = request.get_json()
+    error = validate_book_data(data, ['title', 'author', 'isbn', 'price'])
+    if error:
+        return jsonify({'error': error}), 400
+
+    book_id = str(uuid.uuid4())
+    new_book = Book(
+        id=book_id,
+        title=data['title'],
+        author=data['author'],
+        isbn=data['isbn'],
+        price=float(data['price'])
+    )
+    books_db[book_id] = new_book
+    return jsonify({
+        'id': new_book.id,
+        'title': new_book.title,
+        'author': new_book.author,
+        'isbn': new_book.isbn,
+        'price': new_book.price
+    }), 201
+
+@app.route('/books/<book_id>', methods=['PUT'])
+def update_book(book_id):
+    if book_id not in books_db:
+        return jsonify({'error': 'Book not found'}), 404
+
+    data = request.get_json()
+    error = validate_book_data(data, ['title', 'author', 'isbn', 'price'])
+    if error:
+        return jsonify({'error': error}), 400
+
+    book = books_db[book_id]
+    book.title = data['title']
+    book.author = data['author']
+    book.isbn = data['isbn']
+    book.price = float(data['price'])
+
+    return jsonify({
+        'id': book.id,
+        'title': book.title,
+        'author': book.author,
+        'isbn': book.isbn,
+        'price': book.price
+    })
+
+@app.route('/books/<book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    if book_id not in books_db:
+        return jsonify({'error': 'Book not found'}), 404
+
+    del books_db[book_id]
+    return jsonify({'message': 'Book deleted successfully'}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

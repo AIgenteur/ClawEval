@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Using version '2' of Docker Compose which is outdated and lacks modern features.",
+      "fix": "Update to version '3.8' or higher (latest stable version)."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using 'latest' tag which is non-deterministic and can lead to unexpected updates.",
+      "fix": "Specify a concrete version tag (e.g., 'node:18-alpine')."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password is hardcoded in plaintext which is a security risk.",
+      "fix": "Use Docker secrets or environment files with proper permissions."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "Running in development mode which may expose debug information and reduce security.",
+      "fix": "Set NODE_ENV to 'production' for a production environment."
+    },
+    {
+      "line": "volumes: - .:/app",
+      "problem": "Mounting source code directory which is unnecessary and potentially insecure in production.",
+      "fix": "Remove the volume mount or use a proper build process."
+    },
+    {
+      "line": "restart: no",
+      "problem": "Container restart policy is set to 'no' which means it won't restart after failure.",
+      "fix": "Use 'restart: unless-stopped' or 'restart: always' for better reliability."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is end-of-life (EOL) and no longer supported or secure.",
+      "fix": "Use a supported version like 'mysql:8.0' or 'mysql:8.0-oracle'."
+    },
+    {
+      "line": "ports: - \"3306:3306\"",
+      "problem": "Database port is exposed publicly which is a security risk.",
+      "fix": "Remove the port mapping or restrict access to internal networks only."
+    },
+    {
+      "line": "volumes: - /tmp/mysql-data:/var/lib/mysql",
+      "problem": "Using /tmp for persistent data which will be lost on system reboot.",
+      "fix": "Use a proper persistent volume or named volume (e.g., 'mysql-data:/var/lib/mysql')."
+    },
+    {
+      "line": "ports: - \"6379:6379\"",
+      "problem": "Redis port is exposed publicly and Redis has no authentication configured.",
+      "fix": "Remove the port mapping or restrict access, and enable Redis authentication."
+    }
+  ],
+  "count": 10
+}
+```

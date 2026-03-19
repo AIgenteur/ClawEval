@@ -1,0 +1,76 @@
+```json
+{
+  "architecture": {
+    "components": [
+      "Load Balancers (NGINX/HAProxy)",
+      "API Gateway (Kong/Envoy)",
+      "URL Shortener Service (Microservice in Go/Java)",
+      "Custom Alias Service",
+      "Expiration Service",
+      "User Management Service (for GDPR compliance)",
+      "CDN (Cloudflare/Akamai)",
+      "Message Queue (Kafka/RabbitMQ) for async tasks",
+      "Object Storage (S3/MinIO) for analytics logs",
+      "Monitoring Stack (Prometheus/Grafana)",
+      "Distributed Tracing (Jaeger/Zipkin)"
+    ],
+    "database": {
+      "primary": "Aurora PostgreSQL (Serverless v2)",
+      "justification": "Aurora PostgreSQL offers high availability, auto-scaling, and low-latency reads/writes. Serverless v2 scales to 10M+ writes/day within budget. Supports JSONB for flexible schema (e.g., custom aliases, metadata)."
+    },
+    "cache": {
+      "type": "Redis Cluster (ElastiCache)",
+      "strategy": "Cache-aside with write-through for hot URLs. Cache keys are short URL hashes; values are long URLs + metadata (expiration, custom alias, etc.).",
+      "invalidation": "TTL-based (matching expiration time) + event-driven (Kafka) for manual invalidation (e.g., GDPR deletion)."
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 (a-zA-Z0-9) with SHA-256 + truncation",
+      "length": 7,
+      "collision_handling": "Database-level unique constraint + retry with salted hash (e.g., append timestamp). Probability of collision at 10M/day for 7 chars is ~0.0001% (safe for practical purposes)."
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (1B redirects / 10M new URLs daily)",
+    "read_optimization": "Read replicas for Aurora PostgreSQL (up to 15 replicas), Redis Cluster for hot URLs, CDN for static assets (e.g., favicons).",
+    "write_path": "Async writes to Aurora via message queue (Kafka) to decouple API from DB. Custom aliases are validated synchronously.",
+    "horizontal_scaling": "Kubernetes (EKS/GKE) with auto-scaling (HPA) based on CPU/memory. API Gateway and URL shortener service scale horizontally. Aurora auto-scales to 100+ ACUs."
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment for Aurora PostgreSQL and Redis. Active-active for critical services (API Gateway, URL shortener).",
+    "failover": "Automatic failover for Aurora (RPO < 1s, RTO < 1min). Redis Cluster with master-replica failover. Circuit breakers in API Gateway.",
+    "data_replication": "Aurora PostgreSQL with 6-way replication (3 AZs). Redis Cluster with 3 replicas per shard. Cross-region replication for disaster recovery (RTO < 5min)."
+  },
+  "compliance": {
+    "gdpr_deletion": "User data (long URLs, custom aliases) stored in Aurora with soft deletion (is_deleted flag). Hard deletion via async job (Kafka) to purge data from Aurora, Redis, and analytics logs.",
+    "data_retention": "Default retention: 1 year for analytics logs (object storage). Custom aliases and long URLs retained until expiration or user deletion.",
+    "analytics_separation": "Analytics logs (clicks, referrers) stored in separate S3 bucket with lifecycle policies (30-day retention). PII (IPs, user IDs) hashed or anonymized."
+  },
+  "cost_estimate": {
+    "monthly_total": 4800,
+    "breakdown": {
+      "compute": 2000,
+      "database": 1200,
+      "cache": 600,
+      "cdn": 500,
+      "other": 500
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket per IP/user for API endpoints. Sliding window for redirect endpoints (to prevent abuse).",
+    "limits": "1000 requests/minute per IP for API (create short URL). 10,000 requests/minute per IP for redirects."
+  },
+  "monitoring": {
+    "metrics": [
+      "Latency (p50, p95, p99) for redirects and API",
+      "Error rates (5xx, 4xx) per endpoint",
+      "Cache hit/miss ratio",
+      "Database connection pool usage",
+      "Queue depth (Kafka)",
+      "Custom alias conflicts",
+      "GDPR deletion requests processed"
+    ],
+    "alerting": "PagerDuty/Slack alerts for p99 latency > 50ms, error rate > 1%, or cache hit ratio < 90%. Automated scaling triggers based on CPU/memory."
+  }
+}
+```

@@ -1,0 +1,98 @@
+```json
+{
+  "components": [
+    {
+      "name": "Load Balancer",
+      "technology": "AWS ALB / NGINX Plus / HAProxy",
+      "purpose": "Distribute incoming WebSocket and HTTP traffic across multiple application servers to handle 1M concurrent users.",
+      "scaling_strategy": "Auto-scaling based on CPU/memory metrics; supports sticky sessions for WebSocket connections."
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Socket.io / Pusher / Custom WebSocket Server (Node.js + uWebSockets)",
+      "purpose": "Maintain persistent real-time connections with low-latency (<100ms) message delivery.",
+      "scaling_strategy": "Horizontal scaling with connection-aware routing; use Redis for session stickiness and presence tracking."
+    },
+    {
+      "name": "Message Queue",
+      "technology": "Apache Kafka / RabbitMQ / AWS SQS + SNS",
+      "purpose": "Decouple message ingestion from processing to handle spikes in traffic and ensure message persistence.",
+      "scaling_strategy": "Partitioned topics for scalability; consumer groups for parallel processing."
+    },
+    {
+      "name": "Message Service",
+      "technology": "Go / Rust microservice",
+      "purpose": "Process and route messages in real-time; manage encryption, read receipts, and group memberships.",
+      "scaling_strategy": "Stateless design; auto-scaling based on message throughput; sharded by user ID."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster",
+      "purpose": "Track online/offline status, typing indicators, and read receipts with sub-millisecond latency.",
+      "scaling_strategy": "Sharded Redis instances; pub/sub for real-time presence updates."
+    },
+    {
+      "name": "User & Group Service",
+      "technology": "PostgreSQL (Aurora) + Caching (Redis)",
+      "purpose": "Store user profiles, group metadata, and memberships; support GDPR-compliant data deletion.",
+      "scaling_strategy": "Read replicas for scaling reads; sharding for large user bases."
+    },
+    {
+      "name": "File Storage",
+      "technology": "AWS S3 / Google Cloud Storage with CDN (CloudFront / Cloud CDN)",
+      "purpose": "Store and serve file attachments up to 50MB with high availability and low latency.",
+      "scaling_strategy": "Automatic scaling; lifecycle policies for GDPR compliance (e.g., auto-delete after 30 days)."
+    },
+    {
+      "name": "Message Store",
+      "technology": "Apache Cassandra / ScyllaDB",
+      "purpose": "Persist all messages with high write throughput and low-latency reads for message history.",
+      "scaling_strategy": "Multi-region replication; time-series partitioning for efficient queries."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "Hardware Security Module (HSM) / AWS KMS / Libsodium",
+      "purpose": "Handle end-to-end encryption key management and message encryption/decryption.",
+      "scaling_strategy": "Stateless service; auto-scaling; keys stored encrypted at rest."
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong / AWS API Gateway / NGINX",
+      "purpose": "Route REST and WebSocket traffic; enforce authentication, rate limiting, and GDPR consent checks.",
+      "scaling_strategy": "Auto-scaling; caching for frequent requests."
+    },
+    {
+      "name": "Monitoring & Logging",
+      "technology": "Prometheus + Grafana / Datadog / AWS CloudWatch",
+      "purpose": "Real-time observability, alerting, and performance tracking to ensure 99.99% uptime.",
+      "scaling_strategy": "Centralized logging with retention policies; distributed tracing (Jaeger/Zipkin)."
+    },
+    {
+      "name": "CDN",
+      "technology": "Cloudflare / AWS CloudFront / Fastly",
+      "purpose": "Cache static assets and reduce latency for global users.",
+      "scaling_strategy": "Automatic scaling; edge caching with TTL based on content type."
+    }
+  ],
+  "data_flow": "User connects via WebSocket → Load Balancer routes to WebSocket Gateway → Message Service validates and encrypts message → Message stored in Message Store and Message Queue → Presence Service updates online status → Message delivered to recipients via WebSocket Gateway → Read receipts tracked via Presence Service → File attachments uploaded to File Storage via API Gateway.",
+  "infrastructure": {
+    "cloud": "Multi-cloud (AWS + GCP) for redundancy and compliance",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "~$120,000 - $180,000 (varies by traffic and region; includes compute, storage, networking, and support)",
+  "bottlenecks": [
+    "WebSocket connection churn during peak hours",
+    "Database write contention in Message Store",
+    "Encryption overhead for large group chats",
+    "Cross-region replication latency for message history",
+    "Cost of maintaining 99.99% uptime (multi-region redundancy)"
+  ],
+  "tradeoffs": [
+    "End-to-end encryption limits server-side message processing (e.g., no spam filtering)",
+    "Multi-region deployment increases cost but improves latency and resilience",
+    "Using Kafka adds complexity but ensures message durability and scalability",
+    "Storing all messages indefinitely improves history but increases storage costs",
+    "Hardware Security Modules (HSMs) improve security but add operational overhead"
+  ]
+}
+```

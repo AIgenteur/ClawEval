@@ -1,0 +1,154 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T0",
+      "name": "Project setup and planning",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T1",
+      "name": "Set up PostgreSQL database",
+      "depends_on": ["T0"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Design database schema",
+      "depends_on": ["T1"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Set up project structure and dependencies",
+      "depends_on": ["T0"],
+      "estimated_hours": 8,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T4",
+      "name": "Implement user registration",
+      "depends_on": ["T2", "T3"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Implement user login (JWT)",
+      "depends_on": ["T4"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Implement basic CRUD for todos",
+      "depends_on": ["T5"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Implement todo categories/tags",
+      "depends_on": ["T6"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Implement due date reminders",
+      "depends_on": ["T6"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Set up rate limiting",
+      "depends_on": ["T5"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Write unit tests for user auth",
+      "depends_on": ["T5"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Write unit tests for todos",
+      "depends_on": ["T6"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "Write unit tests for categories/tags",
+      "depends_on": ["T7"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T13",
+      "name": "Write unit tests for due date reminders",
+      "depends_on": ["T8"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T14",
+      "name": "Set up Docker for local development",
+      "depends_on": ["T3"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T15",
+      "name": "Configure Docker for production",
+      "depends_on": ["T14"],
+      "estimated_hours": 4,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T16",
+      "name": "Write API documentation (OpenAPI)",
+      "depends_on": ["T6"],
+      "estimated_hours": 8,
+      "assignable_to": "fullstack"
+    },
+    {
+      "id": "T17",
+      "name": "Set up CI/CD pipeline",
+      "depends_on": ["T11", "T12", "T13", "T15"],
+      "estimated_hours": 12,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": [
+    "T0",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "T8",
+    "T9",
+    "T10",
+    "T11",
+    "T12",
+    "T13",
+    "T14",
+    "T15",
+    "T16",
+    "T17"
+  ],
+  "total_hours": 136,
+  "parallel_tracks": 3
+}
+```

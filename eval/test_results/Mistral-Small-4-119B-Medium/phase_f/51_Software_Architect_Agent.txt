@@ -1,0 +1,135 @@
+```json
+{
+  "components": [
+    {
+      "name": "Load Balancer",
+      "technology": "AWS ALB / NGINX Plus / HAProxy",
+      "purpose": "Distribute incoming WebSocket and HTTP traffic across multiple application servers to handle 1M concurrent users.",
+      "scaling_strategy": "Auto-scaling based on CPU/memory metrics; supports sticky sessions for WebSocket connections."
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Socket.IO / Pusher / Custom WebSocket Server (Node.js + uWebSockets)",
+      "purpose": "Maintain persistent, low-latency (<100ms) bidirectional connections with clients for real-time messaging.",
+      "scaling_strategy": "Stateless design; horizontal scaling via connection sharding (e.g., Redis-backed session store)."
+    },
+    {
+      "name": "Message Queue",
+      "technology": "Apache Kafka / RabbitMQ / NATS Streaming",
+      "purpose": "Decouple message ingestion from processing; ensure reliable delivery and order preservation.",
+      "scaling_strategy": "Partitioned topics for parallel processing; consumer groups for horizontal scaling."
+    },
+    {
+      "name": "Message Service",
+      "technology": "Go / Rust / Java (Spring Boot)",
+      "purpose": "Process incoming messages, validate, encrypt, persist, and broadcast to recipients.",
+      "scaling_strategy": "Stateless microservices; auto-scaling based on message queue depth."
+    },
+    {
+      "name": "Message Store",
+      "technology": "Apache Cassandra / ScyllaDB",
+      "purpose": "Persist messages with high write throughput and low-latency reads for message history.",
+      "scaling_strategy": "Linear scalability via partitioning; tunable consistency for performance vs. durability."
+    },
+    {
+      "name": "User Presence Service",
+      "technology": "Redis Cluster (with Sentinel)",
+      "purpose": "Track online/offline status, last seen, and presence updates in real-time.",
+      "scaling_strategy": "Sharded Redis instances; pub/sub for presence broadcast."
+    },
+    {
+      "name": "Read Receipt Service",
+      "technology": "Redis Sorted Sets / DynamoDB",
+      "purpose": "Track when messages are read by recipients and update UI accordingly.",
+      "scaling_strategy": "Optimized for high-frequency writes; TTL-based cleanup."
+    },
+    {
+      "name": "File Storage",
+      "technology": "AWS S3 / Google Cloud Storage / MinIO (self-hosted)",
+      "purpose": "Store and serve file attachments (up to 50MB) with high durability and availability.",
+      "scaling_strategy": "Automatic scaling; CDN integration (CloudFront / Cloudflare) for global low-latency access."
+    },
+    {
+      "name": "File Processing Service",
+      "technology": "FFmpeg / ImageMagick / Custom Workers",
+      "purpose": "Generate thumbnails, compress images, and validate file types before storage.",
+      "scaling_strategy": "Kubernetes-based worker pods; auto-scaling based on queue depth."
+    },
+    {
+      "name": "Group Chat Service",
+      "technology": "Custom Microservice (Go/Rust)",
+      "purpose": "Manage group membership, message fan-out to up to 500 members, and access control.",
+      "scaling_strategy": "Sharded by group ID; in-memory caching for active groups."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "Libsodium / OpenSSL / AWS KMS",
+      "purpose": "End-to-end encryption (E2EE) of messages and files using per-message keys.",
+      "scaling_strategy": "Stateless; key derivation handled client-side; server only stores encrypted blobs."
+    },
+    {
+      "name": "User Service",
+      "technology": "PostgreSQL / CockroachDB",
+      "purpose": "Store user profiles, authentication data, and GDPR-compliant metadata.",
+      "scaling_strategy": "Read replicas for scaling reads; sharding for write scaling."
+    },
+    {
+      "name": "Notification Service",
+      "technology": "Firebase Cloud Messaging / Apple Push Notification Service / Web Push API",
+      "purpose": "Send push notifications for offline users when new messages arrive.",
+      "scaling_strategy": "Batched delivery; async processing via message queue."
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Grafana / Datadog / New Relic",
+      "purpose": "Track latency, error rates, system health, and user activity for SLA compliance.",
+      "scaling_strategy": "Centralized logging and metrics; auto-alerting on anomalies."
+    },
+    {
+      "name": "CDN & Edge Caching",
+      "technology": "Cloudflare / AWS CloudFront / Fastly",
+      "purpose": "Cache static assets, avatars, and frequently accessed content globally.",
+      "scaling_strategy": "Automatic edge scaling; cache invalidation via webhooks."
+    }
+  ],
+  "data_flow": {
+    "real_time_message": "Client → WebSocket Gateway → Message Queue → Message Service → (Encrypt) → Message Store → Message Service → WebSocket Gateway → Recipients",
+    "presence_update": "Client → WebSocket Gateway → User Presence Service → WebSocket Gateway → Contacts",
+    "read_receipt": "Client → Message Service → Read Receipt Service → Message Service → Sender",
+    "file_upload": "Client → WebSocket Gateway → File Processing Service → File Storage → Message Service → Recipients",
+    "group_join": "Client → Group Chat Service → User Service → Group Chat Service → Members"
+  },
+  "infrastructure": {
+    "cloud": "Multi-cloud (AWS + GCP) for redundancy and compliance",
+    "regions": 3,
+    "availability_zones_per_region": 3,
+    "global_load_balancer": "Anycast DNS with health checks",
+    "disaster_recovery": "Active-active across regions with <1min failover"
+  },
+  "estimated_monthly_cost": {
+    "compute": "$45,000 - $75,000 (EC2/GKE instances, auto-scaling)",
+    "message_queue": "$8,000 - $12,000 (Kafka cluster)",
+    "storage": "$12,000 - $20,000 (S3, Cassandra, PostgreSQL)",
+    "cdn": "$5,000 - $10,000 (CloudFront/Fastly)",
+    "network": "$15,000 - $25,000 (data transfer, load balancers)",
+    "monitoring": "$3,000 - $5,000 (Datadog/New Relic)",
+    "total": "$88,000 - $147,000/month (excluding labor and support)"
+  },
+  "bottlenecks": [
+    "WebSocket connection churn during peak hours (e.g., 100K connections/sec)",
+    "Cassandra write latency under high load (>10K writes/sec)",
+    "Redis cluster memory pressure due to presence state and read receipts",
+    "Cross-region replication lag for message persistence",
+    "Cost of global CDN for file delivery at scale",
+    "Key rotation overhead for E2EE without breaking message history"
+  ],
+  "tradeoffs": [
+    "Using Kafka for message queue adds complexity but ensures durability and order; RabbitMQ is simpler but less scalable.",
+    "E2EE improves privacy but complicates server-side features like search and spam filtering.",
+    "Multi-region deployment improves uptime but increases cost and complexity.",
+    "Using Cassandra over PostgreSQL for message store sacrifices some query flexibility for write scalability.",
+    "Storing encrypted blobs in S3 reduces server load but increases egress costs.",
+    "Implementing read receipts via Redis Sorted Sets is fast but limits historical querying."
+  ]
+}
+```

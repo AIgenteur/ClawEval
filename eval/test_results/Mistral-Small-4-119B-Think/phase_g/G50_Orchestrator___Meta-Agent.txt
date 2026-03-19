@@ -1,0 +1,86 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnosis",
+      "agents": [
+        {"agent": "log_analyzer", "input": "customer_report", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "outage_metrics", "timeout_seconds": 60},
+        {"agent": "dependency_mapper", "input": "service_dependencies", "timeout_seconds": 30},
+        {"agent": "db_checker", "input": "database_health", "timeout_seconds": 60},
+        {"agent": "config_auditor", "input": "recent_config_changes", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete and return data (even if errors)"
+    },
+    {
+      "phase": 2,
+      "name": "Impact Assessment & Notification",
+      "agents": [
+        {"agent": "incident_reporter", "input": "diagnostic_results", "timeout_seconds": 30},
+        {"agent": "notification_agent", "input": "incident_ticket", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Incident ticket created and notifications sent"
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Analysis",
+      "agents": [
+        {"agent": "log_analyzer", "input": "error_patterns", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "anomalous_metrics", "timeout_seconds": 60},
+        {"agent": "dependency_mapper", "input": "impacted_services", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "Root cause identified or timeout reached"
+    },
+    {
+      "phase": 4,
+      "name": "Remediation Planning",
+      "agents": [
+        {"agent": "capacity_planner", "input": "resource_utilization", "timeout_seconds": 30},
+        {"agent": "rollback_agent", "input": "deployment_history", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "Remediation options identified (rollback or scale)"
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Customer Update",
+      "agents": [
+        {"agent": "db_checker", "input": "post_remediation_health", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "post_remediation_metrics", "timeout_seconds": 60},
+        {"agent": "customer_communicator", "input": "status_update", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Service verified healthy and customer notified"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 3,
+      "condition": "Root cause identified as configuration issue",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 5"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Rollback required (degraded state persists)",
+      "if_true": "go to phase 5",
+      "if_false": "go to phase 5"
+    }
+  ],
+  "escalation": {
+    "trigger": "No root cause found after 10 minutes",
+    "action": "Notify senior on-call and create war room"
+  },
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    "Service remains in degraded state after 5 minutes of remediation attempts",
+    "Database connection failures detected",
+    "Critical metric thresholds breached (error rate > 5%)"
+  ]
+}
+```

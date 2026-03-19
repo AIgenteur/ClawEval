@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Insecure Secret Key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a cryptographically secure random secret key generated at runtime."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Avoid using user input directly in template rendering. Use proper escaping or parameterized templates."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries with placeholders (e.g., ? or named parameters)."
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization (Pickle)",
+      "severity": "critical",
+      "location": "obj = pickle.loads(data)",
+      "fix": "Avoid using pickle for untrusted data. Use safer serialization formats like JSON."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid using shell=True. Use subprocess with a list of arguments and proper input validation."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal",
+      "severity": "high",
+      "location": "return open(path).read()",
+      "fix": "Validate and sanitize user-provided paths. Use absolute paths and restrict to a safe directory."
+    },
+    {
+      "id": 7,
+      "type": "Hardcoded Password",
+      "severity": "high",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Avoid hardcoding passwords. Use environment variables or secure secret management."
+    },
+    {
+      "id": 8,
+      "type": "Information Exposure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Avoid exposing environment variables. Only return necessary information."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "Flask app configuration",
+      "fix": "Enforce HTTPS by setting app.config['SESSION_COOKIE_SECURE'] = True and using SSL/TLS."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "Flask app configuration",
+      "fix": "Implement rate limiting to prevent brute force and denial-of-service attacks."
+    }
+  ],
+  "count": 10
+}
+```

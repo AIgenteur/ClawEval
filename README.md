@@ -47,6 +47,7 @@ No discrete GPU? Unified-memory devices can run these models directly. Estimates
 | GPT-OSS-120B GGUF | ~61 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
 | Qwen3.5-122B-A10B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
 | Nemotron-3-Super-120B-A12B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Mistral-Small-4-119B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
 
 > ⚠️ **tight** = model loads but leaves little room for KV cache / long context. Short prompts only.
 >
@@ -139,7 +140,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | 56 | Security | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B Think | 🟢 10 |
 | 57 | SRE / Incident | Qwen3.5-35B-A3B Think | 🟡 7 | Qwen3.5-122B-A10B / GPT-OSS | 🟡 6 |
 | 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 59 | Compliance | Qwen3.5-27B NT | 🟢 9 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NT | 🟢 8 |
+| 59 | Compliance | Qwen3.5-27B NT | 🟢 9 | Mistral-Small-4-119B Med | 🟢 9 |
 
 > † Phase G discriminator score (harder test that differentiates models — [details](docs/results-phase-g.md))
 >

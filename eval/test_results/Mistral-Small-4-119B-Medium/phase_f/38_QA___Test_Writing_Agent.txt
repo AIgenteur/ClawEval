@@ -1,0 +1,68 @@
+```python
+import pytest
+from tax_calculator import calculate_tax
+
+def test_zero_income_single():
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0.0
+    assert rate == 0.0
+
+def test_zero_income_married():
+    tax, rate = calculate_tax(0, 'married')
+    assert tax == 0.0
+    assert rate == 0.0
+
+def test_typical_single_income():
+    tax, rate = calculate_tax(50000, 'single')
+    assert tax == 6158.5
+    assert rate == 12.32
+
+def test_typical_married_income():
+    tax, rate = calculate_tax(100000, 'married')
+    assert tax == 11089.5
+    assert rate == 11.09
+
+def test_high_single_income():
+    tax, rate = calculate_tax(300000, 'single')
+    assert tax == 70661.5
+    assert rate == 23.55
+
+def test_high_married_income():
+    tax, rate = calculate_tax(600000, 'married')
+    assert tax == 153639.5
+    assert rate == 25.61
+
+def test_single_vs_married_same_income():
+    income = 150000
+    tax_single, _ = calculate_tax(income, 'single')
+    tax_married, _ = calculate_tax(income, 'married')
+    assert tax_single > tax_married
+
+def test_invalid_income_negative():
+    with pytest.raises(ValueError):
+        calculate_tax(-1000, 'single')
+
+def test_invalid_income_non_numeric():
+    with pytest.raises(ValueError):
+        calculate_tax("1000", 'single')
+    with pytest.raises(ValueError):
+        calculate_tax(None, 'single')
+
+def test_invalid_filing_status():
+    with pytest.raises(ValueError):
+        calculate_tax(50000, 'head_of_household')
+
+def test_single_bracket_boundaries():
+    assert calculate_tax(11600, 'single') == (1160.0, 10.0)
+    assert calculate_tax(47150, 'single') == (5149.0, 10.92)
+    assert calculate_tax(100525, 'single') == (15698.5, 15.62)
+    assert calculate_tax(191950, 'single') == (36183.5, 18.85)
+    assert calculate_tax(243725, 'single') == (52070.5, 21.37)
+
+def test_married_bracket_boundaries():
+    assert calculate_tax(23200, 'married') == (2320.0, 10.0)
+    assert calculate_tax(94300, 'married') == (10346.0, 10.97)
+    assert calculate_tax(201050, 'married') == (23357.0, 11.62)
+    assert calculate_tax(383900, 'married') == (66223.0, 17.25)
+    assert calculate_tax(487450, 'married') == (99119.0, 20.34)
+```

@@ -1,0 +1,120 @@
+```json
+{
+  "components": [
+    {
+      "name": "Load Balancer",
+      "technology": "NGINX / AWS ALB / Cloudflare",
+      "purpose": "Distribute incoming WebSocket connections across multiple WebSocket servers to handle 1M concurrent users.",
+      "scaling_strategy": "Auto-scaling based on connection count and CPU load; sticky sessions for WebSocket persistence."
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Node.js (Socket.io) / Go (Gorilla WebSocket) / Elixir (Phoenix Channels)",
+      "purpose": "Maintain persistent WebSocket connections for real-time messaging with low latency (<100ms).",
+      "scaling_strategy": "Horizontal scaling with connection-aware routing; stateless design with external session store (Redis)."
+    },
+    {
+      "name": "Message Queue",
+      "technology": "Apache Kafka / RabbitMQ / AWS SQS",
+      "purpose": "Buffer and distribute messages to online users and persist messages for history.",
+      "scaling_strategy": "Partitioned topics by user ID or chat ID; auto-scaling consumers based on queue depth."
+    },
+    {
+      "name": "Message Store",
+      "technology": "MongoDB (for flexible schema) / Cassandra (for high write throughput)",
+      "purpose": "Persist all messages with metadata (sender, timestamp, chat ID) for message history and compliance.",
+      "scaling_strategy": "Sharded by chat ID; time-series indexing for fast retrieval; TTL for GDPR data deletion."
+    },
+    {
+      "name": "User Presence Service",
+      "technology": "Redis (with Sorted Sets) / DynamoDB (for persistence)",
+      "purpose": "Track online/offline status, last seen time, and presence updates in real-time.",
+      "scaling_strategy": "Redis Cluster for in-memory presence; periodic snapshots to persistent store."
+    },
+    {
+      "name": "Read Receipt Service",
+      "technology": "Redis Streams / PostgreSQL (for audit logs)",
+      "purpose": "Record when messages are read by recipients and deliver receipts to senders.",
+      "scaling_strategy": "Asynchronous processing via message queue; batch updates to reduce DB load."
+    },
+    {
+      "name": "File Storage",
+      "technology": "AWS S3 / Google Cloud Storage / MinIO (self-hosted)",
+      "purpose": "Store file attachments securely with encryption at rest.",
+      "scaling_strategy": "Multi-region replication; lifecycle policies for GDPR deletion; CDN for fast delivery."
+    },
+    {
+      "name": "Encryption Service",
+      "technology": "Libsodium / AWS KMS / HashiCorp Vault",
+      "purpose": "Handle end-to-end encryption key management and message encryption/decryption.",
+      "scaling_strategy": "Stateless microservice; key caching with short TTL; hardware security modules (HSMs) for root keys."
+    },
+    {
+      "name": "Group Chat Coordinator",
+      "technology": "Go / Rust (for performance)",
+      "purpose": "Manage group membership, broadcast messages to all members, and enforce access control.",
+      "scaling_strategy": "Sharded by group ID; in-memory cache for active groups; async fan-out via message queue."
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong / AWS API Gateway / Envoy",
+      "purpose": "Route REST and GraphQL requests (login, profile, group creation) to backend services.",
+      "scaling_strategy": "Auto-scaling based on request rate; caching for frequent queries (e.g., user profiles)."
+    },
+    {
+      "name": "Authentication Service",
+      "technology": "OAuth 2.0 / JWT with short-lived tokens / Firebase Auth",
+      "purpose": "Authenticate users, issue access tokens, and validate sessions.",
+      "scaling_strategy": "Stateless JWT validation; token revocation via short expiry and refresh tokens."
+    },
+    {
+      "name": "Monitoring & Observability",
+      "technology": "Prometheus + Grafana / Datadog / New Relic",
+      "purpose": "Track latency, error rates, connection counts, and system health.",
+      "scaling_strategy": "Centralized logging with ELK Stack; distributed tracing with Jaeger."
+    },
+    {
+      "name": "CDN",
+      "technology": "Cloudflare / AWS CloudFront / Fastly",
+      "purpose": "Cache static assets, profile images, and file thumbnails globally.",
+      "scaling_strategy": "Edge caching with cache invalidation on file updates."
+    }
+  ],
+  "data_flow": {
+    "user_message": "User sends message via WebSocket → WebSocket Gateway → Message Queue → Message Store (persist) → Message Queue → WebSocket Gateway → Recipient(s)",
+    "presence_update": "User connects/disconnects → WebSocket Gateway → Presence Service (Redis) → Broadcast to contacts",
+    "read_receipt": "Recipient reads message → WebSocket Gateway → Read Receipt Service → Message Store (update read status) → Sender receives receipt",
+    "file_upload": "User uploads file → API Gateway → File Storage (S3) → Encryption Service (encrypt) → Message Queue → Recipient(s)",
+    "group_message": "Sender sends message → Group Coordinator (validate group) → Message Queue → Fan-out to all members"
+  },
+  "infrastructure": {
+    "cloud": "Multi-cloud (AWS + GCP) for redundancy and compliance",
+    "regions": 3,
+    "availability_zones": 3,
+    "disaster_recovery": "Active-active across regions with DNS-based failover"
+  },
+  "estimated_monthly_cost": {
+    "compute": "$50,000 - $80,000",
+    "storage": "$15,000 - $25,000",
+    "network": "$20,000 - $40,000",
+    "databases": "$30,000 - $50,000",
+    "cdn": "$10,000 - $20,000",
+    "monitoring": "$5,000 - $10,000",
+    "total": "$130,000 - $225,000"
+  },
+  "bottlenecks": [
+    "WebSocket connection limits per server (solved via horizontal scaling and connection pooling)",
+    "Database write amplification for message history (mitigated via batch writes and sharding)",
+    "Encryption overhead for large group chats (optimized via symmetric group keys)",
+    "Presence update storms during peak hours (solved via rate limiting and debouncing)",
+    "Cross-region latency for global users (mitigated via edge computing and CDN)"
+  ],
+  "tradeoffs": [
+    "Using Kafka vs. RabbitMQ: Kafka offers higher throughput but higher operational complexity.",
+    "End-to-end encryption vs. server-side search: E2E encryption limits server-side features like search.",
+    "Multi-cloud redundancy vs. cost: Multi-cloud increases reliability but raises operational overhead.",
+    "Short-lived JWT tokens vs. user experience: Requires frequent re-authentication but improves security.",
+    "Sharding by chat ID vs. user ID: Chat-based sharding improves group message delivery but may complicate user-specific queries."
+  ]
+}
+```

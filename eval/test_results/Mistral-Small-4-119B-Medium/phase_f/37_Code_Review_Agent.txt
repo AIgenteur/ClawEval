@@ -1,0 +1,32 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when no orders are pending (processed list is empty)",
+      "fix": "Add a check for empty processed list before calculating average"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed) for the count",
+      "fix": "Change to return len(processed) for the count"
+    },
+    {
+      "line": 8,
+      "issue": "No validation that discount is between 0 and 100 (could be negative or >100)",
+      "fix": "Add validation: if discount < 0 or discount > 100: raise ValueError or clamp to 0-100"
+    },
+    {
+      "line": null,
+      "issue": "Mutates the input orders dictionary (side effect)",
+      "fix": "Create a deep copy of each order before modifying it"
+    },
+    {
+      "line": null,
+      "issue": "No type checking on price/quantity (could be None or non-numeric)",
+      "fix": "Add validation to ensure price and quantity are numeric and not None"
+    }
+  ],
+  "count": 5
+}
+```

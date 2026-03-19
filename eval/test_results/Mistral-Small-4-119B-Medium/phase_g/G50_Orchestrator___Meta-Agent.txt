@@ -1,0 +1,87 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnosis",
+      "agents": [
+        {"agent": "log_analyzer", "input": "customer_report", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "outage_metrics", "timeout_seconds": 60},
+        {"agent": "dependency_mapper", "input": "service_dependencies", "timeout_seconds": 30},
+        {"agent": "db_checker", "input": "database_health", "timeout_seconds": 60},
+        {"agent": "config_auditor", "input": "recent_config_changes", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete and return findings"
+    },
+    {
+      "phase": 2,
+      "name": "Incident Triage",
+      "agents": [
+        {"agent": "incident_reporter", "input": "diagnostic_findings", "timeout_seconds": 30},
+        {"agent": "notification_agent", "input": "initial_alert", "timeout_seconds": 15}
+      ],
+      "parallel": false,
+      "gate": "Incident ticket created and initial alert sent"
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Analysis",
+      "agents": [
+        {"agent": "log_analyzer", "input": "error_patterns", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "anomaly_metrics", "timeout_seconds": 60},
+        {"agent": "dependency_mapper", "input": "impacted_services", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "Root cause identified or ruled out"
+    },
+    {
+      "phase": 4,
+      "name": "Remediation Planning",
+      "agents": [
+        {"agent": "rollback_agent", "input": "rollback_candidates", "timeout_seconds": 45},
+        {"agent": "capacity_planner", "input": "resource_utilization", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Remediation path determined (rollback or scale)"
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Communication",
+      "agents": [
+        {"agent": "customer_communicator", "input": "status_update", "timeout_seconds": 30},
+        {"agent": "incident_reporter", "input": "resolution_update", "timeout_seconds": 15},
+        {"agent": "log_analyzer", "input": "post_remediation_logs", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "post_remediation_metrics", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "Verification complete and customer notified"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "root_cause_identified",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 3"
+    },
+    {
+      "after_phase": 4,
+      "condition": "requires_rollback",
+      "if_true": "proceed_with_rollback",
+      "if_false": "proceed_with_scaling"
+    }
+  ],
+  "escalation": {
+    "trigger": "outage_duration > 15 minutes",
+    "action": "notify senior engineering team via PagerDuty"
+  },
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    "error_patterns indicate deployment issue",
+    "metric_checker shows high error rate post-deployment",
+    "config_auditor finds problematic config change"
+  ]
+}
+```

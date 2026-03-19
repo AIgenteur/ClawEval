@@ -1,0 +1,135 @@
+```python
+import time
+import threading
+from collections import defaultdict, deque
+
+class RateLimiter:
+    def __init__(self, max_requests: int, window_seconds: float, burst: int = 0):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.burst = burst
+        self.burst_window = window_seconds * 2 if burst > 0 else 0
+        self.locks = defaultdict(threading.Lock)
+        self.state = defaultdict(lambda: {
+            'requests': deque(),
+            'burst_requests': deque() if burst > 0 else None,
+            'last_update': time.time()
+        })
+        self.lock = threading.Lock()
+
+    def allow(self, user_id: str, endpoint: str = "default") -> dict:
+        key = (user_id, endpoint)
+        with self.locks[key]:
+            entry = self.state[key]
+            now = time.time()
+            self._clean_old_requests(entry['requests'], now)
+            if entry['burst_requests'] is not None:
+                self._clean_old_requests(entry['burst_requests'], now)
+
+            used = len(entry['requests'])
+            burst_used = len(entry['burst_requests']) if entry['burst_requests'] is not None else 0
+            remaining = self.max_requests - used
+            burst_remaining = self.burst - burst_used if entry['burst_requests'] is not None else 0
+
+            if remaining <= 0 and burst_remaining <= 0:
+                retry_after = self._calculate_retry_after(entry['requests'], now)
+                return {"allowed": False, "remaining": 0, "retry_after": retry_after}
+
+            if remaining > 0:
+                entry['requests'].append(now)
+                return {"allowed": True, "remaining": remaining - 1, "retry_after": None}
+            else:
+                if entry['burst_requests'] is not None and burst_remaining > 0:
+                    entry['burst_requests'].append(now)
+                    return {"allowed": True, "remaining": 0, "retry_after": None}
+                else:
+                    retry_after = self._calculate_retry_after(entry['requests'], now)
+                    return {"allowed": False, "remaining": 0, "retry_after": retry_after}
+
+    def allow_priority(self, user_id: str, endpoint: str = "default") -> dict:
+        return {"allowed": True, "remaining": 0, "retry_after": None}
+
+    def cleanup(self, max_age_seconds: float = None) -> int:
+        if max_age_seconds is None:
+            max_age_seconds = 2 * self.window_seconds
+        now = time.time()
+        removed = 0
+        with self.lock:
+            keys_to_remove = []
+            for key, entry in self.state.items():
+                oldest = entry['requests'][0] if entry['requests'] else now
+                if now - oldest > max_age_seconds:
+                    keys_to_remove.append(key)
+                elif entry['burst_requests'] is not None:
+                    oldest_burst = entry['burst_requests'][0] if entry['burst_requests'] else now
+                    if now - oldest_burst > max_age_seconds:
+                        keys_to_remove.append(key)
+            for key in keys_to_remove:
+                if key in self.state:
+                    del self.state[key]
+                    removed += 1
+        return removed
+
+    def get_usage(self, user_id: str, endpoint: str = "default") -> dict:
+        key = (user_id, endpoint)
+        with self.locks[key]:
+            entry = self.state[key]
+            now = time.time()
+            self._clean_old_requests(entry['requests'], now)
+            used = len(entry['requests'])
+            burst_used = len(entry['burst_requests']) if entry['burst_requests'] is not None else 0
+            limit = self.max_requests + self.burst if self.burst > 0 else self.max_requests
+            burst_remaining = self.burst - burst_used if self.burst > 0 and entry['burst_requests'] is not None else 0
+            return {
+                "used": used,
+                "limit": limit,
+                "window_seconds": self.window_seconds,
+                "burst_remaining": burst_remaining
+            }
+
+    def to_dict(self) -> dict:
+        with self.lock:
+            return {
+                "max_requests": self.max_requests,
+                "window_seconds": self.window_seconds,
+                "burst": self.burst,
+                "state": {
+                    str(k): {
+                        'requests': list(v['requests']),
+                        'burst_requests': list(v['burst_requests']) if v['burst_requests'] is not None else None,
+                        'last_update': v['last_update']
+                    }
+                    for k, v in self.state.items()
+                }
+            }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'RateLimiter':
+        instance = cls(
+            max_requests=data["max_requests"],
+            window_seconds=data["window_seconds"],
+            burst=data["burst"]
+        )
+        instance.state = defaultdict(lambda: {
+            'requests': deque(),
+            'burst_requests': deque() if data["burst"] > 0 else None,
+            'last_update': time.time()
+        })
+        for key_str, entry in data["state"].items():
+            user_id, endpoint = eval(key_str)
+            instance.state[(user_id, endpoint)]['requests'] = deque(entry['requests'])
+            if entry['burst_requests'] is not None:
+                instance.state[(user_id, endpoint)]['burst_requests'] = deque(entry['burst_requests'])
+            instance.state[(user_id, endpoint)]['last_update'] = entry['last_update']
+        return instance
+
+    def _clean_old_requests(self, requests: deque, now: float):
+        while requests and now - requests[0] > self.window_seconds:
+            requests.popleft()
+
+    def _calculate_retry_after(self, requests: deque, now: float) -> float:
+        if not requests:
+            return 0.0
+        oldest = requests[0]
+        return max(0.0, self.window_seconds - (now - oldest))
+```

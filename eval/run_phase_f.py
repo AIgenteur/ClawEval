@@ -620,6 +620,7 @@ def main():
     parser.add_argument("--nothink", action="store_true", help="Disable thinking (Kimi: chat_template_kwargs.thinking=False)")
     parser.add_argument("--nothink-root", action="store_true", help="Disable thinking (GLM-5: enable_thinking=false at root level)")
     parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level for system message (GPT-OSS-120B)")
+    parser.add_argument("--reasoning-effort", choices=["low", "medium", "high"], help="Mistral reasoning_effort param (low/medium/high)")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     parser.add_argument("--tier", type=int, help="Run only this tier")
     args = parser.parse_args()
@@ -633,6 +634,8 @@ def main():
         extra_body = {"enable_thinking": False}
     elif args.thinking_budget:
         extra_body = {"chat_template_kwargs": {"enable_thinking": True, "thinking_budget": args.thinking_budget}}
+    elif args.reasoning_effort:
+        extra_body = {"reasoning_effort": args.reasoning_effort}
 
     out_dir = Path(f"test_results/{args.model}/phase_f")
     out_dir.mkdir(parents=True, exist_ok=True)
