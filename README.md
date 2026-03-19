@@ -33,7 +33,7 @@ We test quantized open-source models that fit on hardware you already own. Find 
 
 No discrete GPU? Unified-memory devices can run these models directly. Estimates are **conservative** — they account for OS overhead (~4–8 GB) and KV cache for reasonable context windows.
 
-| Model (as tested) | Weights | Mac Mini M4 (16 GB) | Mac Mini M4 Pro (24 GB) | Mac Mini M4 Pro (48 GB) | Strix Halo (128 GB) | DGX Spark (128 GB) |
+| Model (as tested) | Weights | Mac Mini M4 (16 GB) | Mac Mini M4 Pro (24 GB) | Mac Mini M4 Pro (48 GB) | Strix Halo (96 GB GPU) | DGX Spark (96 GB GPU) |
 |---|---|:---:|:---:|:---:|:---:|:---:|
 | Qwen3.5-0.8B Q4_K_M | ~0.5 GB | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Qwen3.5-2B Q4_K_M | ~1.5 GB | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -50,7 +50,7 @@ No discrete GPU? Unified-memory devices can run these models directly. Estimates
 
 > ⚠️ **tight** = model loads but leaves little room for KV cache / long context. Short prompts only.
 >
-> **Strix Halo** = AMD Ryzen AI Max (up to 128 GB LPDDR5X, 96 GB allocatable to GPU). **DGX Spark** = NVIDIA GB10 (128 GB LPDDR5X unified). Both can run 120B-class models locally.
+> **Strix Halo** = AMD Ryzen AI Max (128 GB LPDDR5X total, up to 96 GB allocatable to GPU). **DGX Spark** = NVIDIA GB10 (128 GB LPDDR5X unified, ~96 GB GPU-usable). Both can run 120B-class models with room for KV cache.
 >
 > Mac Mini M4 Pro 64 GB and M4 Max 128 GB configs exist but are not listed — they slot between the columns above.
 
