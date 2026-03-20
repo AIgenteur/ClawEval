@@ -1,0 +1,116 @@
+
+```json
+{
+  "components": [
+    {
+      "name": "Edge Load Balancer",
+      "technology": "AWS Global Accelerator / Cloudflare",
+      "purpose": "Route user traffic to the nearest region, terminate TLS, distribute load",
+      "scaling_strategy": "Anycast + global PoPs, auto‑scale edge nodes per region"
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong / AWS API Gateway",
+      "purpose": "Authentication, rate‑limiting, routing for REST APIs (user mgmt, attachments)",
+      "scaling_strategy": "Horizontal scaling behind ELB, auto‑scale based on request rate"
+    },
+    {
+      "name": "WebSocket Server Cluster",
+      "technology": "Node.js + Socket.IO or Go + gorilla/websocket",
+      "purpose": "Maintain persistent connections, deliver real‑time messages",
+      "scaling_strategy": "Stateful sticky sessions with Redis Pub/Sub for fan‑out; add nodes as connections grow (≈100 k conn/node)"
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Apache Kafka (MSK) or Redis Streams",
+      "purpose": "Ingest, order, and fan‑out messages across WebSocket servers",
+      "scaling_strategy": "Kafka partitioned by conversation ID; increase brokers and replication factor for HA"
+    },
+    {
+      "name": "Chat Service (stateless microservices)",
+      "technology": "Go / Java microservices",
+      "purpose": "Business logic: message validation, group chat handling, encryption, read receipts, presence",
+      "scaling_strategy": "Stateless pods in Kubernetes; horizontal pod autoscaler based on queue depth"
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster + Pub/Sub",
+      "purpose": "Track online/offline status, last‑seen, push updates to interested parties",
+      "scaling_strategy": "Redis Cluster sharded by user ID; Pub/Sub for real‑time updates"
+    },
+    {
+      "name": "Read Receipt Service",
+      "technology": "Redis sorted sets + Kafka",
+      "purpose": "Store read markers, deliver to clients, generate read‑receipt events",
+      "scaling_strategy": "Redis sorted sets per conversation; async processing via Kafka consumers"
+    },
+    {
+      "name": "Message Storage Service",
+      "technology": "Cassandra (or ScyllaDB) + Elasticsearch",
+      "purpose": "Persist messages for history, fast retrieval, full‑text search",
+      "scaling_strategy": "Cassandra with multi‑datacenter replication; Elasticsearch for search; auto‑scale nodes"
+    },
+    {
+      "name": "Attachment Storage Service",
+      "technology": "S3 (or S3‑compatible) + CDN",
+      "purpose": "Store files up to 50 MB, serve via signed URLs, virus‑scan",
+      "scaling_strategy": "S3 auto‑scaling, multi‑region replication, CDN edge caching"
+    },
+    {
+      "name": "Push Notification Service",
+      "technology": "Firebase Cloud Messaging (FCM) / Apple Push Notification Service (APNs)",
+      "purpose": "Notify offline users of new messages",
+      "scaling_strategy": "Batch notifications, dedicated workers, scale workers based on delivery load"
+    },
+    {
+      "name": "End‑to‑End Encryption Module",
+      "technology": "Signal Protocol (Double Ratchet) implemented in client SDK",
+      "purpose": "Encrypt messages on device; server only sees encrypted blobs",
+      "scaling_strategy": "Client‑side processing; server provides key exchange relay (no server scaling impact)"
+    },
+    {
+      "name": "User Identity & GDPR Service",
+      "technology": "PostgreSQL (sharded) + Anonymization pipeline",
+      "purpose": "Store profiles, handle consent, deletion, data portability",
+      "scaling_strategy": "Sharded PostgreSQL with encryption at rest; automated GDPR request processing"
+    },
+    {
+      "name": "Analytics & Monitoring",
+      "technology": "Prometheus + Grafana + OpenTelemetry + ELK stack",
+      "purpose": "Collect metrics, logs, traces; SLA monitoring, alerting",
+      "scaling_strategy": "Sidecar collectors, scalable time‑series DB, horizontally scalable log aggregation"
+    }
+  ],
+  "data_flow": "A user connects via WebSocket to the nearest region’s edge load balancer; the balancer forwards to a WebSocket server which authenticates the token with the API gateway. The client encrypts the message client‑side (E2E) and sends the encrypted payload to the WebSocket server. The server publishes the payload to a Kafka topic partitioned by conversation ID. The Chat Service consumes the event, stores the encrypted message in Cassandra, updates the read‑receipt sorted set in Redis, and publishes presence/notification events to the Presence Service and Push Notification Service. The WebSocket server subscribes to the conversation’s Kafka partition and fans out the encrypted payload to all connected participants in real time. Offline participants receive a push notification containing a signed S3 URL for any file attachments. Read receipts are generated client‑side, sent to the Read Receipt Service, stored in Redis, and broadcast to participants. Presence (online/offline) is tracked via Redis Pub/Sub and reflected in the UI. All personal data is anonymized before analytics; GDPR deletion requests are handled by the User Identity Service, which cascades deletions across Cassandra, Redis, and S3.",
+  "infrastructure": {
+    "cloud": "AWS (with optional multi‑cloud fallback)",
+    "regions": 5,
+    "regions_details": [
+      {"name": "us‑east‑1", "purpose": "Primary region, highest user density"},
+      {"name": "us‑west‑2", "purpose": "West‑coast coverage"},
+      {"name": "eu‑west‑1", "purpose": "European users"},
+      {"name": "ap‑southeast‑1", "purpose": "Asia‑Pacific coverage"},
+      {"name": "ap‑northeast‑1", "purpose": "Japan/Korea coverage"}
+    ]
+  },
+  "estimated_monthly_cost": "$450,000 – $600,000",
+  "bottlenecks": [
+    "Database write throughput for message persistence (Cassandra must sustain ~500 k writes/s)",
+    "Fan‑out latency for large group chats (up to 500 members) where each message must be delivered to all participants",
+    "Redis Pub/Sub for presence updates at 1 M scale (requires careful sharding)",
+    "E2E encryption CPU overhead on mobile clients (mitigated by native libraries)",
+    "File upload bandwidth and processing (virus scanning, transcoding) for 50 MB attachments",
+    "Cross‑region network latency for users roaming between regions",
+    "Compliance overhead for GDPR deletion (must scrub all copies including backups)"
+  ],
+  "tradeoffs": [
+    "Strong consistency vs availability: chose eventual consistency for message delivery to meet <100 ms latency, accepting a tiny chance of out‑of‑order messages which are reconciled via vector clocks",
+    "Storing hot message data in Redis for fast read receipts vs cost: older messages are moved to Cassandra",
+    "E2E encryption prevents server‑side content filtering; compliance scanning must be performed client‑side or via key escrow (which impacts privacy guarantees)",
+    "Horizontal scaling of WebSocket servers increases state‑management complexity; using a stateless design with Redis Pub/Sub adds network hops",
+    "Managed Kafka service reduces operational overhead but introduces vendor lock‑in; self‑managed Kafka offers more control at higher ops cost",
+    "Multi‑region replication improves latency but increases data‑transfer costs; we limit replication to the three most critical regions and use CDN for static assets",
+    "Push notification reliability vs cost: we batch notifications to reduce FCM/APNs costs at the expense of slightly higher latency for non‑critical alerts"
+  ]
+}
+```

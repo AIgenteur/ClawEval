@@ -1,0 +1,72 @@
+{
+  "architecture": {
+    "components": [
+      "API Gateway / Load Balancer (e.g., AWS ALB)",
+      "Stateless API Servers (auto‑scaling group of containerized microservices)",
+      "Redis Cluster (for caching short‑URL mappings and rate‑limit counters)",
+      "Primary PostgreSQL database (write‑optimized, partitioned by short code)",
+      "Read Replicas of PostgreSQL (multiple AZs for read traffic)",
+      "CDN (e.g., CloudFront) to serve redirects close to users",
+      "Analytics/Logging Service (separate, GDPR‑sanitised)",
+      "Background Workers (for link‑expiration cleanup, GDPR deletion jobs)"
+    ],
+    "database": {
+      "primary": "PostgreSQL 14 with partitioned tables on the short code column (e.g., range partitioning by first two characters); write‑optimised settings (async commit, bulk insert).",
+      "justification": "Provides ACID guarantees for custom alias uniqueness, supports JSON for metadata, easy partitioning for high‑write workloads, and has mature read‑replica ecosystem for scaling reads."
+    },
+    "cache": {
+      "type": "Redis 7 (cluster mode) with ~15‑20 nodes across AZs",
+      "strategy": "Write‑through cache: every created or updated short URL is immediately written to Redis; reads hit Redis first (TTL of 24 h for most URLs, configurable up to 30 d for long‑lived aliases).",
+      "invalidation": "On update or deletion, the specific key is deleted; background expiration uses Redis keyspace notifications to trigger cleanup of stale DB records."
+    },
+    "hash_strategy": {
+      "algorithm": "Base‑62 (a‑z, A‑Z, 0‑9) with a cryptographically‑secure random generator (e.g., /dev/urandom). A 7‑character string yields 62^7 ≈ 3.5 trillion possible values.",
+      "length": 7,
+      "collision_handling": "If the generated code already exists (UNIQUE constraint violation), retry with a new random code up to 3 times; after 3 retries, append a random suffix (max 2 extra chars). Custom aliases bypass this step."
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (≈1 billion redirects per day vs 10 million short‑URL creations)",
+    "read_optimization": "Serve all redirect lookups from Redis; on a cache miss, query one of the PostgreSQL read‑replicas using connection pooling (PgBouncer). Replicas are spread across 3 AZs to keep latency < 5 ms for cache‑misses.",
+    "write_path": "Client → API GW → API Server → Primary DB (synchronous commit) → Async Redis write‑through (publish to cache). Writes are batched (up to 500/s per server) to smooth peaks.",
+    "horizontal_scaling": "Add API server instances behind the ALB as CPU/request‑rate thresholds are crossed (e.g., > 60 % CPU or > 30 k req/s per instance). Add Redis shards when cluster memory usage exceeds 70 %. Add PostgreSQL read‑replicas or sharding partitions when read latency > 10 ms."
+  },
+  "reliability": {
+    "uptime_strategy": "Deploy across at least 3 Availability Zones; use an Application Load Balancer with health checks; keep spare capacity for 10× spikes (auto‑scaling policies set to scale up quickly). Implement circuit‑breaker logic on Redis and DB calls to degrade gracefully.",
+    "failover": "Primary DB uses synchronous streaming replication to a hot standby; automatic failover via AWS RDS Multi‑AZ (or Patroni for self‑managed). Redis Sentinel monitors primary; on failure, automatic replica promotion with < 30 s RTO. CDN provides geographic redundancy for redirects.",
+    "data_replication": "PostgreSQL: 1 primary + 2 synchronous standbys + 4 asynchronous read‑replicas (total 5 copies). Redis: 3‑node cluster with replication factor 3 (each slot replicated to 3 nodes). Analytics data replicated to a separate data warehouse with eventual consistency."
+  },
+  "compliance": {
+    "gdpr_deletion": "Upon receiving a user deletion request, a background worker marks the short URL as 'deleted' in the DB, immediately removes the entry from Redis, and cascades the deletion to all analytics tables. A hard‑delete job runs nightly to purge marked records after a 24‑hour grace period.",
+    "data_retention": "Short‑URL metadata (original URL, creation timestamp, owner) retained for 90 days after expiration or deletion, then permanently erased. Analytics aggregates (click counts, geo‑distribution) are anonymized and kept indefinitely for reporting.",
+    "analytics_separation": "Click‑stream events are streamed to a separate, GDPR‑sanitised data lake (e.g., Kafka → S3) where PII (e.g., IP address) is hashed or omitted before storage. No personal data resides in the primary DB."
+  },
+  "cost_estimate": {
+    "monthly_total": 3300,
+    "breakdown": {
+      "compute": 500,
+      "database": 800,
+      "cache": 150,
+      "cdn": 1500,
+      "other": 350
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token‑bucket per API key (or per IP for unauthenticated requests) implemented with Redis (INCR + EXPIRE). Limits are enforced at the API Gateway (ALB) and within the application layer for fine‑grained control.",
+    "limits": "Authenticated writes: 1,000 requests/min; Authenticated reads: 10,000 requests/min; Anonymous reads: 300 requests/min per IP; Burst allowance of 2× for up to 5 seconds."
+  },
+  "monitoring": {
+    "metrics": [
+      "Request latency (p50, p95, p99) – measured via CloudWatch/Datadog",
+      "Error rate (5xx, 4xx) – per endpoint",
+      "Cache hit ratio (Redis)",
+      "DB query latency (read replica vs primary)",
+      "CPU / memory utilization on API servers and DB nodes",
+      "Active connections (API, DB, Redis)",
+      "Queue depth for background jobs (link‑expiration, GDPR deletion)",
+      "CDN cache hit ratio and origin request rate"
+    ],
+    "alerting": "CloudWatch Alarms for p99 latency > 50 ms, error rate > 0.1 %, Redis memory > 70 % or cluster nodes down; PagerDuty integration for critical alerts; dashboards in Grafana for on‑call review."
+  }
+}

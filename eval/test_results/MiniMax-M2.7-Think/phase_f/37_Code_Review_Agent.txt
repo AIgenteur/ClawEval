@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "Discount can be greater than 100% (or negative) without any validation, which can produce unexpected negative prices.",
+      "fix": "Add a validation check: if discount < 0 or discount > 100: raise ValueError('Discount must be between 0 and 100') or clamp the discount to the 0‑100 range before applying it."
+    },
+    {
+      "line": 8,
+      "issue": "No type or existence check for order['price'] and order['quantity']; they could be missing or None, causing a KeyError or TypeError when multiplying.",
+      "fix": "Retrieve price and quantity with .get() and verify they are numeric, e.g.: price = order.get('price'); quantity = order.get('quantity'); if price is None or quantity is None: raise KeyError('Missing price or quantity')."
+    },
+    {
+      "line": 14,
+      "issue": "The function mutates the original order dictionaries (sets 'final_price' and updates 'status'), causing side‑effects on the caller's data.",
+      "fix": "Work on a shallow copy of each order before modifying: order_copy = order.copy(); then add order_copy to processed and use order_copy for final_price/status."
+    },
+    {
+      "line": 18,
+      "issue": "Division by zero occurs when no orders have status 'pending', causing a ZeroDivisionError when computing the average.",
+      "fix": "Guard the division: avg = total / len(processed) if processed else 0 (or None) to handle the empty case."
+    },
+    {
+      "line": 23,
+      "issue": "The 'count' field returns len(orders) instead of the number of processed orders (len(processed)).",
+      "fix": "Return len(processed) for the 'count' key: 'count': len(processed)."
+    }
+  ],
+  "count": 5
+}

@@ -1,0 +1,18 @@
+```json
+{
+  "issues": [
+    {"line": "1", "problem": "version '2' is outdated", "fix": "Use version '3' or later (e.g., '3.8')"},
+    {"line": "4", "problem": "'latest' tag is non-deterministic", "fix": "Use a specific version tag (e.g., 'node:18')"},
+    {"line": "8", "problem": "DB_PASSWORD in plaintext", "fix": "Use Docker secrets or reference from .env file"},
+    {"line": "9", "problem": "NODE_ENV set to 'development'", "fix": "Set NODE_ENV to 'production' for production"},
+    {"line": "11", "problem": "Source volume mount (.:/app) in production", "fix": "Use a named volume or build context instead of binding current directory"},
+    {"line": "12", "problem": "restart: no", "fix": "Change to 'unless-stopped' or 'always' for production"},
+    {"line": "15", "problem": "MySQL 5.6 is EOL", "fix": "Use MySQL 8.0 or later (e.g., 'mysql:8.0')"},
+    {"line": "17", "problem": "DB port 3306 exposed publicly", "fix": "Remove the port mapping or restrict to localhost"},
+    {"line": "19", "problem": "MYSQL_ROOT_PASSWORD in plaintext", "fix": "Use Docker secrets or reference from .env file"},
+    {"line": "21", "problem": "/tmp used for persistent data", "fix": "Use a named volume (e.g., 'mysql-data:/var/lib/mysql')"},
+    {"line": "26", "problem": "Redis port exposed publicly without authentication", "fix": "Remove port mapping or add password authentication"}
+  ],
+  "count": 11
+}
+```

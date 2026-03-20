@@ -1,0 +1,28 @@
+```python
+from collections import OrderedDict
+
+class _LRUCache:
+    __slots__ = ('capacity', '_cache')
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self._cache = OrderedDict()
+
+    def get(self, key):
+        if key in self._cache:
+            self._cache.move_to_end(key)   # mark as most‑recently used
+            return self._cache[key]
+        return -1
+
+    def put(self, key, value):
+        if key in self._cache:
+            self._cache.move_to_end(key)   # update position
+            self._cache[key] = value
+        else:
+            if len(self._cache) >= self.capacity:
+                self._cache.popitem(last=False)  # evict least‑recently used
+            self._cache[key] = value
+
+def lru_cache(capacity: int):
+    """Return an LRU cache with the given capacity."""
+    return _LRUCache(capacity)
+```

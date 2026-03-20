@@ -1,0 +1,80 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self._capacity = capacity
+        self._cache = OrderedDict()          # key -> (value, expiry_time)
+        self._stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+
+    def get(self, key: str):
+        """Return value for key if present and not expired; otherwise None."""
+        if key not in self._cache:
+            self._stats["misses"] += 1
+            return None
+        value, expiry = self._cache[key]
+        # Lazy expiration check
+        if expiry is not None and time.time() > expiry:
+            del self._cache[key]
+            self._stats["expirations"] += 1
+            self._stats["misses"] += 1
+            return None
+        # Move to most‑recent position
+        self._cache.move_to_end(key)
+        self._stats["hits"] += 1
+        return value
+
+    def put(self, key: str, value, ttl: float = None):
+        """Insert or update a key‑value pair with optional TTL (seconds)."""
+        # If cache is disabled, ignore inserts
+        if self._capacity <= 0:
+            return
+
+        expiry = None if ttl is None else time.time() + ttl
+
+        if key in self._cache:
+            # Update existing entry and move to most‑recent
+            self._cache[key] = (value, expiry)
+            self._cache.move_to_end(key)
+        else:
+            # Evict least‑recently‑used entry if at capacity
+            if len(self._cache) >= self._capacity:
+                evicted_key, (evicted_val, evicted_expiry) = self._cache.popitem(last=False)
+                if evicted_expiry is not None and time.time() > evicted_expiry:
+                    self._stats["expirations"] += 1
+                else:
+                    self._stats["evictions"] += 1
+            # Insert new entry
+            self._cache[key] = (value, expiry)
+
+    def delete(self, key: str) -> bool:
+        """Remove a key from the cache. Returns True if the key existed."""
+        if key in self._cache:
+            del self._cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        """Number of non‑expired entries currently stored."""
+        now = time.time()
+        return sum(1 for _, (_, exp) in self._cache.items()
+                   if exp is None or exp > now)
+
+    def get_stats(self) -> dict:
+        """Return cache statistics."""
+        return dict(self._stats)
+
+    def keys(self) -> list:
+        """Return all non‑expired keys in most‑recently‑used order."""
+        now = time.time()
+        valid_keys = [k for k, (_, exp) in self._cache.items()
+                      if exp is None or exp > now]
+        # Most‑recent first (reverse of insertion order)
+        return valid_keys[::-1]
+
+    def clear(self) -> None:
+        """Remove all entries and reset statistics."""
+        self._cache.clear()
+        self._stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+```

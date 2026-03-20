@@ -1,0 +1,105 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Triage and Initial Alerting",
+      "agents": [
+        {"agent": "log_analyzer", "input": "latest 5 minutes of service logs", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "error_rate, latency, CPU; query last 5m", "timeout_seconds": 45},
+        {"agent": "db_checker", "input": "connection_pool, locks, replication lag", "timeout_seconds": 30},
+        {"agent": "config_auditor", "input": "recent config changes in last hour", "timeout_seconds": 30},
+        {"agent": "notification_agent", "input": "critical alert to on-call and #incidents channel", "timeout_seconds": 20}
+      ],
+      "parallel": true,
+      "gate": "At least one diagnostic agent reports a critical severity (log error pattern, metric breach, DB lock) OR any metric threshold exceeded."
+    },
+    {
+      "phase": 2,
+      "name": "Deep Diagnostic Analysis",
+      "agents": [
+        {"agent": "dependency_mapper", "input": "service map for affected service; current deployment version", "timeout_seconds": 45},
+        {"agent": "capacity_planner", "input": "current CPU, memory, pod count vs. baselines", "timeout_seconds": 30},
+        {"agent": "metric_checker", "input": "detailed time series for last 15m; compare with pre‑deployment baseline", "timeout_seconds": 45}
+      ],
+      "parallel": true,
+      "gate": "A root‑cause hypothesis is formed (e.g., recent deployment, config drift, resource exhaustion) and sufficient evidence is gathered to decide next steps."
+    },
+    {
+      "phase": 3,
+      "name": "Customer Communication",
+      "agents": [
+        {"agent": "customer_communicator", "input": "templated impact statement: service X degraded, expected resolution time, mitigation steps", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Phase 2 completed and a preliminary impact assessment is available."
+    },
+    {
+      "phase": 4,
+      "name": "Non‑Rollback Remediation",
+      "agents": [
+        {"agent": "config_auditor", "input": "revert recent config changes identified in Phase 2", "timeout_seconds": 30},
+        {"agent": "capacity_planner", "input": "scale up pod replica count based on capacity analysis", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Decision point 2 evaluated rollback NOT required."
+    },
+    {
+      "phase": 5,
+      "name": "Rollback Execution",
+      "agents": [
+        {"agent": "rollback_agent", "input": "target version = previous known good deployment; reason = deployment introduced error", "timeout_seconds": 120}
+      ],
+      "parallel": false,
+      "gate": "Decision point 2 evaluated rollback required."
+    },
+    {
+      "phase": 6,
+      "name": "Post‑Remediation Verification",
+      "agents": [
+        {"agent": "metric_checker", "input": "error_rate, latency, resource usage after remediation; compare to SLA thresholds", "timeout_seconds": 45},
+        {"agent": "log_analyzer", "input": "recent logs after remediation; ensure error patterns have subsided", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "Metrics and logs indicate error rate below threshold and latency within SLA."
+    },
+    {
+      "phase": 7,
+      "name": "Incident Closure and Notification",
+      "agents": [
+        {"agent": "incident_reporter", "input": "update ticket with root cause, remediation steps, resolution time, lessons learned", "timeout_seconds": 30},
+        {"agent": "notification_agent", "input": "resolution message to on‑call, stakeholders, and #incidents channel", "timeout_seconds": 20}
+      ],
+      "parallel": false,
+      "gate": "All verification checks passed."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "Critical errors detected by any diagnostic agent in Phase 1 (log_analyzer severity=critical OR metric_checker error_rate > 5% OR db_checker lock timeout)",
+      "if_true": "go to phase 2",
+      "if_false": "go to phase 6"
+    },
+    {
+      "after_phase": 2,
+      "condition": "Root cause identified as a recent deployment AND rollback conditions met (error rate > 2% after deployment, previous version had < 0.5% error rate, rollback safe per dependency_mapper, no dependent services rely on new features that cannot be reverted)",
+      "if_true": "go to phase 5",
+      "if_false": "go to phase 4"
+    }
+  ],
+  "escalation": {
+    "trigger": "If total elapsed time since Phase 1 start exceeds 15 minutes without meeting the Phase 6 gate (i.e., incident not resolved)",
+    "action": "Escalate to on‑call SRE manager, open incident bridge, notify executive stakeholders via notification_agent"
+  },
+  "rollback_conditions": [
+    "Error rate increased > 2% after the most recent deployment, while the previous version had < 0.5% error rate",
+    "Dependency mapper confirms no downstream services depend on new features that cannot be rolled back",
+    "Log analyzer detects a reproducible crash pattern introduced by the new version",
+    "Metric checker shows latency p99 exceeds SLA threshold (e.g., > 500 ms) for at least 3 minutes after deployment",
+    "No successful manual mitigation (e.g., config revert) has resolved the issue within 5 minutes"
+  ],
+  "total_phases": 7,
+  "max_time_minutes": 20
+}
+```

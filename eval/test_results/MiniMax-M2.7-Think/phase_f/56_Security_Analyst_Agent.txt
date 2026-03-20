@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded secret key",
+      "severity": "high",
+      "location": "Line 5: app.secret_key = \"password123\"",
+      "fix": "Generate a cryptographically random secret key and store it securely, e.g., in environment variables or a secrets manager."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI) / XSS",
+      "severity": "critical",
+      "location": "Line 8-9: render_template_string with user input",
+      "fix": "Use template rendering with context variables, e.g., render_template('search.html', query=q) and escape output appropriately."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "Line 13-14: db.execute with string formatting",
+      "fix": "Use parameterized queries: db.execute('SELECT * FROM users WHERE id = ?', (id,))."
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization (pickle)",
+      "severity": "critical",
+      "location": "Line 19: pickle.loads(data)",
+      "fix": "Avoid pickle for untrusted data; use a safe serialization format like JSON or a signed serialization scheme."
+    },
+    {
+      "id": 5,
+      "type": "OS Command Injection",
+      "severity": "critical",
+      "location": "Line 24-25: subprocess.check_output with shell=True",
+      "fix": "Avoid shell=True; use subprocess.run with a list of arguments, and validate/sanitize input."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "Line 28: open(path).read()",
+      "fix": "Validate and sanitize the path, restrict to a safe base directory, use os.path.realpath and whitelist."
+    },
+    {
+      "id": 7,
+      "type": "Weak Default Admin Password",
+      "severity": "high",
+      "location": "Line 33-34: password comparison with environment variable default 'admin'",
+      "fix": "Enforce strong password policy; do not provide a default fallback; ensure password is set via secure secret management."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure (Environment Variables)",
+      "severity": "high",
+      "location": "Line 38-39: debug endpoint returns os.environ",
+      "fix": "Remove or restrict debug endpoint; do not expose environment variables in responses."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "Application configuration (no SSL/TLS settings)",
+      "fix": "Enable HTTPS, set HSTS headers, and enforce TLS (e.g., using Flask-TLS or a reverse proxy)."
+    },
+    {
+      "id": 10,
+      "type": "No Rate Limiting",
+      "severity": "medium",
+      "location": "All endpoints (no rate limit configuration)",
+      "fix": "Implement rate limiting (e.g., using Flask-Limiter) to protect against brute-force and DoS attacks."
+    }
+  ],
+  "count": 10
+}
+```
