@@ -82,22 +82,22 @@ Phase F tests showed identical scores (10/10) across all models for ~15 roles, m
 |---|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | | | Kimi-K2.5 | Kimi-K2.5 | GLM-5 | GLM-5 | MiniMax-M2.5 | Qwen3.5+ | Qwen3.5+ | MiniMax-M2.7 |
 | | | Alibaba | `no think` | Alibaba | `no think` | Alibaba | Alibaba | `no think` | Ollama Cloud |
-| 36 | Code Gen (RateLimiter) | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 8 | 🟢 **10** | 🟢 **10** | 🔴 0 ⚡ |
-| 2 | Input Validator (nested) | 🟢 **10** | 🟢 **10** | 🔴 0 ⏱️ | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🔴 0 ⚡ |
+| 36 | Code Gen (RateLimiter) | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 8 | 🟢 **10** | 🟢 **10** | 🟢 8 |
+| 2 | Input Validator (nested) | 🟢 **10** | 🟢 **10** | 🔴 0 ⏱️ | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 9 |
 | 5 | Sentiment (hard, 20 items) | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 **10** | 🟢 8 |
 | 40 | Fact-Checking (plausible) | 🟢 10 | 🟢 **10** | 🟢 9 | 🟢 **10** | 🟢 9 | 🟢 **10** | 🟢 **10** | 🟢 **10** |
 | 49 | Algorithm (LRU Cache + TTL) | 🟢 9 | 🟢 9 | 🟢 **10** | 🟢 9 | 🟢 9 | 🟢 **10** | 🟢 9 | 🟢 **10** |
 | 51 | Architect (trade-offs) | 🟢 9 | 🟢 **10** | 🟢 9 | 🟢 9 | 🟢 **10** | 🟢 8 | 🟢 **10** | 🟢 **10** |
-| 48 | STEM (multi-step calc) | 🟢 **8** | 🟢 **8** | 🟡 6 | 🔴 4 | 🟡 5 | 🟡 6 | 🔴 4 | 🔴 0 ⚡ |
+| 48 | STEM (multi-step calc) | 🟢 **8** | 🟢 **8** | 🟡 6 | 🔴 4 | 🟡 5 | 🟡 6 | 🔴 4 | 🟡 5 |
 | 9 | Research (contradictions) | 🟢 **8** | 🟢 **8** | 🟡 5 | 🔴 3 | 🟡 6 | 🟡 6 | 🟡 5 | 🟢 **9** |
-| 12 | Content Planner (15 constraints) | 🟡 **7** | 🔴 1 | 🔴 1 | 🔴 1 | 🔴 0 ⏱️ | 🔴 1 | 🔴 1 | 🔴 0 ⚡ |
+| 12 | Content Planner (15 constraints) | 🟡 **7** | 🔴 1 | 🔴 1 | 🔴 1 | 🔴 0 ⏱️ | 🔴 1 | 🔴 1 | 🔴 0 |
 | 50 | Orchestrator (multi-agent) | 🟡 **7** | 🟡 **7** | 🟢 **8** | 🟡 7 | 🔴 3 | 🟡 7 | 🟡 7 | 🟡 7 |
 | 23 | Web Scraping (messy HTML) | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** |
-| | **TOTAL** | **96 (87%)** | **91 (83%)** | **76 (69%)** | **80 (73%)** | **78 (71%)** | **86 (78%)** | **86 (78%)** | **64 (58%)** |
+| | **TOTAL** | **96 (87%)** | **91 (83%)** | **76 (69%)** | **80 (73%)** | **78 (71%)** | **86 (78%)** | **86 (78%)** | **83 (75%)** |
 
 > **Timeouts:** GLM-5 Think Input Validator 0/10 (300s), MiniMax-M2.5 Content Planner 0/10 (504 Gateway Timeout).
 > **Qwen3.5+ NoThink Sentiment 10/10** (19/20) — best NoThink sentiment score of any cloud model.
-> ⚡ M2.7 reasoning overflow — model consumes entire 8000 token budget on thinking, no answer produced.
+> M2.7 tested with 16-24k max_tokens. Content Planner G-12 is 0/10 even at 24k (genuine failure).
 
 ---
 

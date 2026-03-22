@@ -30,13 +30,13 @@
 | 4 | Notification | 🟢 **9** | 🟢 **9** | 🟢 8 | 🟡 7 | 🟢 **9** | 🟢 **9** | 🟢 **9** | 🟢 8 |
 | 5 | Sentiment | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 6 | FAQ Generation | 🟡 7 | 🟡 6 | 🟡 7 | 🔴 2 | 🟡 6 | 🟡 5 | 🟢 **8** | 🟡 6 |
-| 7 | Translation | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🔴 0 ⚡ |
+| 7 | Translation | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
 | 8 | Calendar | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 | 🔴 0 |
 | | **Tier 2 — Moderate** | | | | | | | | |
 | 9 | Research Agent | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 10 | Content Writer | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
 | 11 | Editor | 🟢 **10** | 🟢 9 | 🔴 0 | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 **10** | 🟢 **10** |
-| 12 | Content Planner | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🔴 0 ⚡ |
+| 12 | Content Planner | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 13 | Email Drafting | 🟢 **10** | 🟢 9 | 🟢 8 | 🟢 9 | 🟢 8 | 🟡 6 | 🟢 8 | 🟢 8 |
 | 14 | Doc Summary | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 **10** | 🟢 8 | 🟢 8 | 🟢 **10** |
 | 15 | Meeting Notes | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 8 | 🟢 9 | 🟢 **10** | 🟢 9 | 🟢 9 |
@@ -53,13 +53,13 @@
 | 26 | Lead Scoring | 🟢 8 | 🟢 8 | 🟢 8 | 🟢 **10** | 🟢 8 | 🟢 8 | 🟢 **10** | 🟢 8 |
 | 27 | Sprint Summary | 🟡 7 | 🟡 5 | 🟢 **9** | 🟡 7 | 🟢 **9** | 🟢 **9** | 🟢 **9** | 🟢 **9** |
 | 28 | Transaction | 🟢 9 | 🟢 9 | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 **10** |
-| 29 | Home Automation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 | 🔴 0 | 🟢 10 | 🟢 10 | 🔴 0 ⚡ |
+| 29 | Home Automation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 9 | 🔴 0 | 🟢 10 | 🟢 10 | 🟢 9 |
 | 30 | Fitness Tracking | 🟢 8 | 🟢 8 | 🟢 **9** | 🟢 **9** | 🟢 8 | 🟢 **9** | 🟢 8 | 🟢 **9** |
 | 31 | Recipe / Cooking | 🔴 1 | 🔴 1 | 🔴 2 | 🔴 1 | 🔴 2 | 🔴 1 | 🟢 **9** | 🔴 2 |
 | 32 | Personal Finance | 🟡 5 | 🟡 5 | 🟡 **7** | 🟡 **7** | 🟡 **7** | 🟡 **7** | 🟡 6 | 🟡 **7** |
 | 33 | SEO Optimization | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
 | 34 | Landing Page | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
-| 35 | Travel Planning | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 9 | 🔴 3 | 🟡 7 | 🟢 9 | 🔴 0 ⚡ |
+| 35 | Travel Planning | 🟢 **10** | 🟢 **10** | 🟢 9 | 🟢 9 | 🔴 3 | 🟡 7 | 🟢 9 | 🟢 8 |
 | | **Tier 3 — Advanced** | | | | | | | | |
 | 36 | Code Generation | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 37 | Code Review | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 8 | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
@@ -87,7 +87,7 @@
 | 57 | SRE / Incident | 🔴 3 | 🔴 2 | 🔴 4 | 🟡 **6** | 🔴 3 | 🟡 **6** | 🟡 **6** | 🔴 3 |
 | 58 | Book Writing | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
 | 59 | Compliance | 🟢 8 | 🟢 **9** | 🟡 7 | 🟢 8 | 🟢 **9** | 🟢 8 | 🟢 8 | 🟢 **9** |
-| | **TOTAL** | **473** | **469** | **465** | **461** | **465** | **465** | **482** 🥇 | **444** |
+| | **TOTAL** | **473** | **469** | **465** | **461** | **465** | **465** | **482** 🥇 | **482** 🥇 |
 
 ### Tier Breakdown
 
@@ -113,7 +113,7 @@
 - 📝 Manual review tests default to 5/10 pending human review
 - Calendar (0/10) is hard for all models
 - MiniMax-M2.5 / M2.7 NoThink not supported by API
-- ⚡ = Reasoning overflow (model hit 8000 token cap, all budget consumed by thinking)
+- M2.7 tested via Ollama Cloud API with 16-24k max_tokens (reasoning counts against token budget)
 
 ---
 
