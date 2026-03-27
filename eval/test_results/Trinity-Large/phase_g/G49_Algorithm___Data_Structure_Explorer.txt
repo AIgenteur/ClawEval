@@ -1,0 +1,68 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+
+    def _is_expired(self, key):
+        entry = self.cache[key]
+        if entry['ttl'] is None:
+            return False
+        return time.time() > entry['expires_at']
+
+    def _remove_expired(self):
+        keys_to_remove = []
+        for key in list(self.cache.keys()):
+            if self._is_expired(key):
+                keys_to_remove.append(key)
+        for key in keys_to_remove:
+            del self.cache[key]
+            self.stats['expirations'] += 1
+
+    def get(self, key: str):
+        if key not in self.cache:
+            self.stats['misses'] += 1
+            return None
+        if self._is_expired(key):
+            del self.cache[key]
+            self.stats['expirations'] += 1
+            self.stats['misses'] += 1
+            return None
+        self.cache.move_to_end(key)
+        self.stats['hits'] += 1
+        return self.cache[key]['value']
+
+    def put(self, key: str, value: any, ttl: float = None):
+        if key in self.cache:
+            del self.cache[key]
+        elif len(self.cache) >= self.capacity:
+            evicted_key, _ = self.cache.popitem(last=False)
+            self.stats['evictions'] += 1
+        expires_at = time.time() + ttl if ttl is not None else None
+        self.cache[key] = {'value': value, 'ttl': ttl, 'expires_at': expires_at}
+
+    def delete(self, key: str) -> bool:
+        if key in self.cache:
+            del self.cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        self._remove_expired()
+        return len(self.cache)
+
+    def get_stats(self) -> dict:
+        return self.stats.copy()
+
+    def keys(self) -> list:
+        self._remove_expired()
+        return list(self.cache.keys())
+
+    def clear(self) -> None:
+        self.cache.clear()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+```

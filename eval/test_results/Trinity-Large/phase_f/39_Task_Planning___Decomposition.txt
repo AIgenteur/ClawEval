@@ -1,0 +1,109 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "Set up PostgreSQL database schema",
+      "depends_on": [],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "Implement user authentication (JWT)",
+      "depends_on": ["T1"],
+      "estimated_hours": 12,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Create user registration and login endpoints",
+      "depends_on": ["T2"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Implement CRUD operations for todos",
+      "depends_on": ["T1", "T2"],
+      "estimated_hours": 16,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Implement todo categories/tags",
+      "depends_on": ["T4"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Implement due date reminders",
+      "depends_on": ["T4"],
+      "estimated_hours": 10,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Implement rate limiting",
+      "depends_on": ["T3", "T4"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Write unit tests for authentication",
+      "depends_on": ["T3"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Write unit tests for todos",
+      "depends_on": ["T4"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "Write unit tests for categories/tags",
+      "depends_on": ["T5"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Write unit tests for reminders",
+      "depends_on": ["T6"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T12",
+      "name": "Create OpenAPI documentation",
+      "depends_on": ["T3", "T4", "T5", "T6"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T13",
+      "name": "Create Dockerfile",
+      "depends_on": ["T1", "T2", "T3", "T4", "T5", "T6", "T7"],
+      "estimated_hours": 4,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T14",
+      "name": "Set up CI/CD pipeline",
+      "depends_on": ["T8", "T9", "T10", "T11", "T13"],
+      "estimated_hours": 8,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": [
+    "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T13", "T14"
+  ],
+  "total_hours": 106,
+  "parallel_tracks": 3
+}
+```

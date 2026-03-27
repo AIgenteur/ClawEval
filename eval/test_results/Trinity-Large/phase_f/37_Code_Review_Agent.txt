@@ -1,0 +1,37 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "No validation for discount values > 100, which would result in negative prices",
+      "fix": "Add validation to ensure discount is between 0 and 100"
+    },
+    {
+      "line": 10,
+      "issue": "Price can still be negative if discount > 100, even with the check",
+      "fix": "Move the price < 0 check after discount validation or clamp discount first"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when no orders are pending (len(processed) == 0)",
+      "fix": "Add check for empty processed list before division"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) instead of len(processed), which is misleading",
+      "fix": "Change to len(processed) to reflect actual processed count"
+    },
+    {
+      "line": 8,
+      "issue": "No type checking for price and quantity (could be None or non-numeric)",
+      "fix": "Add validation that price and quantity are numeric and not None"
+    },
+    {
+      "line": 13,
+      "issue": "Mutates the input order dictionaries (side effect)",
+      "fix": "Create a copy of the order before modifying it"
+    }
+  ],
+  "count": 6
+}
+```

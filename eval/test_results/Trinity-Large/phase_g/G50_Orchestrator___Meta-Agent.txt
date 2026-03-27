@@ -1,0 +1,82 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnostics",
+      "agents": [
+        {"agent": "log_analyzer", "input": "recent logs from affected services", "timeout_seconds": 120},
+        {"agent": "metric_checker", "input": "current metrics for affected services", "timeout_seconds": 90},
+        {"agent": "notification_agent", "input": "outage detected, severity level 1", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "At least one diagnostic agent must return results within timeout"
+    },
+    {
+      "phase": 2,
+      "name": "Service Health Assessment",
+      "agents": [
+        {"agent": "dependency_mapper", "input": "affected services", "timeout_seconds": 60},
+        {"agent": "db_checker", "input": "database connections and locks", "timeout_seconds": 90},
+        {"agent": "config_auditor", "input": "recent config changes in last 24h", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "Dependency mapping and database check must complete successfully"
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Analysis",
+      "agents": [
+        {"agent": "incident_reporter", "input": "initial findings from phases 1-2", "timeout_seconds": 45}
+      ],
+      "parallel": false,
+      "gate": "Incident ticket must be created with severity classification"
+    },
+    {
+      "phase": 4,
+      "name": "Remediation",
+      "agents": [
+        {"agent": "rollback_agent", "input": "last stable deployment", "timeout_seconds": 300},
+        {"agent": "capacity_planner", "input": "current resource utilization", "timeout_seconds": 120}
+      ],
+      "parallel": true,
+      "gate": "Rollback must be triggered only if config changes or deployment issues identified"
+    },
+    {
+      "phase": 5,
+      "name": "Verification & Communication",
+      "agents": [
+        {"agent": "metric_checker", "input": "post-remediation metrics", "timeout_seconds": 90},
+        {"agent": "customer_communicator", "input": "outage resolved, resolution details", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "Metrics must show service recovery before customer notification"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 1,
+      "condition": "log_analyzer finds critical errors AND metric_checker shows 95%+ error rate",
+      "if_true": "go to phase 2",
+      "if_false": "go to phase 3"
+    },
+    {
+      "after_phase": 2,
+      "condition": "db_checker finds database locks OR config_auditor finds recent breaking changes",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 5"
+    }
+  ],
+  "escalation": {
+    "trigger": "Phase 3 not completed within 15 minutes OR no recovery in phase 4 within 10 minutes",
+    "action": "Escalate to human SRE team with all collected data"
+  },
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    "config_auditor identifies breaking config changes in last 2 hours",
+    "log_analyzer finds deployment-related errors",
+    "metric_checker shows cascading failures after recent deployment"
+  ]
+}
+```

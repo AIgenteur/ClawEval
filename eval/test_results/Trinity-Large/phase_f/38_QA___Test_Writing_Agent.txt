@@ -1,0 +1,61 @@
+```python
+import pytest
+from your_module import calculate_tax
+
+def test_zero_income():
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0
+    assert rate == 0
+
+def test_negative_income():
+    with pytest.raises(ValueError):
+        calculate_tax(-1000, 'single')
+
+def test_invalid_filing_status():
+    with pytest.raises(ValueError):
+        calculate_tax(50000, 'invalid')
+
+def test_non_numeric_income():
+    with pytest.raises(ValueError):
+        calculate_tax("50000", 'single')
+
+def test_single_low_income():
+    tax, rate = calculate_tax(11600, 'single')
+    assert tax == 1160
+    assert rate == 10.00
+
+def test_single_middle_income():
+    tax, rate = calculate_tax(50000, 'single')
+    assert tax == 6330
+    assert rate == 12.66
+
+def test_single_high_income():
+    tax, rate = calculate_tax(1000000, 'single')
+    assert tax == 332689.5
+    assert rate == 33.27
+
+def test_married_low_income():
+    tax, rate = calculate_tax(23200, 'married')
+    assert tax == 2320
+    assert rate == 10.00
+
+def test_married_middle_income():
+    tax, rate = calculate_tax(100000, 'married')
+    assert tax == 12575
+    assert rate == 12.58
+
+def test_married_high_income():
+    tax, rate = calculate_tax(1000000, 'married')
+    assert tax == 315687.5
+    assert rate == 31.57
+
+def test_bracket_boundary_single():
+    tax, rate = calculate_tax(47150, 'single')
+    assert tax == 5743.80
+    assert rate == 12.18
+
+def test_bracket_boundary_married():
+    tax, rate = calculate_tax(94300, 'married')
+    assert tax == 11487.60
+    assert rate == 12.18
+```

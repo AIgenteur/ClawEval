@@ -1,0 +1,56 @@
+```json
+{
+  "architecture": {
+    "components": ["API Gateway", "Load Balancer", "Application Servers", "Primary Database", "Read Replicas", "Redis Cluster", "CDN", "S3 for Analytics", "Monitoring Stack"],
+    "database": {
+      "primary": "PostgreSQL with connection pooling",
+      "justification": "ACID compliance for transactions, mature ecosystem, good read replica support, cost-effective at scale"
+    },
+    "cache": {
+      "type": "Redis Cluster",
+      "strategy": "Write-through with TTL-based expiration",
+      "invalidation": "TTL-based, manual invalidation on updates/deletions"
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 encoding of auto-incrementing ID",
+      "length": 7,
+      "collision_handling": "Pre-generation and verification before insertion"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "Read replicas + CDN caching + Redis cache",
+    "write_path": "Connection pooling + async processing for analytics",
+    "horizontal_scaling": "Stateless application servers behind load balancer"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment + auto-scaling",
+    "failover": "Active-passive database failover + health checks",
+    "data_replication": "Synchronous replication for primary data, async for analytics"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft delete with hard delete cron job, audit logging",
+    "data_retention": "7 days for logs, 30 days for analytics, configurable for user data",
+    "analytics_separation": "Analytics data stored separately with anonymized identifiers"
+  },
+  "cost_estimate": {
+    "monthly_total": 4850,
+    "breakdown": {
+      "compute": 2400,
+      "database": 1500,
+      "cache": 500,
+      "cdn": 300,
+      "other": 150
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket per user/IP with Redis backend",
+    "limits": "1000 req/min per IP, 10000 req/min per authenticated user"
+  },
+  "monitoring": {
+    "metrics": ["p99 latency", "error rate", "cache hit ratio", "database connections", "CPU/Memory usage"],
+    "alerting": "PagerDuty integration for >1% error rate or >100ms latency increase"
+  }
+}
+```

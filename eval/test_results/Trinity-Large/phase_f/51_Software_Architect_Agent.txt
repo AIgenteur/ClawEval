@@ -1,0 +1,91 @@
+```json
+{
+  "components": [
+    {
+      "name": "Load Balancer",
+      "technology": "AWS NLB/ALB",
+      "purpose": "Distribute incoming traffic across WebSocket servers",
+      "scaling_strategy": "Auto-scaling based on concurrent connections"
+    },
+    {
+      "name": "WebSocket Gateway",
+      "technology": "Node.js with Socket.IO",
+      "purpose": "Real-time bidirectional communication",
+      "scaling_strategy": "Horizontal scaling with Redis for session affinity"
+    },
+    {
+      "name": "Message Broker",
+      "technology": "Redis Cluster",
+      "purpose": "Message queuing and pub/sub for real-time delivery",
+      "scaling_strategy": "Sharding by user ID"
+    },
+    {
+      "name": "API Gateway",
+      "technology": "Kong/Envoy",
+      "purpose": "REST API for non-real-time operations",
+      "scaling_strategy": "Auto-scaling based on request rate"
+    },
+    {
+      "name": "Authentication Service",
+      "technology": "JWT with Redis cache",
+      "purpose": "User authentication and session management",
+      "scaling_strategy": "Stateless with distributed cache"
+    },
+    {
+      "name": "Message Storage",
+      "technology": "Cassandra",
+      "purpose": "Persistent message storage with high write throughput",
+      "scaling_strategy": "Data partitioning by user ID"
+    },
+    {
+      "name": "File Storage",
+      "technology": "AWS S3 with CloudFront",
+      "purpose": "Store and serve file attachments",
+      "scaling_strategy": "Geo-distributed CDN"
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster",
+      "purpose": "Track online/offline status",
+      "scaling_strategy": "In-memory with periodic persistence"
+    },
+    {
+      "name": "E2EE Service",
+      "technology": "Custom Go service",
+      "purpose": "Key management and encryption/decryption",
+      "scaling_strategy": "Stateless with Redis for key caching"
+    },
+    {
+      "name": "Analytics Service",
+      "technology": "ClickHouse",
+      "purpose": "Store read receipts and analytics",
+      "scaling_strategy": "Columnar storage for high ingestion"
+    },
+    {
+      "name": "Monitoring/Alerting",
+      "technology": "Prometheus + Grafana",
+      "purpose": "System health monitoring",
+      "scaling_strategy": "Centralized monitoring with distributed agents"
+    }
+  ],
+  "data_flow": "Client connects via WebSocket to gateway → Authentication verified → Messages routed through Redis broker → Stored in Cassandra → File attachments uploaded to S3 → Presence tracked in Redis → E2EE keys managed by dedicated service → Read receipts logged to ClickHouse",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3,
+    "availability_zones": 3
+  },
+  "estimated_monthly_cost": "$150,000 - $200,000",
+  "bottlenecks": [
+    "Redis cluster memory limitations for presence tracking",
+    "Cassandra write throughput during peak hours",
+    "E2EE service CPU usage for encryption operations",
+    "S3 egress costs for file downloads"
+  ],
+  "tradeoffs": [
+    "Redis for presence vs. database persistence (memory vs. durability)",
+    "Cassandra eventual consistency vs. strong consistency for message ordering",
+    "Client-side vs. server-side E2EE key management (security vs. recovery)",
+    "WebSocket keep-alive vs. reconnection strategy (latency vs. resource usage)"
+  ]
+}
+```

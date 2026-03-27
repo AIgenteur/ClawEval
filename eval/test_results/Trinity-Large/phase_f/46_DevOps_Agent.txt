@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Docker Compose version 2 is outdated",
+      "fix": "Use version '3.8' or higher"
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "Use a specific version like 'node:18-alpine'"
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Database password in plaintext",
+      "fix": "Use Docker secrets or environment variables from a secure source"
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "NODE_ENV should be 'production' for deployment",
+      "fix": "Change to 'production'"
+    },
+    {
+      "line": "volumes: - .:/app",
+      "problem": "Source volume mount in production exposes source code",
+      "fix": "Use a multi-stage build or copy files into image"
+    },
+    {
+      "line": "restart: no",
+      "problem": "restart: no prevents container from restarting on failure",
+      "fix": "Use 'unless-stopped' or 'always'"
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is EOL and insecure",
+      "fix": "Use a supported version like 'mysql:8.0'"
+    },
+    {
+      "line": "ports: - \"3306:3306\"",
+      "problem": "Database port exposed publicly",
+      "fix": "Remove public port mapping or use a private network"
+    },
+    {
+      "line": "volumes: - /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp is temporary storage that may be cleared",
+      "fix": "Use a named volume: 'mysql-data:/var/lib/mysql'"
+    },
+    {
+      "line": "ports: - \"6379:6379\"",
+      "problem": "Redis port exposed publicly without authentication",
+      "fix": "Remove public port mapping or add authentication"
+    }
+  ],
+  "count": 10
+}
+```

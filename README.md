@@ -67,6 +67,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 | Alibaba Coding Plan | **MiniMax-M2.5** — 465/590 (79%) Phase F, 78/110 (71%) Phase G | ✅ Tested |
 | Ollama Cloud | **MiniMax-M2.7** — 482/590 (82%) Phase F, 83/110 (75%) Phase G | ✅ Tested |
 | OpenRouter | **Step-3.5-Flash** — 438/590 (74%) Phase F, 66/110 (60%) Phase G | ✅ Tested |
+| OpenRouter | **Trinity-Large** — 453/590 (77%) Phase F, 73/110 (66%) Phase G | ✅ Tested |
 
 > 💡 **M2.7 ties Qwen3.5-Plus for Phase F champion** at 482/590 (82%). Initial low scores were caused by insufficient token budget — M2.7's reasoning tokens count against `max_tokens`, requiring 16-24k to avoid truncation.
 >

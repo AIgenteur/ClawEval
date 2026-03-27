@@ -1,0 +1,239 @@
+```json
+[
+    {
+        "name": "Morning Routine",
+        "trigger": "Time-based",
+        "conditions": [
+            {
+                "type": "time",
+                "value": "6:30 AM",
+                "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            },
+            {
+                "type": "time",
+                "value": "8:00 AM",
+                "days": ["Saturday", "Sunday"]
+            }
+        ],
+        "actions": [
+            {
+                "type": "light",
+                "action": "gradual_on",
+                "target": "all_lights",
+                "duration": "30 minutes"
+            }
+        ]
+    },
+    {
+        "name": "Thermostat Control",
+        "trigger": "Time-based",
+        "conditions": [
+            {
+                "type": "time",
+                "value": "11:00 PM"
+            },
+            {
+                "type": "time",
+                "value": "6:00 AM"
+            }
+        ],
+        "actions": [
+            {
+                "type": "thermostat",
+                "action": "set_temperature",
+                "target": "sleeping",
+                "temperature": "68°F"
+            }
+        ]
+    },
+    {
+        "name": "Security System",
+        "trigger": "Geofencing",
+        "conditions": [
+            {
+                "type": "location",
+                "target": "Alice",
+                "status": "away"
+            },
+            {
+                "type": "location",
+                "target": "Bob",
+                "status": "away"
+            }
+        ],
+        "actions": [
+            {
+                "type": "security",
+                "action": "arm"
+            }
+        ]
+    },
+    {
+        "name": "Pet Care",
+        "trigger": "Time-based",
+        "conditions": [
+            {
+                "type": "time",
+                "value": "7:00 AM"
+            },
+            {
+                "type": "time",
+                "value": "6:00 PM"
+            }
+        ],
+        "actions": [
+            {
+                "type": "pet",
+                "action": "feed"
+            }
+        ]
+    },
+    {
+        "name": "Energy Management",
+        "trigger": "Time-based",
+        "conditions": [
+            {
+                "type": "time",
+                "value": "2:00 PM"
+            },
+            {
+                "type": "time",
+                "value": "7:00 PM"
+            }
+        ],
+        "actions": [
+            {
+                "type": "energy",
+                "action": "solar_priority"
+            },
+            {
+                "type": "energy",
+                "action": "battery_backup"
+            }
+        ]
+    },
+    {
+        "name": "Motion-Activated Lighting",
+        "trigger": "Motion",
+        "conditions": [
+            {
+                "type": "time",
+                "value": "10:00 PM"
+            },
+            {
+                "type": "time",
+                "value": "6:00 AM"
+            }
+        ],
+        "actions": [
+            {
+                "type": "light",
+                "action": "dim",
+                "target": "hallway_lights",
+                "level": "20%"
+            },
+            {
+                "type": "light",
+                "action": "off_after",
+                "duration": "5 minutes"
+            }
+        ]
+    },
+    {
+        "name": "Bob's Office",
+        "trigger": "Computer",
+        "conditions": [
+            {
+                "type": "device",
+                "target": "Bob's_computer",
+                "status": "on"
+            }
+        ],
+        "actions": [
+            {
+                "type": "light",
+                "action": "on",
+                "target": "desk_lamp"
+            },
+            {
+                "type": "thermostat",
+                "action": "set_temperature",
+                "target": "Bob's_office",
+                "temperature": "70°F"
+            }
+        ]
+    },
+    {
+        "name": "Laundry Notification",
+        "trigger": "Appliance",
+        "conditions": [
+            {
+                "type": "device",
+                "target": "washer",
+                "status": "complete"
+            },
+            {
+                "type": "device",
+                "target": "dryer",
+                "status": "complete"
+            }
+        ],
+        "actions": [
+            {
+                "type": "notification",
+                "target": "both_phones",
+                "message": "Laundry cycle complete"
+            }
+        ]
+    },
+    {
+        "name": "Water Leak Detection",
+        "trigger": "Sensor",
+        "conditions": [
+            {
+                "type": "device",
+                "target": "water_leak_detector",
+                "status": "triggered"
+            }
+        ],
+        "actions": [
+            {
+                "type": "plumbing",
+                "action": "shut_off_main_valve"
+            },
+            {
+                "type": "notification",
+                "target": "both_phones",
+                "message": "Water leak detected"
+            }
+        ]
+    },
+    {
+        "name": "Guest Mode",
+        "trigger": "Manual",
+        "conditions": [
+            {
+                "type": "mode",
+                "target": "guest_mode",
+                "status": "activated"
+            }
+        ],
+        "actions": [
+            {
+                "type": "security",
+                "action": "generate_temporary_code"
+            },
+            {
+                "type": "thermostat",
+                "action": "set_temperature",
+                "target": "guest_mode",
+                "temperature": "72°F"
+            },
+            {
+                "type": "network",
+                "action": "enable_guest_wifi"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret",
+      "severity": "critical",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a strong, randomly generated secret key from environment variables or secure storage"
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "high",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Use template rendering with proper escaping or remove f-string interpolation"
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Avoid pickle for untrusted data; use safer formats like JSON"
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid shell=True; use subprocess.run with a list of arguments"
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal",
+      "severity": "high",
+      "location": "open(path).read()",
+      "fix": "Validate and sanitize file paths; restrict to safe directories"
+    },
+    {
+      "id": 7,
+      "type": "Insecure Authentication",
+      "severity": "high",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Use secure password hashing (e.g., bcrypt) and proper authentication mechanisms"
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Remove debug endpoint or restrict access to authorized users"
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "No HTTPS enforcement",
+      "fix": "Enforce HTTPS using middleware or configuration"
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "No rate limiting",
+      "fix": "Implement rate limiting to prevent brute-force and DoS attacks"
+    }
+  ],
+  "count": 10
+}
+```
