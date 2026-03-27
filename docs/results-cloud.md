@@ -110,12 +110,12 @@
 
 ### Notes
 
-- All models tested via Alibaba Coding Plan API (cloud), except M2.7 via Ollama Cloud API, Step-3.5-Flash via OpenRouter free tier
+- All models tested via Alibaba Coding Plan API (cloud), except M2.7 via Ollama Cloud API, Step-3.5-Flash via OpenRouter
 - 📝 Manual review tests default to 5/10 pending human review
 - Calendar (0/10) is hard for all models
 - MiniMax-M2.5 / M2.7 NoThink not supported by API
 - M2.7 tested via Ollama Cloud API with 16-24k max_tokens (reasoning counts against token budget)
-- Step-3.5-Flash tested via OpenRouter free tier with multi-key rotation (13 keys), ~115 t/s, 8-16k max_tokens
+- Step-3.5-Flash tested via OpenRouter with multi-key rotation (13 keys), ~115 t/s, 8-16k max_tokens
 
 ---
 
@@ -142,7 +142,7 @@ See [Phase G Results](results-phase-g.md#%EF%B8%8F-cloud-models) for the 11 hard
 - NoThink: 86/110 (78%) — Sentiment 10/10 (19/20), Architect 10/10
 
 **Step-3.5-Flash:**
-- 66/110 (60%) — via OpenRouter free tier. Needed 24k max_tokens for Algorithm (10/10) and Architect (10/10). Also strong on Fact-Check 10/10, Web Scraping 10/10, Sentiment 9/10, Research 9/10, Orchestrator 8/10.
+- 66/110 (60%) — via OpenRouter. Needed 24k max_tokens for Algorithm (10/10) and Architect (10/10). Also strong on Fact-Check 10/10, Web Scraping 10/10, Sentiment 9/10, Research 9/10, Orchestrator 8/10.
 
 ---
 

@@ -122,7 +122,7 @@ Phase F tests showed identical scores (10/10) across all models for ~15 roles, m
 | 13 | **35B NoThink** | 77/110 (70%) | Local 24GB |
 | 14 | **GLM-5 Think** | 76/110 (69%) | Cloud · Timeout hurt score |
 | 15 | **35B Think** | 51/60 (85%)* | Local · 5/11 tests overflow |
-| 16 | **Step-3.5-Flash** | 66/110 (60%) | Cloud · OpenRouter free. Algorithm 10, Architect 10, Fact-Check 10 |
+| 16 | **Step-3.5-Flash** | 66/110 (60%) | Cloud · OpenRouter. Algorithm 10, Architect 10, Fact-Check 10 |
 | 17 | **0.8B Think / NT** | 33/110 (30%) | Local 8GB · Research 8/10 is impressive |
 
 \* Only 6/11 tests completed due to SGLang thinking budget bug
