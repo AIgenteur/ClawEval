@@ -1,0 +1,72 @@
+{
+  "components": [
+    {
+      "name": "Edge Gateway & Global Load Balancer",
+      "technology": "Envoy Proxy + AWS Global Accelerator",
+      "purpose": "Terminate TLS, route users to nearest region, enforce rate limiting, and maintain <100ms latency via anycast routing",
+      "scaling_strategy": "Auto-scaling edge nodes with consistent hashing, stateless routing, and connection draining for zero-downtime updates"
+    },
+    {
+      "name": "WebSocket Connection Manager",
+      "technology": "Go (net/http + gorilla/websocket) + gRPC",
+      "purpose": "Maintain persistent bidirectional connections, handle message framing, and route encrypted payloads to internal services",
+      "scaling_strategy": "Horizontally scaled stateless pods behind L4 load balancers, session affinity via Redis-backed routing table"
+    },
+    {
+      "name": "Presence & Session Service",
+      "technology": "Redis Cluster (7.x) with Pub/Sub",
+      "purpose": "Track online/offline status, manage heartbeats, and broadcast presence updates to connected peers",
+      "scaling_strategy": "Sharded by user ID hash, memory-optimized instances with active-active replication across AZs"
+    },
+    {
+      "name": "Message Router & Pub/Sub",
+      "technology": "Apache Kafka (KRaft mode)",
+      "purpose": "Decouple ingestion from delivery, handle group fan-out, guarantee ordering per conversation, and buffer offline messages",
+      "scaling_strategy": "Partitioned by conversation ID, auto-scaling brokers, tiered storage for cost-effective retention"
+    },
+    {
+      "name": "Distributed Message Store",
+      "technology": "ScyllaDB (Cassandra-compatible)",
+      "purpose": "Persist encrypted messages, support fast range queries for chat history, and enforce TTL for compliance",
+      "scaling_strategy": "Linear horizontal scaling via consistent hashing, partitioned by conversation ID, multi-AZ replication"
+    },
+    {
+      "name": "Object Storage & CDN",
+      "technology": "AWS S3 + CloudFront",
+      "purpose": "Store file attachments (up to 50MB), deliver via edge caching, and enforce presigned URL access control",
+      "scaling_strategy": "Multi-region replication, lifecycle policies for archival/deletion, edge cache invalidation on updates"
+    },
+    {
+      "name": "Async Event Processor",
+      "technology": "Apache Flink + AWS Lambda",
+      "purpose": "Process read receipts, trigger push notifications for offline users, and update delivery status asynchronously",
+      "scaling_strategy": "Event-driven auto-scaling consumers, exactly-once processing semantics, dead-letter queues for retries"
+    },
+    {
+      "name": "Compliance & Data Governance Service",
+      "technology": "HashiCorp Vault + OpenTelemetry + Custom Erasure Pipeline",
+      "purpose": "Manage E2EE key exchange metadata, enforce GDPR data residency, automate right-to-erasure, and maintain immutable audit logs",
+      "scaling_strategy": "Stateless microservices with region-locked data routing, automated retention policies, and cryptographically verifiable logs"
+    }
+  ],
+  "data_flow": "Client encrypts payload locally using Signal Protocol → sends via WebSocket to nearest regional Edge Gateway → Gateway routes to Connection Manager → Presence Service validates recipient status → Message published to Kafka partitioned by conversation ID → Async consumers fan-out ciphertext to online recipients via WebSockets, persist to ScyllaDB, and track delivery → Read receipts processed asynchronously and synced back → File uploads use presigned S3 URLs with CDN caching → All metadata/logs routed through Compliance Service for GDPR enforcement, with automated erasure and regional data residency controls.",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$180,000 - $250,000 USD (scales with message volume, attachment storage, and cross-region egress)",
+  "bottlenecks": [
+    "WebSocket connection state synchronization during regional failovers",
+    "Fan-out latency for 500-member groups under peak concurrency",
+    "Cross-region replication lag affecting global read consistency",
+    "Database write amplification from high-frequency read receipt updates",
+    "Mobile device CPU/battery constraints during E2EE key derivation and decryption"
+  ],
+  "tradeoffs": [
+    "E2EE prevents server-side content moderation and full-text search",
+    "Eventual consistency chosen for presence/receipts to prioritize availability and <100ms latency",
+    "Multi-region active-active increases data residency complexity for GDPR compliance",
+    "Optimized group fan-out trades storage duplication for lower delivery latency",
+    "Stateless connection routing requires external Redis state, adding dependency complexity"
+  ]
+}

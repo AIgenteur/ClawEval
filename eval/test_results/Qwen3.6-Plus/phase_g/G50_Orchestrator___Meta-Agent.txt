@@ -1,0 +1,94 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Diagnostics & Alerting",
+      "agents": [
+        {"agent": "log_analyzer", "input": "last 30 minutes of application and system logs", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "error_rate, p99_latency, cpu, memory, network_io", "timeout_seconds": 45},
+        {"agent": "db_checker", "input": "connection_pool_status, active_locks, replication_lag", "timeout_seconds": 60},
+        {"agent": "config_auditor", "input": "configuration changes in last 24 hours", "timeout_seconds": 45},
+        {"agent": "notification_agent", "input": "P1 outage alert to on-call engineering and SRE channels", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents complete or timeout, and initial alert dispatched"
+    },
+    {
+      "phase": 2,
+      "name": "Dependency Mapping & Incident Logging",
+      "agents": [
+        {"agent": "dependency_mapper", "input": "affected service topology and upstream/downstream dependencies", "timeout_seconds": 60},
+        {"agent": "capacity_planner", "input": "current resource utilization vs baseline thresholds", "timeout_seconds": 45},
+        {"agent": "incident_reporter", "input": "create P1 incident ticket with initial diagnostic summary", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "Service dependency graph mapped, capacity assessed, and incident ticket created"
+    },
+    {
+      "phase": 3,
+      "name": "Root Cause Correlation",
+      "agents": [
+        {"agent": "incident_reporter", "input": "update ticket with correlated diagnostics and root cause hypothesis", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Root cause hypothesis generated and linked to incident ticket"
+    },
+    {
+      "phase": 4,
+      "name": "Customer Communication & Rollback Execution",
+      "agents": [
+        {"agent": "customer_communicator", "input": "broadcast status update acknowledging outage and estimated resolution time", "timeout_seconds": 45},
+        {"agent": "rollback_agent", "input": "revert to previous stable deployment version", "timeout_seconds": 120}
+      ],
+      "parallel": false,
+      "gate": "Customers notified and rollback initiated successfully"
+    },
+    {
+      "phase": 5,
+      "name": "Alternative Remediation & Scaling",
+      "agents": [
+        {"agent": "customer_communicator", "input": "update customers on extended investigation and mitigation steps", "timeout_seconds": 45},
+        {"agent": "db_checker", "input": "verify lock clearance and connection pool recovery", "timeout_seconds": 60},
+        {"agent": "capacity_planner", "input": "evaluate resource headroom and trigger auto-scaling", "timeout_seconds": 60}
+      ],
+      "parallel": false,
+      "gate": "Alternative mitigation applied and customer status updated"
+    },
+    {
+      "phase": 6,
+      "name": "Verification & Post-Remediation Check",
+      "agents": [
+        {"agent": "metric_checker", "input": "verify error_rate < 0.1% and latency < baseline for 5 minutes", "timeout_seconds": 60},
+        {"agent": "log_analyzer", "input": "scan for residual error patterns post-remediation", "timeout_seconds": 45},
+        {"agent": "incident_reporter", "input": "update ticket with resolution status and close if verified", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "System metrics stable, logs clean, and incident resolved or escalated"
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 3,
+      "condition": "Root cause hypothesis identifies a deployment or config change within the last 2 hours as the primary trigger",
+      "if_true": "go to phase 4",
+      "if_false": "go to phase 5"
+    },
+    {
+      "after_phase": 4,
+      "condition": "Rollback completes successfully and error rate drops below 1% within 3 minutes",
+      "if_true": "go to phase 6",
+      "if_false": "go to phase 5"
+    }
+  ],
+  "escalation": {
+    "trigger": "Total elapsed time exceeds 15 minutes without successful verification in phase 6, OR error rate remains > 5% after two remediation attempts",
+    "action": "Page VP of Engineering and SRE Director, initiate war room, and transition to manual incident command"
+  },
+  "total_phases": 6,
+  "max_time_minutes": 20,
+  "rollback_conditions": [
+    "Error rate exceeds 50% AND a deployment occurred within the last 2 hours",
+    "P99 latency spikes > 300% baseline AND config_auditor detects a recent routing or feature flag change",
+    "Database connection pool exhaustion correlates with a recent schema migration or index change"
+  ]
+}

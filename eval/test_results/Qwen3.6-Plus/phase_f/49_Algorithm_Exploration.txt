@@ -1,0 +1,53 @@
+```python
+def lru_cache(capacity):
+    class Node:
+        def __init__(self, key=0, value=0):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    class Cache:
+        def __init__(self, cap):
+            self.cap = cap
+            self.map = {}
+            self.head = Node()
+            self.tail = Node()
+            self.head.next = self.tail
+            self.tail.prev = self.head
+
+        def _remove(self, node):
+            node.prev.next = node.next
+            node.next.prev = node.prev
+
+        def _add(self, node):
+            node.next = self.head.next
+            node.prev = self.head
+            self.head.next.prev = node
+            self.head.next = node
+
+        def get(self, key):
+            if key in self.map:
+                node = self.map[key]
+                self._remove(node)
+                self._add(node)
+                return node.value
+            return -1
+
+        def put(self, key, value):
+            if key in self.map:
+                node = self.map[key]
+                node.value = value
+                self._remove(node)
+                self._add(node)
+            else:
+                if len(self.map) >= self.cap:
+                    lru = self.tail.prev
+                    self._remove(lru)
+                    del self.map[lru.key]
+                new_node = Node(key, value)
+                self.map[key] = new_node
+                self._add(new_node)
+
+    return Cache(capacity)
+```

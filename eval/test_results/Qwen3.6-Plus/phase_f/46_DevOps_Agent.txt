@@ -1,0 +1,17 @@
+```json
+{
+  "issues": [
+    {"line": "1", "problem": "version '2' is outdated", "fix": "Remove the 'version' key entirely (Docker Compose V2 does not require it) or upgrade to '3.8'+"},
+    {"line": "4", "problem": "'latest' tag is non-deterministic", "fix": "Pin to a specific, stable version like 'node:20-alpine'"},
+    {"line": "8", "problem": "DB password in plaintext (should use secrets)", "fix": "Use Docker secrets or a .env file with restricted permissions instead of hardcoding"},
+    {"line": "9", "problem": "NODE_ENV should be 'production'", "fix": "Change value to 'production' for optimized performance and security"},
+    {"line": "11", "problem": "Source volume mount (.:/app) in production", "fix": "Remove the bind mount or use a multi-stage build to copy source code into the image"},
+    {"line": "12", "problem": "restart: no — should be 'unless-stopped' or 'always'", "fix": "Change to 'restart: unless-stopped' to ensure service recovery after crashes or reboots"},
+    {"line": "15", "problem": "MySQL 5.6 is EOL", "fix": "Upgrade to a supported LTS version like 'mysql:8.0' or 'mysql:8.4'"},
+    {"line": "17", "problem": "DB port 3306 exposed publicly", "fix": "Remove the host port mapping or restrict to localhost: '127.0.0.1:3306:3306'"},
+    {"line": "21", "problem": "/tmp for persistent data (will be lost)", "fix": "Use a named volume or a persistent host directory like './mysql-data:/var/lib/mysql'"},
+    {"line": "26", "problem": "Redis port exposed publicly + no auth", "fix": "Remove public port mapping, bind to localhost, and configure authentication (requirepass/ACLs)"}
+  ],
+  "count": 10
+}
+```

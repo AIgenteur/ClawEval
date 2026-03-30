@@ -1,0 +1,56 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+
+    def get(self, key: str) -> any:
+        if key not in self.cache:
+            self.stats["misses"] += 1
+            return None
+        value, expire_time = self.cache[key]
+        if expire_time is not None and time.time() > expire_time:
+            del self.cache[key]
+            self.stats["expirations"] += 1
+            self.stats["misses"] += 1
+            return None
+        self.cache.move_to_end(key)
+        self.stats["hits"] += 1
+        return value
+
+    def put(self, key: str, value: any, ttl: float = None) -> None:
+        expire_time = time.time() + ttl if ttl is not None else None
+        if key in self.cache:
+            self.cache[key] = (value, expire_time)
+            self.cache.move_to_end(key)
+            return
+        if len(self.cache) >= self.capacity:
+            self.cache.popitem(last=False)
+            self.stats["evictions"] += 1
+        self.cache[key] = (value, expire_time)
+
+    def delete(self, key: str) -> bool:
+        if key in self.cache:
+            del self.cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        now = time.time()
+        return sum(1 for _, (_, exp) in self.cache.items() if exp is None or now <= exp)
+
+    def get_stats(self) -> dict:
+        return self.stats.copy()
+
+    def keys(self) -> list:
+        now = time.time()
+        return [k for k in reversed(self.cache) if self.cache[k][1] is None or now <= self.cache[k][1]]
+
+    def clear(self) -> None:
+        self.cache.clear()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+```

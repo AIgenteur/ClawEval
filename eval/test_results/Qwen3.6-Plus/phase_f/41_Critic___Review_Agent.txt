@@ -1,0 +1,56 @@
+# Critical Architecture Review: E-Commerce Platform Proposal
+
+## Executive Summary
+This proposal describes a legacy-style, highly centralized architecture optimized for minimal initial setup rather than production readiness. While it may function as a throwaway prototype or internal tool, it fundamentally fails to meet the operational, security, and scalability requirements of a modern e-commerce platform. The design introduces multiple single points of failure, violates core deployment and observability standards, and will incur significant hidden costs as traffic or business complexity grows.
+
+---
+
+## Strengths
+- **Low Initial Complexity & Cost:** A single server with Django and MySQL requires minimal infrastructure overhead and can be stood up quickly.
+- **Mature Core Technologies:** Django provides robust built-in security (CSRF, XSS, SQL injection protection), a mature ORM, and a strong ecosystem. MySQL is a proven, ACID-compliant relational database.
+- **Straightforward Debugging (Initially):** With everything co-located, local debugging and log inspection are simple for a solo developer or tiny team.
+
+*Note: These advantages are heavily outweighed by architectural debt and operational risk.*
+
+---
+
+## Critical Weaknesses (Mapped to Evaluation Criteria)
+
+| Criterion | Assessment |
+|-----------|------------|
+| **Scalability** | ❌ **Severely limited.** Monolithic architecture + single server + local memory sessions + no caching prevents horizontal scaling. Synchronous payment processing blocks worker threads, capping concurrent users. |
+| **Reliability** | ❌ **Fragile.** Every component is a single point of failure. Local memory sessions vanish on restart/crash. Cron jobs lack retry logic, dead-letter queues, or execution guarantees. No staging environment guarantees production breakages. |
+| **Security** | ❌ **High risk.** FTP transmits credentials and code in plaintext. Synchronous payment processing in the request thread risks timeouts, partial state, and exposure of sensitive data. No mention of PCI-DSS compliance, secrets management, WAF, or log access controls. |
+| **Maintainability** | ❌ **Poor.** Manual FTP deployments, no CI/CD, no environment parity, and local-only logs create a debugging and rollback nightmare. Technical debt will compound rapidly as features are added. |
+| **Performance** | ❌ **Will degrade quickly.** No caching forces repeated DB hits. Serving static files from the app server competes for bandwidth/CPU. Synchronous I/O blocks request workers. User experience will suffer under moderate load. |
+| **Deployment Practices** | ❌ **Antiquated & risky.** FTP lacks atomic deploys, version control integration, rollback capability, and environment isolation. Direct-to-production deployments without staging violate basic release engineering standards. |
+| **Data Management** | ❌ **Unsafe & non-resilient.** Single MySQL instance with no replication, automated backups, or point-in-time recovery. Local memory sessions are ephemeral. No data lifecycle or archival strategy. |
+| **Monitoring** | ❌ **Blind to production state.** Local log files cannot be aggregated, searched, or alerted on. No metrics, tracing, health checks, or error tracking. Issues will only surface via customer complaints. |
+| **Cost Efficiency** | ❌ **False economy.** Low upfront cost is offset by high operational overhead, downtime risk, security incident exposure, developer friction, and inevitable re-architecture costs. |
+| **Industry Best Practices** | ❌ **Contradicts modern standards.** Violates 12-factor app principles, CI/CD norms, observability standards, async processing patterns, CDN usage, infrastructure-as-code, and e-commerce compliance requirements. |
+
+---
+
+## Prioritized Improvement Roadmap
+
+### 🔴 Critical (Address Before Any Production Traffic)
+1. **Replace FTP with Secure CI/CD:** Use Git-based pipelines (GitHub Actions, GitLab CI, or Jenkins) with SSH/rsync or containerized deployments. Enable atomic deploys and instant rollbacks.
+2. **Externalize Session Storage:** Switch to Redis or database-backed sessions (`django.contrib.sessions.backends.db` or `cache`). Local memory sessions are unacceptable for production.
+3. **Enforce HTTPS & Secrets Management:** Terminate TLS at a reverse proxy (Nginx/Caddy/Cloudflare). Store credentials in environment variables or a secrets manager (AWS Secrets Manager, HashiCorp Vault, Doppler).
+4. **Implement Automated Backups & DB Resilience:** Enable automated daily backups, binlog retention, and read replicas. Consider managed MySQL (RDS, Cloud SQL, DigitalOcean Managed DB).
+
+### 🟡 Short-Term (Within 1-2 Sprints)
+5. **Add a Staging Environment:** Mirror production infrastructure. Run integration, load, and security tests before promotion.
+6. **Introduce Caching & CDN:** Deploy Redis/Memcached for query and template caching. Offload static/media files to object storage (S3, GCS) + CDN (CloudFront, Cloudflare).
+7. **Async Payment & Background Processing:** Replace cron with a task queue (Celery + Redis/RabbitMQ). Process payments, emails, and inventory sync asynchronously with retries and dead-letter queues.
+8. **Centralized Logging & Observability:** Ship logs to a centralized system (ELK, Datadog, Grafana Loki). Add APM (Sentry, New Relic, OpenTelemetry) and alerting on error rates, latency, and queue depth.
+
+### 🟢 Medium/Long-Term (Scale & Compliance)
+9. **Containerize & Standardize Infrastructure:** Package the app in Docker. Use IaC (Terraform, Pulumi) for reproducible environments. Consider managed PaaS (Render, Fly.io, AWS ECS) or Kubernetes if scaling demands it.
+10. **PCI-DSS Compliance Strategy:** Never handle raw card data. Use hosted payment fields or redirect flows (Stripe Checkout, PayPal, Adyen). Tokenize and minimize data scope.
+11. **Modularize the Monolith (If Needed):** As complexity grows, enforce domain boundaries within Django (apps, service layers, event-driven communication). Consider extracting high-load services (search, recommendations, notifications) only when justified by metrics.
+
+---
+
+## Conclusion
+This proposal is fundamentally unsuited for a production e-commerce platform. While it minimizes initial setup effort, it introduces severe operational, security, and scalability risks that will inevitably impact revenue, customer trust, and developer velocity. Modern e-commerce demands resilience, observability, secure deployment pipelines, and asynchronous processing. By adopting the prioritized improvements above, the team can retain Django's productivity while building a system that scales securely, recovers gracefully, and aligns with industry standards. **Do not deploy this architecture to production without addressing the critical and short-term items.**

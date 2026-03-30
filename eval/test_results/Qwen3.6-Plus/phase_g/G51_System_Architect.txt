@@ -1,0 +1,70 @@
+{
+  "architecture": {
+    "components": [
+      "API Gateway / Edge Router",
+      "Stateless Redirect Microservice",
+      "URL Creation & Validation Service",
+      "Redis Cache Cluster",
+      "Managed PostgreSQL Database",
+      "Global CDN",
+      "Message Queue (SQS/Kafka)",
+      "Async Analytics & Cleanup Workers"
+    ],
+    "database": {
+      "primary": "PostgreSQL (Managed, Multi-AZ)",
+      "justification": "ACID compliance ensures strict uniqueness for custom aliases, native TTL/partitioning supports expiration, mature tooling for GDPR hard deletes, and cost-effective read scaling for the 100:1 ratio."
+    },
+    "cache": {
+      "type": "Redis Cluster",
+      "strategy": "Cache-aside for redirects with read-through fallback, write-through for creation/updates, CDN edge caching for 301 responses",
+      "invalidation": "TTL-based (24h sliding), explicit purge on alias update/deletion, background worker invalidates expired keys"
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 encoding of distributed Snowflake IDs",
+      "length": 7,
+      "collision_handling": "Atomic reservation from pre-generated ID pool; deterministic retry with incremental suffix if collision occurs"
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "CDN edge caching absorbs 95%+ of traffic, Redis L1 cache handles remaining misses, connection pooling, read replicas for analytics queries, HTTP/3 multiplexing",
+    "write_path": "Synchronous validation -> DB insert -> async analytics via message queue -> cache warm-up -> 201 response",
+    "horizontal_scaling": "Stateless API containers behind ALB with HPA/KEDA auto-scaling on RPS/CPU; DB read replicas scale independently; queue consumers scale on lag"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment, health checks with circuit breakers, graceful degradation (serve stale cache on DB failure), automated PITR backups",
+    "failover": "Automated DB failover (<30s), Redis Sentinel/Cluster auto-healing, CDN origin failover to secondary region, stateless API instant replacement",
+    "data_replication": "Synchronous replication for primary DB, async cross-region replication for DR, Redis replication with AOF persistence"
+  },
+  "compliance": {
+    "gdpr_deletion": "Hard delete from primary DB, synchronous cache purge, analytics anonymization pipeline, 30-day audit log retention for compliance verification",
+    "data_retention": "Configurable per-link TTL, automated background cleanup of expired links, 90-day default retention for aggregated analytics",
+    "analytics_separation": "Dedicated analytics datastore, IP hashing/anonymization at ingestion, opt-out tracking, completely decoupled from redirect hot path"
+  },
+  "cost_estimate": {
+    "monthly_total": 4950,
+    "breakdown": {
+      "compute": 900,
+      "database": 1300,
+      "cache": 650,
+      "cdn": 1400,
+      "other": 700
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token bucket at API Gateway/Edge, per-IP and per-API-key, sliding window for creation endpoints, adaptive throttling during spikes",
+    "limits": "Redirects: 1000 req/s/IP (burst 2000), Creation: 10 req/s/IP, Custom alias: 5 req/s/IP, Global cap: 150k RPS"
+  },
+  "monitoring": {
+    "metrics": [
+      "p50/p95/p99 redirect latency",
+      "cache hit ratio",
+      "DB query latency & connection pool usage",
+      "error rates (4xx/5xx)",
+      "queue depth & consumer lag",
+      "cost per 1k requests"
+    ],
+    "alerting": "PagerDuty integration with multi-threshold alerts (p99 > 45ms, error rate > 0.1%, cache hit < 90%, DB CPU > 80%), automated runbooks for scaling and incident response"
+  }
+}

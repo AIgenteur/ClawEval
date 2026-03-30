@@ -1,0 +1,32 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when processed list is empty (e.g., empty input or no pending orders).",
+      "fix": "Use conditional division: avg = total / len(processed) if processed else 0"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) which counts all input orders instead of only the successfully processed ones.",
+      "fix": "Change to 'count': len(processed)"
+    },
+    {
+      "line": 8,
+      "issue": "No validation on discount value; discounts > 100 or < 0 cause incorrect pricing before clamping.",
+      "fix": "Clamp discount to valid range: discount = max(0, min(100, order.get('discount', 0)))"
+    },
+    {
+      "line": 14,
+      "issue": "Directly mutates the original order dictionaries passed in the input list, causing unintended side effects.",
+      "fix": "Create a copy before modification: order_copy = order.copy(); modify order_copy and append it"
+    },
+    {
+      "line": 8,
+      "issue": "No type checking or safe retrieval for 'price' and 'quantity'; missing keys or None values raise KeyError/TypeError.",
+      "fix": "Use .get() with defaults and type casting: price_val = float(order.get('price', 0)); qty = int(order.get('quantity', 0)); price = price_val * qty"
+    }
+  ],
+  "count": 5
+}
+```

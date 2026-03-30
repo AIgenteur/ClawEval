@@ -1,0 +1,81 @@
+```python
+import pytest
+
+# Assuming calculate_tax is imported from your module:
+# from your_module import calculate_tax
+
+def test_zero_income():
+    """Edge case: Zero income should return zero tax and zero effective rate."""
+    assert calculate_tax(0, 'single') == (0, 0)
+    assert calculate_tax(0.0, 'married') == (0, 0)
+
+def test_negative_income_raises():
+    """Edge case: Negative income must raise ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-1, 'single')
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-1000.50, 'married')
+
+def test_invalid_income_type_raises():
+    """Edge case: Non-numeric income types must raise ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("50000", 'single')
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(None, 'married')
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax([1000], 'single')
+
+def test_invalid_filing_status_raises():
+    """Edge case: Unsupported filing status must raise ValueError."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'head_of_household')
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'joint')
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, '')
+
+def test_single_low_income_first_bracket():
+    """Typical case: Income fully within the first 10% bracket."""
+    tax, rate = calculate_tax(10000, 'single')
+    assert tax == 1000.0
+    assert rate == 10.0
+
+def test_single_at_bracket_boundary():
+    """Edge case: Income exactly at the first bracket limit."""
+    tax, rate = calculate_tax(11600, 'single')
+    assert tax == 1160.0
+    assert rate == 10.0
+
+def test_single_crossing_brackets():
+    """Typical case: Income spanning multiple brackets."""
+    tax, rate = calculate_tax(20000, 'single')
+    # 11600 @ 10% + 8400 @ 12%
+    assert tax == 2168.0
+    assert rate == 10.84
+
+def test_married_high_income_top_bracket():
+    """High income case: Income exceeding all brackets, hitting 37%."""
+    tax, rate = calculate_tax(1_000_000, 'married')
+    # Manually verified progressive sum
+    assert tax == 296125.5
+    assert rate == 29.61
+
+def test_single_vs_married_same_income():
+    """Comparison case: Same income yields different tax/rate by status."""
+    s_tax, s_rate = calculate_tax(50000, 'single')
+    m_tax, m_rate = calculate_tax(50000, 'married')
+    
+    assert s_tax == 6053.0
+    assert s_rate == 12.11
+    assert m_tax == 5536.0
+    assert m_rate == 11.07
+    assert s_tax > m_tax  # Married filing jointly should pay less at this income
+
+def test_float_income_and_rounding_precision():
+    """Edge case: Float income with precise rounding behavior."""
+    tax, rate = calculate_tax(12345.67, 'single')
+    # 11600 @ 10% + 745.67 @ 12% = 1160 + 89.4804 = 1249.4804
+    assert tax == 1249.48
+    # Rate calculated on unrounded tax, then rounded to 2 decimals
+    assert rate == 10.12
+```

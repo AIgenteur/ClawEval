@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "high",
+      "location": "Line 5: app.secret_key = \"password123\"",
+      "fix": "Generate a cryptographically secure random key and load it from environment variables or a dedicated secrets manager."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "Line 9: render_template_string(f\"Results for: {q}\")",
+      "fix": "Never interpolate user input directly into templates. Use render_template with a static file and pass variables safely, or enable auto-escaping."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "Line 14: db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))"
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "Line 20: pickle.loads(data)",
+      "fix": "Replace pickle with safe serialization formats like JSON or msgpack, and strictly validate input structure before processing."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "Line 25: subprocess.check_output(cmd, shell=True)",
+      "fix": "Remove shell=True, pass commands as a list of arguments, and validate/sanitize input against a strict allowlist."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "Line 30: open(path).read()",
+      "fix": "Sanitize the path, resolve it to an absolute path, and verify it remains within a designated safe base directory before opening."
+    },
+    {
+      "id": 7,
+      "type": "Weak/Default Credentials & Plaintext Comparison",
+      "severity": "high",
+      "location": "Line 35: os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Remove default fallback values, enforce strong passwords, and use secure password hashing (e.g., bcrypt/argon2) for verification."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure (Environment Leak)",
+      "severity": "high",
+      "location": "Line 39: return str(os.environ)",
+      "fix": "Remove the /debug endpoint entirely. Never expose environment variables, secrets, or internal state to end users."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "Application/Deployment Configuration",
+      "fix": "Enforce HTTPS via a reverse proxy (Nginx/Apache) or use Flask-Talisman to redirect HTTP to HTTPS and set secure transport headers."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "Application/Deployment Configuration",
+      "fix": "Implement rate limiting using Flask-Limiter to protect endpoints against brute-force, credential stuffing, and denial-of-service attacks."
+    }
+  ],
+  "count": 10
+}
+```

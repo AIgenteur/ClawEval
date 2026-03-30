@@ -1,0 +1,16 @@
+```json
+{
+  "tasks": [
+    {"id": "T1", "agent": "data_analyst", "action": "Analyze Q3 financial data and extract key metrics and insights", "depends_on": [], "input_from": []},
+    {"id": "T2", "agent": "writer", "action": "Draft the Q3 earnings blog post using the analyzed data", "depends_on": ["T1"], "input_from": ["T1"]},
+    {"id": "T3", "agent": "editor", "action": "Review, edit, and finalize the blog post for clarity, tone, and accuracy", "depends_on": ["T2"], "input_from": ["T2"]},
+    {"id": "T4", "agent": "seo", "action": "Optimize the edited blog post with target keywords, meta tags, and internal links", "depends_on": ["T3"], "input_from": ["T3"]},
+    {"id": "T5", "agent": "web_publisher", "action": "Format and publish the SEO-optimized blog post to the company website", "depends_on": ["T4"], "input_from": ["T4"]},
+    {"id": "T6", "agent": "designer", "action": "Create visual graphics and banners for social media based on the finalized content", "depends_on": ["T3"], "input_from": ["T3"]},
+    {"id": "T7", "agent": "social_media", "action": "Draft captions and schedule/publish social media posts with the designed graphics", "depends_on": ["T6"], "input_from": ["T6"]},
+    {"id": "T8", "agent": "email_marketing", "action": "Compose a summary email newsletter and send it to the subscriber list", "depends_on": ["T3"], "input_from": ["T3"]}
+  ],
+  "execution_order": ["T1", "T2", "T3", "T4", "T6", "T8", "T5", "T7"],
+  "parallel_groups": [["T1"], ["T2"], ["T3"], ["T4", "T6", "T8"], ["T5", "T7"]]
+}
+```
