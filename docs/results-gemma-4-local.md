@@ -29,70 +29,70 @@ All tests run locally via `llama.cpp` server perfectly controlling reasoning bud
 | # | Agent Role | Gemma-4-E2B | Gemma-4-E4B | Gemma-4-A4B | Gemma-4-31B |
 |---|---|---|---|---|---|
 | | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | 🟢 9 | 🟢 10 | | |
-| 2 | Input Validator | 🟢 10 | 🟢 10 | | |
-| 3 | Health Monitor | 🟡 5 | 🟠 5 | | |
-| 4 | Notification | 🟢 8 | 🟢 8 | | |
-| 5 | Sentiment | 🟢 10 | 🟢 10 | | |
-| 6 | FAQ Generation | 🟡 5 | 🟠 5 | | |
-| 7 | Translation | 🟢 9 | 🟢 10 | | |
-| 8 | Calendar | 🔴 0 | 🔴 0 | | |
+| 1 | Router / Triage | 🟢 9 | 🟢 10 | 🟢 10 | |
+| 2 | Input Validator | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 3 | Health Monitor | 🟡 5 | 🟠 5 | 🟠 5 | |
+| 4 | Notification | 🟢 8 | 🟢 8 | 🟢 8 | |
+| 5 | Sentiment | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 6 | FAQ Generation | 🟡 5 | 🟠 5 | 🟠 5 | |
+| 7 | Translation | 🟢 9 | 🟢 10 | 🟢 9 | |
+| 8 | Calendar | 🔴 0 | 🔴 0 | 🔴 0 | |
 | | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | 🟢 10 | 🟢 10 | | |
-| 10 | Content Writer | 📝 5 | 📝 5 | | |
-| 11 | Editor | 🟢 9 | 🟡 7 | | |
-| 12 | Content Planner | 🟢 10 | 🟢 10 | | |
-| 13 | Email Drafting | 🟢 8 | 🟢 8 | | |
-| 14 | Doc Summary | 🟢 10 | 🟢 10 | | |
-| 15 | Meeting Notes | 🟢 9 | 🟢 9 | | |
-| 16 | Social Scouting | 🟢 10 | 🟢 19 | | |
-| 17 | Social Content | 📝 5 | 📝 5 | | |
-| 18 | News Aggregation | 🟢 10 | 🟢 10 | | |
-| 19 | Shopping | 🟢 10 | 🟢 8 | | |
-| 20 | Memory Mgmt | 🟢 9 | 🟢 8 | | |
-| 21 | RAG / Retrieval | 🟡 6 | 🟡 6 | | |
-| 22 | Data Analysis | 🔴 0 | 🔴 1 | | |
-| 23 | Web Scraping | 🟢 10 | 🟢 10 | | |
-| 24 | Image Description | 📝 5 | 📝 5 | | |
-| 25 | Customer Support | 🟢 10 | 🟢 9 | | |
-| 26 | Lead Scoring | 🟢 8 | 🟢 8 | | |
-| 27 | Sprint Summary | 🟢 10 | 🟢 9 | | |
-| 28 | Transaction | 🟢 10 | 🟢 9 | | |
-| 29 | Home Automation | 🟢 10 | 🟢 10 | | |
-| 30 | Fitness Tracking | 🟢 9 | 🟢 9 | | |
-| 31 | Recipe / Cooking | 🔴 2 | 🔴 2 | | |
-| 32 | Personal Finance | 🟡 6 | 🟠 5 | | |
-| 33 | SEO Optimization | 🟢 9 | 🟢 9 | | |
-| 34 | Landing Page | 📝 5 | 📝 5 | | |
-| 35 | Travel Planning | 🟢 8 | 🟢 9 | | |
+| 9 | Research Agent | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 10 | Content Writer | 📝 5 | 📝 5 | 📝 5 | |
+| 11 | Editor | 🟢 9 | 🟡 7 | 🔴 0 | |
+| 12 | Content Planner | 🟢 10 | 🟢 10 | 🔴 0 | |
+| 13 | Email Drafting | 🟢 8 | 🟢 8 | 🟢 9 | |
+| 14 | Doc Summary | 🟢 10 | 🟢 10 | 🟢 8 | |
+| 15 | Meeting Notes | 🟢 9 | 🟢 9 | 🟢 9 | |
+| 16 | Social Scouting | 🟢 10 | 🟢 19 | 🟢 19 | |
+| 17 | Social Content | 📝 5 | 📝 5 | 📝 5 | |
+| 18 | News Aggregation | 🟢 10 | 🟢 10 | 🟠 5 | |
+| 19 | Shopping | 🟢 10 | 🟢 8 | 🟢 8 | |
+| 20 | Memory Mgmt | 🟢 9 | 🟢 8 | 🟢 9 | |
+| 21 | RAG / Retrieval | 🟡 6 | 🟡 6 | 🟠 4 | |
+| 22 | Data Analysis | 🔴 0 | 🔴 1 | 🔴 0 | |
+| 23 | Web Scraping | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 24 | Image Description | 📝 5 | 📝 5 | 📝 5 | |
+| 25 | Customer Support | 🟢 10 | 🟢 9 | 🟢 10 | |
+| 26 | Lead Scoring | 🟢 8 | 🟢 8 | 🟢 8 | |
+| 27 | Sprint Summary | 🟢 10 | 🟢 9 | 🟢 10 | |
+| 28 | Transaction | 🟢 10 | 🟢 9 | 🟢 9 | |
+| 29 | Home Automation | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 30 | Fitness Tracking | 🟢 9 | 🟢 9 | 🟢 9 | |
+| 31 | Recipe / Cooking | 🔴 2 | 🔴 2 | 🔴 2 | |
+| 32 | Personal Finance | 🟡 6 | 🟠 5 | 🟡 7 | |
+| 33 | SEO Optimization | 🟢 9 | 🟢 9 | 🟢 9 | |
+| 34 | Landing Page | 📝 5 | 📝 5 | 📝 5 | |
+| 35 | Travel Planning | 🟢 8 | 🟢 9 | 🔴 0 | |
 | | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | 🟢 10 | 🟢 10 | | |
-| 37 | Code Review | 🟢 10 | 🟢 8 | | |
-| 38 | QA / Test Writing | 🟢 8 | 🟢 10 | | |
-| 39 | Task Planning | 🟢 9 | 🟢 8 | | |
-| 40 | Fact-Checking | 🟢 10 | 🟡 7 | | |
-| 41 | Critic / Review | 📝 5 | 📝 5 | | |
-| 42 | Market Research | 🟢 8 | 🟡 6 | | |
-| 43 | Synthesizer | 🟢 9 | 🟢 9 | | |
-| 44 | Curriculum Design | 🟡 6 | 🟡 6 | | |
-| 45 | Prototype Gen | 🟡 5 | 🟡 7 | | |
-| 46 | DevOps | 🟢 9 | 🟢 9 | | |
+| 36 | Code Generation | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 37 | Code Review | 🟢 10 | 🟢 8 | 🟢 10 | |
+| 38 | QA / Test Writing | 🟢 8 | 🟢 10 | 🟢 8 | |
+| 39 | Task Planning | 🟢 9 | 🟢 8 | 🟢 9 | |
+| 40 | Fact-Checking | 🟢 10 | 🟡 7 | 🟢 10 | |
+| 41 | Critic / Review | 📝 5 | 📝 5 | 📝 5 | |
+| 42 | Market Research | 🟢 8 | 🟡 6 | 🟡 6 | |
+| 43 | Synthesizer | 🟢 9 | 🟢 9 | 🟢 9 | |
+| 44 | Curriculum Design | 🟡 6 | 🟡 6 | 🟡 6 | |
+| 45 | Prototype Gen | 🟡 5 | 🟡 7 | 🟠 5 | |
+| 46 | DevOps | 🟢 9 | 🟢 9 | 🟢 9 | |
 | | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | 🟡 6 | 🟢 8 | | |
-| 48 | STEM Analysis | 🟢 10 | 🟢 10 | | |
-| 49 | Algorithm | 🟢 10 | 🟢 10 | | |
+| 47 | Math / Logic | 🟡 6 | 🟢 8 | 🔴 0 | |
+| 48 | STEM Analysis | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 49 | Algorithm | 🟢 10 | 🟢 10 | 🟢 10 | |
 | | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | 🟢 8 | 🟢 8 | | |
-| 51 | Architect | 🟢 9 | 🟢 10 | | |
-| 52 | Debugger | 🟢 10 | 🟢 10 | | |
-| 53 | Legal Review | 🟢 10 | 🟢 10 | | |
-| 54 | Medical | 🟢 10 | 🟢 9 | | |
-| 55 | Financial | 🟡 6 | 🟡 6 | | |
-| 56 | Security | 🟢 10 | 🟢 10 | | |
-| 57 | SRE / Incident | 🟡 7 | 🟡 6 | | |
-| 58 | Book Writing | 📝 5 | 📝 5 | | |
-| 59 | Compliance | 🟡 7 | 🟢 8 | | |
-| | **TOTAL (Phase F)** | **461 (78%)** | **468 (79%)** | | |
+| 50 | Orchestrator | 🟢 8 | 🟢 8 | 🟢 8 | |
+| 51 | Architect | 🟢 9 | 🟢 10 | 🟢 9 | |
+| 52 | Debugger | 🟢 10 | 🟢 10 | 🟢 8 | |
+| 53 | Legal Review | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 54 | Medical | 🟢 10 | 🟢 9 | 🟢 9 | |
+| 55 | Financial | 🟡 6 | 🟡 6 | 🟡 6 | |
+| 56 | Security | 🟢 10 | 🟢 10 | 🟢 10 | |
+| 57 | SRE / Incident | 🟡 7 | 🟡 6 | 🔴 3 | |
+| 58 | Book Writing | 📝 5 | 📝 5 | 📝 5 | |
+| 59 | Compliance | 🟡 7 | 🟢 8 | 🟢 9 | |
+| | **TOTAL (Phase F)** | **461 (78%)** | **468 (79%)** | **428 (73%)** | |
 
 > 📝 Manual review tests default to 5/10 pending review.
 
