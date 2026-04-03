@@ -1,0 +1,70 @@
+```python
+import pytest
+
+def test_zero_income():
+    """Test that zero income returns zero tax and zero effective rate."""
+    assert calculate_tax(0, 'single') == (0, 0)
+    assert calculate_tax(0, 'married') == (0, 0)
+
+def test_single_typical_income():
+    """Test typical income for a single filer within multiple brackets."""
+    # Calculation:
+    # 11600 * 0.10 = 1160
+    # (47150 - 11600) * 0.12 = 4266
+    # (50000 - 47150) * 0.22 = 627
+    # Total = 6053.0
+    # Rate = 6053 / 50000 * 100 = 12.106 -> 12.11
+    assert calculate_tax(50000, 'single') == (6053.0, 12.11)
+
+def test_married_typical_income():
+    """Test typical income for a married filer within multiple brackets."""
+    # Calculation:
+    # 23200 * 0.10 = 2320
+    # (50000 - 23200) * 0.12 = 3216
+    # Total = 5536.0
+    # Rate = 5536 / 50000 * 100 = 11.072 -> 11.07
+    assert calculate_tax(50000, 'married') == (5536.0, 11.07)
+
+def test_high_income_single():
+    """Test very high income to ensure top bracket logic works."""
+    # Calculation for 1,000,000 single:
+    # B1: 1160.0
+    # B2: 4266.0
+    # B3: 11732.5
+    # B4: 21942.0
+    # B5: 16568.0
+    # B6: 127966.25
+    # B7: (1000000 - 609350) * 0.37 = 144560.5
+    # Total = 328195.25
+    # Rate = 32.819525 -> 32.82
+    assert calculate_tax(1000000, 'single') == (328195.25, 32.82)
+
+def test_invalid_income_negative():
+    """Test that negative income raises a ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(-100, 'single')
+
+def test_invalid_income_type():
+    """Test that non-numeric income raises a ValueError."""
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax("10000", 'single')
+    with pytest.raises(ValueError, match="Income must be non-negative number"):
+        calculate_tax(None, 'single')
+
+def test_invalid_filing_status():
+    """Test that an unsupported filing status raises a ValueError."""
+    with pytest.raises(ValueError, match="Invalid filing status"):
+        calculate_tax(50000, 'head_of_household')
+
+def test_bracket_boundaries():
+    """Test income exactly at the boundary of a tax bracket."""
+    # Single boundary: 11600 is the end of the 10% bracket
+    # 11600 * 0.10 = 1160.0
+    # Rate = 1160 / 11600 * 100 = 10.0
+    assert calculate_tax(11600, 'single') == (1160.0, 10.0)
+    
+    # Single boundary: 11600.01 should trigger the 12% rate for the extra cent
+    # 1160 + (0.01 * 0.12) = 1160.0012 -> rounded to 1160.0
+    # Rate = 1160.0012 / 11600.01 * 100 = 10.0
+    assert calculate_tax(11600.01, 'single') == (1160.0, 10.0)
+```

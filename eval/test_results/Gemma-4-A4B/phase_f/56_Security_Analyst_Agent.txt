@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded Secret Key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Load the secret key from a secure environment variable or a secret management service."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "render_template_string(f\"Results for: {q}\")",
+      "fix": "Pass variables as arguments to the template engine instead of using f-strings: render_template_string(\"Results for: {{ q }}\", q=q)."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))."
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "pickle.loads(data)",
+      "fix": "Avoid using pickle for untrusted data; use a safe serialization format like JSON."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Avoid using shell=True and pass arguments as a list, or avoid executing shell commands from user input entirely."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal",
+      "severity": "high",
+      "location": "open(path).read()",
+      "fix": "Sanitize the input path using os.path.basename() or validate that the path stays within a specific allowed directory."
+    },
+    {
+      "id": 7,
+      "type": "Broken Authentication (Default Credentials)",
+      "severity": "high",
+      "location": "os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Remove the default fallback password and ensure the environment variable is mandatory and strong."
+    },
+    {
+      "id": 8,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Remove the debug endpoint or restrict it to authenticated administrators only."
+    },
+    {
+      "id": 9,
+      "type": "Missing Transport Layer Security (HTTPS)",
+      "severity": "medium",
+      "location": "Application deployment configuration",
+      "fix": "Configure the web server to enforce HTTPS and use HSTS (HTTP Strict Transport Security)."
+    },
+    {
+      "id": 10,
+      "type": "Lack of Rate Limiting",
+      "severity": "medium",
+      "location": "Application configuration",
+      "fix": "Implement rate limiting (e.g., using Flask-Limiter) to prevent brute-force and DoS attacks."
+    }
+  ],
+  "count": 10
+}
+```

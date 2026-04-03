@@ -1,0 +1,32 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 8,
+      "issue": "discount could be > 100, no validation",
+      "fix": "discount = min(order.get('discount', 0), 100)"
+    },
+    {
+      "line": 18,
+      "issue": "ZeroDivisionError when no orders are pending",
+      "fix": "avg = total / len(processed) if processed else 0"
+    },
+    {
+      "line": 23,
+      "issue": "Returns len(orders) not len(processed)",
+      "fix": "'count': len(processed)"
+    },
+    {
+      "line": 14,
+      "issue": "Mutates input orders dict (side effect)",
+      "fix": "order = order.copy() at the start of the loop"
+    },
+    {
+      "line": 7,
+      "issue": "No type checking on price/quantity (could be None)",
+      "fix": "Ensure order['price'] and order['quantity'] are numeric before calculation"
+    }
+  ],
+  "count": 5
+}
+```

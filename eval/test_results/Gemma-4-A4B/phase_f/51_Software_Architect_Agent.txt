@@ -1,0 +1,66 @@
+```json
+{
+  "components": [
+    {
+      "name": "WebSocket Gateway (Edge Service)",
+      "technology": "Go (Golang) with Gorilla WebSocket",
+      "purpose": "Maintains persistent bi-directional connections with clients; handles heartbeat/keep-alive.",
+      "scaling_strategy": "Horizontal scaling via Kubernetes (K8s) HPA based on connection count; Load balanced via NLB (Network Load Balancer)."
+    },
+    {
+      "name": "Message Orchestrator",
+      "technology": "Go / gRPC",
+      "purpose": "Handles message routing, group fan-out logic, and read receipt processing.",
+      "scaling_strategy": "Stateless microservices scaled horizontally; uses gRPC for low-latency inter-service communication."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster",
+      "purpose": "Tracks real-time online/offline status and last-seen timestamps.",
+      "scaling_strategy": "Redis Sharding/Clustering to handle high-frequency write/read operations for 1M users."
+    },
+    {
+      "name": "Chat History Service",
+      "technology": "ScyllaDB (Cassandra-compatible)",
+      "purpose": "High-throughput, low-latency persistence of encrypted message blobs.",
+      "scaling_strategy": "Partitioning by conversation_id to ensure linear scalability and fast range queries for history."
+    },
+    {
+      "name": "Pub/Sub Layer",
+      "technology": "Redis Pub/Sub or Apache Kafka",
+      "purpose": "Inter-node communication to route messages between WebSocket servers holding different user connections.",
+      "scaling_strategy": "Partitioned topics to prevent single-node bottlenecks."
+    },
+    {
+      "name": "Media Service",
+      "technology": "AWS S3 + CloudFront CDN",
+      "purpose": "Handles file uploads (up to 50MB) and global content delivery.",
+      "scaling_strategy": "Pre-signed URLs for direct-to-S3 uploads to bypass application servers; CDN edge caching."
+    },
+    {
+      "name": "Identity & Auth Service",
+      "technology": "PostgreSQL (Managed)",
+      "purpose": "User profiles, contact lists, and metadata management.",
+      "scaling_strategy": "Read replicas for high-read user profile lookups; Multi-AZ deployment for 99.99% uptime."
+    }
+  ],
+  "data_flow": "1. Client A encrypts message locally (E2EE) and sends via WebSocket to Gateway. 2. Gateway forwards to Message Orchestrator. 3. Orchestrator writes encrypted blob to ScyllaDB and publishes to Pub/Sub. 4. Pub/Sub notifies the specific Gateway node holding Client B's connection. 5. Gateway pushes message to Client B. 6. Read receipts follow the same path as lightweight 'event' messages.",
+  "infrastructure": {
+    "cloud": "AWS",
+    "regions": 3,
+    "compliance": "Regional data silos (EU-central-1 for GDPR) to ensure data residency requirements."
+  },
+  "estimated_monthly_cost": "$120,000 - $180,000 (Scales with egress and storage growth)",
+  "bottle_necks": [
+    "WebSocket connection state management (Memory pressure on Gateway nodes)",
+    "Redis memory exhaustion for 1M concurrent presence heartbeats",
+    "ScyllaDB compaction overhead during high-volume write bursts",
+    "Network egress costs for high-frequency media sharing"
+  ],
+  "tradeoffs": [
+    "Consistency vs Availability: Choosing AP (Availability/Partition Tolerance) for chat delivery; message order is guaranteed per-conversation via sequence IDs, but global order is not.",
+    "E2EE vs Functionality: Server cannot perform content moderation, spam detection, or server-side search because it cannot read message content.",
+    "Latency vs Reliability: Using asynchronous writes to ScyllaDB to keep <100ms latency, accepting a tiny window of potential data loss in extreme crash scenarios."
+  ]
+}
+```

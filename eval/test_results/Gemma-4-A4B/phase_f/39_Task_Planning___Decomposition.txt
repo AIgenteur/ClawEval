@@ -1,0 +1,93 @@
+```json
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "PostgreSQL Database Setup",
+      "depends_on": [],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T2",
+      "name": "User Authentication Implementation (JWT)",
+      "depends_on": ["T1"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T3",
+      "name": "Unit Tests: Authentication",
+      "depends_on": ["T2"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T4",
+      "name": "Todo CRUD Operations (Protected)",
+      "depends_on": ["T2"],
+      "estimated_hours": 8,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T5",
+      "name": "Todo Categories and Tags Implementation",
+      "depends_on": ["T4"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T6",
+      "name": "Unit Tests: Todo CRUD & Categories",
+      "depends_on": ["T4", "T5"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T7",
+      "name": "Due Date Reminders Logic",
+      "depends_on": ["T4"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T8",
+      "name": "Rate Limiting Implementation",
+      "depends_on": ["T4"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T9",
+      "name": "Unit Tests: Reminders & Rate Limiting",
+      "depends_on": ["T7", "T8"],
+      "estimated_hours": 6,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T10",
+      "name": "API Documentation (OpenAPI/Swagger)",
+      "depends_on": ["T4"],
+      "estimated_hours": 4,
+      "assignable_to": "backend"
+    },
+    {
+      "id": "T11",
+      "name": "Dockerization (Dockerfile & Compose)",
+      "depends_on": ["T4", "T5", "T7", "T8"],
+      "estimated_hours": 4,
+      "assignable_to": "devops"
+    },
+    {
+      "id": "T12",
+      "name": "CI/CD Pipeline Setup",
+      "depends_on": ["T3", "T6", "T9", "T11"],
+      "estimated_hours": 6,
+      "assignable_to": "devops"
+    }
+  ],
+  "critical_path": ["T1", "T2", "T4", "T7", "T9", "T12"],
+  "total_hours": 66,
+  "parallel_tracks": 3
+}
+```

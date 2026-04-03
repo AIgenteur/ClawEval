@@ -1,0 +1,62 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+
+    def get(self, key: str) -> any:
+        if key not in self.cache:
+            self.stats["misses"] += 1
+            return None
+        
+        val, expiry = self.cache[key]
+        now = time.time()
+        
+        if expiry is not None and now > expiry:
+            del self.cache[key]
+            self.stats["misses"] += 1
+            self.stats["expirations"] += 1
+            return None
+        
+        self.cache.move_to_end(key)
+        self.stats["hits"] += 1
+        return val
+
+    def put(self, key: str, value: any, ttl: float = None) -> None:
+        expiry = time.time() + ttl if ttl is not None else None
+        
+        if key in self.cache:
+            del self.cache[key]
+        elif len(self.cache) >= self.capacity:
+            self.cache.popitem(last=False)
+            self.stats["evictions"] += 1
+            
+        self.cache[key] = (value, expiry)
+
+    def delete(self, key: str) -> bool:
+        if key in self.cache:
+            del self.cache[key]
+            return True
+        return False
+
+    def size(self) -> int:
+        now = time.time()
+        return sum(1 for v in self.cache.values() if v[1] is None or now <= v[1])
+
+    def get_stats(self) -> dict:
+        return self.stats.copy()
+
+    def keys(self) -> list:
+        now = time.time()
+        # OrderedDict stores items from LRU (start) to MRU (end).
+        # We reverse to return MRU order.
+        return [k for k, v in reversed(list(self.cache.items())) if v[1] is None or now <= v[1]]
+
+    def clear(self) -> None:
+        self.cache.clear()
+        self.stats = {"hits": 0, "misses": 0, "evictions": 0, "expirations": 0}
+```

@@ -1,0 +1,62 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version '2' is outdated",
+      "fix": "Use '3.8' or a more recent version"
+    },
+    {
+      "line": "4",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "Use a specific version tag (e.g., node:18)"
+    },
+    {
+      "line": "8",
+      "problem": "DB password in plaintext",
+      "fix": "Use Docker secrets"
+    },
+    {
+      "line": "9",
+      "problem": "NODE_ENV should be 'production'",
+      "fix": "Set NODE_ENV to 'production'"
+    },
+    {
+      "line": "11",
+      "problem": "Source volume mount (.:/app) in production",
+      "fix": "Use named volumes or COPY files in the Dockerfile"
+    },
+    {
+      "line": "12",
+      "problem": "restart: no",
+      "fix": "Use 'unless-stopped' or 'always'"
+    },
+    {
+      "line": "15",
+      "problem": "MySQL 5.6 is EOL",
+      "fix": "Use a supported version like mysql:8.0"
+    },
+    {
+      "line": "17",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "Remove the ports mapping to keep it internal to the network"
+    },
+    {
+      "line": "19",
+      "problem": "DB password in plaintext",
+      "fix": "Use Docker secrets"
+    },
+    {
+      "line": "21",
+      "problem": "/tmp for persistent data (will be lost)",
+      "fix": "Use a named volume"
+    },
+    {
+      "line": "26",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "Remove the ports mapping and add authentication"
+    }
+  ],
+  "count": 11
+}
+```

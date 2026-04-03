@@ -1,0 +1,152 @@
+```json
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Parallel Diagnostic Triage",
+      "agents": [
+        {
+          "agent": "log_analyzer",
+          "input": "production_error_logs_stream",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "metric_checker",
+          "input": "prometheus_query_error_rates",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "db_checker",
+          "input": "database_connection_and_lock_stats",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "cluster_resource_utilization",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "config_auditor",
+          "input": "recent_deployment_and_config_logs",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "dependency_mapper",
+          "input": "service_mesh_topology_map",
+          "timeout_seconds": 30
+        }
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents must complete and error patterns must be identified."
+    },
+    {
+      "phase": 2,
+      "name": "Incident Alerting and Communication",
+      "agents": [
+        {
+          "agent": "notification_agent",
+          "input": "slack_and_pagerduty_channels",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "jira_incident_management_api",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "customer_communicator",
+          "input": "status_page_api_endpoint",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": false,
+      "gate": "Internal teams notified, ticket created, and customer status page updated."
+    },
+    {
+      "phase": 3,
+      "name": "Remediation: Deployment Rollback",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "previous_stable_deployment_id",
+          "timeout_seconds": 180
+        }
+      ],
+      "parallel": false,
+      "gate": "Rollback command successfully executed by orchestrator."
+    },
+    {
+      "phase": 4,
+      "name": "Remediation: Infrastructure Scaling",
+      "agents": [
+        {
+          "agent": "capacity_planner",
+          "input": "auto_scale_request_parameters",
+          "timeout_seconds": 120
+        },
+        {
+          "agent": "db_checker",
+          "input": "db_connection_pool_expansion",
+          "timeout_seconds": 120
+        }
+      ],
+      "parallel": true,
+      "gate": "Resource scaling commands acknowledged by cloud provider."
+    },
+    {
+      "phase": 5,
+      "name": "Post-Remediation Verification",
+      "agents": [
+        {
+          "agent": "metric_checker",
+          "input": "post_remediation_health_metrics",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "log_analyzer",
+          "input": "post_remediation_error_logs",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "notification_agent",
+          "input": "all_clear_slack_channel",
+          "timeout_seconds": 30
+        }
+      ],
+      "parallel": true,
+      "gate": "Metrics return to baseline and error rates are below threshold."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "root_cause == 'deployment_or_config_change'",
+      "if_true": "go to phase 3",
+      "if_false": "go to phase 4"
+    },
+    {
+      "after_phase": 3,
+      "condition": "remediation_success == true",
+      "if_true": "go to phase 5",
+      "if_false": "escalate"
+    },
+    {
+      "after_phase": 4,
+      "condition": "remediation_success == true",
+      "if_true": "go to phase 5",
+      "if_false": "escalate"
+    }
+  ],
+  "escalation": {
+    "trigger": "If incident is not resolved within 15 minutes of Phase 1 start",
+    "action": "Trigger PagerDuty Critical Alert to SRE On-Call Lead and initiate manual war room."
+  },
+  "total_phases": 5,
+  "max_time_minutes": 20,
+  "rollback_conditions": [
+    "config_auditor identifies a deployment within the last 30 minutes",
+    "metric_checker shows error rate spike immediately following a version change",
+    "dependency_mapper identifies a failure in a newly deployed service version"
+  ]
+}
+```
