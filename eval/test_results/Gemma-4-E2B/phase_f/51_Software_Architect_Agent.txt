@@ -1,0 +1,61 @@
+```json
+{
+  "components": [
+    {
+      "name": "Connection Gateway (API/WebSocket)",
+      "technology": "Go/Rust (for high concurrency), WebSockets/MQTT",
+      "purpose": "Handles all client connections, authentication, and initial message ingress/egress. Must be stateless and highly scalable.",
+      "scaling_strategy": "Horizontal scaling via load balancers (L7), utilizing connection pooling, and deploying across multiple availability zones."
+    },
+    {
+      "name": "Real-Time Messaging Service (RMS)",
+      "technology": "Apache Kafka / Pulsar",
+      "purpose": "Acts as the central message bus for decoupling producers (senders) and consumers (delivery services). Handles fan-out for group chats.",
+      "scaling_strategy": "Partitioning topics based on user/group IDs. Cluster scaling (adding brokers) to handle massive throughput."
+    },
+    {
+      "name": "Presence Service",
+      "technology": "Redis Cluster (for ephemeral state), Cassandra (for persistent status)",
+      "purpose": "Tracks the online/offline status, typing indicators, and last seen times for 1M users.",
+      "scaling_strategy": "Sharding Redis clusters based on geographic region or user ID hash to ensure low latency lookups."
+    },
+    {
+      "name": "Persistence Layer (Message History)",
+      "technology": "Cassandra / ScyllaDB",
+      "purpose": "Stores immutable message history and metadata. Chosen for high write throughput and horizontal scalability.",
+      "scaling_strategy": "Consistent hashing across nodes to distribute data load and ensure linear scalability."
+    },
+    {
+      "name": "File Storage Service",
+      "technology": "AWS S3 / Azure Blob Storage",
+      "purpose": "Stores large file attachments (up to 50MB). Decouples storage from the core database.",
+      "scaling_strategy": "Leveraging cloud provider's inherent durability and massive scale for object storage."
+    },
+    {
+      "name": "Encryption & Key Management Service (KMS)",
+      "technology": "Hardware Security Modules (HSM) backed KMS (e.g., AWS KMS)",
+      "purpose": "Manages the generation, rotation, and secure storage of end-to-end encryption keys (e.g., Signal Protocol implementation).",
+      "scaling_strategy": "Highly secure, dedicated service with strict access controls and high availability."
+    }
+  ],
+  "data_flow": "Client -> Connection Gateway (WebSocket) -> Message Ingress -> Encryption/Signing (E2EE) -> Kafka/Pulsar (Message Bus) -> RMS Processing (Fan-out, Status Update) -> Persistence Layer (Cassandra Write) -> Delivery Service -> Recipient Connection Gateway -> Client.",
+  "infrastructure": {
+    "cloud": "Multi-Cloud (AWS/GCP) or Hybrid",
+    "regions": 5,
+    "deployment_model": "Kubernetes (EKS/GKE) for container orchestration, leveraging auto-scaling groups and serverless functions for auxiliary tasks.",
+    "database_sharding": "Horizontal sharding (Cassandra/ScyllaDB) based on user ID or chat group ID."
+  },
+  "estimated_monthly_cost": "USD 500,000 - 1,500,000 (Highly dependent on chosen cloud provider and data egress costs)",
+  "bottlenecks": [
+    "End-to-End Encryption Overhead: Cryptographic operations can introduce latency if not optimized.",
+    "Database Write Throughput: Ensuring Cassandra/ScyllaDB can handle the sustained write load from 1M concurrent users.",
+    "Network Latency: Maintaining <100ms latency globally requires optimized CDN/Edge network placement.",
+    "Key Management Complexity: Securely managing millions of encryption keys across distributed services."
+  ],
+  "tradeoffs": [
+    "Consistency vs. Availability (CAP Theorem): Prioritizing Availability (AP) for real-time messaging, accepting eventual consistency for non-critical metadata.",
+    "Latency vs. Security: Implementing robust E2EE adds computational overhead, requiring careful optimization to meet the <100ms requirement.",
+    "Operational Complexity vs. Performance: Using highly distributed systems (Kafka, Cassandra) provides maximum scalability but significantly increases operational complexity and monitoring requirements."
+  ]
+}
+```

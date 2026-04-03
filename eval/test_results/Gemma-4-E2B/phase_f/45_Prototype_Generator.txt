@@ -1,0 +1,142 @@
+```python
+from flask import Flask, request, jsonify, abort
+from typing import List, Dict, Any
+
+app = Flask(__name__)
+
+# --- In-Memory Database ---
+books_db: Dict[int, Dict[str, Any]] = {}
+next_book_id = 1
+
+# --- Helper Functions ---
+
+def validate_book_data(data: Dict[str, Any], is_update: bool = False) -> tuple[bool, str]:
+    """Validates required fields for book creation or update."""
+    required_fields = ["title", "author", "isbn", "price"]
+    
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return False, f"Missing required field: {field}"
+    
+    if not isinstance(data.get('price'), (int, float)) or data['price'] <= 0:
+        return False, "Price must be a positive number."
+
+    if is_update and 'id' in data and data['id'] != next(iter(books_db.keys()), None):
+        # This check is redundant if we rely on the route ID, but good for safety
+        pass 
+
+    return True, ""
+
+# --- API Endpoints ---
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    """
+    GET /books — List all books with pagination.
+    Query params: ?page=1&per_page=10
+    """
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+    except ValueError:
+        return jsonify({"error": "Invalid page or per_page parameter. Must be integers."}), 400
+
+    if page < 1 or per_page < 1:
+        return jsonify({"error": "Page and per_page must be positive integers."}), 400
+
+    total_books = len(books_db)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    
+    paginated_books = list(books_db.values())[start_index:end_index]
+
+    return jsonify({
+        "total": total_books,
+        "page": page,
+        "per_page": per_page,
+        "books": paginated_books
+    }), 200
+
+@app.route('/books/<int:book_id>', methods=['GET'])
+def get_book(book_id: int):
+    """
+    GET /books/<id> — Get a single book.
+    """
+    book = books_db.get(book_id)
+    if book is None:
+        return jsonify({"error": f"Book with ID {book_id} not found"}), 404
+    
+    return jsonify(book), 200
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    """
+    POST /books — Create a new book.
+    Requires: title, author, isbn, price.
+    """
+    data = request.get_json()
+    
+    is_valid, error_message = validate_book_data(data)
+    if not is_valid:
+        return jsonify({"error": error_message}), 400
+
+    global next_book_id
+    new_book = {
+        "id": next_book_id,
+        "title": data['title'],
+        "author": data['author'],
+        "isbn": data['isbn'],
+        "price": data['price']
+    }
+    
+    books_db[next_book_id] = new_book
+    next_book_id += 1
+    
+    return jsonify(new_book), 201
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id: int):
+    """
+    PUT /books/<id> — Update an existing book.
+    Requires: title, author, isbn, price.
+    """
+    if book_id not in books_db:
+        return jsonify({"error": f"Book with ID {book_id} not found"}), 404
+
+    data = request.get_json()
+    
+    # Check if the ID in the URL matches the ID in the body (optional but good practice)
+    if data.get('id') != book_id:
+        return jsonify({"error": "ID mismatch between URL and request body."}), 400
+
+    is_valid, error_message = validate_book_data(data, is_update=True)
+    if not is_valid:
+        return jsonify({"error": error_message}), 400
+
+    # Update the book
+    book_to_update = books_db[book_id]
+    book_to_update.update({
+        "title": data['title'],
+        "author": data['author'],
+        "isbn": data['isbn'],
+        "price": data['price']
+    })
+
+    return jsonify(book_to_update), 200
+
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id: int):
+    """
+    DELETE /books/<id> — Delete a book.
+    """
+    if book_id not in books_db:
+        return jsonify({"error": f"Book with ID {book_id} not found"}), 404
+
+    del books_db[book_id]
+    
+    # 204 No Content is the standard response for successful deletion
+    return '', 204
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```

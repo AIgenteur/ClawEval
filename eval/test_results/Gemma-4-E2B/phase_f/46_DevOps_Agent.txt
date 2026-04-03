@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "problem": "version '2' is outdated",
+      "fix": "Upgrade to version '3' or higher for better feature support and compatibility."
+    },
+    {
+      "line": "4",
+      "problem": "'latest' tag is non-deterministic",
+      "fix": "Use a specific, pinned version tag (e.g., 'node:18-alpine') instead of 'latest'."
+    },
+    {
+      "line": "6",
+      "problem": "DB password in plaintext (should use secrets)",
+      "fix": "Use Docker Secrets or environment variable injection (e.g., via `.env` files or Docker Swarm/Compose secrets) instead of hardcoding passwords."
+    },
+    {
+      "line": "7",
+      "problem": "NODE_ENV is set to 'development'",
+      "fix": "Change NODE_ENV to 'production' for deployment environments."
+    },
+    {
+      "line": "9",
+      "problem": "Source volume mount (.:/app) in production",
+      "fix": "Avoid mounting the host directory in production environments. Use a named volume for persistent data."
+    },
+    {
+      "line": "10",
+      "problem": "restart: no",
+      "fix": "Change restart policy to 'unless-stopped' or 'always' to ensure the services restart automatically after a failure or Docker daemon restart."
+    },
+    {
+      "line": "12",
+      "problem": "MySQL 5.6 is End-of-Life (EOL)",
+      "fix": "Upgrade the MySQL image to a currently supported version (e.g., MySQL 8.0)."
+    },
+    {
+      "line": "13",
+      "problem": "DB port 3306 exposed publicly",
+      "fix": "Do not expose the database port publicly. Restrict access to the internal Docker network or use a reverse proxy."
+    },
+    {
+      "line": "14",
+      "problem": "/tmp for persistent data (will be lost)",
+      "fix": "Use a named Docker volume (e.g., `mysql_data:/var/lib/mysql`) instead of the volatile `/tmp` directory for persistent data."
+    },
+    {
+      "line": "17",
+      "problem": "Redis port exposed publicly + no auth",
+      "fix": "If Redis is exposed, consider adding authentication. For internal services, ensure the port is not exposed externally."
+    }
+  ],
+  "count": 10
+}
+```

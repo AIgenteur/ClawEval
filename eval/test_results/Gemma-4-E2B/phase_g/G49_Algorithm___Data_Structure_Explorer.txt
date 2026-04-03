@@ -1,0 +1,182 @@
+```python
+import time
+from collections import OrderedDict
+
+class LRUCache:
+    """
+    An LRU Cache implementation with time-based expiration (TTL).
+    """
+    def __init__(self, capacity: int):
+        if capacity <= 0:
+            raise ValueError("Capacity must be a positive integer.")
+        self.capacity = capacity
+        # Stores key -> (value, expiration_timestamp)
+        self.cache = {}
+        # OrderedDict maintains the LRU order (keys are ordered from LRU to MRU)
+        self.lru_order = OrderedDict()
+        
+        # Statistics tracking
+        self.stats = {
+            "hits": 0,
+            "misses": 0,
+            "evictions": 0,
+            "expirations": 0
+        }
+
+    def _is_expired(self, key: str) -> bool:
+        """Checks if an entry is expired."""
+        if key not in self.cache:
+            return True
+        
+        _, expiry_time = self.cache[key]
+        return time.time() > expiry_time
+
+    def get(self, key: str) -> any:
+        """
+        Retrieve an item. Returns None if the key is missing or expired.
+        Updates LRU order on successful access.
+        """
+        if key not in self.cache:
+            self.stats["misses"] += 1
+            return None
+
+        if self._is_expired(key):
+            # Lazy removal of expired entry
+            self._remove_entry(key)
+            self.stats["expirations"] += 1
+            self.stats["misses"] += 1 # Treat expired access as a miss
+            return None
+
+        # Hit: Update LRU order (move to the end/MRU position)
+        value, _ = self.cache[key]
+        self.lru_order.move_to_end(key)
+        self.stats["hits"] += 1
+        return value
+
+    def put(self, key: str, value: any, ttl: float = None) -> None:
+        """
+        Insert or update an item.
+        ttl: Time To Live in seconds. If None, the item never expires.
+        """
+        expiry_time = None
+        if ttl is not None and ttl > 0:
+            expiry_time = time.time() + ttl
+
+        if key in self.cache:
+            # Update existing entry
+            self.cache[key] = (value, expiry_time)
+            self.lru_order.move_to_end(key)
+            return
+
+        # New entry
+        if len(self.cache) >= self.capacity:
+            # Evict LRU item (the first item in OrderedDict)
+            lru_key, _ = self.lru_order.popitem(last=False)
+            del self.cache[lru_key]
+            self.stats["evictions"] += 1
+
+        # Add new entry
+        self.cache[key] = (value, expiry_time)
+        self.lru_order[key] = None  # Value is not stored in OrderedDict, only key order
+        self.lru_order.move_to_end(key)
+
+    def delete(self, key: str) -> bool:
+        """
+        Removes a key from the cache.
+        Returns True if the key existed and was deleted, False otherwise.
+        """
+        if key in self.cache:
+            self._remove_entry(key)
+            return True
+        return False
+
+    def _remove_entry(self, key: str) -> None:
+        """Internal helper to remove an entry and update stats."""
+        if key in self.cache:
+            del self.cache[key]
+            self.lru_order.pop(key)
+            # Note: Stats updates (like eviction/expiration) are handled in the calling method (get/put)
+            # or implicitly by the structure of the operation.
+
+    def size(self) -> int:
+        """Returns the current number of non-expired entries."""
+        count = 0
+        # Iterate through all stored keys and check expiration status
+        for key in self.cache:
+            if not self._is_expired(key):
+                count += 1
+        return count
+
+    def keys(self) -> list:
+        """
+        Returns all non-expired keys in most-recently-used order.
+        """
+        result = []
+        # Iterate through the OrderedDict keys (which are in LRU -> MRU order)
+        for key in self.lru_order.keys():
+            if not self._is_expired(key):
+                result.append(key)
+        return result
+
+    def get_stats(self) -> dict:
+        """Returns a dictionary containing cache statistics."""
+        return self.stats
+
+    def clear(self) -> None:
+        """Removes all entries and resets statistics."""
+        self.cache.clear()
+        self.lru_order.clear()
+        self.stats = {
+            "hits": 0,
+            "misses": 0,
+            "evictions": 0,
+            "expirations": 0
+        }
+
+if __name__ == '__main__':
+    # Example Usage and Testing
+    cache = LRUCache(capacity=3)
+    print("--- Initial State ---")
+    print(f"Size: {cache.size()}")
+    print(f"Stats: {cache.get_stats()}")
+
+    # 1. Put items
+    cache.put("a", 100, ttl=2)
+    cache.put("b", 200, ttl=1)
+    cache.put("c", 300)
+    print("\n--- After initial puts ---")
+    print(f"Size: {cache.size()}")
+    print(f"Keys (LRU -> MRU): {cache.keys()}")
+
+    # 2. Access 'a' (Hit, moves 'a' to MRU)
+    print("\n--- Access 'a' ---")
+    print(f"Get 'a': {cache.get('a')}")
+    print(f"Stats: {cache.get_stats()}")
+
+    # 3. Put 'd' (Evicts 'b' because 'b' is LRU and capacity is 3)
+    cache.put("d", 400)
+    print("\n--- After putting 'd' (Evicts 'b') ---")
+    print(f"Size: {cache.size()}")
+    print(f"Keys (LRU -> MRU): {cache.keys()}")
+    print(f"Cache contents: {list(cache.cache.keys())}")
+
+    # 4. Test Expiration (Wait 2 seconds)
+    print("\n--- Waiting 2 seconds for expiration ---")
+    time.sleep(2.1)
+
+    # 5. Access 'a' (Should be expired and lazily removed)
+    print("\n--- Access 'a' after expiration ---")
+    print(f"Get 'a': {cache.get('a')}")
+    print(f"Size: {cache.size()}")
+    print(f"Stats: {cache.get_stats()}")
+    print(f"Keys (LRU -> MRU): {cache.keys()}")
+    print(f"Cache contents: {list(cache.cache.keys())}")
+    
+    # 6. Test Delete
+    print("\n--- Testing Delete 'c' ---")
+    deleted = cache.delete("c")
+    print(f"Delete 'c' successful: {deleted}")
+    print(f"Size: {cache.size()}")
+    print(f"Keys (LRU -> MRU): {cache.keys()}")
+    print(f"Cache contents: {list(cache.cache.keys())}")
+```

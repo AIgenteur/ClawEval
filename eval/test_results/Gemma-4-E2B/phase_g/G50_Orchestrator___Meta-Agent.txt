@@ -1,0 +1,131 @@
+```json
+{
+  "workflow_name": "Production Outage Automated Response",
+  "total_phases": 5,
+  "max_time_minutes": 25,
+  "rollback_conditions": [
+    "If Phase 5 verification fails AND the error pattern persists for 5 minutes.",
+    "If the rollback attempt itself results in a new, critical error state."
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Parallel Diagnostic Collection",
+      "agents": [
+        {
+          "agent": "log_analyzer",
+          "input": "Error logs from last 15 minutes",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "metric_checker",
+          "input": "Prometheus/Grafana endpoints for affected services",
+          "timeout_seconds": 60
+        },
+        {
+          "agent": "db_checker",
+          "input": "Database connection pool status and lock tables",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "config_auditor",
+          "input": "Recent configuration changes (last 24 hours)",
+          "timeout_seconds": 30
+        }
+      ],
+      "parallel": true,
+      "gate": "All diagnostic data must be collected successfully (non-empty output) to proceed."
+    },
+    {
+      "phase": 2,
+      "name": "Root Cause Analysis & Triage",
+      "agents": [
+        {
+          "agent": "dependency_mapper",
+          "input": "Service topology map",
+          "timeout_seconds": 45
+        },
+        {
+          "agent": "capacity_planner",
+          "input": "Current resource utilization metrics",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "Consolidated diagnostic data from Phase 1",
+          "timeout_seconds": 15
+        },
+        {
+          "agent": "notification_agent",
+          "input": "Initial diagnostic summary",
+          "timeout_seconds": 10
+        }
+      ],
+      "parallel": false,
+      "gate": "Root cause hypothesis must be generated and logged. Notification must be sent to the on-call team."
+    },
+    {
+      "phase": 3,
+      "name": "Remediation Attempt",
+      "agents": [
+        {
+          "agent": "rollback_agent",
+          "input": "Identified faulty deployment ID",
+          "timeout_seconds": 90
+        }
+      ],
+      "parallel": false,
+      "gate": "Remediation attempt must complete. If successful, proceed to Phase 4. If unsuccessful, proceed to Phase 4 (Escalation path)."
+    },
+    {
+      "phase": 4,
+      "name": "Verification and Communication",
+      "agents": [
+        {
+          "agent": "customer_communicator",
+          "input": "Status update based on remediation outcome",
+          "timeout_seconds": 30
+        },
+        {
+          "agent": "incident_reporter",
+          "input": "Verification results (Success/Failure)",
+          "timeout_seconds": 15
+        }
+      ],
+      "parallel": false,
+      "gate": "Verification must confirm service health restoration. If verification fails, proceed to Phase 5 (Rollback)."
+    },
+    {
+      "phase": 5,
+      "name": "Final Action / Escalation",
+      "agents": [
+        {
+          "agent": "notification_agent",
+          "input": "Final failure report and escalation details",
+          "timeout_seconds": 60
+        }
+      ],
+      "parallel": false,
+      "gate": "If verification fails, execute controlled rollback. If rollback fails, trigger immediate high-priority escalation."
+    }
+  ],
+  "decision_points": [
+    {
+      "after_phase": 2,
+      "condition": "If metric_checker reports critical failure OR log_analyzer finds repeated fatal errors.",
+      "if_true": "go to phase 3",
+      "if_false": "go to phase 4"
+    },
+    {
+      "after_phase": 4,
+      "condition": "If verification fails AND the incident has persisted for more than 10 minutes.",
+      "if_true": "go to phase 5",
+      "if_false": "end_workflow"
+    }
+  ],
+  "escalation": {
+    "trigger": "If Phase 5 (Rollback) fails OR if the total execution time exceeds 20 minutes without resolution.",
+    "action": "Trigger PagerDuty alert to Tier 3 engineers and create a high-priority incident ticket with all diagnostic data."
+  }
+}
+```

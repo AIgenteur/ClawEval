@@ -1,0 +1,77 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Weak Secret Key",
+      "severity": "medium",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Use a long, random, cryptographically secure secret key stored securely (e.g., environment variable or secret manager)."
+    },
+    {
+      "id": 2,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries (prepared statements) instead of string formatting to prevent SQL injection: `db.execute(\"SELECT * FROM users WHERE id = ?\", (id,))"
+    },
+    {
+      "id": 3,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "obj = pickle.loads(data)",
+      "fix": "Avoid using `pickle` on untrusted input. Use safer serialization formats like JSON for data exchange."
+    },
+    {
+      "id": 4,
+      "type": "OS Command Injection",
+      "severity": "critical",
+      "location": "subprocess.check_output(cmd, shell=True)",
+      "fix": "Never use `shell=True` with user-supplied input. Pass the command and arguments as a list to `subprocess.check_output` to prevent command injection."
+    },
+    {
+      "id": 5,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "return open(path).read()",
+      "fix": "Validate the user-supplied file path rigorously. Ensure the path does not contain directory traversal sequences (e.g., '..') and restrict access to a safe directory."
+    },
+    {
+      "id": 6,
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "medium",
+      "location": "return render_template_string(f\"Results for: {q}\")",
+      "fix": "Ensure all user-supplied input (`q`) is properly sanitized or escaped before being rendered in the template to prevent XSS attacks."
+    },
+    {
+      "id": 7,
+      "type": "Information Disclosure",
+      "severity": "medium",
+      "location": "return str(os.environ)",
+      "fix": "Do not expose sensitive environment variables in debug endpoints. Only return necessary, non-sensitive information."
+    },
+    {
+      "id": 8,
+      "type": "Weak Authentication / Hardcoded Credentials",
+      "severity": "medium",
+      "location": "if pw == os.environ.get(\"ADMIN_PW\", \"admin\")",
+      "fix": "Use strong password hashing (e.g., bcrypt) for user passwords. Never rely on simple string comparisons for authentication."
+    },
+    {
+      "id": 9,
+      "type": "Missing Rate Limiting",
+      "severity": "high",
+      "location": "N/A (Missing feature)",
+      "fix": "Implement rate limiting on sensitive endpoints (like `/login` and `/upload`) to mitigate brute-force attacks and Denial of Service (DoS)."
+    },
+    {
+      "id": 10,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "high",
+      "location": "N/A (Deployment configuration)",
+      "fix": "Enforce HTTPS/TLS across the application to protect data in transit and prevent man-in-the-middle attacks."
+    }
+  ],
+  "count": 10
+}
+```

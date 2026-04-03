@@ -1,0 +1,127 @@
+```python
+class Node:
+    """Represents a node in the Doubly Linked List."""
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    """
+    Implements the LRU Cache structure using a dictionary for O(1) lookup
+    and a Doubly Linked List for O(1) ordering management.
+    """
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}  # key -> Node
+        
+        # Dummy head and tail nodes for the Doubly Linked List
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove_node(self, node: Node):
+        """Removes a node from the linked list."""
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+
+    def _add_to_head(self, node: Node):
+        """Adds a node right after the head (making it Most Recently Used)."""
+        node.prev = self.head
+        node.next = self.head.next
+        
+        self.head.next.prev = node
+        self.head.next = node
+
+    def _move_to_head(self, node: Node):
+        """Moves an existing node to the front of the list."""
+        self._remove_node(node)
+        self._add_to_head(node)
+
+    def get(self, key: int) -> int:
+        """
+        Retrieves the value associated with the key. O(1).
+        Returns -1 if the key is not found.
+        """
+        if key in self.cache:
+            node = self.cache[key]
+            # Update usage: move the accessed node to the front
+            self._move_to_head(node)
+            return node.value
+        else:
+            return -1
+
+    def put(self, key: int, value: int) -> None:
+        """
+        Inserts or updates a key-value pair. O(1).
+        If capacity is exceeded, the Least Recently Used item is evicted.
+        """
+        if key in self.cache:
+            # Case 1: Key exists (Update)
+            node = self.cache[key]
+            node.value = value
+            # Update usage
+            self._move_to_head(node)
+        else:
+            # Case 2: Key is new (Insert)
+            new_node = Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_head(new_node)
+
+            # Check capacity
+            if len(self.cache) > self.capacity:
+                # Evict the Least Recently Used item (the node just before the tail)
+                lru_node = self.tail.prev
+                
+                # Remove from dictionary
+                del self.cache[lru_node.key]
+                
+                # Remove from linked list
+                self._remove_node(lru_node)
+
+    def __len__(self):
+        return len(self.cache)
+
+def lru_cache(capacity: int) -> LRUCache:
+    """
+    Factory function to create and return an LRU Cache object.
+    """
+    if capacity <= 0:
+        raise ValueError("Capacity must be a positive integer.")
+    return LRUCache(capacity)
+
+if __name__ == '__main__':
+    # Example usage demonstration
+    cache = lru_cache(2)
+    print("Cache initialized with capacity 2.")
+
+    cache.put(1, 1)
+    print(f"Put(1, 1). Cache size: {len(cache)}")
+
+    cache.put(2, 2)
+    print(f"Put(2, 2). Cache size: {len(cache)}")
+
+    print(f"Get(1): {cache.get(1)}")  # returns 1 (1 becomes MRU)
+
+    cache.put(3, 3)  # Evicts key 2 (LRU)
+    print(f"Put(3, 3). Cache size: {len(cache)}")
+
+    print(f"Get(2): {cache.get(2)}")  # returns -1 (2 was evicted)
+
+    cache.put(4, 4)  # Evicts key 1 (LRU)
+    print(f"Put(4, 4). Cache size: {len(cache)}")
+
+    print(f"Get(1): {cache.get(1)}")  # returns -1 (1 was evicted)
+    print(f"Get(3): {cache.get(3)}")  # returns 3
+    print(f"Get(4): {cache.get(4)}")  # returns 4
+    
+    cache.put(5, 5) # Evicts key 3 (LRU)
+    print(f"Put(5, 5). Cache size: {len(cache)}")
+    print(f"Get(3): {cache.get(3)}") # returns -1
+    print(f"Get(5): {cache.get(5)}") # returns 5
+```

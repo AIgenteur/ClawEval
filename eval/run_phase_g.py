@@ -466,6 +466,7 @@ def main():
     parser.add_argument("--nothink-root", action="store_true", help="Disable thinking (GLM-5: enable_thinking=false at root level)")
     parser.add_argument("--reasoning", choices=["low", "medium", "high"], help="Reasoning level (GPT-OSS-120B)")
     parser.add_argument("--reasoning-effort", choices=["low", "medium", "high"], help="Mistral reasoning_effort param (low/medium/high)")
+    parser.add_argument("--reasoning-budget-tokens", type=int, help="Number of tokens reserved for reasoning (for llama.cpp / Gemma-4)")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     args = parser.parse_args()
 
@@ -495,6 +496,12 @@ def main():
         extra_body = {"chat_template_kwargs": {"enable_thinking": True, "thinking_budget": args.thinking_budget}}
     elif args.reasoning_effort:
         extra_body = {"reasoning_effort": args.reasoning_effort}
+
+    if args.reasoning_budget_tokens:
+        if extra_body is None:
+            extra_body = {}
+        extra_body["reasoning_budget_tokens"] = args.reasoning_budget_tokens
+
 
     out_dir = Path(f"test_results/{args.model}/phase_g")
     out_dir.mkdir(parents=True, exist_ok=True)

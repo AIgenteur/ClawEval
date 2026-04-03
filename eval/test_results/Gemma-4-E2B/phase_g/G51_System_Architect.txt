@@ -1,0 +1,70 @@
+```json
+{
+  "architecture": {
+    "components": [
+      "API Gateway (Edge Routing)",
+      "URL Creation Service (Write Path)",
+      "Redirect Service (Read Path)",
+      "Data Persistence Layer (NoSQL)",
+      "Cache Layer (Distributed In-Memory)",
+      "GDPR Deletion Service"
+    ],
+    "database": {
+      "primary": "DynamoDB (or Cassandra)",
+      "justification": "DynamoDB/Cassandra provides massive horizontal scalability, predictable low-latency key-value lookups (essential for redirects), and handles the 1B read operations per day efficiently. It is highly cost-effective when using on-demand capacity."
+    },
+    "cache": {
+      "type": "Redis Cluster (or Memcached)",
+      "strategy": "Read-Through/Write-Through caching for short code lookups.",
+      "invalidation": "Time-to-Live (TTL) based expiration for redirects; immediate invalidation upon link expiration or deletion."
+    },
+    "hash_strategy": {
+      "algorithm": "Base62 encoding of a UUID/Snowflake ID",
+      "length": 8,
+      "collision_handling": "Deterministic hashing ensures unique, short codes. Collision handling relies on the uniqueness of the underlying ID generation mechanism."
+    }
+  },
+  "scaling": {
+    "read_write_ratio": "100:1 (1 Billion Reads to 10 Million Writes)",
+    "read_optimization": "Aggressive caching at the CDN/Edge layer and in-memory Redis cache to handle the overwhelming read volume.",
+    "write_path": "Asynchronous processing using message queues (SQS/Kafka) to decouple URL creation from database writes, ensuring high throughput for the user experience.",
+    "horizontal_scaling": "Stateless microservices deployed on serverless platforms (AWS Lambda/Fargate) across multiple geographic regions for active-active redundancy and 10x spike handling."
+  },
+  "reliability": {
+    "uptime_strategy": "Active-Active Multi-Region Deployment (e.g., US-East and EU-West). Automated health checks and DNS failover.",
+    "failover": "Automatic DNS routing based on regional health checks. Database replication (e.g., DynamoDB Global Tables) ensures immediate data consistency across regions.",
+    "data_replication": "Synchronous replication for critical metadata and eventual consistency for non-critical analytics data."
+  },
+  "compliance": {
+    "gdpr_deletion": "A dedicated, auditable deletion service that uses soft deletes followed by hard deletion (or cryptographic erasure) upon verified request, ensuring data is purged from all primary and secondary storage within regulatory timelines.",
+    "data_retention": "Minimal retention policy (e.g., 90 days for audit logs, immediate deletion of PII upon request).",
+    "analytics_separation": "Analytics data is stored in a separate, anonymized data warehouse (e.g., Snowflake/Redshift) completely decoupled from the operational database to maintain GDPR separation."
+  },
+  "cost_estimate": {
+    "monthly_total": 4800,
+    "breakdown": {
+      "compute": 1500,
+      "database": 1500,
+      "cache": 800,
+      "cdn": 500,
+      "other": 500
+    },
+    "fits_budget": true
+  },
+  "rate_limiting": {
+    "strategy": "Token Bucket algorithm applied at the API Gateway level.",
+    "limits": "Per IP address and per API key (e.g., 100 requests/second per user/IP) to prevent abuse and DDoS attacks."
+  },
+  "monitoring": {
+    "metrics": [
+      "P99 Redirect Latency (Target < 50ms)",
+      "Read/Write Throughput (QPS)",
+      "Cache Hit Ratio",
+      "Error Rates (4xx/5xx)",
+      "Database Latency and Throttling",
+      "Uptime Percentage"
+    ],
+    "alerting": "Real-time alerts configured for latency spikes, cache misses exceeding thresholds, and sudden drops in availability (99.99% violation)."
+  }
+}
+```

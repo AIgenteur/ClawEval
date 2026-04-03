@@ -1,0 +1,234 @@
+```python
+import time
+from collections import defaultdict
+
+class RateLimiter:
+    """
+    Implements a hybrid token-bucket / sliding-window rate limiter.
+    Tracks limits per (user_id, endpoint) pair.
+    """
+    def __init__(self, max_requests: int, window_seconds: float, burst: int = 0):
+        if max_requests <= 0 or window_seconds <= 0:
+            raise ValueError("max_requests and window_seconds must be positive.")
+
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.burst = burst
+        
+        # Structure to hold the state:
+        # Key: (user_id, endpoint)
+        # Value: {
+        #   'timestamps': list[float],  # Timestamps of recent requests
+        #   'used': int,                 # Current count within the window
+        #   'burst_remaining': int       # Remaining burst capacity
+        # }
+        self.limits = defaultdict(lambda: {
+            'timestamps': [],
+            'used': 0,
+            'burst_remaining': burst
+        })
+
+    def _get_key(self, user_id: str, endpoint: str) -> tuple:
+        """Helper to generate the unique key."""
+        return (user_id, endpoint)
+
+    def allow(self, user_id: str, endpoint: str = "default") -> dict:
+        """
+        Checks if a request is allowed based on the sliding window and burst limits.
+        """
+        key = self._get_key(user_id, endpoint)
+        now = time.time()
+        
+        # 1. Priority Check
+        # (Assuming a mechanism exists to identify priority users, e.g., checking user_id)
+        # For this implementation, we assume a specific user ID signifies priority.
+        if user_id == "priority_user":
+            return {"allowed": True, "remaining": self.max_requests + self.burst, "retry_after": None}
+
+        state = self.limits[key]
+        timestamps = state['timestamps']
+        
+        # 2. Cleanup expired timestamps (Sliding Window maintenance)
+        window_start = now - self.window_seconds
+        
+        # Remove timestamps older than the window start
+        # Since timestamps are added chronologically, we only need to check the start of the list
+        while timestamps and timestamps[0] < window_start:
+            timestamps.pop(0)
+
+        # 3. Check Limit
+        current_count = len(timestamps)
+        
+        if current_count < self.max_requests + self.burst:
+            # Allow request
+            timestamps.append(now)
+            state['used'] += 1
+            
+            # Update burst tracking (simple model: burst is consumed when count exceeds max_requests)
+            if state['used'] > self.max_requests:
+                # If we exceed max_requests, we consume burst capacity
+                state['burst_remaining'] = self.burst
+            else:
+                # If we are below max_requests, the burst capacity is fully available
+                state['burst_remaining'] = self.burst
+                
+            return {"allowed": True, "remaining": self.max_requests + self.burst - state['used'], "retry_after": None}
+        else:
+            # Deny request
+            # Calculate retry time: wait until the oldest request expires
+            retry_after = (timestamps[0] + self.window_seconds) - now
+            
+            return {"allowed": False, "remaining": 0, "retry_after": max(0.0, retry_after)}
+
+    def allow_priority(self, user_id: str, endpoint: str = "default") -> dict:
+        """
+        Always returns True for priority users, bypassing all limits.
+        """
+        return {"allowed": True, "remaining": self.max_requests + self.burst, "retry_after": None}
+
+    def cleanup(self, max_age_seconds: float = None) -> int:
+        """
+        Removes entries older than max_age_seconds.
+        Returns the count of removed entries.
+        """
+        if max_age_seconds is None:
+            max_age_seconds = 2 * self.window_seconds
+        
+        now = time.time()
+        removed_count = 0
+        
+        keys_to_delete = []
+        
+        for key, state in self.limits.items():
+            timestamps = state['timestamps']
+            
+            # Remove expired timestamps from the list
+            while timestamps and timestamps[0] < (now - max_age_seconds):
+                timestamps.pop(0)
+            
+            # If the state is now empty, mark for deletion
+            if not timestamps:
+                keys_to_delete.append(key)
+                removed_count += 1
+        
+        for key in keys_to_delete:
+            del self.limits[key]
+            
+        return removed_count
+
+    def get_usage(self, user_id: str, endpoint: str = "default") -> dict:
+        """
+        Returns the current usage statistics for a specific user/endpoint pair.
+        """
+        key = self._get_key(user_id, endpoint)
+        state = self.limits.get(key)
+        
+        if not state:
+            return {"used": 0, "limit": self.max_requests, "window_seconds": self.window_seconds, "burst_remaining": self.burst}
+        
+        return {
+            "used": state['used'],
+            "limit": self.max_requests,
+            "window_seconds": self.window_seconds,
+            "burst_remaining": state['burst_remaining']
+        }
+
+    def to_dict(self) -> dict:
+        """
+        Serializes the entire state of the RateLimiter.
+        """
+        state = {
+            "max_requests": self.max_requests,
+            "window_seconds": self.window_seconds,
+            "burst": self.burst,
+            "limits": {}
+        }
+        
+        for (user_id, endpoint), data in self.limits.items():
+            state["limits"][(user_id, endpoint)] = {
+                "timestamps": data['timestamps'],
+                "used": data['used'],
+                "burst_remaining": data['burst_remaining']
+            }
+            
+        return state
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'RateLimiter':
+        """
+        Deserializes the state and reconstructs the RateLimiter instance.
+        """
+        max_requests = data.get("max_requests", 100)
+        window_seconds = data.get("window_seconds", 60.0)
+        burst = data.get("burst", 0)
+        limits_data = data.get("limits", {})
+
+        limiter = cls(max_requests=max_requests, window_seconds=window_seconds, burst=burst)
+        
+        # Reconstruct the internal state
+        for (user_id, endpoint), data in limits_data.items():
+            limiter.limits[(user_id, endpoint)] = {
+                'timestamps': data['timestamps'],
+                'used': data['used'],
+                'burst_remaining': data['burst_remaining']
+            }
+            
+        return limiter
+
+if __name__ == '__main__':
+    # --- Example Usage ---
+    
+    # Initialize limiter: 5 requests per 10 seconds, with a burst of 2
+    limiter = RateLimiter(max_requests=5, window_seconds=10.0, burst=2)
+    
+    user1 = "user_a"
+    user2 = "user_b"
+    
+    print("--- Initial State ---")
+    print(f"Usage for {user1}: {limiter.get_usage(user1)}")
+    
+    print("\n--- Testing Burst and Limit ---")
+    
+    # 1. Test burst capacity (5 max + 2 burst = 7 total allowed)
+    for i in range(7):
+        result = limiter.allow(user1, "api/data")
+        print(f"Request {i+1}: Allowed={result['allowed']}, Remaining={result['remaining']}, Retry={result['retry_after']}")
+        if i == 4:
+            print("--- Reached Max Capacity (5 used) ---")
+        
+    # 2. Test denial and retry time
+    print("\n--- Testing Denial ---")
+    result = limiter.allow(user1, "api/data")
+    print(f"Request 8 (Denied): Allowed={result['allowed']}, Remaining={result['remaining']}, Retry={result['retry_after']}")
+    
+    # Wait for the window to slide (simulated wait)
+    print("\n--- Simulating Wait (10.5 seconds) ---")
+    time.sleep(10.5)
+    
+    # 3. Test after wait (should allow a new request)
+    result = limiter.allow(user1, "api/data")
+    print(f"Request 9 (After Wait): Allowed={result['allowed']}, Remaining={result['remaining']}, Retry={result['retry_after']}")
+
+    print("\n--- Testing Priority User ---")
+    priority_result = limiter.allow_priority("priority_user", "admin/config")
+    print(f"Priority Request: Allowed={priority_result['allowed']}")
+
+    print("\n--- Cleanup Test ---")
+    # Cleanup entries older than 2 * window_seconds (20 seconds)
+    print(f"Cleanup before: {limiter.cleanup()}")
+    
+    # Wait long enough for old entries to expire
+    print("Waiting 21 seconds for cleanup...")
+    time.sleep(21)
+    
+    print(f"Cleanup after: {limiter.cleanup()}")
+    print(f"Usage for {user1} after cleanup: {limiter.get_usage(user1)}")
+
+    print("\n--- Serialization Test ---")
+    serialized_data = limiter.to_dict()
+    print(f"Serialized Data Keys: {list(serialized_data['limits'].keys())}")
+    
+    reconstructed_limiter = RateLimiter.from_dict(serialized_data)
+    print(f"Reconstructed Max Requests: {reconstructed_limiter.max_requests}")
+    print(f"Reconstructed Usage for {user1}: {reconstructed_limiter.get_usage(user1)}")
+```

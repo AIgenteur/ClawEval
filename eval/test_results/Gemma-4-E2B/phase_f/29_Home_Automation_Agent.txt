@@ -1,0 +1,179 @@
+```json
+[
+  {
+    "rule_id": "R001_Morning_Lighting",
+    "description": "Gradual morning lighting routine.",
+    "trigger": "Time trigger (Weekday 6:30 AM and Weekend 8:00 AM)",
+    "conditions": [
+      "Day of the week is Monday through Friday OR Saturday/Sunday"
+    ],
+    "actions": [
+      "Set living room and bedroom lights to 30% brightness",
+      "Gradually increase all house lights to 100% over 15 minutes"
+    ]
+  },
+  {
+    "rule_id": "R002_Thermostat_Occupied",
+    "description": "Set temperature when house is occupied.",
+    "trigger": "Occupancy sensor detects presence in the house",
+    "conditions": [
+      "Time is between 6:30 AM and 11:00 PM"
+    ],
+    "actions": [
+      "Set thermostat to 72°F"
+    ]
+  },
+  {
+    "rule_id": "R003_Thermostat_Empty",
+    "description": "Set temperature when house is empty.",
+    "trigger": "Occupancy sensor detects no presence in the house",
+    "conditions": [
+      "Time is between 11:00 PM and 6:30 AM"
+    ],
+    "actions": [
+      "Set thermostat to 65°F"
+    ]
+  },
+  {
+    "rule_id": "R004_Thermostat_Sleeping",
+    "description": "Set temperature for sleeping hours.",
+    "trigger": "Time trigger (11:00 PM)",
+    "conditions": [
+      "Time is between 11:00 PM and 6:30 AM"
+    ],
+    "actions": [
+      "Set thermostat to 68°F"
+    ]
+  },
+  {
+    "rule_id": "R005_Security_Arm",
+    "description": "Arm security when both occupants are away.",
+    "trigger": "Geo-fencing detects both Alice and Bob have left the defined perimeter",
+    "conditions": [
+      "Alice is outside AND Bob is outside"
+    ],
+    "actions": [
+      "Arm all security systems (doors, windows)",
+      "Send notification to both phones: 'System Armed'"
+    ]
+  },
+  {
+    "rule_id": "R006_Security_Disarm",
+    "description": "Disarm security when either occupant returns.",
+    "trigger": "Geo-fencing detects one occupant has returned",
+    "conditions": [
+      "Alice is back OR Bob is back"
+    ],
+    "actions": [
+      "Disarm all security systems",
+      "Send notification to the returning occupant: 'System Disarmed'"
+    ]
+  },
+  {
+    "rule_id": "R007_Pet_Feeding_Morning",
+    "description": "Automated pet feeding in the morning.",
+    "trigger": "Time trigger (7:00 AM)",
+    "conditions": [
+      "Day of the week is Monday through Sunday"
+    ],
+    "actions": [
+      "Activate auto-feeder for the cat"
+    ]
+  },
+  {
+    "rule_id": "R008_Pet_Feeding_Evening",
+    "description": "Automated pet feeding in the evening.",
+    "trigger": "Time trigger (6:00 PM)",
+    "conditions": [
+      "Day of the week is Monday through Sunday"
+    ],
+    "actions": [
+      "Activate auto-feeder for the cat"
+    ]
+  },
+  {
+    "rule_id": "R009_Pet_Camera_Security",
+    "description": "Activate cat camera when both occupants are away.",
+    "trigger": "Geo-fencing detects both Alice and Bob have left the defined perimeter",
+    "conditions": [
+      "Alice is outside AND Bob is outside"
+    ],
+    "actions": [
+      "Turn on the cat camera"
+    ]
+  },
+  {
+    "rule_id": "R010_Energy_Solar_Priority",
+    "description": "Prioritize solar energy usage during peak hours.",
+    "trigger": "Time trigger (2:00 PM)",
+    "conditions": [
+      "Time is between 2:00 PM and 7:00 PM"
+    ],
+    "actions": [
+      "Prioritize power draw from solar panels",
+      "Set battery backup system to standby mode"
+    ]
+  },
+  {
+    "rule_id": "R011_Lighting_Hallway",
+    "description": "Motion-activated hallway lighting.",
+    "trigger": "Motion detected in the hallway",
+    "conditions": [
+      "Time is between 10:00 PM and 6:00 AM"
+    ],
+    "actions": [
+      "Set hallway lights to 20% brightness",
+      "Set a timer to turn lights off after 5 minutes of no motion"
+    ]
+  },
+  {
+    "rule_id": "R012_Bob_Office_Automation",
+    "description": "Automate Bob's office setup.",
+    "trigger": "Computer turns on in Bob's office",
+    "conditions": [
+      "Location is Bob's office"
+    ],
+    "actions": [
+      "Turn on the desk lamp",
+      "Set A/C to 70°F"
+    ]
+  },
+  {
+    "rule_id": "R013_Laundry_Notification",
+    "description": "Notify user when laundry cycle is complete.",
+    "trigger": "Laundry appliance reports cycle completion",
+    "conditions": [
+      "Cycle status is 'Complete'"
+    ],
+    "actions": [
+      "Send notification to primary user device: 'Laundry cycle complete'"
+    ]
+  },
+  {
+    "rule_id": "R014_Water_Leak_Alert",
+    "description": "Immediate response to water leak detection.",
+    "trigger": "Water leak detector triggers",
+    "conditions": [
+      "Leak sensor status is 'Active'"
+    ],
+    "actions": [
+      "Shut off the main water valve",
+      "Send immediate alert to Alice's phone",
+      "Send immediate alert to Bob's phone"
+    ]
+  },
+  {
+    "rule_id": "R015_Guest_Mode_Activation",
+    "description": "Activate temporary guest mode.",
+    "trigger": "User activates 'Guest Mode' feature",
+    "conditions": [
+      "User confirms activation"
+    ],
+    "actions": [
+      "Set temporary door code for guests",
+      "Raise thermostat to 72°F",
+      "Enable guest WiFi network"
+    ]
+  }
+]
+```
