@@ -164,6 +164,7 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 > - [🟢 24GB VRAM — Gemma-4 Local Benchmarks (4 models)](docs/results-gemma-4-local.md)
 > - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
 > - [🆕 Phase G — Discriminator Tests (harder tests)](docs/results-phase-g.md)
+> - [⚡ Token Efficiency — Which models waste the fewest tokens?](docs/results-token-efficiency.md)
 > - [Phase E — 12 Killer Tests (all models)](docs/results-phase-e.md)
 > - [Full detailed results with all configs →](RESULTS.md)
 
