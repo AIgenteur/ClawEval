@@ -1,0 +1,165 @@
+[
+  {
+    "id": 1,
+    "name": "Morning Routine",
+    "trigger": {
+      "type": "schedule",
+      "times": [
+        {"time": "06:30", "days": ["Mon", "Tue", "Wed", "Thu", "Fri"]},
+        {"time": "08:00", "days": ["Sat", "Sun"]}
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {
+        "type": "light_control",
+        "device": "main_lights",
+        "action": "fade_on",
+        "duration": "15m",
+        "target_brightness": "75%"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Thermostat Climate Control",
+    "trigger": {
+      "type": "state_change",
+      "entity": "home_occupancy_sensor",
+      "from": "any",
+      "to": "any"
+    },
+    "conditions": [
+      {"type": "time_range", "start": "23:00", "end": "06:00", "operator": "within"},
+      {"type": "occupancy_state", "value": "occupied"},
+      {"type": "occupancy_state", "value": "empty"}
+    ],
+    "actions": [
+      {"type": "thermostat_control", "device": "main_thermostat", "action": "set_temperature", "value": 68, "unit": "F", "state": "sleeping"},
+      {"type": "thermostat_control", "device": "main_thermostat", "action": "set_temperature", "value": 72, "unit": "F", "state": "occupied"},
+      {"type": "thermostat_control", "device": "main_thermostat", "action": "set_temperature", "value": 65, "unit": "F", "state": "empty"}
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Security Geofencing",
+    "trigger": {
+      "type": "geofence",
+      "entities": ["alice_phone", "bob_phone"],
+      "event": "zone_enter/exit"
+    },
+    "conditions": [
+      {"type": "count", "entity": "phone_locations", "operator": "equals", "value": 0},
+      {"type": "count", "entity": "phone_locations", "operator": "greater_than", "value": 0}
+    ],
+    "actions": [
+      {"type": "security_control", "device": "main_alarm", "action": "arm_away"},
+      {"type": "security_control", "device": "main_alarm", "action": "disarm"}
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Pet Care Automation",
+    "trigger": {
+      "type": "multi",
+      "triggers": [
+        {"type": "schedule", "times": ["07:00", "18:00"]},
+        {"type": "geofence", "event": "all_away"}
+      ]
+    },
+    "conditions": [],
+    "actions": [
+      {"type": "pet_feeder", "device": "auto_feeder", "action": "dispense_food", "schedule": "07:00, 18:00"},
+      {"type": "camera_control", "device": "cat_camera", "action": "turn_on", "trigger_condition": "both_away"}
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Energy Management",
+    "trigger": {
+      "type": "time",
+      "at": "14:00"
+    },
+    "conditions": [
+      {"type": "solar_production", "operator": "greater_than", "value": 5000, "unit": "W"},
+      {"type": "battery_level", "operator": "less_than", "value": 80, "unit": "%"}
+    ],
+    "actions": [
+      {"type": "energy_routing", "device": "smart_panel", "action": "prioritize_solar", "time_range": "14:00-19:00"},
+      {"type": "energy_routing", "device": "smart_panel", "action": "switch_to_battery", "time_range": "19:00-23:00"}
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Hallway Motion Lighting",
+    "trigger": {
+      "type": "motion",
+      "device": "hallway_motion_sensor"
+    },
+    "conditions": [
+      {"type": "time_range", "start": "22:00", "end": "06:00", "operator": "within"}
+    ],
+    "actions": [
+      {"type": "light_control", "device": "hallway_lights", "action": "turn_on", "brightness": "20%"},
+      {"type": "timer", "duration": "5m", "action": "turn_off", "device": "hallway_lights"}
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Bob's Office Activation",
+    "trigger": {
+      "type": "state_change",
+      "device": "bob_computer",
+      "from": "off",
+      "to": "on"
+    },
+    "conditions": [],
+    "actions": [
+      {"type": "light_control", "device": "desk_lamp", "action": "turn_on"},
+      {"type": "thermostat_control", "device": "office_ac", "action": "set_temperature", "value": 70, "unit": "F"}
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Laundry Cycle Complete",
+    "trigger": {
+      "type": "state_change",
+      "device": "washer_dryer",
+      "from": "running",
+      "to": "complete"
+    },
+    "conditions": [],
+    "actions": [
+      {"type": "notification", "target": ["alice_phone", "bob_phone"], "message": "Laundry cycle complete. Please remove clothes.", "priority": "normal"}
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Water Leak Emergency",
+    "trigger": {
+      "type": "state_change",
+      "device": "water_leak_sensor",
+      "from": "dry",
+      "to": "wet"
+    },
+    "conditions": [],
+    "actions": [
+      {"type": "valve_control", "device": "main_water_valve", "action": "close"},
+      {"type": "notification", "target": ["alice_phone", "bob_phone"], "message": "CRITICAL: Water leak detected! Main valve automatically closed.", "priority": "critical"}
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Guest Mode Activation",
+    "trigger": {
+      "type": "button_press",
+      "device": "guest_mode_switch"
+    },
+    "conditions": [],
+    "actions": [
+      {"type": "lock_control", "device": "front_door", "action": "generate_temp_code", "duration": "24h"},
+      {"type": "thermostat_control", "device": "main_thermostat", "action": "set_temperature", "value": 72, "unit": "F"},
+      {"type": "wifi_control", "device": "main_router", "action": "enable_network", "network": "Guest_WiFi"}
+    ]
+  }
+]

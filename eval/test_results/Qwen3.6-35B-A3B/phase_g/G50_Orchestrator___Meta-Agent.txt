@@ -1,0 +1,77 @@
+{
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Initial Triage & Parallel Diagnostics",
+      "agents": [
+        {"agent": "log_analyzer", "input": "Production error logs from last 15 minutes", "timeout_seconds": 60},
+        {"agent": "metric_checker", "input": "CPU, memory, error rate, and latency metrics for affected services", "timeout_seconds": 45},
+        {"agent": "db_checker", "input": "Connection pool status, lock waits, and replication lag", "timeout_seconds": 60},
+        {"agent": "config_auditor", "input": "Recent configuration changes in last 2 hours", "timeout_seconds": 30},
+        {"agent": "capacity_planner", "input": "Resource utilization trends and threshold breaches", "timeout_seconds": 45},
+        {"agent": "notification_agent", "input": "Alert severity: P1, channel: PagerDuty/Slack", "timeout_seconds": 15}
+      ],
+      "parallel": true,
+      "gate": "All diagnostic agents complete execution and return structured findings"
+    },
+    {
+      "phase": 2,
+      "name": "Dependency Mapping & Incident Setup",
+      "agents": [
+        {"agent": "dependency_mapper", "input": "Service topology and upstream/downstream dependencies", "timeout_seconds": 60},
+        {"agent": "incident_reporter", "input": "Initial diagnostic findings and affected services", "timeout_seconds": 30},
+        {"agent": "customer_communicator", "input": "Acknowledge receipt, provide initial ETA, and request additional details", "timeout_seconds": 30}
+      ],
+      "parallel": true,
+      "gate": "Incident ticket created, dependency graph generated, and customer acknowledgment sent"
+    },
+    {
+      "phase": 3,
+      "name": "Remediation Execution",
+      "agents": [
+        {"agent": "rollback_agent", "input": "Previous stable deployment version and target service", "timeout_seconds": 120},
+        {"agent": "config_auditor", "input": "Verify rollback configuration state and dependencies", "timeout_seconds": 30}
+      ],
+      "parallel": false,
+      "gate": "Rollback or configuration fix successfully applied without new errors"
+    },
+    {
+      "phase": 4,
+      "name": "Post-Remediation Verification",
+      "agents": [
+        {"agent": "metric_checker", "input": "Validate error rates, latency, and throughput return to baseline", "timeout_seconds": 60},
+        {"agent": "log_analyzer", "input": "Scan for recurring error patterns post-fix", "timeout_seconds": 60},
+        {"agent": "db_checker", "input": "Confirm database connections, locks, and replication are healthy", "timeout_seconds": 60}
+      ],
+      "parallel": true,
+      "gate": "All health metrics and logs indicate stable service operation"
+    },
+    {
+      "phase": 5,
+      "name": "Incident Closure & Reporting",
+      "agents": [
+        {"agent": "incident_reporter", "input": "Update ticket with resolution details and timeline", "timeout_seconds": 30},
+        {"agent": "customer_communicator", "input": "Send final resolution notification and request confirmation", "timeout_seconds": 30},
+        {"agent": "notification_agent", "input": "Close PagerDuty/Slack alerts and mark incident resolved", "timeout_seconds": 15}
+      ],
+      "parallel": true,
+      "gate": "All closure tasks completed and stakeholders notified"
+    }
+  ],
+  "decision_points": [
+    {"after_phase": 2, "condition": "Is the root cause clearly identified as a recent deployment or config change?", "if_true": "go to phase 3", "if_false": "go to phase 3"},
+    {"after_phase": 3, "condition": "Did the remediation action complete successfully?", "if_true": "go to phase 4", "if_false": "go to phase 3"}
+  ],
+  "escalation": {
+    "trigger": "Total workflow duration exceeds 15 minutes without resolution or if Phase 4 verification fails twice",
+    "action": "Route to on-call SRE lead with full diagnostic logs, dependency maps, and remediation history for manual intervention"
+  },
+  "total_phases": 5,
+  "max_time_minutes": 20,
+  "rollback_conditions": [
+    "Error rate exceeds 5% for more than 3 consecutive minutes",
+    "Database connection pool exhaustion persists after capacity scaling",
+    "Config auditor detects unapproved or conflicting deployment configurations",
+    "Metric checker shows latency p99 > 2000ms with no traffic drop"
+  ]
+}

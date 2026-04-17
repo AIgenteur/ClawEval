@@ -1,0 +1,57 @@
+```json
+{
+  "issues": [
+    {
+      "line": "version: '2'",
+      "problem": "Docker Compose file format version 2 is deprecated and outdated.",
+      "fix": "Update to version '3' or remove the version key (default is 3 in modern Docker)."
+    },
+    {
+      "line": "image: node:latest",
+      "problem": "Using the 'latest' tag is non-deterministic and can lead to unpredictable builds.",
+      "fix": "Pin to a specific version tag (e.g., 'node:18-alpine')."
+    },
+    {
+      "line": "DB_PASSWORD: supersecret123",
+      "problem": "Hardcoded secrets in the compose file are insecure.",
+      "fix": "Use Docker secrets or inject via environment variables at runtime."
+    },
+    {
+      "line": "NODE_ENV: development",
+      "problem": "Running in development mode in a containerized environment is generally insecure and inefficient.",
+      "fix": "Change to 'NODE_ENV: production'."
+    },
+    {
+      "line": "- .:/app",
+      "problem": "Mounting the local source code directory into a production container is a security risk.",
+      "fix": "Copy files into the image during build or mount a read-only volume."
+    },
+    {
+      "line": "restart: no",
+      "problem": "The container will not restart automatically if it crashes.",
+      "fix": "Change to 'restart: unless-stopped' or 'restart: always'."
+    },
+    {
+      "line": "image: mysql:5.6",
+      "problem": "MySQL 5.6 is End of Life (EOL) and contains known security vulnerabilities.",
+      "fix": "Upgrade to a supported version like 'mysql:8.0'."
+    },
+    {
+      "line": "- \"3306:3306\"",
+      "problem": "Exposing the database port publicly allows external access to the database.",
+      "fix": "Bind to localhost (e.g., '127.0.0.1:3306:3306') or remove the port mapping."
+    },
+    {
+      "line": "- /tmp/mysql-data:/var/lib/mysql",
+      "problem": "/tmp is a volatile directory; data will be lost on system reboot.",
+      "fix": "Use a persistent directory or a named Docker volume."
+    },
+    {
+      "line": "ports: - \"6379:6379\"",
+      "problem": "Redis is exposed publicly without authentication, allowing unauthorized access.",
+      "fix": "Bind to localhost and configure 'requirepass' or use Docker secrets for auth."
+    }
+  ],
+  "count": 10
+}
+```

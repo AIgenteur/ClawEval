@@ -1,0 +1,84 @@
+{
+  "components": [
+    {
+      "name": "Edge Gateway & Load Balancer",
+      "technology": "Envoy + Cloudflare/NGINX",
+      "purpose": "TLS termination, DDoS protection, rate limiting, regional routing, and connection health checks",
+      "scaling_strategy": "Global Anycast routing, auto-scaling based on concurrent connections and CPU utilization"
+    },
+    {
+      "name": "WebSocket Connection Manager",
+      "technology": "Go (gorilla/websocket) + Kubernetes",
+      "purpose": "Maintains persistent connections, handles JWT auth, heartbeat/ping-pong, and session routing",
+      "scaling_strategy": "Horizontal pod autoscaling (HPA) with Redis-backed sticky sessions and connection pooling"
+    },
+    {
+      "name": "Message Broker & Router",
+      "technology": "Apache Kafka + NATS JetStream",
+      "purpose": "Durable message queuing, ordered delivery, fan-out routing to group members, and replay capability",
+      "scaling_strategy": "Topic partitioning by chat_id, broker auto-scaling, consumer group rebalancing"
+    },
+    {
+      "name": "Presence & Status Service",
+      "technology": "Redis Cluster + Pub/Sub",
+      "purpose": "Tracks online/offline status, last seen timestamps, typing indicators, and connection state",
+      "scaling_strategy": "Sharded Redis cluster with read replicas, TTL-based eviction, and memory optimization"
+    },
+    {
+      "name": "Message Persistence Store",
+      "technology": "Apache Cassandra / DynamoDB",
+      "purpose": "Stores message history, metadata, read receipts, and group membership state",
+      "scaling_strategy": "Partition key by chat_id/user_id, on-demand capacity mode, multi-AZ replication, compaction tuning"
+    },
+    {
+      "name": "File Attachment Service",
+      "technology": "AWS S3 + CloudFront + ClamAV",
+      "purpose": "Secure storage, CDN delivery, virus scanning, and presigned URL generation for files up to 50MB",
+      "scaling_strategy": "S3 auto-scales transparently, CloudFront edge caching, multipart upload optimization"
+    },
+    {
+      "name": "Read Receipt & Event Processor",
+      "technology": "Go microservice + Kafka Consumers",
+      "purpose": "Consumes delivery events, updates read status in DB, pushes acknowledgments to clients",
+      "scaling_strategy": "Kafka consumer group scaling, stateless design, horizontal pod autoscaling based on lag"
+    },
+    {
+      "name": "E2EE Key Exchange & Metadata Service",
+      "technology": "Client-side WebCrypto + AWS KMS (envelope encryption)",
+      "purpose": "Manages session keys, stores only ciphertext and metadata, enforces key rotation and forward secrecy",
+      "scaling_strategy": "Stateless API, auto-scaling, key material stored in HSM-backed KMS with regional isolation"
+    },
+    {
+      "name": "Compliance & Data Lifecycle Service",
+      "technology": "Python + Elasticsearch + AWS DataSync",
+      "purpose": "GDPR data residency enforcement, audit logging, automated deletion workflows, and consent management",
+      "scaling_strategy": "Event-driven architecture, auto-scaling log processors, region-locked storage buckets"
+    },
+    {
+      "name": "Orchestration & Observability Platform",
+      "technology": "Kubernetes (EKS/GKE) + Prometheus/Grafana + Jaeger",
+      "purpose": "Service deployment, health monitoring, distributed tracing, auto-recovery, and SLA tracking",
+      "scaling_strategy": "Cluster autoscaler, HPA/VPA, multi-region failover configuration, circuit breakers"
+    }
+  ],
+  "data_flow": "Client authenticates via Edge Gateway -> WebSocket Gateway establishes session & registers presence in Redis -> Client sends E2EE-encrypted message -> Gateway routes to Message Broker -> Broker fans out to target chat members -> Read Receipt Processor consumes delivery events, updates Cassandra, pushes acks -> File uploads use presigned S3 URLs -> Compliance service logs metadata for audit -> All data flows respect regional residency constraints and eventual consistency models.",
+  "infrastructure": {
+    "cloud": "AWS (multi-region active-active)",
+    "regions": 3
+  },
+  "estimated_monthly_cost": "$95,000 - $120,000",
+  "bottlenecks": [
+    "WebSocket connection limits per node (~10k-50k depending on config)",
+    "Fan-out latency for 500-member groups during peak activity",
+    "Database write throughput during viral message spikes",
+    "E2EE key exchange handshake overhead on mobile networks",
+    "Redis memory consumption for global presence tracking at 1M concurrent users"
+  ],
+  "tradeoffs": [
+    "E2EE prevents server-side message search/moderation without client-side processing",
+    "Multi-region active-active requires eventual consistency for presence and read receipts",
+    "GDPR data residency adds routing complexity and slight latency for cross-region users",
+    "Horizontal scaling of stateful components (Kafka/Redis) requires careful partitioning vs. architectural simplicity",
+    "99.99% uptime necessitates redundant active-active regions and zero-downtime deployments, increasing infrastructure cost"
+  ]
+}

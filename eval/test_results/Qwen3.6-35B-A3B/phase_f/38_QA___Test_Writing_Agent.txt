@@ -1,0 +1,50 @@
+```python
+import pytest
+
+def test_zero_income():
+    tax, rate = calculate_tax(0, 'single')
+    assert tax == 0.0
+    assert rate == 0
+
+def test_typical_income_single():
+    tax, rate = calculate_tax(50000, 'single')
+    assert tax == 6053.0
+    assert rate == 12.11
+
+def test_typical_income_married():
+    tax, rate = calculate_tax(100000, 'married')
+    assert tax == 12106.0
+    assert rate == 12.11
+
+def test_high_income_single():
+    tax, rate = calculate_tax(1000000, 'single')
+    assert tax == 328187.75
+    assert rate == 32.82
+
+def test_bracket_boundary_exact():
+    tax, rate = calculate_tax(47150, 'single')
+    assert tax == 5426.0
+    assert rate == 11.51
+
+def test_bracket_boundary_just_above():
+    tax, rate = calculate_tax(47151, 'single')
+    assert tax == 5426.22
+    assert rate == 11.51
+
+def test_float_income():
+    tax, rate = calculate_tax(45000.50, 'single')
+    assert tax == 5168.06
+    assert rate == 11.48
+
+def test_invalid_income_type():
+    with pytest.raises(ValueError):
+        calculate_tax("50000", "single")
+
+def test_negative_income():
+    with pytest.raises(ValueError):
+        calculate_tax(-100, "single")
+
+def test_invalid_filing_status():
+    with pytest.raises(ValueError):
+        calculate_tax(50000, "divorced")
+```

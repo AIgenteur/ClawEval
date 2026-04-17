@@ -1,0 +1,75 @@
+{
+  "vulnerabilities": [
+    {
+      "id": 1,
+      "type": "Hardcoded/Weak Secret Key",
+      "severity": "high",
+      "location": "app.secret_key = \"password123\"",
+      "fix": "Generate a cryptographically strong random secret key and store it in environment variables or a secure vault."
+    },
+    {
+      "id": 2,
+      "type": "Server-Side Template Injection (SSTI)",
+      "severity": "critical",
+      "location": "@app.route(\"/search\") -> render_template_string(f\"Results for: {q}\")",
+      "fix": "Use render_template() with static template files and never pass user input directly into template strings. Escape output if rendering HTML."
+    },
+    {
+      "id": 3,
+      "type": "SQL Injection",
+      "severity": "critical",
+      "location": "@app.route(\"/user/<id>\") -> db.execute(f\"SELECT * FROM users WHERE id = {id}\")",
+      "fix": "Use parameterized queries: db.execute(\"SELECT * FROM users WHERE id = ?\", (id,)) to prevent SQL injection."
+    },
+    {
+      "id": 4,
+      "type": "Insecure Deserialization",
+      "severity": "critical",
+      "location": "@app.route(\"/upload\") -> pickle.loads(data)",
+      "fix": "Avoid pickle for untrusted data. Use JSON or another safe serialization format. If required, restrict unpickling to safe classes."
+    },
+    {
+      "id": 5,
+      "type": "Command Injection",
+      "severity": "critical",
+      "location": "@app.route(\"/run\") -> subprocess.check_output(cmd, shell=True)",
+      "fix": "Remove shell=True and avoid executing user-supplied commands. Use subprocess.run() with a predefined list of safe arguments or validate input strictly."
+    },
+    {
+      "id": 6,
+      "type": "Path Traversal / Arbitrary File Read",
+      "severity": "high",
+      "location": "@app.route(\"/file\") -> open(path).read()",
+      "fix": "Validate and sanitize the file path. Resolve the real path and ensure it resides within an allowed directory. Use a static file server instead."
+    },
+    {
+      "id": 7,
+      "type": "Hardcoded Default Credentials / Weak Authentication",
+      "severity": "high",
+      "location": "@app.route(\"/login\") -> if pw == os.environ.get(\"ADMIN_PW\", \"admin\"):",
+      "fix": "Implement secure password hashing (e.g., bcrypt/argon2), remove hardcoded defaults, and use proper session management with multi-factor authentication."
+    },
+    {
+      "id": 8,
+      "type": "Sensitive Information Disclosure",
+      "severity": "medium",
+      "location": "@app.route(\"/debug\") -> return str(os.environ)",
+      "fix": "Remove debug endpoints in production. Never expose environment variables, system paths, or internal configuration to end users."
+    },
+    {
+      "id": 9,
+      "type": "Missing HTTPS Enforcement",
+      "severity": "medium",
+      "location": "Application deployment/configuration",
+      "fix": "Enforce HTTPS via a reverse proxy (Nginx/Apache) or Flask extensions. Configure HSTS headers and redirect all HTTP traffic to HTTPS."
+    },
+    {
+      "id": 10,
+      "type": "Missing Rate Limiting",
+      "severity": "medium",
+      "location": "Application configuration / All endpoints",
+      "fix": "Implement rate limiting using Flask-Limiter to restrict request frequency per IP/user, particularly on authentication and search endpoints."
+    }
+  ],
+  "count": 10
+}

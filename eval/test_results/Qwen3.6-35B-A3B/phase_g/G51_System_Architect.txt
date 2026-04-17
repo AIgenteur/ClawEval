@@ -1,0 +1,31 @@
+{
+  "architecture": {
+    "components": ["API Gateway/ALB", "Stateless Shortener Service (ECS/K8s)", "Redis Cluster", "Aurora PostgreSQL", "CDN/Edge Network", "Async Analytics Worker", "Background Job Scheduler"],
+    "database": {"primary": "Aurora PostgreSQL", "justification": "Strong consistency for custom alias uniqueness, native JSONB for metadata/expiration, point-in-time recovery for GDPR compliance, and read replicas for high read throughput"},
+    "cache": {"type": "Redis Cluster", "strategy": "Cache-aside with multi-level caching (CDN edge -> Redis -> DB)", "invalidation": "TTL-based (24h default) + explicit delete on update/GDPR request + write-through for critical alias checks"},
+    "hash_strategy": {"algorithm": "Base62", "length": 6, "collision_handling": "Retry with deterministic salt + sharded ID generator"}
+  },
+  "scaling": {
+    "read_write_ratio": "100:1",
+    "read_optimization": "CDN edge caching for redirect responses, Redis cluster for sub-millisecond lookups, database read replicas scaled independently, connection pooling",
+    "write_path": "Synchronous alias validation + DB insert -> immediate Redis cache warm -> async analytics ingestion via message queue",
+    "horizontal_scaling": "Stateless API auto-scales on CPU/latency, DB read replicas scale out, Redis scales via cluster mode, CDN handles global traffic distribution"
+  },
+  "reliability": {
+    "uptime_strategy": "Multi-AZ deployment, automated health checks, blue/green deployments, circuit breakers for downstream services",
+    "failover": "Automatic DNS failover to secondary region, Aurora cross-AZ replication, Redis sentinel/cluster failover, ALB health-based routing",
+    "data_replication": "Synchronous replication within primary region, asynchronous cross-region replication for disaster recovery, daily encrypted snapshots"
+  },
+  "compliance": {
+    "gdpr_deletion": "Soft-delete flag + cryptographic erasure of PII, background purge job runs within 30 days, audit log retained separately for compliance",
+    "data_retention": "Configurable per link (default 24 months), automated cleanup via scheduled Worker, expiration enforced at read time",
+    "analytics_separation": "Redirect events streamed to Kinesis -> S3/Data Warehouse, completely decoupled from redirect path to guarantee <50ms p99"
+  },
+  "cost_estimate": {
+    "monthly_total": 4800,
+    "breakdown": {"compute": 900, "database": 1200, "cache": 650, "cdn": 1500, "other": 550},
+    "fits_budget": true
+  },
+  "rate_limiting": {"strategy": "Token bucket algorithm with per-IP and per-API-key limits, burst allowance for spikes, global fallback limits", "limits": "100 writes/min per IP, 10,000 reads/sec global burst, 1,000 custom alias attempts/min"},
+  "monitoring": {"metrics": ["p99 redirect latency", "cache hit ratio", "DB connection pool utilization", "error rate (4xx/5xx)", "queue depth for analytics", "GDPR deletion job progress"], "alerting": "PagerDuty/Slack integration on p99 > 45ms, cache hit ratio < 85%, error rate > 0.1%, or replication lag > 5s"}
+}
