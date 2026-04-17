@@ -475,8 +475,8 @@ def score_social_monitoring(content, scoring):
             if act_crisis == exp_crisis:
                 correct += 0.5
 
-    score = round(correct / (total / 2) * 10) if total > 0 else 0
-    msg = f"{correct}/{total/2} checks correct"
+    score = min(round(correct / total * 10), 10) if total > 0 else 0
+    msg = f"{correct}/{total} checks correct"
     return score, 10, msg
 
 

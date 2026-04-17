@@ -65,17 +65,17 @@ Don't have a GPU? We also test open-source models hosted on cloud providers so y
 
 | Provider | Models | Status |
 |---|---|---|
-| Alibaba Coding Plan | **Qwen3.5-Plus** — 🥇 482/590 (82%) Phase F, 86/110 (78%) Phase G | ✅ Tested |
+| Alibaba Coding Plan | **Qwen3.5-Plus** — 🥇 472/590 (80%) Phase F, 86/110 (78%) Phase G | ✅ Tested |
 | Alibaba Coding Plan | **Kimi K2.5** — 473/590 (80%) Phase F, 96/110 (87%) Phase G | ✅ Tested |
-| Alibaba Coding Plan | **GLM-5** — 465/590 (79%) Phase F, 80/110 (73%) Phase G | ✅ Tested |
-| Alibaba Coding Plan | **MiniMax-M2.5** — 465/590 (79%) Phase F, 78/110 (71%) Phase G | ✅ Tested |
-| Ollama Cloud | **MiniMax-M2.7** — 482/590 (82%) Phase F, 83/110 (75%) Phase G | ✅ Tested |
+| Alibaba Coding Plan | **GLM-5** — 456/590 (77%) Phase F, 80/110 (73%) Phase G | ✅ Tested |
+| Alibaba Coding Plan | **MiniMax-M2.5** — 455/590 (77%) Phase F, 78/110 (71%) Phase G | ✅ Tested |
+| Ollama Cloud | **MiniMax-M2.7** — 473/590 (80%) Phase F, 83/110 (75%) Phase G | ✅ Tested |
 | OpenRouter | **Step-3.5-Flash** — 438/590 (74%) Phase F, 66/110 (60%) Phase G | ✅ Tested |
-| OpenRouter | **Trinity-Large** — 453/590 (77%) Phase F, 73/110 (66%) Phase G | ✅ Tested |
+| OpenRouter | **Trinity-Large** — 444/590 (75%) Phase F, 73/110 (66%) Phase G | ✅ Tested |
 | OpenRouter | **Nemotron-3-Nano-30B** — 453/590 (77%) Phase F, 70/110 (64%) Phase G | ✅ Tested |
-| OpenRouter | **Qwen3.6-Plus** — 479/590 (81%) Phase F, 91/110 (83%) Phase G | ✅ Tested |
+| OpenRouter | **Qwen3.6-Plus** — 469/590 (79%) Phase F, 91/110 (83%) Phase G | ✅ Tested |
 
-> 💡 **M2.7 ties Qwen3.5-Plus for Phase F champion** at 482/590 (82%). Initial low scores were caused by insufficient token budget — M2.7's reasoning tokens count against `max_tokens`, requiring 16-24k to avoid truncation.
+> 💡 **Kimi K2.5 leads Phase F** at 473/590 (80%), closely followed by M2.7 and Qwen3.5-Plus. M2.7's reasoning tokens count against `max_tokens`, requiring 16-24k to avoid truncation.
 >
 > 📊 **Detailed cloud comparisons:**
 > - [☁️ Full cloud model comparison (all scores per role) →](docs/results-cloud.md)

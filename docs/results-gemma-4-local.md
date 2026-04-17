@@ -45,7 +45,7 @@ All tests run locally via `llama.cpp` server perfectly controlling reasoning bud
 | 13 | Email Drafting | 🟢 8 | 🟢 8 | 🟢 9 | 🟢 10 |
 | 14 | Doc Summary | 🟢 10 | 🟢 10 | 🟢 8 | 🟡 7 |
 | 15 | Meeting Notes | 🟢 9 | 🟢 9 | 🟢 9 | 🟢 9 |
-| 16 | Social Scouting | 🟢 10 | 🟢 19 | 🟢 19 | 🟢 19 |
+| 16 | Social Scouting | 🟢 10 | 🟢 10 | 🟢 10 | 🟢 10 |
 | 17 | Social Content | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
 | 18 | News Aggregation | 🟢 10 | 🟢 10 | 🟠 5 | 🟢 10 |
 | 19 | Shopping | 🟢 10 | 🟢 8 | 🟢 8 | 🟢 10 |
@@ -92,7 +92,7 @@ All tests run locally via `llama.cpp` server perfectly controlling reasoning bud
 | 57 | SRE / Incident | 🟡 7 | 🟡 6 | 🔴 3 | 🟡 6 |
 | 58 | Book Writing | 📝 5 | 📝 5 | 📝 5 | 📝 5 |
 | 59 | Compliance | 🟡 7 | 🟢 8 | 🟢 9 | 🟡 7 |
-| | **TOTAL (Phase F)** | **461 (78%)** | **468 (79%)** | **428 (73%)** | **478 (81%)** |
+| | **TOTAL (Phase F)** | **451 (76%)** | **459 (78%)** | **419 (71%)** | **469 (79%)** |
 
 > 📝 Manual review tests default to 5/10 pending review.
 
