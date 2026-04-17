@@ -16,6 +16,12 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 **Built for agent frameworks like [OpenClaw](https://github.com/AIgenteur/ClawEval) and [Hermes Agent](https://github.com/NousResearch/hermes-agent)** — any system where you need to pick the right LLM backend for specialized sub-agent roles. If your framework is model-agnostic, ClawEval shows you exactly which model to plug in for each job.
 
+### ⚡ NEW: Token Efficiency Leaderboard
+
+> 🏆 **[Which models waste the fewest tokens? →](docs/results-token-efficiency.md)**
+>
+> Two models both score 10/10 — but one used 500 tokens, the other 5,000. The efficient one saves **10× on compute, cost, and latency.** We rank 35 models by tokens-per-point. Think modes use 10–20× more tokens for marginal gains. **This metric is hardware-independent.**
+
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 
 > 📄 **[OpenClaw Backend: Local on 3090 — The Complete Guide (PDF)](docs/OpenClaw_Backend_Local_on_3090.pdf)** — An interactive walkthrough of running the full OpenClaw backend locally on an RTX 3090. Covers setup, model selection, and performance tips with step-by-step calls to action.
