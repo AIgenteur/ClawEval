@@ -1,106 +1,79 @@
-# 🔬 Phase H — Dense Constraint Tests
+# Phase H (Hard) Benchmarking Results
 
-[← Back to Main Results](../README.md)
+Phase H is designed to evaluate LLMs on complex, multi-constraint agentic workflows with granular checkpoint scoring. Rather than standard pass/fail metrics, Phase H forces models to navigate dense instructions and partial scores.
 
-## What Is Phase H?
+## How It Is Run
+Phase H uses a combination of rigorous JSON constraint parsing, deep code execution, and keyword-based substring evaluation (`h_keywords`). The suite consists of **53 fully automated tests**, totaling **1,100 scoring checkpoints**. 
 
-Phase H is the **ceiling-breaker** for ClawEval. In Phase F, most strong models score 8–10 out of 10 on many tests — making it impossible to rank them. Phase H solves this by using **30–50 checkpoints per test** instead of 10, creating real spread between models that Phase F can't distinguish.
-
-**Same roles. Same task types. Much harder.**
-
-## How It Differs From Phase F
-
-| | Phase F | Phase H |
-|---|---|---|
-| **Checkpoints per test** | ~10 | 30–50 |
-| **Score scale** | /10 per test | Raw count (e.g., 29/30) |
-| **Purpose** | Baseline capability | Fine-grained ranking |
-| **Difficulty** | Standard | Adversarial edge cases, traps, sarcasm, near-truths |
-| **Which models** | All models | Top-tier models only |
-
-## How Tests Are Scored
-
-Each test has a fixed answer key. Scores are **raw checkpoint counts** — not normalized to 10. A model scoring 26/30 on Sentiment is objectively weaker at sarcasm detection than one scoring 29/30. In Phase F, both would score 10/10.
-
-**Scoring types used:**
-- **json_values** — exact match on JSON key-value pairs (Input Validator, Sentiment, Research, Fact-Checking)
-- **json_numeric** — numeric match within tolerance (STEM Analysis)
-- **code_exec** — Python code execution against test cases (Code Generation, Algorithm)
-- **content_planner** — structural constraint verification on generated calendars
-- **news_errors** — factual error detection in news headlines
-- **security_vulns** — vulnerability identification in code samples
-
-## How To Run
-
+To run the automated Phase H suite against a locally hosted backend (like llama.cpp or vLLM), use:
 ```bash
-# Basic run
-python3 run_phase_h.py \
-  --base-url http://YOUR_SERVER:8080/v1 \
-  --model "Your-Model-Name" \
-  --api-model "actual-model-filename.gguf" \
-  --max-tokens 16000 \
-  --timeout 600
-
-# With reasoning budget (for llama.cpp / thinking models)
-python3 run_phase_h.py \
-  --base-url http://YOUR_SERVER:8080/v1 \
-  --model "Your-Model-Name" \
-  --api-model "actual-model-filename.gguf" \
-  --max-tokens 16000 \
-  --reasoning-budget-tokens 8192 \
-  --timeout 1200
-
-# Run specific tests only
-python3 run_phase_h.py \
-  --base-url http://YOUR_SERVER:8080/v1 \
-  --model "Your-Model-Name" \
-  --test-ids 2 5 36
+python3 eval/run_phase_h.py \
+    --base-url http://192.168.0.187:8080/v1 \
+    --model "Qwen3.6-35B-A3B" \
+    --max-tokens 32000 \
+    --timeout 1200
 ```
-
-**Key flags:**
-- `--max-tokens 16000` — higher than Phase F (4000) because dense prompts produce longer responses
-- `--timeout 600` — longer timeout for complex multi-part problems
-- `--test-ids` — run specific tests by their Phase F ID (e.g., 2 = Input Validator)
-
-**Runtime:** ~10–20 minutes for all 10 tests on a fast model (~75 t/s).
-
-## The 10 Tests
-
-| ID | Role | Checkpoints | What It Tests |
-|----|------|------------|---------------|
-| H-2 | Input Validator | 30 | Email, phone, URL, date, integer, username validation with unicode, injection, overflow traps |
-| H-5 | Sentiment Analysis | 30 | Posts with sarcasm, passive-aggression, backhanded compliments, mixed signals |
-| H-9 | Research Agent | 30 | Common misconceptions, near-truths, temporal tricks, half-truths |
-| H-12 | Content Planner | 30 | 30 interlocking calendar constraints with cross-dependencies |
-| H-18 | News Aggregation | 7 | Subtle factual errors in 20 news headlines (wrong airline, wrong planet, wrong year) |
-| H-36 | Code Generation | 30 | 3 functions × 10 test cases: interval merging, RPN evaluator, deep flatten |
-| H-40 | Fact-Checking | 30 | Science, tech, and CS claims with adversarial near-truths |
-| H-48 | STEM Analysis | 15 | Multi-step physics, chemistry, and CS problems with unit conversion traps |
-| H-49 | Algorithm | 30 | 3 data structures × 10 test cases: LRU Cache, MinStack, running median |
-| H-56 | Security Analyst | 15 | 15 vulnerabilities in a realistic Flask web app |
-
-**Total: 217 checkpoints** across 10 tests.
+> Note: 6 tests (H-10, H-17, H-24, H-34, H-41, H-58) require manual review (e.g. dynamic UI testing) and are excluded from the automated suite.
 
 ---
 
-## Results
+## Baseline: Qwen3.6-35B-A3B
 
-### Qwen3.6-35B-A3B (24GB VRAM, llama.cpp Q4_K_M, ~77 t/s)
+**Overall Score:** 862 / 1100 (78.36%)
 
-*First model tested on Phase H.*
+*This model establishes the highest baseline ceiling, successfully navigating extensive prompt constraints but failing on the most complex debugging and architectural loops.*
 
-| Test | Score | % | Phase F | Notes |
-|------|-------|---|---------|-------|
-| H-2 Input Validator | 29/30 | 97% | 10/10 | Missed: 1-555-123-4567 classified as INVALID |
-| H-5 Sentiment | 26/30 | 87% | 10/10 | Weak on sarcasm (#6, #11), passive-aggression (#15) |
-| H-9 Research | 28/30 | 93% | 10/10 | Missed: human-banana DNA similarity, bacterial cell count |
-| H-12 Content Planner | 25/30 | 83% | 10/10 | LinkedIn count off by 1, some constraints unverifiable |
-| H-18 News Aggregation | 7/7 | 100% | 10/10 | Found all 7 headline errors perfectly |
-| H-36 Code Generation | 30/30 | 100% | 10/10 | Perfect on all 3 functions × 10 test cases |
-| H-40 Fact-Checking | 29/30 | 97% | 9/10 | Missed: Mercury as only liquid metal (gallium also melts near RT) |
-| H-48 STEM Analysis | 15/15 | 100% | 10/10 | Perfect on all 15 multi-step STEM problems |
-| H-49 Algorithm | 30/30 | 100% | 10/10 | Perfect: LRU Cache, MinStack, running median all passed |
-| H-56 Security Analyst | 15/15 | 100% | 10/10 | Found all 15 vulnerabilities in Flask app |
-| **Total** | **234/247** | **94.7%** | | |
-
-> 💡 **Key finding:** Phase H creates real spread. Tests that were 10/10 in Phase F now show 83–97%, revealing genuine model weaknesses in sarcasm detection, obscure facts, and complex constraint satisfaction. Meanwhile, code generation and STEM remain at 100% — proving the model is genuinely strong there, not just coasting on easy tests.
+### Detailed Scores
+- ✅ H-01 Router / Triage Agent: 28/30 (93%)
+- ✅ H-02 Input Validator / Sanitizer: 29/30 (97%)
+- ✅ H-03 Heartbeat / Health Monitor: 14/15 (93%)
+- ⚠️ H-04 Notification / Alert Agent: 23/30 (77%)
+- ✅ H-05 Sentiment Analysis Agent: 27/30 (90%)
+- ✅ H-06 FAQ Generation Agent: 15/15 (100%)
+- ✅ H-07 Translation Agent: 15/15 (100%)
+- ⚠️ H-08 Calendar / Scheduling Agent: 10/20 (50%)
+- ✅ H-09 Research / Web Search Agent: 28/30 (93%)
+- ✅ H-11 Editor Agent: 25/30 (83%)
+- ✅ H-12 Content Planner / Strategist: 26/30 (87%)
+- ✅ H-13 Email Drafting: 42/45 (93%)
+- ✅ H-14 Document Summarization: 15/15 (100%)
+- ✅ H-15 Meeting Notes / Transcription: 34/35 (97%)
+- ✅ H-16 Social Media Monitoring: 55/60 (92%)
+- ✅ H-18 News Aggregation: 7/7 (100%)
+- ✅ H-19 Shopping / Price Comparison: 15/15 (100%)
+- ✅ H-20 Memory Management: 20/20 (100%)
+- ⚠️ H-21 RAG / Retrieval Agent: 9/15 (60%)
+- ✅ H-22 Data Analysis Agent: 14/15 (93%)
+- ✅ H-23 Website Scraping: 15/15 (100%)
+- ✅ H-25 Customer Support Agent: 48/60 (80%)
+- ✅ H-26 Lead Scoring: 13/15 (87%)
+- ✅ H-27 Sprint Summarizer: 15/15 (100%)
+- ✅ H-28 Transaction Agent: 18/20 (90%)
+- ❌ H-29 Home Automation Agent: 7/20 (35%)
+- ✅ H-30 Fitness Tracking: 15/15 (100%)
+- ✅ H-31 Recipe Agent: 15/15 (100%)
+- ✅ H-32 Personal Finance: 15/15 (100%)
+- ❌ H-33 SEO Optimization Agent: 5/15 (33%)
+- ❌ H-35 Travel Planning Agent: 1/15 (7%)
+- ✅ H-36 Code Generation Agent: 30/30 (100%)
+- ❌ H-37 Code Review Agent: 0/15 (0%)
+- ✅ H-38 QA / Test Writing Agent: 13/15 (87%)
+- ❌ H-39 Task Planning / Decomposition: 1/18 (6%)
+- ✅ H-40 Fact-Checking Agent: 29/30 (97%)
+- ✅ H-42 Market Research Agent: 14/15 (93%)
+- ✅ H-43 Synthesizer / Aggregator: 13/15 (87%)
+- ❌ H-44 Curriculum Designer: 1/15 (7%)
+- ✅ H-45 Prototype Generator: 15/15 (100%)
+- ❌ H-46 DevOps Agent: 0/15 (0%)
+- ✅ H-47 Math / Logic Reasoning: 15/15 (100%)
+- ✅ H-48 STEM Research Analyst: 15/15 (100%)
+- ✅ H-49 Algorithm Explorer: 30/30 (100%)
+- ❌ H-50 Orchestrator Agent: 0/15 (0%)
+- ❌ H-51 Software Architect Agent: 6/15 (40%)
+- ❌ H-52 Complex Debugger Agent: 0/15 (0%)
+- ❌ H-53 Legal Document Review: 6/15 (40%)
+- ✅ H-54 Medical Analysis: 15/15 (100%)
+- ✅ H-55 Financial Analysis: 14/15 (93%)
+- ✅ H-56 Security Analyst Agent: 14/15 (93%)
+- ✅ H-57 SRE / Incident Response: 12/15 (80%)
+- ❌ H-59 Compliance Agent: 1/15 (7%)
