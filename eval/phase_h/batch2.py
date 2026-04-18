@@ -195,7 +195,7 @@ Questions:
     # H-11: EDITOR AGENT — 30 errors to find
     {
         "id": 11, "role": "Editor Agent", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Find ALL errors in this business report. There are exactly 30 errors (spelling, grammar, punctuation, factual, formatting). List each with line reference and correction. Respond as JSON: {"errors": [{"line": N, "error": "...", "correction": "..."}, ...], "count": 30}
 
 Report:

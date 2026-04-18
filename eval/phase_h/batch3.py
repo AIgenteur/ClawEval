@@ -4,7 +4,7 @@ PHASE_H_BATCH3 = [
     # H-19: SHOPPING / PRICE COMPARISON — 15 products
     {
         "id": 19, "role": "Shopping / Price Comparison", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Compare these 15 products across 3 stores and identify the best deal for each. Respond as JSON: {"1": {"best_store": "...", "best_price": N.NN, "savings_pct": N}, ...}
 
 Products and prices (Store A / Store B / Store C):

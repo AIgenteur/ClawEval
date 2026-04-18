@@ -117,7 +117,7 @@ s15: Downtime in minutes""",
     # H-37: CODE REVIEW — 15 bugs
     {
         "id": 37, "role": "Code Review Agent", "tier": 3,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Find ALL 15 bugs in this Python code. For each, identify the line and describe the bug. Respond as JSON: {"bugs": [{"line": N, "bug": "description", "severity": "critical/major/minor"}, ...], "count": 15}
 
 ```python

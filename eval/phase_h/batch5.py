@@ -5,7 +5,7 @@ PHASE_H_BATCH5 = [
     # H-6: FAQ GENERATION — 15 constraints
     {
         "id": 6, "role": "FAQ Generation Agent", "tier": 1,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Generate a FAQ section for a SaaS project management tool. Answer these 15 questions exactly. Respond as JSON: {"q1": "answer", ...}. Keep answers to 1-2 sentences.
 
 q1: What is the free plan limit for users?
@@ -106,7 +106,7 @@ c15: None of the translations add information not in the original""",
     # H-15: MEETING NOTES — 20 action items
     {
         "id": 15, "role": "Meeting Notes / Transcription Agent", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Extract all 20 action items from this meeting transcript. For each, identify: owner, task, deadline. Respond as JSON: {"actions": [{"id": 1, "owner": "name", "task": "...", "deadline": "..."}, ...]}
 
 Transcript:
@@ -149,7 +149,7 @@ Find ALL 20 action items with correct owner and deadline.""",
     # H-39: TASK DECOMPOSITION — 20 subtasks
     {
         "id": 39, "role": "Task Planning / Decomposition", "tier": 3,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Decompose "Migrate a monolithic Django app to microservices" into exactly 20 ordered subtasks with dependencies. Respond as JSON: {"tasks": [{"id": 1, "task": "...", "depends_on": [], "effort_days": N, "team": "backend/frontend/devops/qa"}, ...]}
 
 Requirements:
@@ -184,7 +184,7 @@ Verify your constraints and respond with the task list.""",
     # H-46: DEVOPS — 15 issues to detect
     {
         "id": 46, "role": "DevOps Agent", "tier": 3,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Find ALL 15 issues in this Kubernetes deployment config. For each, identify the issue and severity. Respond as JSON: {"issues": [{"line": "...", "issue": "...", "severity": "critical/major/minor"}, ...], "count": 15}
 
 ```yaml
@@ -267,7 +267,7 @@ spec:
     # H-53: LEGAL REVIEW — 15 issues
     {
         "id": 53, "role": "Legal Document Review", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Find ALL 15 legal issues in this SaaS service agreement. For each, identify the clause, issue, and risk level. Respond as JSON: {"issues": [{"clause": "...", "issue": "...", "risk": "high/medium/low"}, ...], "count": 15}
 
 Agreement:
@@ -307,7 +307,7 @@ Agreement:
     # H-54: MEDICAL ANALYSIS — 15 findings
     {
         "id": 54, "role": "Medical / Health Analysis", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Analyze this patient's lab results and identify ALL 15 findings (normal, abnormal high, abnormal low). Respond as JSON: {"findings": [{"test": "...", "value": N, "status": "normal/high/low", "concern": "..."}, ...]}
 
 Patient: 45-year-old male, BMI 31, Type 2 Diabetes, on Metformin
@@ -448,7 +448,7 @@ q15: Time from resolution to stakeholder communication (minutes)""",
     # H-59: COMPLIANCE — 15 violations
     {
         "id": 59, "role": "Compliance / Regulatory Agent", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Identify ALL 15 GDPR compliance violations in this data processing description. Respond as JSON: {"violations": [{"id": 1, "article": "...", "violation": "...", "severity": "critical/major/minor"}, ...], "count": 15}
 
 Company Data Processing Description:

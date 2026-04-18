@@ -167,6 +167,42 @@ def score_h_security_vulns(content, scoring):
         msg += " | missed: " + "; ".join(missed[:8])
     return found, total, msg
 
+def score_h_keywords(content, scoring):
+    """Score by checking if the expected keyword/phrase strings are present in the output text."""
+    answers = scoring.get("answers", {})
+    if not answers:
+        return 0, 0, "No answers defined."
+    
+    total = len(answers)
+    text = content.lower()
+    
+    correct = 0
+    wrong = []
+    
+    for key, expected in answers.items():
+        if isinstance(expected, str):
+            kw_lower = expected.lower()
+        else:
+            kw_lower = str(expected).lower()
+            
+        if kw_lower in text:
+            correct += 1
+        elif kw_lower.replace("→", "->") in text:
+            correct += 1
+        else:
+            # try fuzzy matching of >3 char words
+            words = [w for w in kw_lower.replace("/", " ").replace("→", " ").replace("-", " ").split() if len(w) > 3]
+            if words and all(w in text for w in words):
+                correct += 1
+            else:
+                wrong.append(f"#{key}: missing {expected}")
+                
+    msg = f"{correct}/{total} correct"
+    if wrong:
+        msg += " | " + "; ".join(wrong[:5])
+        
+    return correct, total, msg
+
 
 def score_h_content_planner(content, scoring):
     """Score content planner with dense constraint checking."""
@@ -298,6 +334,7 @@ H_SCORERS = {
     "security_vulns": score_h_security_vulns,
     "content_planner": score_h_content_planner,
     "news_errors": score_h_news_errors,
+    "h_keywords": score_h_keywords,
 }
 
 
@@ -310,7 +347,7 @@ def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, api_ke
     )
 
     scoring = test["scoring"]
-    stype = scoring["type"]
+    stype = test.get("scoring_type", scoring.get("type"))
     scorer = H_SCORERS.get(stype)
 
     if scorer:

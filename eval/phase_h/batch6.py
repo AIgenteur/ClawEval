@@ -4,7 +4,7 @@ PHASE_H_BATCH6 = [
     # H-29: HOME AUTOMATION — 20 rules
     {
         "id": 29, "role": "Home Automation Agent", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Given these 20 smart home scenarios, determine the correct action for each. Respond as JSON: {"1": "action", ...}
 
 House config: Thermostat (heating/cooling), lights (on/off/dim), doors (lock/unlock), alarm (arm/disarm), blinds (open/close), music (play/pause/stop), cameras (on/off).
@@ -107,7 +107,7 @@ Scale factor: 14/4 = 3.5""",
     # H-33: SEO OPTIMIZATION — 15 checks
     {
         "id": 33, "role": "SEO Optimization Agent", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Audit this webpage for SEO issues. Find ALL 15 problems. Respond as JSON: {"issues": [{"id": 1, "issue": "...", "severity": "critical/major/minor", "fix": "..."}, ...], "count": 15}
 
 Page HTML:
@@ -158,7 +158,7 @@ URL: example.com/page-1234?ref=123&utm=abc""",
     # H-35: TRAVEL PLANNING — 15 constraints
     {
         "id": 35, "role": "Travel Planning Agent", "tier": 2,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Plan a 5-day trip to Tokyo, Japan. Budget: $2000 total. Respond as JSON: {"days": [{"day": 1, "morning": "...", "afternoon": "...", "evening": "...", "hotel": "...", "meals_budget": N, "transport_budget": N, "activity_budget": N}], "total_budget": N}
 
 ALL 15 constraints must be met:
@@ -242,7 +242,7 @@ Claims:
     # H-44: CURRICULUM DESIGN — 15 constraints
     {
         "id": 44, "role": "Curriculum / Course Designer", "tier": 3,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Design a 6-week Python programming course. Respond as JSON: {"weeks": [{"week": 1, "topic": "...", "objectives": [...], "assignment": "...", "prerequisites": [...]}]}
 
 ALL 15 constraints:
@@ -326,7 +326,7 @@ Rules:
     # H-50: ORCHESTRATOR — 15 constraints
     {
         "id": 50, "role": "Orchestrator / Manager Agent", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Design a multi-agent workflow for processing a customer refund request. Respond as JSON: {"agents": [{"name": "...", "input": "...", "output": "...", "next": "...", "fallback": "..."}], "constraints": {...}}
 
 15 constraints:
@@ -370,7 +370,7 @@ Rules:
     # H-51: SOFTWARE ARCHITECT — 15 design decisions
     {
         "id": 51, "role": "Software Architect Agent", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Design a system architecture for a real-time collaborative document editor (like Google Docs). Answer 15 architecture questions. Respond as JSON: {"q1": "answer", ...}
 
 q1: What conflict resolution strategy? (OT/CRDT/locking)
@@ -413,7 +413,7 @@ q15: Monitoring and observability stack?""",
     # H-52: COMPLEX DEBUGGER — 15 bugs
     {
         "id": 52, "role": "Complex Debugger Agent", "tier": 5,
-        "scoring_type": "json_values",
+        "scoring_type": "h_keywords",
         "prompt": """Find ALL 15 bugs in this async Python code. Respond as JSON: {"bugs": [{"line": "...", "bug": "...", "fix": "..."}, ...], "count": 15}
 
 ```python
