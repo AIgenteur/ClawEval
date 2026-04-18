@@ -99,10 +99,8 @@ python3 run_phase_h.py \
 | H-36 Code Generation | 30/30 | 100% | 10/10 | Perfect on all 3 functions × 10 test cases |
 | H-40 Fact-Checking | 29/30 | 97% | 9/10 | Missed: Mercury as only liquid metal (gallium also melts near RT) |
 | H-48 STEM Analysis | 15/15 | 100% | 10/10 | Perfect on all 15 multi-step STEM problems |
-| H-49 Algorithm | 🔄 | — | 10/10 | Scorer bug fixed, re-running |
+| H-49 Algorithm | 30/30 | 100% | 10/10 | Perfect: LRU Cache, MinStack, running median all passed |
 | H-56 Security Analyst | 15/15 | 100% | 10/10 | Found all 15 vulnerabilities in Flask app |
-| **Total (excl. H-49)** | **204/217** | **94%** | | |
+| **Total** | **234/247** | **94.7%** | | |
 
-> 💡 **Key finding:** Phase H creates real spread. Tests that were 10/10 in Phase F now show 83–97%, revealing genuine model weaknesses in sarcasm detection, obscure facts, and complex constraint satisfaction.
->
-> 🔄 H-49 retry in progress with fixed multi-statement code execution scorer.
+> 💡 **Key finding:** Phase H creates real spread. Tests that were 10/10 in Phase F now show 83–97%, revealing genuine model weaknesses in sarcasm detection, obscure facts, and complex constraint satisfaction. Meanwhile, code generation and STEM remain at 100% — proving the model is genuinely strong there, not just coasting on easy tests.
