@@ -113,7 +113,11 @@ def score_h_code_exec(content, scoring):
             # Execute in isolated namespace
             namespace = {}
             exec(code, namespace)
-            result = eval(call, namespace)
+            # Handle multi-statement test cases: exec all but last, eval the last
+            statements = [s.strip() for s in call.split(";") if s.strip()]
+            for stmt in statements[:-1]:
+                exec(stmt, namespace)
+            result = eval(statements[-1], namespace)
             result_str = str(result).replace(" ", "")
             expected_str = str(expected).replace(" ", "")
             if result_str == expected_str:

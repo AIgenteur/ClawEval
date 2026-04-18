@@ -22,6 +22,12 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 >
 > Two models both score 10/10 — but one used 500 tokens, the other 5,000. The efficient one saves **10× on compute, cost, and latency.** We rank 35 models by tokens-per-point. Think modes use 10–20× more tokens for marginal gains. **This metric is hardware-independent.**
 
+### 🔬 NEW: Phase H — Dense Constraint Tests
+
+> 🏆 **[Can your model handle 30–50 checkpoints per test? →](docs/results-phase-h.md)**
+>
+> Phase F tests have **ceiling effects** — most strong models score 8–10/10. Phase H uses **30–50 checkpoints** per test with adversarial traps, sarcasm, and near-truths to create real ranking spread. Same roles, much harder.
+
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 
 > 📄 **[OpenClaw Backend: Local on 3090 — The Complete Guide (PDF)](docs/OpenClaw_Backend_Local_on_3090.pdf)** — An interactive walkthrough of running the full OpenClaw backend locally on an RTX 3090. Covers setup, model selection, and performance tips with step-by-step calls to action.
