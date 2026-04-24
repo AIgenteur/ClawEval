@@ -1,0 +1,116 @@
+```python
+class JSONValidator:
+    TYPE_MAP = {
+        "str": str,
+        "int": int,
+        "float": float,
+        "bool": bool,
+        "list": list,
+        "dict": dict,
+    }
+
+    def validate(self, data, schema):
+        errors = []
+
+        for field_name, field_schema in schema.items():
+            field_type = field_schema.get("type")
+            required = field_schema.get("required", False)
+
+            # Check if field exists
+            if field_name not in data:
+                if required:
+                    errors.append(f"Field '{field_name}' is required")
+                continue
+
+            value = data[field_name]
+
+            # Check type (use type() is to avoid bool/int confusion)
+            expected_type = self.TYPE_MAP.get(field_type)
+            if expected_type is not None:
+                if type(value) is not expected_type:
+                    errors.append(
+                        f"Field '{field_name}' must be of type {field_type}, "
+                        f"got {type(value).__name__}"
+                    )
+                    continue  # Skip constraint checks if type is wrong
+
+            # Check min/max for numbers
+            if field_type in ("int", "float"):
+                if "min" in field_schema and value < field_schema["min"]:
+                    errors.append(
+                        f"Field '{field_name}' must be at least "
+                        f"{field_schema['min']}, got {value}"
+                    )
+                if "max" in field_schema and value > field_schema["max"]:
+                    errors.append(
+                        f"Field '{field_name}' must be at most "
+                        f"{field_schema['max']}, got {value}"
+                    )
+
+            # Check min_length/max_length for strings
+            if field_type == "str":
+                if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' must have length at least "
+                        f"{field_schema['min_length']}, got {len(value)}"
+                    )
+                if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' must have length at most "
+                        f"{field_schema['max_length']}, got {len(value)}"
+                    )
+
+            # Check min_length/max_length for lists
+            if field_type == "list":
+                if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' must have length at least "
+                        f"{field_schema['min_length']}, got {len(value)}"
+                    )
+                if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' must have length at most "
+                        f"{field_schema['max_length']}, got {len(value)}"
+                    )
+
+        return {"valid": len(errors) == 0, "errors": errors}
+```
+
+**Example usage:**
+
+```python
+validator = JSONValidator()
+
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 1, "max_length": 50},
+    "age": {"type": "int", "required": True, "min": 0, "max": 150},
+    "score": {"type": "float", "required": False, "min": 0.0, "max": 100.0},
+    "tags": {"type": "list", "required": False, "min_length": 1, "max_length": 10},
+    "active": {"type": "bool", "required": True},
+}
+
+# Valid data
+result = validator.validate(
+    {"name": "Alice", "age": 30, "score": 95.5, "tags": ["dev"], "active": True},
+    schema
+)
+# {"valid": True, "errors": []}
+
+# Multiple errors
+result = validator.validate(
+    {"age": -5, "active": "yes", "extra": "allowed"},
+    schema
+)
+# {"valid": False, "errors": [
+#   "Field 'name' is required",
+#   "Field 'age' must be at least 0, got -5",
+#   "Field 'active' must be of type bool, got str"
+# ]}
+```
+
+**Key design decisions:**
+
+- **`type(value) is expected_type`** instead of `isinstance()` — prevents `bool` from passing as `int` (since `bool` is a subclass of `int` in Python)
+- **`continue` after type mismatch** — avoids runtime errors from calling `len()` on non-iterable types or comparing non-numeric types
+- **Extra fields ignored** — only fields defined in the schema are validated
+- **All errors collected** — doesn't stop at the first error per field or overall

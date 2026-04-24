@@ -1,0 +1,146 @@
+```json
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Analyze monolithic Django app and identify domain boundaries",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Design microservices architecture and communication protocols",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Setup Kubernetes cluster and base infrastructure",
+      "depends_on": [2],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Setup API Gateway for routing and rate limiting",
+      "depends_on": [3],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Setup CI/CD pipelines for microservices deployment",
+      "depends_on": [3],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Extract User Authentication Service from Django monolith",
+      "depends_on": [2, 4],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 7,
+      "task": "Database migration - Decouple user DB schema into separate instance",
+      "depends_on": [6],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Extract Order Processing Service from Django monolith",
+      "depends_on": [4, 7],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Database migration - Decouple order DB schema into separate instance",
+      "depends_on": [8],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Extract Notification Service from Django monolith",
+      "depends_on": [4, 7],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Update frontend to support API gateway routing and auth flows",
+      "depends_on": [4],
+      "effort_days": 6,
+      "team": "frontend"
+    },
+    {
+      "id": 12,
+      "task": "Refactor frontend state management for microservices data",
+      "depends_on": [11],
+      "effort_days": 7,
+      "team": "frontend"
+    },
+    {
+      "id": 13,
+      "task": "Implement frontend UI for decoupled Order Service",
+      "depends_on": [12, 9],
+      "effort_days": 6,
+      "team": "frontend"
+    },
+    {
+      "id": 14,
+      "task": "Implement frontend UI for decoupled Notification Service",
+      "depends_on": [12, 10],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 15,
+      "task": "Write unit and integration tests for Auth Service",
+      "depends_on": [7],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 16,
+      "task": "Write unit and integration tests for Order Service",
+      "depends_on": [9],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 17,
+      "task": "Write unit and integration tests for Notification Service",
+      "depends_on": [10],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "End-to-end testing across all microservices and frontend",
+      "depends_on": [13, 14, 15, 16, 17],
+      "effort_days": 7,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Performance and load testing on the new microservices architecture",
+      "depends_on": [18],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Final production cutover and monitoring setup",
+      "depends_on": [5, 19],
+      "effort_days": 4,
+      "team": "devops"
+    }
+  ]
+}
+```

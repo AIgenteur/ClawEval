@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Single replica lacks high availability and fault tolerance.",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "Using the ':latest' tag is an anti-pattern; it makes deployments unpredictable and prevents reliable rollbacks.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "No resource requests or limits defined for the main container, risking resource starvation and node instability.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Invalid securityContext field 'runAsRoot' (should be 'runAsNonRoot: false'); running as root is a security risk.",
+      "severity": "major"
+    },
+    {
+      "line": "23",
+      "issue": "Running the container as privileged grants excessive host permissions, a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Hardcoding sensitive credentials (DB_PASSWORD) in plain text instead of using Kubernetes Secrets.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "Hardcoding sensitive credentials (API_KEY) in plain text instead of using Kubernetes Secrets.",
+      "severity": "critical"
+    },
+    {
+      "line": "34",
+      "issue": "Sidecar container defines resource requests but is missing resource limits, risking unbounded resource consumption.",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "Excessive memory request (10Gi) for a logging sidecar, unnecessarily wasting cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "Excessive CPU request (8) for a logging sidecar, unnecessarily wasting cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "40",
+      "issue": "Using a hostPath volume in a Deployment is an anti-pattern; data is tied to a specific node and not portable across pods.",
+      "severity": "major"
+    },
+    {
+      "line": "41",
+      "issue": "Using /tmp for hostPath is volatile as the OS may periodically clean up this directory, leading to data loss.",
+      "severity": "minor"
+    },
+    {
+      "line": "48",
+      "issue": "Exposing a service externally via LoadBalancer instead of using an Ingress controller or ClusterIP for internal routing.",
+      "severity": "major"
+    },
+    {
+      "line": "50",
+      "issue": "Exposing the service on unencrypted HTTP port 80 instead of HTTPS/TLS.",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "Missing livenessProbe and readinessProbe for the main container, preventing Kubernetes from monitoring and managing app health.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

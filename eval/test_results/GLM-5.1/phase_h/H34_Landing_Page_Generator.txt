@@ -1,0 +1,406 @@
+Here's the complete QuillAI landing page meeting all 20 constraints:
+
+```html
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QuillAI — The AI-powered writing assistant that helps you write faster, clearer, and more creatively. Trusted by 10,000+ users worldwide.">
+    <title>QuillAI — AI Writing Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        ::selection { background: rgba(99,102,241,0.3); color: #c7d2fe; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .noise-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        .float-anim { animation: float 6s ease-in-out infinite; }
+        @keyframes pulse-glow { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+        .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
+        .faq-answer.open { max-height: 300px; padding-top: 12px; }
+        .faq-chevron { transition: transform 0.3s ease; }
+        .faq-chevron.open { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-[#050505] text-white font-sans antialiased">
+
+    <!-- ===== NAVBAR ===== -->
+    <header class="fixed top-0 left-0 right-0 z-50">
+        <nav class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between" aria-label="Main navigation">
+            <a href="#" class="flex items-center gap-2 group" aria-label="QuillAI Home">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                    <i data-lucide="pen-tool" class="w-4 h-4 text-white"></i>
+                </div>
+                <span class="text-lg font-semibold tracking-tight">QuillAI</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm text-neutral-400 hover:text-white transition-colors duration-150">Features</a>
+                <a href="#pricing" class="text-sm text-neutral-400 hover:text-white transition-colors duration-150">Pricing</a>
+                <a href="#testimonials" class="text-sm text-neutral-400 hover:text-white transition-colors duration-150">Testimonials</a>
+                <a href="#contact" class="text-sm text-neutral-400 hover:text-white transition-colors duration-150">Contact</a>
+            </div>
+            <div class="hidden md:flex items-center gap-3">
+                <a href="#pricing" class="text-sm text-neutral-300 hover:text-white transition-colors duration-150 px-4 py-2">Log in</a>
+                <a href="#hero-cta" class="text-sm font-medium bg-white text-black px-5 py-2.5 rounded-full hover:bg-neutral-200 transition-colors duration-150">Start Free Trial</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-neutral-400 hover:text-white" aria-label="Open menu">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </nav>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#0f0f0f]/95 backdrop-blur-xl border-t border-white/5 px-6 py-4 space-y-3">
+            <a href="#features" class="block text-sm text-neutral-400 hover:text-white py-2">Features</a>
+            <a href="#pricing" class="block text-sm text-neutral-400 hover:text-white py-2">Pricing</a>
+            <a href="#testimonials" class="block text-sm text-neutral-400 hover:text-white py-2">Testimonials</a>
+            <a href="#contact" class="block text-sm text-neutral-400 hover:text-white py-2">Contact</a>
+            <a href="#hero-cta" class="block text-sm font-medium bg-white text-black px-5 py-2.5 rounded-full text-center mt-3">Start Free Trial</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== HERO SECTION ===== -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden noise-bg">
+            <!-- Background glow -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pulse-glow"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#050505] to-transparent z-10 pointer-events-none"></div>
+
+            <div class="relative z-20 max-w-7xl mx-auto px-6 pt-24 pb-20 text-center">
+                <!-- Social proof badge -->
+                <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-8">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span class="text-xs font-medium text-neutral-300">Trusted by 10,000+ users worldwide</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-[1.05] mb-6">
+                    Write smarter<br>
+                    <span class="bg-gradient-to-r from-indigo-400 to-purple-300 bg-clip-text text-transparent">with AI</span>
+                </h1>
+                <p class="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    QuillAI harnesses the power of artificial intelligence to transform your writing — clearer, faster, and more compelling. From first draft to final polish.
+                </p>
+
+                <div id="hero-cta" class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                    <a href="#pricing" class="inline-flex items-center gap-2 bg-white text-black font-medium text-sm px-8 py-3.5 rounded-full hover:bg-neutral-200 transition-colors duration-150">
+                        Start Free Trial
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                    <a href="#how-it-works" class="inline-flex items-center gap-2 border border-white/10 text-white font-medium text-sm px-8 py-3.5 rounded-full hover:bg-white/5 transition-colors duration-150">
+                        See How It Works
+                    </a>
+                </div>
+
+                <!-- Hero visual -->
+                <div class="relative max-w-4xl mx-auto">
+                    <div class="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-[80px] opacity-40"></div>
+                    <div class="relative bg-[#0A0A0A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                        <div class="flex items-center gap-2 px-5 py-3 border-b border-white/5">
+                            <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/60"></div>
+                            <span class="ml-3 text-xs text-neutral-500">QuillAI Editor</span>
+                        </div>
+                        <div class="p-6 md:p-8 text-left">
+                            <p class="text-neutral-500 text-sm mb-2">Original draft:</p>
+                            <p class="text-neutral-400 text-sm md:text-base line-through decoration-red-400/50 mb-6">Our product helps teams work together better and get more stuff done in less time so they can focus on important things.</p>
+                            <p class="text-neutral-500 text-sm mb-2">QuillAI rewrite:</p>
+                            <p class="text-white text-sm md:text-base leading-relaxed">Our platform empowers teams to collaborate seamlessly, accelerate productivity, and focus on what truly matters — delivering results faster than ever.</p>
+                            <div class="flex items-center gap-3 mt-6">
+                                <span class="inline-flex items-center gap-1.5 bg-green-500/10 text-green-400 text-xs font-medium px-3 py-1 rounded-full">
+                                    <i data-lucide="check-circle" class="w-3 h-3"></i>
+                                    Clarity +42%
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 bg-indigo-500/10 text-indigo-400 text-xs font-medium px-3 py-1 rounded-full">
+                                    <i data-lucide="zap" class="w-3 h-3"></i>
+                                    Tone adjusted
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== LOGOS / SOCIAL PROOF ===== -->
+        <section class="relative py-16 border-y border-white/5">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-8">Trusted by teams at leading companies</p>
+                <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-40">
+                    <div class="flex items-center gap-2 text-neutral-400"><i data-lucide="hexagon" class="w-6 h-6"></i><span class="font-semibold text-sm">TechFlow</span></div>
+                    <div class="flex items-center gap-2 text-neutral-400"><i data-lucide="triangle" class="w-6 h-6"></i><span class="font-semibold text-sm">Veridian</span></div>
+                    <div class="flex items-center gap-2 text-neutral-400"><i data-lucide="diamond" class="w-6 h-6"></i><span class="font-semibold text-sm">NovaSoft</span></div>
+                    <div class="flex items-center gap-2 text-neutral-400"><i data-lucide="circle" class="w-6 h-6"></i><span class="font-semibold text-sm">Orbitas</span></div>
+                    <div class="flex items-center gap-2 text-neutral-400"><i data-lucide="square" class="w-6 h-6"></i><span class="font-semibold text-sm">BlockBase</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== HOW IT WORKS ===== -->
+        <section id="how-it-works" class="relative py-24 md:py-32 noise-bg">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-medium text-indigo-400 uppercase tracking-widest">How It Works</span>
+                    <h2 class="text-3xl md:text-5xl font-medium tracking-tight mt-4 mb-4">From idea to polished prose</h2>
+                    <p class="text-neutral-400 text-lg max-w-2xl mx-auto">Three simple steps to transform your writing with the power of AI.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Step 1 -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-indigo-500/5 rounded-2xl group-hover:bg-indigo-500/10 transition-colors duration-300"></div>
+                        <div class="relative p-8">
+                            <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm mb-6">1</div>
+                            <h3 class="text-xl font-medium mb-3">Paste or type your draft</h3>
+                            <p class="text-neutral-400 leading-relaxed">Drop in your existing text or start from scratch — QuillAI works with any content, from emails to long-form articles.</p>
+                        </div>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-indigo-500/5 rounded-2xl group-hover:bg-indigo-500/10 transition-colors duration-300"></div>
+                        <div class="relative p-8">
+                            <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm mb-6">2</div>
+                            <h3 class="text-xl font-medium mb-3">AI analyzes & enhances</h3>
+                            <p class="text-neutral-400 leading-relaxed">Our artificial intelligence engine evaluates clarity, tone, grammar, and style — then generates intelligent suggestions in real time.</p>
+                        </div>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-indigo-500/5 rounded-2xl group-hover:bg-indigo-500/10 transition-colors duration-300"></div>
+                        <div class="relative p-8">
+                            <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm mb-6">3</div>
+                            <h3 class="text-xl font-medium mb-3">Publish with confidence</h3>
+                            <p class="text-neutral-400 leading-relaxed">Accept suggestions with one click, customize the tone, and export your polished content anywhere — ready for the world to see.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FEATURES SECTION ===== -->
+        <section id="features" class="relative py-24 md:py-32">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-medium text-indigo-400 uppercase tracking-widest">Features</span>
+                    <h2 class="text-3xl md:text-5xl font-medium tracking-tight mt-4 mb-4">Everything you need to write brilliantly</h2>
+                    <p class="text-neutral-400 text-lg max-w-2xl mx-auto">AI-powered tools designed to make every word count.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Feature 1 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">AI Rewrites</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Instantly rephrase sentences for clarity, conciseness, or impact. Choose your tone and let AI do the heavy lifting.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Grammar & Style</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Catch every error and stylistic inconsistency. QuillAI goes beyond grammar to elevate your unique voice.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="gauge" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Tone Adjustment</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Shift from casual to professional, friendly to authoritative — with a single click. Match any audience or context.</p>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="file-text" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Long-Form Generation</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Generate full blog posts, reports, and articles from a simple prompt. AI drafts, you refine — ship faster.</p>
+                    </div>
+                    <!-- Feature 5 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="languages" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Multilingual Support</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Write in 30+ languages with native-level fluency. Translate and localize content without losing nuance.</p>
+                    </div>
+                    <!-- Feature 6 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Readability Score</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Real-time scoring based on Flesch-Kincaid and other indices. Know exactly how accessible your writing is.</p>
+                    </div>
+                    <!-- Feature 7 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="plug" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Integrations</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Works inside Google Docs, Notion, Slack, and more. Your AI assistant goes wherever you write.</p>
+                    </div>
+                    <!-- Feature 8 -->
+                    <div class="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-5">
+                            <i data-lucide="lock" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-medium mb-2">Privacy First</h3>
+                        <p class="text-neutral-400 text-sm leading-relaxed">Your data is never used to train models. End-to-end encryption and SOC 2 compliance keep your content safe.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== BEFORE / AFTER COMPARISON ===== -->
+        <section class="relative py-24 md:py-32 noise-bg">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-medium text-indigo-400 uppercase tracking-widest">See the difference</span>
+                    <h2 class="text-3xl md:text-5xl font-medium tracking-tight mt-4 mb-4">Before & after QuillAI</h2>
+                    <p class="text-neutral-400 text-lg max-w-2xl mx-auto">Real examples showing how QuillAI transforms everyday writing.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                    <!-- Before -->
+                    <div class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 md:p-8">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                            <span class="text-xs font-medium text-red-400 uppercase tracking-widest">Before</span>
+                        </div>
+                        <p class="text-neutral-400 leading-relaxed">"We make a good product that lots of people like to use because it's really helpful for them to do their work and stuff and it saves time."</p>
+                        <div class="mt-4 flex items-center gap-4 text-xs text-neutral-500">
+                            <span>Readability: Grade 12</span>
+                            <span>•</span>
+                            <span>Wordy & vague</span>
+                        </div>
+                    </div>
+                    <!-- After -->
+                    <div class="bg-[#0A0A0A] border border-indigo-500/20 rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-[60px]"></div>
+                        <div class="relative">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                                <span class="text-xs font-medium text-green-400 uppercase tracking-widest">After QuillAI</span>
+                            </div>
+                            <p class="text-white leading-relaxed">"Our product empowers users to accomplish more in less time — delivering an intuitive, reliable experience thousands rely on daily."</p>
+                            <div class="mt-4 flex items-center gap-4 text-xs text-green-400/70">
+                                <span>Readability: Grade 8</span>
+                                <span>•</span>
+                                <span>Clear & impactful</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRICING SECTION ===== -->
+        <section id="pricing" class="relative py-24 md:py-32">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-medium text-indigo-400 uppercase tracking-widest">Pricing</span>
+                    <h2 class="text-3xl md:text-5xl font-medium tracking-tight mt-4 mb-4">Simple, transparent pricing</h2>
+                    <p class="text-neutral-400 text-lg max-w-2xl mx-auto">Start free. Upgrade when you're ready.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    <!-- Free Tier -->
+                    <div class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-8 hover:border-white/20 transition-all duration-300">
+                        <h3 class="text-lg font-medium mb-1">Free</h3>
+                        <p class="text-neutral-500 text-sm mb-6">For getting started</p>
+                        <div class="mb-6">
+                            <span class="text-4xl font-semibold">$0</span>
+                            <span class="text-neutral-500 text-sm">/month</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>5,000 AI words/month</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Basic grammar checks</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>1 writing tone</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Community support</li>
+                        </ul>
+                        <a href="#" class="block text-center border border-white/10 text-white text-sm font-medium px-6 py-3 rounded-full hover:bg-white/5 transition-colors duration-150">Get Started</a>
+                    </div>
+
+                    <!-- Pro Tier (highlighted) -->
+                    <div class="relative bg-[#0A0A0A] border border-indigo-500/30 rounded-2xl p-8 shadow-2xl shadow-indigo-500/10">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white text-xs font-medium px-4 py-1 rounded-full">Most Popular</div>
+                        <h3 class="text-lg font-medium mb-1">Pro</h3>
+                        <p class="text-neutral-500 text-sm mb-6">For professionals</p>
+                        <div class="mb-6">
+                            <span class="text-4xl font-semibold">$19</span>
+                            <span class="text-neutral-500 text-sm">/month</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Unlimited AI words</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Advanced grammar & style</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>All writing tones</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Long-form generation</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Priority support</li>
+                        </ul>
+                        <a href="#" class="block text-center bg-white text-black text-sm font-medium px-6 py-3 rounded-full hover:bg-neutral-200 transition-colors duration-150">Start Free Trial</a>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-8 hover:border-white/20 transition-all duration-300">
+                        <h3 class="text-lg font-medium mb-1">Enterprise</h3>
+                        <p class="text-neutral-500 text-sm mb-6">For teams & organizations</p>
+                        <div class="mb-6">
+                            <span class="text-4xl font-semibold">$49</span>
+                            <span class="text-neutral-500 text-sm">/month</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Everything in Pro</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Team collaboration</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Custom brand voice</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>API access</li>
+                            <li class="flex items-center gap-3 text-sm text-neutral-300"><i data-lucide="check" class="w-4 h-4 text-green-400 flex-shrink-0"></i>Dedicated account manager</li>
+                        </ul>
+                        <a href="#" class="block text-center border border-white/10 text-white text-sm font-medium px-6 py-3 rounded-full hover:bg-white/5 transition-colors duration-150">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TESTIMONIALS SECTION ===== -->
+        <section id="testimonials" class="relative py-24 md:py-32 noise-bg">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-medium text-indigo-400 uppercase tracking-widest">Testimonials</span>
+                    <h2 class="text-3xl md:text-5xl font-medium tracking-tight mt-4 mb-4">Loved by writers everywhere</h2>
+                    <p class="text-neutral-400 text-lg max-w-2xl mx-auto">See what our users have to say about QuillAI.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-8 hover:border-white/20 transition-all duration-300">
+                        <div class="flex items-center gap-1 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>

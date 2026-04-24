@@ -1,0 +1,19 @@
+```json
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) - specifically using a library like Yjs, as it handles offline and concurrent edits more gracefully than OT without requiring a central server to resolve all conflicts.",
+  "q2": "WebSocket, because collaborative editing requires full-duplex, low-latency communication for both sending local edits and receiving remote updates continuously.",
+  "q3": "PostgreSQL, utilizing JSONB for flexible document metadata and CRDT state storage, combined with strong ACID compliance for user and document permissions.",
+  "q4": "Use local persistence (IndexedDB) to store edits while offline, and rely on the CRDT state to automatically merge local changes with the server state upon reconnection without conflicts.",
+  "q5": "Redis Pub/Sub, as it provides extremely low-latency message routing for ephemeral real-time updates between WebSocket server instances.",
+  "q6": "Use consistent hashing or room-based routing (based on Document ID) at the load balancer to route users to the correct WebSocket node, backed by Redis Pub/Sub to broadcast updates across all server nodes.",
+  "q7": "Treat cursor positions as ephemeral, high-frequency updates; broadcast them via WebSocket to all connected clients in the document room, throttled to ~10-20 updates per second, without persisting them in the main document state.",
+  "q8": "JWT (JSON Web Tokens) passed as a query parameter or in the initial handshake header during the WebSocket connection, validated against an OAuth 2.0 / OIDC provider.",
+  "q9": "Store periodic snapshots (e.g., every few minutes or on explicit save) of the CRDT document state in object storage (S3), while keeping an append-only log of operations in the database to reconstruct intermediate states if needed.",
+  "q10": "Use a global CDN (like Cloudflare or AWS CloudFront) with aggressive caching and cache-busting via content-hashed filenames for the SPA bundle, CSS, and static images.",
+  "q11": "Implement document chunking or lazy loading; load the document structure and visible viewport first, then fetch remaining blocks on-demand via virtualized rendering, and store the CRDT state as smaller sub-documents or compressed binary updates.",
+  "q12": "Implement rate limiting at the API Gateway / Load Balancer level using a sliding window algorithm backed by Redis, limiting both REST API calls and WebSocket messages per second per user.",
+  "q13": "Continuous Write-Ahead Log (WAL) backups for PostgreSQL to a separate region, daily automated snapshots of document states to S3 with cross-region replication, and a 30-day retention policy.",
+  "q14": "Use pre-signed URLs to allow clients to upload images directly to object storage (S3) asynchronously, then broadcast an insert operation containing the final image URL to the document once the upload completes.",
+  "q15": "Prometheus for metrics, Grafana for dashboards, Loki/ELK for log aggregation, and Jaeger for distributed tracing, with custom WebSocket connection and sync-latency metrics exported by the servers."
+}
+```

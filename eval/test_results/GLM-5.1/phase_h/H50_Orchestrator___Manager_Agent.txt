@@ -1,0 +1,86 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "Raw customer refund request data",
+      "output": "Validated request data or rejection reason",
+      "next": {
+        "valid": "FraudCheckAgent",
+        "invalid": "NotificationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5,
+      "audit": "Log request receipt, data validation outcome, and timestamp"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request data",
+      "output": "Fraud assessment score and pass/fail status",
+      "next": {
+        "pass": "ApprovalAgent",
+        "fail": "NotificationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10,
+      "audit": "Log fraud check initiation, score, and pass/fail outcome"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Validated, fraud-cleared request data",
+      "output": "Approval decision (approved/rejected) and reason",
+      "next": {
+        "approved": "PaymentAgent",
+        "rejected": "NotificationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10,
+      "audit": "Log approval decision, refund amount, and policy applied"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved refund request data",
+      "output": "Payment processing confirmation or failure",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 15,
+      "audit": "Log payment gateway request, transaction ID, and status"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "Failed/edge case request data from previous agents",
+      "output": "Escalation ticket ID and manual review assignment",
+      "next": "NotificationAgent",
+      "fallback": "NotificationAgent",
+      "timeout": 5,
+      "audit": "Log escalation reason, assigned human agent, and ticket ID"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final outcome (approved, rejected, or escalated)",
+      "output": "Notification delivery confirmation",
+      "next": "END",
+      "fallback": "SystemLogFallback",
+      "timeout": 5,
+      "audit": "Log notification type, recipient, delivery status, and timestamp"
+    }
+  ],
+  "constraints": {
+    "1_min_6_agents": "Satisfied - 6 agents defined",
+    "2_required_agents": "Satisfied - Validation, Fraud-check, Approval, Payment, Notification included",
+    "3_defined_io_next": "Satisfied - Each agent has input, output, and next",
+    "4_conditional_branch": "Satisfied - Validation, Fraud, and Approval agents use if/else routing in 'next'",
+    "5_fallback_handler": "Satisfied - Each agent has a fallback defined",
+    "6_first_agent": "Satisfied - ValidationTriageAgent is first",
+    "7_last_agent": "Satisfied - NotificationAgent is last",
+    "8_fraud_before_approval": "Satisfied - FraudCheckAgent routes to ApprovalAgent",
+    "9_payment_after_approval": "Satisfied - ApprovalAgent routes to PaymentAgent",
+    "10_processing_time_under_60s": "Satisfied - Total timeout sum is 50s (5+10+10+15+5+5), well under 60s",
+    "11_approved_rejected_outcomes": "Satisfied - Approval and Fraud agents route to NotificationAgent on rejection",
+    "12_logging_audit": "Satisfied - Each agent has an 'audit' field defining logging actions",
+    "13_no_circular_deps": "Satisfied - Linear flow with conditional branches, no loops",
+    "14_human_escalation": "Satisfied - HumanEscalationAgent handles edge cases and fallbacks",
+    "15_timeout_value": "Satisfied - Each agent has a 'timeout' field in seconds"
+  }
+}
+```

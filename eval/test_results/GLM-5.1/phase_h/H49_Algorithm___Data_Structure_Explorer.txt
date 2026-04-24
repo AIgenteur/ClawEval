@@ -1,0 +1,137 @@
+```python
+class Node:
+    def __init__(self, key=0, val=0):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = Node()
+        self.tail = Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        prev, nxt = node.prev, node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def _add(self, node):
+        nxt = self.head.next
+        self.head.next = node
+        node.prev = self.head
+        node.next = nxt
+        nxt.prev = node
+
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add(node)
+            return node.val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self._remove(self.cache[key])
+        node = Node(key, value)
+        self._add(node)
+        self.cache[key] = node
+        if len(self.cache) > self.capacity:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self) -> None:
+        if self.stack[-1] == self.min_stack[-1]:
+            self.min_stack.pop()
+        self.stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def get_min(self) -> int:
+        return self.min_stack[-1]
+
+
+class MinHeap:
+    def __init__(self):
+        self.heap = []
+
+    def push(self, val):
+        self.heap.append(val)
+        self._bubble_up(len(self.heap) - 1)
+
+    def pop(self):
+        if not self.heap:
+            return None
+        if len(self.heap) == 1:
+            return self.heap.pop()
+        root = self.heap[0]
+        self.heap[0] = self.heap.pop()
+        self._bubble_down(0)
+        return root
+
+    def peek(self):
+        return self.heap[0] if self.heap else None
+
+    def __len__(self):
+        return len(self.heap)
+
+    def _bubble_up(self, idx):
+        parent = (idx - 1) // 2
+        if idx > 0 and self.heap[idx] < self.heap[parent]:
+            self.heap[idx], self.heap[parent] = self.heap[parent], self.heap[idx]
+            self._bubble_up(parent)
+
+    def _bubble_down(self, idx):
+        left = 2 * idx + 1
+        right = 2 * idx + 2
+        smallest = idx
+        if left < len(self.heap) and self.heap[left] < self.heap[smallest]:
+            smallest = left
+        if right < len(self.heap) and self.heap[right] < self.heap[smallest]:
+            smallest = right
+        if smallest != idx:
+            self.heap[idx], self.heap[smallest] = self.heap[smallest], self.heap[idx]
+            self._bubble_down(smallest)
+
+
+def find_median(stream):
+    max_heap = MinHeap() # stores negatives to simulate max heap
+    min_heap = MinHeap()
+    medians = []
+    
+    for num in stream:
+        if len(max_heap) == 0 or num <= -max_heap.peek():
+            max_heap.push(-num)
+        else:
+            min_heap.push(num)
+
+        if len(max_heap) > len(min_heap) + 1:
+            min_heap.push(-max_heap.pop())
+        elif len(min_heap) > len(max_heap):
+            max_heap.push(-min_heap.pop())
+
+        if len(max_heap) == len(min_heap):
+            medians.append((-max_heap.peek() + min_heap.peek()) / 2.0)
+        else:
+            medians.append(float(-max_heap.peek()))
+            
+    return medians
+```

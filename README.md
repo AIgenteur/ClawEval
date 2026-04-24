@@ -134,13 +134,13 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 
 ### 🏅 ClawEval v2 Leaderboard
 
-| Rank | Model | Provider | Score | % | 100% Tests | Notes |
-|------|-------|----------|-------|---|------------|-------|
-| 🥇 | **Kimi K2.6** | ☁️ Ollama + OpenRouter | 892/1220 | **73.1%** | 15 | Thinking model — needs 32k tokens |
-| 🥈 | **Qwen3.5-Plus** | ☁️ Alibaba | 862/1220 | **70.7%** | 21 | Most 100% tests |
-| — | GLM-5.1 | ☁️ Ollama Cloud | 🔄 Running... | — | — | Results dropping soon |
+| Rank | Model | Provider | Score | % | Perfect | Notes |
+|------|-------|----------|-------|---|---------|-------|
+| 🥇 | **Kimi K2.6** | ☁️ Ollama Cloud | 866/1220 | **71.0%** | 17 | Thinking model — needs 32k tokens |
+| 🥈 | **Qwen3.5-Plus** | ☁️ Alibaba | 862/1220 | **70.7%** | 21 | Most perfect scores, fastest |
+| 🥉 | **GLM-5.1** | ☁️ Ollama Cloud | 804/1220 | **65.9%** | 21 | 5 tests pending 16k retry |
 
-> 📊 **[Full ClawEval v2 results →](docs/results-phase-h.md)** · Models are tested sequentially — star ⭐ this repo to get notified when results drop.
+> 📊 **[Full ClawEval v2 results →](docs/results-phase-h.md)** · Star ⭐ this repo to get notified when new models drop.
 
 ---
 

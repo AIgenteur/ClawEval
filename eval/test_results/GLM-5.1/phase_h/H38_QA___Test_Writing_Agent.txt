@@ -1,0 +1,67 @@
+```python
+def is_valid_password(password):
+    if len(password) < 8 or len(password) > 64:
+        return False
+    
+    if ' ' in password:
+        return False
+        
+    if password[0].isdigit():
+        return False
+        
+    specials = set("!@#$%^&*()-_+=")
+    has_upper = has_lower = has_digit = has_special = False
+    
+    for char in password:
+        if char.isupper():
+            has_upper = True
+        elif char.islower():
+            has_lower = True
+        elif char.isdigit():
+            has_digit = True
+        elif char in specials:
+            has_special = True
+            
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+        
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i-1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+            
+    if "password" in password.lower():
+        return False
+        
+    return True
+
+def run_tests():
+    test_cases = [
+        ("Aa1!bcde", True),                     # 1: Valid password
+        ("Aa1!", False),                        # 2: Too short (< 8 chars)
+        ("Aa1!" + "a"*61, False),               # 3: Too long (> 64 chars)
+        ("aa1!bcde", False),                    # 4: No uppercase letter
+        ("AA1!BCDE", False),                    # 5: No lowercase letter
+        ("Aa!bcdef", False),                    # 6: No digit
+        ("Aa1bcdefg", False),                   # 7: No special character
+        ("Aa1! bcd", False),                    # 8: Contains space
+        ("1Aa!bcde", False),                    # 9: Starts with a digit
+        ("Aaaa1!bcd", False),                   # 10: More than 3 consecutive identical chars
+        ("Aa1!passWord", False),                # 11: Contains "password"
+        ("Aa1!PASSWORD", False),                # 12: Contains "PASSWORD" (case-insensitive)
+        ("Aa1!" + "b"*60, True),               # 13: Exactly 64 chars, valid
+        ("Aaa1!bcde", True),                    # 14: Exactly 3 consecutive identical chars (valid)
+        ("Aa1!_+-=", True),                     # 15: Valid with multiple special characters
+    ]
+    
+    results = []
+    for input_val, expected in test_cases:
+        actual = is_valid_password(input_val)
+        results.append((input_val, expected, actual))
+        
+    return results
+```
