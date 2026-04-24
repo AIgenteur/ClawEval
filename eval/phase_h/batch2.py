@@ -59,7 +59,7 @@ Tickets:
     # H-3: HEARTBEAT / HEALTH MONITOR — 15 services
     {
         "id": 3, "role": "Heartbeat / Health Monitor", "tier": 1,
-        "scoring_type": "json_numeric",
+        "scoring_type": "json_values",
         "prompt": """Analyze these 15 service health reports and provide status for each. Respond as JSON: {"s1": {"status": "healthy/degraded/down", "latency_ms": N, "error_rate_pct": N.N}, ...}
 
 Reports:

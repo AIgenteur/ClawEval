@@ -329,6 +329,34 @@ def score_h_news_errors(content, scoring):
     return found, total, msg
 
 
+def score_h_content_check(content, scoring):
+    """Score creative content by checking for presence of keywords/patterns in raw text.
+    Used for batch7 tests (Content Writer, Social Media, Image Description, Landing Page, Critic, Book).
+    Each answer key maps to a list of keywords — at least one must be present."""
+    checks = scoring.get("checks", {})
+    total = len(checks)
+    if not content or content.startswith("ERROR:") or len(content) < 50:
+        return 0, total, "No content to check"
+
+    text_lower = content.lower()
+    correct = 0
+    wrong = []
+
+    for check_name, keywords in checks.items():
+        if isinstance(keywords, str):
+            keywords = [keywords]
+        found = any(kw.lower() in text_lower for kw in keywords)
+        if found:
+            correct += 1
+        else:
+            wrong.append(f"#{check_name}: missing")
+
+    msg = f"{correct}/{total} correct"
+    if wrong:
+        msg += " | " + "; ".join(wrong[:10])
+    return correct, total, msg
+
+
 # Phase H scorer map
 H_SCORERS = {
     "json_values": score_h_json_values,
@@ -338,6 +366,7 @@ H_SCORERS = {
     "content_planner": score_h_content_planner,
     "news_errors": score_h_news_errors,
     "h_keywords": score_h_keywords,
+    "h_content_check": score_h_content_check,
 }
 
 

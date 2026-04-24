@@ -1,10 +1,11 @@
-"""Phase H Dense Tests — Batch 7: Tests 10, 17, 24, 34, 41, 58 (previously manual-review, now automated)"""
+"""Phase H Dense Tests — Batch 7: Tests 10, 17, 24, 34, 41, 58 (previously manual-review, now automated)
+Uses h_content_check scorer: checks for keyword presence in raw model output."""
 
 PHASE_H_BATCH7 = [
     # H-10: CONTENT WRITER — 20 structural constraints
     {
         "id": 10, "role": "Content Writer / Blog Writer", "tier": 2,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """Write a blog post about "Why Remote Work Is Here to Stay in 2025". 
 
 ALL 20 constraints must be met:
@@ -31,28 +32,27 @@ ALL 20 constraints must be met:
 
 Respond in markdown format with clear H2 headings.""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "has_remote_work_title": "yes",
-                "has_2025_title": "yes",
-                "has_5_h2_sections": "yes",
-                "has_3_statistics": "yes",
-                "has_introduction": "yes",
-                "has_conclusion": "yes",
-                "has_3_companies": "yes",
-                "has_2_counterarguments": "yes",
-                "has_2_paragraphs_per_section": "yes",
-                "has_3_lists": "yes",
-                "has_2_quotes": "yes",
-                "has_productivity_data": "yes",
-                "has_mental_health": "yes",
-                "has_2_tech_tools": "yes",
-                "has_call_to_action": "yes",
-                "has_transitions": "yes",
-                "has_cost_savings": "yes",
-                "has_covid_reference": "yes",
-                "has_comparison": "yes",
-                "sections_min_100_words": "yes"
+            "checks": {
+                "has_remote_work_title": ["remote work"],
+                "has_2025_title": ["2025"],
+                "has_h2_sections": ["## "],
+                "has_statistics": ["according to", "survey", "study found", "research shows", "percent"],
+                "has_introduction": ["introduction", "in recent years", "the rise of", "over the past"],
+                "has_conclusion": ["conclusion", "in conclusion", "looking ahead", "moving forward"],
+                "mentions_companies": ["google", "microsoft", "amazon", "meta", "apple", "twitter", "slack", "zoom"],
+                "has_counterarguments": ["challenge", "drawback", "downside", "however", "obstacle", "concern", "difficult"],
+                "has_bullet_lists": ["- ", "* ", "1."],
+                "has_quotes": ['"', "said", "stated", "noted", "according to"],
+                "mentions_productivity": ["productivity", "output", "performance", "efficiency"],
+                "mentions_mental_health": ["mental health", "work-life balance", "well-being", "wellbeing", "burnout"],
+                "mentions_tech_tools": ["zoom", "slack", "teams", "notion", "asana", "trello", "google meet"],
+                "has_call_to_action": ["start", "try", "consider", "embrace", "take the", "begin"],
+                "has_transitions": ["moreover", "however", "furthermore", "additionally", "in addition", "on the other hand"],
+                "mentions_cost_savings": ["cost", "savings", "save", "expense", "commut"],
+                "mentions_covid": ["covid", "pandemic", "coronavirus", "lockdown"],
+                "has_comparison": ["compared to", " vs ", "unlike", "whereas", "in contrast"],
+                "mentions_remote_flexibility": ["flexibility", "flexible", "anywhere", "hybrid"],
+                "has_substantive_content": ["employee", "employer", "organization", "workforce"]
             }
         }
     },
@@ -60,7 +60,7 @@ Respond in markdown format with clear H2 headings.""",
     # H-17: SOCIAL MEDIA CONTENT — 20 post constraints
     {
         "id": 17, "role": "Social Media Content Agent", "tier": 2,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """Create a 5-day social media content calendar for a SaaS project management tool called "TaskFlow". Respond as JSON:
 {"days": [{"day": 1, "platform": "...", "post_type": "...", "content": "...", "hashtags": [...], "cta": "...", "time": "..."}]}
 
@@ -86,28 +86,27 @@ ALL 20 constraints must be met:
 19. Include at least 1 behind-the-scenes or team culture post
 20. CTA must vary (not the same CTA repeated)""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "has_5_days": "yes",
-                "has_3_platforms": "yes",
-                "has_hashtags_per_post": "yes",
-                "has_cta_per_post": "yes",
-                "has_video_post": "yes",
-                "has_carousel_post": "yes",
-                "has_testimonial": "yes",
-                "has_posting_times": "yes",
-                "has_competitor_mention": "yes",
-                "has_educational_post": "yes",
-                "has_emoji": "yes",
-                "has_promo_post": "yes",
-                "no_consecutive_same_platform": "yes",
-                "has_trending_topic": "yes",
-                "under_280_chars": "yes",
-                "has_poll_question": "yes",
-                "has_pm_hashtag": "yes",
-                "has_b2b_targeting": "yes",
-                "has_behind_scenes": "yes",
-                "has_varied_cta": "yes"
+            "checks": {
+                "has_5_days": ["day 1", "day 2", "day 3", "day 4", "day 5", "\"day\": 1", "\"day\": 5"],
+                "has_twitter": ["twitter", "x.com", "\"x\""],
+                "has_linkedin": ["linkedin"],
+                "has_instagram": ["instagram"],
+                "has_hashtags": ["#taskflow", "#projectmanagement", "#productivity", "#saas"],
+                "has_cta": ["sign up", "try", "click", "learn more", "get started", "visit", "download"],
+                "has_video": ["video", "reel", "tiktok"],
+                "has_carousel": ["carousel", "infographic", "slide"],
+                "has_testimonial": ["testimonial", "customer", "review", "said", "love using", "transformed"],
+                "has_posting_time": [" am", " pm", "est", "pst"],
+                "has_competitor": ["competitor", "compared to", "unlike", "vs", "alternative"],
+                "has_educational": ["how to", "how-to", "tip", "guide", "tutorial", "learn"],
+                "has_emoji": ["🚀", "💡", "✅", "📊", "🎯", "💪", "🔥", "⭐"],
+                "has_promo": ["discount", "free trial", "offer", "% off", "deal", "promo"],
+                "has_trending": ["trending", "trend", "2025", "news", "latest", "industry"],
+                "has_poll": ["poll", "question", "what do you think", "vote", "which"],
+                "has_pm_hashtag": ["#projectmanagement", "#productivity"],
+                "has_b2b": ["enterprise", "b2b", "business", "team", "organization"],
+                "has_behind_scenes": ["behind", "team", "culture", "day in the life", "meet"],
+                "mentions_taskflow": ["taskflow"]
             }
         }
     },
@@ -115,7 +114,7 @@ ALL 20 constraints must be met:
     # H-24: IMAGE DESCRIPTION — 20 analysis checkpoints
     {
         "id": 24, "role": "Image Description / Understanding", "tier": 2,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """You are an image description agent. Given this detailed scene description, produce a comprehensive accessibility description and analysis. Respond as JSON:
 {"description": "...", "objects": [...], "colors": [...], "mood": "...", "composition": "...", "accessibility_alt_text": "...", "detailed_analysis": {...}}
 
@@ -144,28 +143,27 @@ ALL 20 analysis points must be covered:
 19. Accessibility alt-text (concise, under 125 characters)
 20. Suggested image tags for SEO (at least 8 tags)""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "mentions_tokyo": "yes",
-                "mentions_dusk": "yes",
-                "mentions_rain": "yes",
-                "has_object_count": "yes",
-                "mentions_neon_colors": "yes",
-                "mentions_busy_atmosphere": "yes",
-                "mentions_taxi": "yes",
-                "mentions_7eleven": "yes",
-                "mentions_anime_billboard": "yes",
-                "mentions_businessman_phone": "yes",
-                "mentions_students_uniforms": "yes",
-                "mentions_umbrellas": "yes",
-                "mentions_wet_reflections": "yes",
-                "mentions_power_lines": "yes",
-                "mentions_bilingual_signs": "yes",
-                "has_composition_analysis": "yes",
-                "has_lighting_analysis": "yes",
-                "mentions_japanese_culture": "yes",
-                "has_alt_text": "yes",
-                "has_seo_tags": "yes"
+            "checks": {
+                "mentions_tokyo": ["tokyo", "shibuya"],
+                "mentions_dusk": ["dusk", "evening", "twilight", "sunset"],
+                "mentions_rain": ["rain", "drizzle", "wet"],
+                "has_object_count": ["pedestrian", "people", "vehicle", "building"],
+                "mentions_neon_colors": ["neon", "glow", "vibrant", "illuminate"],
+                "mentions_busy_atmosphere": ["busy", "bustling", "crowded", "vibrant", "energetic"],
+                "mentions_taxi": ["taxi", "cab"],
+                "mentions_7eleven": ["7-eleven", "7eleven", "convenience store", "konbini"],
+                "mentions_anime_billboard": ["anime", "billboard", "advertisement"],
+                "mentions_businessman": ["businessman", "business man", "suit", "phone"],
+                "mentions_students": ["student", "uniform", "school"],
+                "mentions_umbrellas": ["umbrella"],
+                "mentions_reflections": ["reflection", "reflect", "wet pavement", "glistening"],
+                "mentions_power_lines": ["power line", "power lines", "overhead", "cables", "wires"],
+                "mentions_bilingual": ["japanese", "english", "bilingual", "kanji"],
+                "has_composition": ["foreground", "midground", "background", "composition"],
+                "has_lighting": ["lighting", "neon light", "artificial", "natural light"],
+                "mentions_culture": ["japanese", "culture", "urban", "japan"],
+                "has_alt_text": ["alt", "alt_text", "alt-text", "accessibility"],
+                "has_seo_tags": ["tag", "keyword", "seo"]
             }
         }
     },
@@ -173,7 +171,7 @@ ALL 20 analysis points must be covered:
     # H-34: LANDING PAGE GENERATOR — 20 structural elements
     {
         "id": 34, "role": "Landing Page Generator", "tier": 2,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """Generate the complete HTML structure for a SaaS landing page for an AI writing assistant called "QuillAI". Respond with the full HTML code.
 
 ALL 20 structural constraints must be met:
@@ -198,28 +196,27 @@ ALL 20 structural constraints must be met:
 19. Include accessibility attributes (alt text on images, aria labels)
 20. Include at least 1 comparison or "before/after" element""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "has_hero_section": "yes",
-                "has_navbar_4_links": "yes",
-                "has_4_feature_cards": "yes",
-                "has_3_pricing_tiers": "yes",
-                "has_3_testimonials": "yes",
-                "has_5_faq": "yes",
-                "has_footer_links": "yes",
-                "has_meta_description": "yes",
-                "has_title_quillai": "yes",
-                "has_email_form": "yes",
-                "has_viewport_meta": "yes",
-                "has_2_cta_buttons": "yes",
-                "has_social_proof": "yes",
-                "has_how_it_works": "yes",
-                "has_semantic_html": "yes",
-                "has_anchor_links": "yes",
-                "has_contact_email": "yes",
-                "has_ai_mention_hero": "yes",
-                "has_accessibility_attrs": "yes",
-                "has_comparison_element": "yes"
+            "checks": {
+                "has_hero_section": ["hero"],
+                "has_navbar": ["<nav", "features", "pricing"],
+                "has_features": ["feature"],
+                "has_pricing": ["free", "pro", "enterprise"],
+                "has_testimonials": ["testimonial"],
+                "has_faq": ["faq", "frequently asked", "question"],
+                "has_footer": ["<footer", "copyright", "©"],
+                "has_meta_description": ["meta name=\"description\"", "meta name='description'"],
+                "has_title_quillai": ["quillai"],
+                "has_email_form": ["<input", "<form", "email", "newsletter", "subscribe"],
+                "has_viewport": ["viewport"],
+                "has_cta_buttons": ["get started", "start free", "try free", "sign up", "free trial"],
+                "has_social_proof": ["trusted by", "users", "companies trust", "join"],
+                "has_how_it_works": ["how it works", "step 1", "step 2", "step 3"],
+                "has_semantic_html": ["<header", "<section", "<footer", "<main", "<nav"],
+                "has_anchor_links": ["href=\"#", "href='#"],
+                "has_contact": ["contact", "email", "@"],
+                "has_ai_mention": ["ai", "artificial intelligence", "ai-powered"],
+                "has_accessibility": ["alt=", "aria-", "role="],
+                "has_comparison": ["before", "after", "compared", "without", "with quillai"]
             }
         }
     },
@@ -227,7 +224,7 @@ ALL 20 structural constraints must be met:
     # H-41: CRITIC / REVIEW AGENT — 20 review checkpoints
     {
         "id": 41, "role": "Critic / Review Agent", "tier": 3,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """Write a comprehensive critical review of this Python code repository structure. Respond as JSON:
 {"overall_score": N, "categories": [{...}], "critical_issues": [...], "recommendations": [...]}
 
@@ -268,28 +265,27 @@ ALL 20 review points must be addressed:
 19. Recommend Dockerfile improvements (multi-stage, non-root)
 20. Rate severity of each issue (critical/high/medium/low)""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "has_overall_score": "yes",
-                "identifies_sql_injection": "yes",
-                "flags_hardcoded_credentials": "yes",
-                "critiques_monolithic_app": "yes",
-                "flags_no_version_pinning": "yes",
-                "critiques_test_coverage": "yes",
-                "flags_deploy_credentials": "yes",
-                "flags_chmod_777": "yes",
-                "critiques_python_38": "yes",
-                "flags_root_docker": "yes",
-                "critiques_missing_env": "yes",
-                "critiques_empty_readme": "yes",
-                "critiques_mixed_utils": "yes",
-                "suggests_project_structure": "yes",
-                "recommends_parameterized_queries": "yes",
-                "recommends_secrets_management": "yes",
-                "recommends_cicd": "yes",
-                "recommends_test_coverage": "yes",
-                "recommends_dockerfile_fixes": "yes",
-                "has_severity_ratings": "yes"
+            "checks": {
+                "has_overall_score": ["overall_score", "overall score", "score:", "/10", "out of 10"],
+                "identifies_sql_injection": ["sql injection", "sql inject", "string format", "f-string", "user_id"],
+                "flags_hardcoded_credentials": ["hardcoded", "hard-coded", "admin123", "credential", "password"],
+                "critiques_monolithic": ["monolithic", "single file", "500 lines", "separation of concern", "too large"],
+                "flags_no_version_pinning": ["version pin", "pinning", "==", "requirements"],
+                "critiques_test_coverage": ["test coverage", "insufficient test", "only 3 test", "mock", "testing"],
+                "flags_deploy_credentials": ["aws credential", "inline credential", "deploy.sh", "secret"],
+                "flags_chmod_777": ["chmod 777", "777", "permission"],
+                "critiques_python_38": ["python 3.8", "outdated", "end of life", "eol", "upgrade python"],
+                "flags_root_docker": ["root user", "non-root", "rootless", "user root", "as root"],
+                "critiques_missing_env": [".env", "env.example", "environment variable"],
+                "critiques_empty_readme": ["readme", "documentation", "empty readme", "todo"],
+                "critiques_mixed_utils": ["utils.py", "mixed responsibilit", "single responsibility", "helper"],
+                "suggests_structure": ["blueprint", "module", "package", "restructur", "refactor"],
+                "recommends_parameterized": ["parameterized", "prepared statement", "placeholder", "bind variable"],
+                "recommends_secrets": ["secret management", "vault", "environment variable", "dotenv", ".env"],
+                "recommends_cicd": ["ci/cd", "ci cd", "pipeline", "github action", "continuous integration"],
+                "recommends_test_coverage": ["coverage", "80%", "90%", "pytest", "test suite"],
+                "recommends_dockerfile": ["multi-stage", "non-root", "slim", "alpine", "dockerfile"],
+                "has_severity_ratings": ["critical", "high", "medium", "low", "severity"]
             }
         }
     },
@@ -297,7 +293,7 @@ ALL 20 review points must be addressed:
     # H-58: BOOK / LONG-FORM WRITING — 20 structural constraints
     {
         "id": 58, "role": "Book / Long-Form Writing", "tier": 5,
-        "scoring_type": "h_keywords",
+        "scoring_type": "h_content_check",
         "prompt": """Write a detailed outline for a non-fiction book titled "The AI Revolution in Small Business: A Practical Guide for 2025". Respond as JSON:
 {"title": "...", "subtitle": "...", "chapters": [{"number": N, "title": "...", "sections": [...], "key_takeaway": "...", "estimated_pages": N}], "appendices": [...], "total_chapters": N, "target_audience": "...", "word_count_estimate": N}
 
@@ -323,28 +319,27 @@ ALL 20 constraints must be met:
 19. Total word count estimate must be 50,000-80,000
 20. Include at least 1 chapter addressing common fears/objections about AI""",
         "scoring": {
-            "type": "json_values",
-            "answers": {
-                "has_12_chapters": "yes",
-                "has_3_5_sections_each": "yes",
-                "ch1_is_introduction": "yes",
-                "ch12_is_conclusion": "yes",
-                "has_2_tool_chapters": "yes",
-                "has_roi_chapter": "yes",
-                "has_ethics_chapter": "yes",
-                "has_implementation_chapter": "yes",
-                "has_key_takeaways": "yes",
-                "has_page_estimates": "yes",
-                "total_pages_200_350": "yes",
-                "has_2_appendices": "yes",
-                "has_target_audience": "yes",
-                "has_case_studies_chapter": "yes",
-                "has_hiring_chapter": "yes",
-                "logical_progression": "yes",
-                "has_marketing_chapter": "yes",
-                "has_customer_service_chapter": "yes",
-                "word_count_50k_80k": "yes",
-                "has_fears_objections_chapter": "yes"
+            "checks": {
+                "has_12_chapters": ["chapter 12", "\"number\": 12", "chapter twelve"],
+                "has_sections": ["section", "sections"],
+                "ch1_is_introduction": ["introduction", "overview", "getting started", "chapter 1"],
+                "ch12_is_conclusion": ["conclusion", "future", "outlook", "looking ahead"],
+                "has_ai_tools": ["chatgpt", "midjourney", "dall-e", "copilot", "gemini", "claude"],
+                "has_roi": ["roi", "return on investment", "financial impact", "cost", "revenue"],
+                "has_ethics": ["ethics", "ethical", "risk", "bias", "privacy", "responsible"],
+                "has_implementation": ["implementation", "getting started", "deploy", "adopt", "integration"],
+                "has_key_takeaways": ["key_takeaway", "key takeaway", "takeaway"],
+                "has_page_estimates": ["estimated_pages", "pages", "page count"],
+                "has_appendices": ["appendix", "appendices", "glossary", "resource"],
+                "has_target_audience": ["target_audience", "target audience", "small business", "entrepreneur"],
+                "has_case_studies": ["case study", "case studies", "real-world", "example", "success story"],
+                "has_hiring": ["hiring", "team building", "talent", "recruit", "workforce"],
+                "has_marketing": ["marketing", "sales", "advertising", "lead generation"],
+                "has_customer_service": ["customer service", "customer support", "chatbot", "helpdesk"],
+                "has_word_count": ["word_count", "word count", "50,000", "60,000", "70,000", "80,000", "50000", "60000", "70000"],
+                "has_fears": ["fear", "objection", "concern", "myth", "misconception", "worry"],
+                "has_book_title": ["ai revolution", "small business"],
+                "has_structured_json": ["\"chapters\"", "\"title\"", "\"number\""]
             }
         }
     },

@@ -136,9 +136,9 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 
 | Rank | Model | Provider | Score | % | Perfect | Notes |
 |------|-------|----------|-------|---|---------|-------|
-| 🥇 | **Kimi K2.6** | ☁️ Ollama Cloud | 866/1220 | **71.0%** | 17 | Thinking model — needs 32k tokens |
-| 🥈 | **Qwen3.5-Plus** | ☁️ Alibaba | 862/1220 | **70.7%** | 21 | Most perfect scores, fastest |
-| 🥉 | **GLM-5.1** | ☁️ Ollama Cloud | 816/1220 | **66.9%** | 21 | Tied for most perfect scores |
+| 🥇 | **Qwen3.5-Plus** | ☁️ Alibaba | 979/1220 | **80.2%** | 25 | Most perfect scores |
+| 🥈 | **Kimi K2.6** | ☁️ Ollama Cloud | 974/1220 | **79.8%** | 22 | Thinking model — needs 32k tokens |
+| 🥉 | **GLM-5.1** | ☁️ Ollama Cloud | 929/1220 | **76.1%** | 24 | Strong on creative tasks |
 
 > 📊 **[Full ClawEval v2 results →](docs/results-phase-h.md)** · Star ⭐ this repo to get notified when new models drop.
 
