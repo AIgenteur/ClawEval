@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 code applies an 80% discount instead of 20% (subtotal multiplied by 0.20 instead of 0.80).",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 code subtracts 1000% of subtotal due to multiplication by 10 instead of 0.10, causing large negative totals.",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is silently ignored with 'pass'; should raise an error or reject the order.",
+      "severity": "major"
+    },
+    {
+      "line": 24,
+      "bug": "Stock is decremented before checking availability, and mutates the input order data directly, causing negative stock and unintended side effects for the caller.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "total_revenue =+ total assigns the positive value of total instead of accumulating revenue (should be +=).",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero occurs if the orders list is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "max() on an empty results list raises a ValueError.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for the presence of '@', accepting clearly invalid email strings.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Uses 'distance + per_km' instead of 'distance * per_km', making distance cost negligible and independent of actual distance.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable condition: weight > 50 is never tested because weight > 30 catches those cases first.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "round(cost) without a decimal argument returns an integer, losing cents precision (should be round(cost, 2)).",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "merged references profile_a instead of creating a copy, so later modifications mutate the original input profile.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded 'updated_at' date instead of using the current timestamp or original value.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive split(',') fails to handle CSV quoted fields, escaped commas, or line breaks inside fields.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "seen.append(item) runs unconditionally, causing duplicates to be recorded multiple times and 'seen' to contain duplicate entries.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}

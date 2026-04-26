@@ -1,0 +1,17 @@
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) - provides eventual consistency, supports offline editing, and eliminates the need for a central authoritative server for conflict resolution.",
+  "q2": "WebSocket - required for full-duplex, low-latency bidirectional communication needed for real-time edit propagation and cursor synchronization.",
+  "q3": "MongoDB - chosen for its native document storage model, flexible schema for rich text structures, built-in change streams for sync, and horizontal scalability.",
+  "q4": "Local-first architecture using IndexedDB to store a local CRDT instance; edits are applied offline and automatically synced/merged when connectivity is restored.",
+  "q5": "Redis Pub/Sub (with Redis Cluster) - provides low-latency, high-throughput message routing for real-time events and document presence management across WebSocket nodes.",
+  "q6": "Stateless WebSocket servers behind an ALB/NGINX with Redis-backed pub/sub for cross-node message routing, combined with consistent hashing to route document connections to specific server shards.",
+  "q7": "Throttled cursor broadcasts (30-60Hz) via WebSocket presence channels; coordinates are sent as relative deltas with user metadata (color, name) and filtered per document session.",
+  "q8": "OAuth 2.0 / OIDC with short-lived JWT access tokens and refresh tokens; permissions are validated via a centralized auth service using policy-as-code (e.g., OPA).",
+  "q9": "Event sourcing with append-only CRDT operation logs stored in MongoDB/S3, combined with periodic point-in-time snapshots; versioning supports linear history and rollback.",
+  "q10": "Global CDN (CloudFront/Cloudflare) with cache-busting via hashed filenames, edge caching for static assets, and automated purge hooks on deployment pipelines.",
+  "q11": "Block-based document model with virtual scrolling and lazy loading; CRDT operations run in Web Workers, and only viewport-visible sections are rendered and synced.",
+  "q12": "Distributed sliding-window rate limiting at the API gateway using Redis; applies per-user and per-document quotas with adaptive throttling for real-time sync payloads.",
+  "q13": "Automated daily full snapshots + continuous change-stream replication to S3 with cross-region redundancy; supports point-in-time recovery (PITR) and quarterly restore validation.",
+  "q14": "Client-side presigned URLs for direct S3/GCS uploads; asynchronous background workers handle image processing, metadata extraction, and document reference updates via a message queue.",
+  "q15": "OpenTelemetry for unified tracing/metrics, Prometheus + Grafana for visualization, Loki/ELK for log aggregation, and PagerDuty for alerting; integrated APM for end-to-end latency tracking."
+}

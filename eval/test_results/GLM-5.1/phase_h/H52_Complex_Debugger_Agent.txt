@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Using a list for a queue is inefficient for removing elements from the front (O(N)).",
+      "fix": "Use `collections.deque` instead of `list`."
+    },
+    {
+      "line": "11",
+      "bug": "`asyncio.get_event_loop()` is deprecated in Python 3.10+ when called from a coroutine.",
+      "fix": "Use `asyncio.get_running_loop().time()`."
+    },
+    {
+      "line": "14",
+      "bug": "Using `if` instead of `while` allows multiple waiting tasks to wake up and exceed the rate limit, and `now` is not recalculated after sleeping.",
+      "fix": "Change to `while` and recalculate `now` and `wait` inside the loop."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new `aiohttp.ClientSession` for every request is inefficient and can exhaust file descriptors.",
+      "fix": "Create the session once outside `fetch_one` and pass it as an argument."
+    },
+    {
+      "line": "27",
+      "bug": "`session.get()` should be used as an async context manager to ensure the response is closed, and `timeout` requires `aiohttp.ClientTimeout`.",
+      "fix": "`async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:`"
+    },
+    {
+      "line": "29",
+      "bug": "Using `url` as a dictionary key will overwrite results if there are duplicate URLs.",
+      "fix": "Use an index or return a list from `gather`."
+    },
+    {
+      "line": "31",
+      "bug": "Same overwriting issue as Line 29, and silently catching all exceptions without logging is bad practice.",
+      "fix": "Use an index, and log the exception."
+    },
+    {
+      "line": "32",
+      "bug": "Redundant `pass` statement after an assignment.",
+      "fix": "Remove `pass`."
+    },
+    {
+      "line": "35",
+      "bug": "Modifying a shared dictionary `results` from concurrent tasks is fragile and unidiomatic.",
+      "fix": "Have `fetch_one` return the data and collect it via `results = await asyncio.gather(*tasks)`."
+    },
+    {
+      "line": "42",
+      "bug": "The comment says 'missing await', but awaiting it would run sequentially. Passing bare coroutines to `asyncio.gather()` is deprecated in Python 3.10+.",
+      "fix": "Use `asyncio.create_task(process_item(item))`."
+    },
+    {
+      "line": "45",
+      "bug": "Using `yield` in an `async def` makes it an async generator, which requires `async for` to iterate.",
+      "fix": "If a list was intended, replace the loop with `return results`."
+    },
+    {
+      "line": "52",
+      "bug": "Using a list for an async connection pool doesn't allow tasks to wait for a connection to become available.",
+      "fix": "Use `asyncio.Queue(maxsize=size)`."
+    },
+    {
+      "line": "56",
+      "bug": "The method doesn't enforce `self.size` and will create infinite connections if the pool is empty.",
+      "fix": "Use `await queue.get()` which will wait if the pool is empty and at max capacity."
+    },
+    {
+      "line": "60",
+      "bug": "Appending to a list doesn't signal waiting tasks that a connection is available.",
+      "fix": "Use `await queue.put(conn)`."
+    },
+    {
+      "line": "68",
+      "bug": "`len(results)` will be 1 because `results` is a dict and all URLs are identical, overwriting each other.",
+      "fix": "Fix the `results` data structure to use a list or unique keys."
+    }
+  ],
+  "count": 15
+}
+```

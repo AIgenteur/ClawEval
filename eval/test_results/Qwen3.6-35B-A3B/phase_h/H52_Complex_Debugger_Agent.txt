@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Using a standard list for FIFO timestamp tracking is O(n) for frequent pops from the front.",
+      "fix": "Use collections.deque() for O(1) appends and pops."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated in Python 3.10+ and raises RuntimeError if no loop is running.",
+      "fix": "Replace with asyncio.get_running_loop().time()"
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession per request causes socket exhaustion and severe performance degradation.",
+      "fix": "Instantiate the session once outside fetch_one() and pass it in, or use a shared session."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 passes an integer, but aiohttp expects a ClientTimeout object.",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30)"
+    },
+    {
+      "line": "29",
+      "bug": "Concurrent modification of the results dict without synchronization can cause race conditions.",
+      "fix": "Protect writes with asyncio.Lock or collect results via an asyncio.Queue."
+    },
+    {
+      "line": "31",
+      "bug": "Same concurrent dict modification issue as line 29.",
+      "fix": "Protect writes with asyncio.Lock or collect results via an asyncio.Queue."
+    },
+    {
+      "line": "32",
+      "bug": "Silently swallowing all exceptions hides errors and makes debugging impossible.",
+      "fix": "Log the exception (e.g., logging.exception()) or re-raise it."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather() fails fast on the first exception, cancelling all remaining tasks.",
+      "fix": "Add return_exceptions=True to collect all results/errors without cancelling tasks."
+    },
+    {
+      "line": "42",
+      "bug": "Calling an async function directly returns a coroutine object, not a scheduled task.",
+      "fix": "Use task = asyncio.create_task(process_item(item))"
+    },
+    {
+      "line": "45",
+      "bug": "yielding inside a synchronous loop within an async generator is valid but can cause unexpected blocking or confusion in async contexts.",
+      "fix": "Use yield r directly or iterate with async for in the caller."
+    },
+    {
+      "line": "52",
+      "bug": "Using a plain list as a connection pool is not async-safe and lacks proper queue semantics.",
+      "fix": "Replace with asyncio.Queue(maxsize=size) for thread/async-safe management."
+    },
+    {
+      "line": "60",
+      "bug": "Appending to the pool without checking the configured size limit violates the pool constraint.",
+      "fix": "Check if len(self.pool) < self.size before appending, or use a Semaphore/Queue."
+    },
+    {
+      "line": "63",
+      "bug": "async def functions return coroutines, but returning a plain object() defeats the purpose of async I/O simulation.",
+      "fix": "Return an awaitable like await asyncio.sleep(0) or keep it sync but mark the function as regular def."
+    },
+    {
+      "line": "68",
+      "bug": "The script never actually runs the async main() function.",
+      "fix": "Add asyncio.run(main()) at the end of the script."
+    },
+    {
+      "line": "31",
+      "bug": "except Exception: catches Exception but CancelledError inherits from BaseException in Python 3.8+, making it safe but still bad practice to catch broadly in async code.",
+      "fix": "Use except (Exception, asyncio.CancelledError): or handle cancellation explicitly."
+    }
+  ],
+  "count": 15
+}
+```

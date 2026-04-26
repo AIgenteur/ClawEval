@@ -1,0 +1,90 @@
+```python
+class JSONValidator:
+    """
+    Validates a JSON-like dictionary (`data`) against a given schema.
+    Schema format:
+        {"field_name": {"type": "str/int/float/bool/list/dict",
+                        "required": true/false,
+                        "min": N, "max": N,
+                        "min_length": N, "max_length": N}}
+    Returns {"valid": bool, "errors": [list of error strings]}.
+    """
+
+    def validate(self, data, schema):
+        errors = []
+
+        for field, specs in schema.items():
+            required = specs.get("required", False)
+            expected_type = specs.get("type")
+
+            # Check for missing required field
+            if field not in data:
+                if required:
+                    errors.append(f"Missing required field '{field}'")
+                continue  # no value, nothing else to check
+
+            value = data[field]
+
+            # -------- Type check --------
+            type_ok = True
+            if expected_type is not None:
+                if expected_type == "int":
+                    # bool is a subclass of int, so exclude it explicitly
+                    type_ok = isinstance(value, int) and not isinstance(value, bool)
+                elif expected_type == "float":
+                    type_ok = isinstance(value, float)
+                elif expected_type == "bool":
+                    type_ok = isinstance(value, bool)
+                elif expected_type == "str":
+                    type_ok = isinstance(value, str)
+                elif expected_type == "list":
+                    type_ok = isinstance(value, list)
+                elif expected_type == "dict":
+                    type_ok = isinstance(value, dict)
+                else:
+                    type_ok = False  # unknown type
+
+            if not type_ok:
+                python_type = type(value).__name__
+                errors.append(
+                    f"Field '{field}' expected type {expected_type}, got {python_type}"
+                )
+                # skip further constraint checks for this field
+                continue
+
+            # -------- Type‑specific constraints (only when type matches) --------
+            if expected_type in ("int", "float"):
+                if "min" in specs and value < specs["min"]:
+                    errors.append(
+                        f"Field '{field}' value {value} is less than minimum {specs['min']}"
+                    )
+                if "max" in specs and value > specs["max"]:
+                    errors.append(
+                        f"Field '{field}' value {value} is greater than maximum {specs['max']}"
+                    )
+
+            elif expected_type == "str":
+                if "min_length" in specs and len(value) < specs["min_length"]:
+                    errors.append(
+                        f"Field '{field}' length {len(value)} is less than minimum {specs['min_length']}"
+                    )
+                if "max_length" in specs and len(value) > specs["max_length"]:
+                    errors.append(
+                        f"Field '{field}' length {len(value)} is greater than maximum {specs['max_length']}"
+                    )
+
+            elif expected_type == "list":
+                if "min_length" in specs and len(value) < specs["min_length"]:
+                    errors.append(
+                        f"Field '{field}' length {len(value)} is less than minimum {specs['min_length']}"
+                    )
+                if "max_length" in specs and len(value) > specs["max_length"]:
+                    errors.append(
+                        f"Field '{field}' length {len(value)} is greater than maximum {specs['max_length']}"
+                    )
+
+            # 'dict' has no length constraints in this schema
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+```

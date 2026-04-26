@@ -1,0 +1,80 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "/login function, query construction",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage",
+      "location": "/login function, password comparison implies plaintext storage",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "/profile function, render_template_string with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "/search function, unescaped output",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "/run function, subprocess with shell=True and user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "/upload function, os.path.join with user-controlled filename",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "/download function, send_file with user-controlled path",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (YAML)",
+      "location": "/config function, yaml.load with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle)",
+      "location": "/session function, pickle.loads with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "/admin function, SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "/export function, os.system with user-controlled format parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "app.run(debug=True)",
+      "severity": "high"
+    },
+    {
+      "type": "Exposed Host Binding",
+      "location": "app.run(host=\"0.0.0.0\")",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Authentication",
+      "location": "Multiple routes: /run, /upload, /download, /config, /session, /export",
+      "severity": "critical"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "/upload function, no validation on file type or content",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}

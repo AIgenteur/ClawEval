@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Race condition: multiple coroutines can check and append to self.requests, exceeding max_requests.",
+      "fix": "Use asyncio.Lock to protect the critical section in acquire."
+    },
+    {
+      "line": "11",
+      "bug": "Deprecated asyncio.get_event_loop().time() should be asyncio.get_running_loop().time().",
+      "fix": "Replace with asyncio.get_running_loop().time()."
+    },
+    {
+      "line": "11",
+      "bug": "Timestamp captured before sleep; appended time is old, causing incorrect rate limiting.",
+      "fix": "Capture the current time after the sleep (or use a monotonic clock after sleep)."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession for each request is inefficient and may cause resource leaks.",
+      "fix": "Create a single session outside fetch_one and reuse it."
+    },
+    {
+      "line": "27",
+      "bug": "timeout parameter expects aiohttp.ClientTimeout object, not an integer.",
+      "fix": "Use aiohttp.ClientTimeout(total=30) instead of 30."
+    },
+    {
+      "line": "29",
+      "bug": "results dictionary uses URL as key; duplicate URLs cause overwrite, losing data.",
+      "fix": "Use a list of tuples or a dict with unique keys (e.g., index) to store all results."
+    },
+    {
+      "line": "31",
+      "bug": "Same as line 29: duplicate URL overwrite in except block.",
+      "fix": "Same fix: ensure each URL result is stored uniquely."
+    },
+    {
+      "line": "32",
+      "bug": "Silent exception handling; missing logging of errors.",
+      "fix": "Log the exception (e.g., using logging.exception) before passing."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather without return_exceptions=True will cancel other tasks if one raises an unhandled exception.",
+      "fix": "Use asyncio.gather(*tasks, return_exceptions=True) to handle exceptions gracefully."
+    },
+    {
+      "line": "42",
+      "bug": "Missing await on process_item call; the coroutine is not executed immediately.",
+      "fix": "Either await it directly or use asyncio.create_task to schedule it, but for gather, the current code is correct. However, the comment indicates a bug, so fix by adding await if sequential processing is intended."
+    },
+    {
+      "line": "45",
+      "bug": "yield in async generator; the function is an async generator but may not be consumed with async for, leading to incorrect usage.",
+      "fix": "Ensure the caller uses async for to iterate over the generator, or change to return a list."
+    },
+    {
+      "line": "52",
+      "bug": "Connection pool is unbounded; no limit on number of connections stored.",
+      "fix": "Initialize pool with connections up to self.size and enforce the limit in release."
+    },
+    {
+      "line": "60",
+      "bug": "release does not check if pool is full; can exceed self.size.",
+      "fix": "Only append if len(self.pool) < self.size, otherwise discard the connection."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection returns a plain object instead of a real connection.",
+      "fix": "Implement actual connection creation (e.g., aiohttp.ClientSession or similar)."
+    },
+    {
+      "line": "68",
+      "bug": "print statement shows len(results) which is 1 due to duplicate URLs, not the actual number of requests.",
+      "fix": "Use a list to store results or ensure unique URLs to get correct count."
+    }
+  ],
+  "count": 15
+}

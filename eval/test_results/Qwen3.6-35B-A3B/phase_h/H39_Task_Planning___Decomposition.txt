@@ -1,0 +1,26 @@
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Assess current monolith architecture & define microservice boundaries", "depends_on": [], "effort_days": 4, "team": "backend"},
+    {"id": 2, "task": "Initialize repository structure & container orchestration base", "depends_on": [1], "effort_days": 3, "team": "devops"},
+    {"id": 3, "task": "Define shared API contracts & OpenAPI specifications", "depends_on": [1], "effort_days": 5, "team": "backend"},
+    {"id": 4, "task": "Establish CI/CD pipeline for automated builds & linting", "depends_on": [2], "effort_days": 4, "team": "devops"},
+    {"id": 5, "task": "Extract core authentication & user management service", "depends_on": [3], "effort_days": 7, "team": "backend"},
+    {"id": 6, "task": "Perform database migration for user service schema", "depends_on": [5], "effort_days": 5, "team": "backend"},
+    {"id": 7, "task": "Complete API gateway setup and routing configuration", "depends_on": [4], "effort_days": 4, "team": "devops"},
+    {"id": 8, "task": "Extract order processing & transaction service", "depends_on": [3], "effort_days": 8, "team": "backend"},
+    {"id": 9, "task": "Perform database migration for order service schema", "depends_on": [8], "effort_days": 6, "team": "backend"},
+    {"id": 10, "task": "Update frontend routing to point to API gateway", "depends_on": [7], "effort_days": 4, "team": "frontend"},
+    {"id": 11, "task": "Implement inter-service communication & message queues", "depends_on": [5, 8], "effort_days": 6, "team": "backend"},
+    {"id": 12, "task": "Set up centralized logging & distributed tracing", "depends_on": [4], "effort_days": 5, "team": "devops"},
+    {"id": 13, "task": "Extract product catalog & inventory service", "depends_on": [3], "effort_days": 7, "team": "backend"},
+    {"id": 14, "task": "Perform database migration for product service schema", "depends_on": [13], "effort_days": 5, "team": "backend"},
+    {"id": 15, "task": "Execute comprehensive testing suite for microservices", "depends_on": [11, 14], "effort_days": 7, "team": "qa"},
+    {"id": 16, "task": "Conduct performance testing on new architecture", "depends_on": [10, 12], "effort_days": 5, "team": "qa"},
+    {"id": 17, "task": "Refactor frontend state management for async service calls", "depends_on": [10], "effort_days": 6, "team": "frontend"},
+    {"id": 18, "task": "Implement frontend feature flags for gradual rollout", "depends_on": [17], "effort_days": 3, "team": "frontend"},
+    {"id": 19, "task": "Orchestrate blue-green deployment strategy", "depends_on": [15, 16], "effort_days": 6, "team": "devops"},
+    {"id": 20, "task": "Final validation testing and production cutover", "depends_on": [18, 19], "effort_days": 4, "team": "qa"}
+  ]
+}
+```

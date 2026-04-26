@@ -1,0 +1,80 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - query construction: f\"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'\"",
+      "severity": "critical"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - render_template_string with user-controlled username",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() - subprocess.run(cmd, shell=True) with JSON command",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data() - os.system with user-supplied fmt parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (YAML)",
+      "location": "load_config() - yaml.load(data) without SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle)",
+      "location": "restore_session() - pickle.loads(data) on raw request data",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal (File Read)",
+      "location": "download() - send_file with unsanitized path query parameter",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal (File Write)",
+      "location": "upload() - os.path.join(UPLOAD_DIR, f.filename) with unsanitized filename",
+      "severity": "high"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() - returning unescaped user input in HTML: f\"<html><body>Results for: {q}</body></html>\"",
+      "severity": "high"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "global variable SECRET = 'admin123'",
+      "severity": "high"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "app.run(debug=True, host='0.0.0.0')",
+      "severity": "high"
+    },
+    {
+      "type": "Use of Broken Cryptographic Hash (MD5)",
+      "location": "login() - hashlib.md5(user.encode()).hexdigest() for token generation",
+      "severity": "medium"
+    },
+    {
+      "type": "Predictable Authentication Token",
+      "location": "login() - token = MD5(username) without any secret, allowing forgery",
+      "severity": "high"
+    },
+    {
+      "type": "Plaintext Password Storage",
+      "location": "login() - password compared directly in SQL query, implying plaintext storage",
+      "severity": "high"
+    },
+    {
+      "type": "Sensitive Token in URL",
+      "location": "admin() - SECRET passed via request.args.get('token') in query string",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}

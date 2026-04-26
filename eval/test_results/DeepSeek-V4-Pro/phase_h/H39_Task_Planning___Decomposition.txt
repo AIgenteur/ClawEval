@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Domain analysis and service decomposition for the Django monolith",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Analyze frontend dependencies on monolith APIs and plan migration strategy",
+      "depends_on": [1],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 3,
+      "task": "Set up containerized development environment and orchestration",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Define API contracts, data formats, and versioning strategy for microservices",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 5,
+      "task": "Establish CI/CD pipeline for the existing monolith",
+      "depends_on": [3],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Database decomposition plan and migration strategy",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 7,
+      "task": "Set up API Gateway infrastructure and base configuration",
+      "depends_on": [3, 4],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 8,
+      "task": "Extract pilot microservice (e.g., user authentication) with its APIs",
+      "depends_on": [3, 4, 6],
+      "effort_days": 10,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Migrate pilot service database (split user data and sync)",
+      "depends_on": [6, 8],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Configure API Gateway routing for the pilot service",
+      "depends_on": [7, 8],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 11,
+      "task": "Integration and contract testing of pilot service",
+      "depends_on": [9, 10],
+      "effort_days": 6,
+      "team": "qa"
+    },
+    {
+      "id": 12,
+      "task": "Implement frontend API client layer for pilot service endpoints",
+      "depends_on": [4, 10],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 13,
+      "task": "End-to-end testing of pilot service together with monolith through API Gateway",
+      "depends_on": [11, 12],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 14,
+      "task": "Set up centralized logging, monitoring, and alerting",
+      "depends_on": [3],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 15,
+      "task": "Extract second microservice (e.g., orders) with its APIs based on pilot patterns",
+      "depends_on": [8, 9, 13],
+      "effort_days": 10,
+      "team": "backend"
+    },
+    {
+      "id": 16,
+      "task": "Migrate second service database and implement data sync",
+      "depends_on": [6, 15],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 17,
+      "task": "Configure API Gateway routing for the second microservice",
+      "depends_on": [15, 10],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 18,
+      "task": "Adapt UI components to consume second service and integrate with pilot features",
+      "depends_on": [12, 17],
+      "effort_days": 6,
+      "team": "frontend"
+    },
+    {
+      "id": 19,
+      "task": "Full regression testing including performance and security across all services",
+      "depends_on": [13, 16, 18],
+      "effort_days": 8,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Final production cutover, decommission monolith modules, and go-live monitoring",
+      "depends_on": [14, 19],
+      "effort_days": 5,
+      "team": "devops"
+    }
+  ]
+}

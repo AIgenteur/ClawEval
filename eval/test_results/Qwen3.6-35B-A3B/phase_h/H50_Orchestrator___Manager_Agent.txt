@@ -1,0 +1,75 @@
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "customer_id, refund_reason, transaction_id, amount, purchase_date",
+      "output": "validated_request, data_integrity_status, enriched_metadata",
+      "next": "FraudCheckAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5,
+      "logging": true
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request, data_integrity_status, enriched_metadata, historical_patterns",
+      "output": "fraud_score, risk_classification, verification_flags",
+      "next": "ApprovalAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5,
+      "logging": true
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_score, risk_classification, verification_flags, refund_amount, policy_rules",
+      "output": "approval_decision, decision_reason, authorized_refund_amount",
+      "next": "PaymentAgent (if approved) / EscalationAgent (if rejected/edge_case)",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 10,
+      "logging": true
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "authorized_refund_amount, customer_payment_method, approval_decision, transaction_id",
+      "output": "payment_transaction_id, payment_status, settlement_receipt",
+      "next": "NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 15,
+      "logging": true
+    },
+    {
+      "name": "EscalationAgent",
+      "input": "decision_reason, edge_case_details, customer_history, manual_review_queue",
+      "output": "human_review_ticket, manual_decision, resolution_notes, audit_reference",
+      "next": "NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 10,
+      "logging": true
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "payment_status OR manual_decision, settlement_receipt, resolution_notes, customer_contact_preferences",
+      "output": "notification_dispatch_status, channel_used, delivery_timestamp, final_audit_log",
+      "next": null,
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5,
+      "logging": true
+    }
+  ],
+  "constraints": {
+    "1_min_agents": 6,
+    "2_required_agents": ["ValidationAgent", "FraudCheckAgent", "ApprovalAgent", "PaymentAgent", "NotificationAgent"],
+    "3_input_output_next_defined": true,
+    "4_conditional_branch": "ApprovalAgent routes to PaymentAgent on approval, EscalationAgent on rejection/edge_case",
+    "5_fallback_per_agent": "ErrorHandlerAgent (centralized error/timeout/retry handler)",
+    "6_first_agent": "ValidationAgent",
+    "7_last_agent": "NotificationAgent",
+    "8_fraud_before_approval": true,
+    "9_payment_after_approval": true,
+    "10_max_total_time_seconds": 50,
+    "11_outcome_handling": "Approved and rejected paths both converge to NotificationAgent",
+    "12_logging_audit": "Structured audit logging enabled at every agent step",
+    "13_no_circular_dependencies": true,
+    "14_human_escalation": "EscalationAgent handles edge cases via human-in-the-loop review",
+    "15_timeout_per_agent": {"ValidationAgent": 5, "FraudCheckAgent": 5, "ApprovalAgent": 10, "PaymentAgent": 15, "EscalationAgent": 10, "NotificationAgent": 5}
+  }
+}

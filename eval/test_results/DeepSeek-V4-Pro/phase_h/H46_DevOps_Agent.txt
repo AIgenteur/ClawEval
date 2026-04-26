@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Replicas set to 1 creates a single point of failure; no high availability.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Using ':latest' image tag leads to non-immutable, unpredictable deployments.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Missing explicit imagePullPolicy (important with :latest tag).",
+      "severity": "minor"
+    },
+    {
+      "line": "20",
+      "issue": "Empty resources `{}` means no requests/limits are set; can cause resource starvation and node instability.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Container runs as root (runAsRoot: true), increasing the attack surface.",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "Privileged mode (privileged: true) grants full host capabilities; severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Hardcoded database password in plain text (DB_PASSWORD). Use SecretKeyRef instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "Hardcoded API key in plain text (API_KEY). Use SecretKeyRef instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "41-42",
+      "issue": "Using hostPath volume for container data breaks pod portability and weakens isolation.",
+      "severity": "major"
+    },
+    {
+      "line": "42",
+      "issue": "hostPath points to /tmp/data, which is temporary storage; data is lost on node reboot.",
+      "severity": "minor"
+    },
+    {
+      "line": "34 (resources block)",
+      "issue": "Sidecar container defines resource requests but no limits, allowing unbounded resource usage.",
+      "severity": "minor"
+    },
+    {
+      "line": "36-37",
+      "issue": "Sidecar requests 10Gi memory and 8 CPUs, which is excessively high and probably a misconfiguration.",
+      "severity": "major"
+    },
+    {
+      "line": "16 (container: api)",
+      "issue": "Missing liveness probe; Kubernetes cannot restart a stuck container automatically.",
+      "severity": "major"
+    },
+    {
+      "line": "16 (container: api)",
+      "issue": "Missing readiness probe; traffic might be sent to a container that isn't ready to serve.",
+      "severity": "major"
+    },
+    {
+      "line": "49-52",
+      "issue": "Service type LoadBalancer exposes only HTTP (port 80) without TLS, risking data interception.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

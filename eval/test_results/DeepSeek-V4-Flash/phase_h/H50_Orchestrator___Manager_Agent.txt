@@ -1,0 +1,85 @@
+{
+  "agents": [
+    {
+      "name": "ValidationTriage",
+      "input": "Customer refund request (order ID, reason, amount, customer ID)",
+      "output": "Validated request or error message",
+      "next": {
+        "valid": "FraudCheck",
+        "invalid": "Notification"
+      },
+      "fallback": "Escalation",
+      "timeout": 5
+    },
+    {
+      "name": "FraudCheck",
+      "input": "Validated request",
+      "output": "Fraud assessment (low_risk, high_risk, suspicious)",
+      "next": {
+        "low_risk": "Approval",
+        "high_risk": "Notification",
+        "suspicious": "Escalation"
+      },
+      "fallback": "Escalation",
+      "timeout": 10
+    },
+    {
+      "name": "Approval",
+      "input": "Fraud assessment (low_risk) and request",
+      "output": "Approval decision (approved or rejected)",
+      "next": {
+        "approved": "Payment",
+        "rejected": "Notification"
+      },
+      "fallback": "Escalation",
+      "timeout": 5
+    },
+    {
+      "name": "Payment",
+      "input": "Approved request",
+      "output": "Payment confirmation or failure",
+      "next": {
+        "success": "Notification",
+        "failure": "Escalation"
+      },
+      "fallback": "Escalation",
+      "timeout": 15
+    },
+    {
+      "name": "Notification",
+      "input": "Result (success, rejection, error) and request details",
+      "output": "Notification sent confirmation",
+      "next": "END",
+      "fallback": "Escalation",
+      "timeout": 5
+    },
+    {
+      "name": "Escalation",
+      "input": "Request and reason for escalation",
+      "output": "Human decision (approved or rejected)",
+      "next": {
+        "approved": "Payment",
+        "rejected": "Notification"
+      },
+      "fallback": "Notification",
+      "timeout": 60
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "agent_definition_requirements": ["input", "output", "next", "fallback"],
+    "conditional_branch": true,
+    "fallback_required": true,
+    "first_agent": "validation",
+    "last_agent": "notification",
+    "order_fraud_before_approval": true,
+    "order_payment_after_approval": true,
+    "max_total_time_seconds": 60,
+    "outcomes": ["approved", "rejected"],
+    "logging_required": true,
+    "no_circular_dependencies": true,
+    "human_escalation": true,
+    "timeout_required": true
+  }
+}

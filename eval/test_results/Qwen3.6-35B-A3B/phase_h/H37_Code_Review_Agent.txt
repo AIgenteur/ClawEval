@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 11,
+      "bug": "Applies 20% of the subtotal instead of a 20% discount. Should be `subtotal *= 0.80` or `subtotal -= subtotal * 0.20`.",
+      "severity": "major"
+    },
+    {
+      "line": 13,
+      "bug": "Subtracts 1000% of the subtotal instead of 10%. Should be `subtotal -= subtotal * 0.10`.",
+      "severity": "major"
+    },
+    {
+      "line": 19,
+      "bug": "Mutates the original input dictionary in-place, causing unintended side effects on the caller's data.",
+      "severity": "minor"
+    },
+    {
+      "line": 21,
+      "bug": "Silently allows negative inventory levels instead of raising an error or skipping the order.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "`=+` is parsed as assignment of a positive number, overwriting `total_revenue` each iteration instead of accumulating. Should be `+=`.",
+      "severity": "critical"
+    },
+    {
+      "line": 33,
+      "bug": "Raises `ZeroDivisionError` if `orders` is empty. Should check for empty list before dividing.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Raises `ValueError` if `results` is empty. Should handle empty list case or provide a default.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Overly simplistic email validation; allows malformed addresses without domain or TLD checks.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Missing multiplication operator for distance. Should be `distance * per_km`.",
+      "severity": "major"
+    },
+    {
+      "line": 58,
+      "bug": "Unreachable code because `if weight > 30:` already catches all cases where weight exceeds 50.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Returns an integer, losing currency precision. Should be `round(cost, 2)`.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Assigns a reference instead of copying the dictionary, mutating the original `profile_a`.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date instead of using a dynamic/current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive CSV parsing fails on fields containing commas within quotes. Should use the `csv` module.",
+      "severity": "major"
+    },
+    {
+      "line": 79,
+      "bug": "Allows duplicate entries in the `duplicates` list and uses an inefficient list for `seen` instead of a `set`.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

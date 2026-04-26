@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Discount for 'SAVE20' multiplies subtotal by 0.20, resulting in 80% off instead of 20% off. Should be subtotal * 0.8.",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "Discount for 'SAVE10' subtracts subtotal * 10, resulting in a negative subtotal. Should be subtotal * 0.9 or subtotal -= subtotal * 0.1.",
+      "severity": "critical"
+    },
+    {
+      "line": 20,
+      "bug": "Inventory update mutates the original order's items by modifying 'stock' in place, causing side effects on input data.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "When stock becomes negative, the code does nothing (pass). Should raise an error or skip the order/item.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Uses '=+' instead of '+=' for total_revenue accumulation, causing total_revenue to be overwritten with the last order's total instead of summed.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero when orders list is empty. Also, len(orders) may not work on all iterables (e.g., generators).",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "max() on empty results list raises ValueError. No handling for empty orders.",
+      "severity": "critical"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for '@' character, which is insufficient (e.g., missing domain, TLD).",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Shipping cost formula adds 'distance' as a flat amount instead of multiplying by 'per_km'. Should be distance * per_km.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "Condition 'elif weight > 50' is unreachable because any weight > 50 also satisfies the previous 'if weight > 30'. Should check larger weight first or use separate ifs.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Returning round(cost) rounds to integer, losing decimal precision. Should round to 2 decimal places or return float.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Assigns merged = profile_a, creating a reference. Modifying merged mutates profile_a. Should create a copy (e.g., profile_a.copy()).",
+      "severity": "critical"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date '2024-01-01' for updated_at. Should use current date or a parameter.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Simple split(',') does not handle quoted fields, escaped commas, or newlines in CSV data.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Appends item to 'seen' list even if it is already present, causing duplicates in 'seen' and multiple entries in 'duplicates' for the same value. Should use a set or only append on first occurrence.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}

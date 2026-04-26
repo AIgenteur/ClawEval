@@ -1,0 +1,100 @@
+```python
+class LRUCache:
+    class _Node:
+        __slots__ = ('key', 'value', 'prev', 'next')
+        def __init__(self, key=0, value=0):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self._Node()
+        self.tail = self._Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: '_Node') -> None:
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+
+    def _add_to_head(self, node: '_Node') -> None:
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add_to_head(node)
+            return node.value
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._add_to_head(node)
+        else:
+            if len(self.cache) >= self.capacity:
+                lru_node = self.tail.prev
+                self._remove(lru_node)
+                del self.cache[lru_node.key]
+            new_node = self._Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_head(new_node)
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self) -> None:
+        if self.stack:
+            val = self.stack.pop()
+            if val == self.min_stack[-1]:
+                self.min_stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1] if self.stack else None
+
+    def get_min(self) -> int:
+        return self.min_stack[-1] if self.min_stack else None
+
+
+def find_median(stream):
+    def _binary_search(arr, x):
+        lo, hi = 0, len(arr)
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if arr[mid] < x:
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo
+
+    sorted_list = []
+    medians = []
+    for num in stream:
+        pos = _binary_search(sorted_list, num)
+        sorted_list.insert(pos, num)
+        n = len(sorted_list)
+        if n % 2 == 1:
+            medians.append(float(sorted_list[n // 2]))
+        else:
+            medians.append((sorted_list[n // 2 - 1] + sorted_list[n // 2]) / 2.0)
+    return medians
+```

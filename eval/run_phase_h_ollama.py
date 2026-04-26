@@ -162,7 +162,7 @@ def main():
         result["test_id"] = tid
         result["role"] = role
         result["tier"] = tier
-        result["scoring_type"] = test.get("scoring_type", test["scoring"]["type"])
+        result["scoring_type"] = test.get("scoring_type", test["scoring"].get("type", "unknown"))
         results.append(result)
 
         # Save individual response

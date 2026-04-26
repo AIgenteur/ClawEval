@@ -1,0 +1,77 @@
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "RefundRequest { orderId, customerId, amount, reason, requestDate }",
+      "output": "ValidatedRequest { eligible: boolean, validationErrors: string[], auditLog: string }",
+      "next": "if eligible == true then FraudCheckAgent else NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 2
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "ValidatedRequest { eligible: true, orderId, customerId, amount }",
+      "output": "FraudResult { riskLevel: 'low' | 'medium' | 'high', fraudScore: number, auditLog: string }",
+      "next": "if riskLevel != 'high' then ApprovalAgent else NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "FraudResult { riskLevel: 'low'|'medium', orderId, customerId, amount, reason }",
+      "output": "ApprovalResult { decision: 'approved'|'denied'|'escalate', reason: string, auditLog: string }",
+      "next": "if decision == 'approved' then PaymentAgent; if decision == 'denied' then NotificationAgent; if decision == 'escalate' then HumanReviewAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5
+    },
+    {
+      "name": "HumanReviewAgent",
+      "input": "ApprovalResult { decision: 'escalate', orderId, customerId, amount, reason, auditLog }",
+      "output": "HumanDecision { finalDecision: 'approved'|'denied', reviewerNotes: string, auditLog: string }",
+      "next": "if finalDecision == 'approved' then PaymentAgent else NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 10
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "ApprovedRefund { orderId, customerId, amount, paymentMethod }",
+      "output": "PaymentResult { success: boolean, transactionId: string, failureReason: string, auditLog: string }",
+      "next": "if success == true then NotificationAgent else NotificationAgent",
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Outcome { type: 'approved'|'denied'|'payment_success'|'payment_failure', orderId, customerId, amount, messageDetails }",
+      "output": "NotificationResult { sent: boolean, channel: 'email'|'sms', auditLog: string }",
+      "next": null,
+      "fallback": "ErrorHandlerAgent",
+      "timeout": 5
+    },
+    {
+      "name": "ErrorHandlerAgent",
+      "input": "ErrorContext { failingAgent: string, errorMessage: string, requestPayload: object }",
+      "output": "ErrorHandled { logged: boolean, escalatedToSupport: boolean, incidentTicket: string, auditLog: string }",
+      "next": null,
+      "fallback": "None",
+      "timeout": 3
+    }
+  ],
+  "constraints": {
+    "minAgents": 7,
+    "mustIncludeAgents": ["ValidationAgent", "FraudCheckAgent", "ApprovalAgent", "PaymentAgent", "NotificationAgent"],
+    "conditionalBranchExists": true,
+    "fallbackHandlerPerAgent": true,
+    "firstAgent": "ValidationAgent",
+    "lastAgent": "NotificationAgent",
+    "fraudCheckBeforeApproval": true,
+    "paymentAfterApproval": true,
+    "totalExpectedProcessingTimeUnder60s": true,
+    "handlesApprovedAndRejectedOutcomes": true,
+    "loggingAuditAtEachStep": true,
+    "noCircularDependencies": true,
+    "humanEscalationPath": "HumanReviewAgent",
+    "eachAgentHasTimeout": true,
+    "timeoutUnit": "seconds"
+  }
+}
