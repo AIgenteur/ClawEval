@@ -1,0 +1,1025 @@
+Here's a complete, polished landing page for QuillAI with all 20 structural constraints met. I've designed it with a sophisticated dark theme, vibrant teal accent, and meaningful interactions throughout.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="QuillAI - Your intelligent AI writing assistant. Create compelling content 10x faster with artificial intelligence powered writing tools.">
+  <title>QuillAI - AI Writing Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07080c;
+      --bg-secondary: #0d0f14;
+      --fg: #e8e9ed;
+      --fg-muted: #8b8f9a;
+      --accent: #00d4aa;
+      --accent-dim: #00a88a;
+      --card: #12141a;
+      --card-hover: #181b22;
+      --border: #1f222b;
+      --glow: rgba(0, 212, 170, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, #00f5c4 50%, #7affdc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .bg-noise {
+      position: relative;
+    }
+
+    .bg-noise::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .nav-blur {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 8, 12, 0.8);
+    }
+
+    .card-glow {
+      position: relative;
+    }
+
+    .card-glow::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, var(--accent), transparent 50%);
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .card-glow:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+      color: var(--bg);
+      font-weight: 600;
+      padding: 0.875rem 2rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 30px var(--glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px var(--glow), 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--fg);
+      font-weight: 600;
+      padding: 0.875rem 2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--glow), transparent);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .pricing-popular {
+      position: relative;
+      border: 2px solid var(--accent);
+      transform: scale(1.05);
+    }
+
+    .pricing-popular::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 1rem;
+      border-radius: 999px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-question {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 0;
+      transition: color 0.2s ease;
+    }
+
+    .faq-question:hover {
+      color: var(--accent);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+      padding-bottom: 1.25rem;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .comparison-card {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .comparison-card.after {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.05), var(--card));
+    }
+
+    .step-connector {
+      position: absolute;
+      top: 24px;
+      left: calc(50% + 24px);
+      width: calc(100% - 48px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--border));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.6; }
+    }
+
+    .float-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .pulse-animation {
+      animation: pulse-glow 4s ease-in-out infinite;
+    }
+
+    input:focus, button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu {
+        display: block;
+      }
+      .desktop-nav {
+        display: none;
+      }
+      .mobile-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--bg);
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+      }
+      .mobile-nav.open {
+        display: flex;
+      }
+      .pricing-popular {
+        transform: scale(1);
+      }
+      .step-connector {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-noise">
+  <!-- Background Orbs -->
+  <div class="glow-orb pulse-animation" style="width: 600px; height: 600px; background: var(--accent); top: -200px; right: -200px;"></div>
+  <div class="glow-orb pulse-animation" style="width: 400px; height: 400px; background: #0066ff; bottom: 20%; left: -100px; animation-delay: 2s;"></div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-[var(--border)]">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-2" aria-label="QuillAI Home">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M8 24L24 8M24 8H12M24 8V20" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="text-xl font-bold">QuillAI</span>
+        </a>
+        
+        <div class="desktop-nav hidden md:flex items-center gap-8">
+          <a href="#features" class="text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">Features</a>
+          <a href="#how-it-works" class="text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">How it Works</a>
+          <a href="#pricing" class="text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">Pricing</a>
+          <a href="#testimonials" class="text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">Testimonials</a>
+          <a href="#contact" class="text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">Contact</a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-4">
+          <button class="btn-secondary text-sm">Log In</button>
+          <button class="btn-primary text-sm">Start Free Trial</button>
+        </div>
+
+        <button class="mobile-menu md:hidden p-2" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+      <button class="absolute top-4 right-4 p-2" aria-label="Close menu" onclick="toggleMobileMenu()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <a href="#features" class="text-2xl" onclick="toggleMobileMenu()">Features</a>
+      <a href="#how-it-works" class="text-2xl" onclick="toggleMobileMenu()">How it Works</a>
+      <a href="#pricing" class="text-2xl" onclick="toggleMobileMenu()">Pricing</a>
+      <a href="#testimonials" class="text-2xl" onclick="toggleMobileMenu()">Testimonials</a>
+      <a href="#contact" class="text-2xl" onclick="toggleMobileMenu()">Contact</a>
+      <button class="btn-primary mt-4">Start Free Trial</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-16" aria-labelledby="hero-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div class="reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--card)] mb-6">
+              <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+              <span class="text-sm text-[var(--fg-muted)]">Powered by Advanced AI</span>
+            </div>
+            <h1 id="hero-heading" class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+              Write Better Content with <span class="gradient-text">Artificial Intelligence</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-[var(--fg-muted)] mb-8 max-w-xl">
+              QuillAI transforms your ideas into compelling content. Our AI writing assistant helps you create blog posts, marketing copy, and more in seconds.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="#pricing" class="btn-primary inline-flex items-center gap-2">
+                Start Free Trial
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <a href="#how-it-works" class="btn-secondary inline-flex items-center gap-2">
+                See How It Works
+              </a>
+            </div>
+          </div>
+          
+          <div class="reveal reveal-delay-2 relative">
+            <div class="float-animation relative bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6 shadow-2xl">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              </div>
+              <div class="space-y-3">
+                <div class="h-4 bg-[var(--border)] rounded w-3/4"></div>
+                <div class="h-4 bg-[var(--border)] rounded w-full"></div>
+                <div class="h-4 bg-[var(--border)] rounded w-5/6"></div>
+                <div class="mt-6 p-4 bg-[var(--bg)] rounded-lg border border-[var(--accent)]">
+                  <div class="flex items-center gap-2 mb-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span class="text-sm text-[var(--accent)]">AI Generated</span>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="h-3 bg-[var(--accent)] rounded opacity-30 w-full"></div>
+                    <div class="h-3 bg-[var(--accent)] rounded opacity-30 w-4/5"></div>
+                    <div class="h-3 bg-[var(--accent)] rounded opacity-30 w-5/6"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-[var(--accent)] rounded-full blur-3xl opacity-20"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="py-12 border-y border-[var(--border)] bg-[var(--bg-secondary)]" aria-label="Social proof">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal flex flex-col md:flex-row items-center justify-between gap-8">
+          <p class="text-[var(--fg-muted)] text-center md:text-left">
+            Trusted by <span class="text-[var(--fg)] font-semibold">10,000+</span> writers and teams worldwide
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-8 opacity-60">
+            <span class="text-lg font-semibold">Acme Inc</span>
+            <span class="text-lg font-semibold">TechFlow</span>
+            <span class="text-lg font-semibold">DataPrime</span>
+            <span class="text-lg font-semibold">CloudSync</span>
+            <span class="text-lg font-semibold">NexGen</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 lg:py-32" aria-labelledby="features-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="features-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            Everything You Need to Write Better
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+            Powerful AI features designed to supercharge your writing workflow
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <article class="reveal reveal-delay-1 card-glow bg-[var(--card)] rounded-xl p-6 border border-[var(--border)] hover:bg-[var(--card-hover)] transition-colors">
+            <div class="feature-icon mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">AI Content Generation</h3>
+            <p class="text-[var(--fg-muted)] text-sm">Generate high-quality content in seconds with our advanced language models trained on millions of documents.</p>
+          </article>
+
+          <article class="reveal reveal-delay-2 card-glow bg-[var(--card)] rounded-xl p-6 border border-[var(--border)] hover:bg-[var(--card-hover)] transition-colors">
+            <div class="feature-icon mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Smart Editing Tools</h3>
+            <p class="text-[var(--fg-muted)] text-sm">Refine your writing with intelligent suggestions for grammar, style, and clarity improvements.</p>
+          </article>
+
+          <article class="reveal reveal-delay-3 card-glow bg-[var(--card)] rounded-xl p-6 border border-[var(--border)] hover:bg-[var(--card-hover)] transition-colors">
+            <div class="feature-icon mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Multi-Format Export</h3>
+            <p class="text-[var(--fg-muted)] text-sm">Export your content to any format - Markdown, HTML, PDF, or directly to your favorite platforms.</p>
+          </article>
+
+          <article class="reveal reveal-delay-4 card-glow bg-[var(--card)] rounded-xl p-6 border border-[var(--border)] hover:bg-[var(--card-hover)] transition-colors">
+            <div class="feature-icon mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Team Collaboration</h3>
+            <p class="text-[var(--fg-muted)] text-sm">Work together seamlessly with real-time editing, comments, and version history for your team.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 lg:py-32 bg-[var(--bg-secondary)]" aria-labelledby="how-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="how-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            How It Works
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+            Get started in minutes with our simple three-step process
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 relative">
+          <div class="hidden md:block step-connector" aria-hidden="true"></div>
+          <div class="hidden md:block step-connector" style="left: calc(150% + 24px);" aria-hidden="true"></div>
+          
+          <article class="reveal reveal-delay-1 text-center">
+            <div class="relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--accent)] text-[var(--bg)] font-bold text-xl mb-6">
+              1
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Describe Your Content</h3>
+            <p class="text-[var(--fg-muted)]">Tell QuillAI what you want to write about. Provide a topic, keywords, or a brief outline to get started.</p>
+          </article>
+
+          <article class="reveal reveal-delay-2 text-center">
+            <div class="relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--accent)] text-[var(--bg)] font-bold text-xl mb-6">
+              2
+            </div>
+            <h3 class="text-xl font-semibold mb-3">AI Generates Draft</h3>
+            <p class="text-[var(--fg-muted)]">Our AI analyzes your input and creates a comprehensive first draft tailored to your needs and style preferences.</p>
+          </article>
+
+          <article class="reveal reveal-delay-3 text-center">
+            <div class="relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--accent)] text-[var(--bg)] font-bold text-xl mb-6">
+              3
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Refine and Publish</h3>
+            <p class="text-[var(--fg-muted)]">Edit, refine, and perfect your content with our smart tools. Then export or publish directly to your platform.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="py-20 lg:py-32" aria-labelledby="comparison-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="comparison-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            See the Difference
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+            Compare your writing before and after QuillAI
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <article class="reveal reveal-delay-1 comparison-card">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-medium">Before</span>
+              <span class="text-[var(--fg-muted)] text-sm">Manual Writing</span>
+            </div>
+            <div class="space-y-4 text-[var(--fg-muted)]">
+              <p class="line-through opacity-60">The product is good and helps people do things better.</p>
+              <p class="line-through opacity-60">It has many features that are useful.</p>
+              <p class="line-through opacity-60">You should try it because it saves time.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-[var(--border)]">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-red-400">Time: 2+ hours</span>
+                <span class="text-red-400">Quality: Basic</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="reveal reveal-delay-2 comparison-card after">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="px-3 py-1 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] text-sm font-medium">After</span>
+              <span class="text-[var(--fg-muted)] text-sm">With QuillAI</span>
+            </div>
+            <div class="space-y-4">
+              <p>Transform your workflow with our cutting-edge solution designed to streamline your daily operations and boost productivity by up to 300%.</p>
+              <p>Experience a comprehensive suite of features including real-time collaboration, intelligent automation, and seamless integrations.</p>
+              <p>Join thousands of professionals who have already revolutionized their processes and reclaimed hours every week.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-[var(--accent)]/30">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-[var(--accent)]">Time: 5 minutes</span>
+                <span class="text-[var(--accent)]">Quality: Professional</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 lg:py-32 bg-[var(--bg-secondary)]" aria-labelledby="pricing-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="pricing-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            Simple, Transparent Pricing
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+            Choose the plan that fits your needs. All plans include a 14-day free trial.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 items-start">
+          <!-- Free Tier -->
+          <article class="reveal reveal-delay-1 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]">
+            <h3 class="text-xl font-semibold mb-2">Free</h3>
+            <p class="text-[var(--fg-muted)] text-sm mb-6">Perfect for trying out QuillAI</p>
+            <div class="mb-6">
+              <span class="text-4xl font-bold">$0</span>
+              <span class="text-[var(--fg-muted)]">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8" role="list">
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                5,000 words per month
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Basic AI models
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                3 content templates
+              </li>
+              <li class="flex items-center gap-3 text-sm text-[var(--fg-muted)]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                No priority support
+              </li>
+            </ul>
+            <button class="w-full btn-secondary">Get Started</button>
+          </article>
+
+          <!-- Pro Tier -->
+          <article class="reveal reveal-delay-2 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)] pricing-popular">
+            <h3 class="text-xl font-semibold mb-2">Pro</h3>
+            <p class="text-[var(--fg-muted)] text-sm mb-6">Best for professionals and small teams</p>
+            <div class="mb-6">
+              <span class="text-4xl font-bold">$29</span>
+              <span class="text-[var(--fg-muted)]">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8" role="list">
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                50,000 words per month
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Advanced AI models
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                50+ content templates
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Priority email support
+              </li>
+            </ul>
+            <button class="w-full btn-primary">Start Free Trial</button>
+          </article>
+
+          <!-- Enterprise Tier -->
+          <article class="reveal reveal-delay-3 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]">
+            <h3 class="text-xl font-semibold mb-2">Enterprise</h3>
+            <p class="text-[var(--fg-muted)] text-sm mb-6">For large teams and organizations</p>
+            <div class="mb-6">
+              <span class="text-4xl font-bold">$99</span>
+              <span class="text-[var(--fg-muted)]">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8" role="list">
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Unlimited words
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Custom AI model training
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                API access
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Dedicated account manager
+              </li>
+            </ul>
+            <button class="w-full btn-secondary">Contact Sales</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 lg:py-32" aria-labelledby="testimonials-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="testimonials-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            Loved by Writers Everywhere
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+            See what our users have to say about QuillAI
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <article class="reveal reveal-delay-1 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]">
+            <div class="flex items-center gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <blockquote class="text-[var(--fg-muted)] mb-6">
+              "QuillAI has completely transformed my content creation process. What used to take me hours now takes minutes. The quality is consistently impressive."
+            </blockquote>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent)] to-blue-500 flex items-center justify-center text-[var(--bg)] font-semibold" aria-hidden="true">SM</div>
+              <div>
+                <cite class="not-italic font-semibold">Sarah Mitchell</cite>
+                <p class="text-sm text-[var(--fg-muted)]">Content Marketing Manager</p>
+              </div>
+            </footer>
+          </article>
+
+          <article class="reveal reveal-delay-2 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]">
+            <div class="flex items-center gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <blockquote class="text-[var(--fg-muted)] mb-6">
+              "As a freelance writer, QuillAI is like having a brilliant co-writer available 24/7. It helps me overcome writer's block and deliver better work to my clients."
+            </blockquote>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold" aria-hidden="true">JC</div>
+              <div>
+                <cite class="not-italic font-semibold">James Chen</cite>
+                <p class="text-sm text-[var(--fg-muted)]">Freelance Copywriter</p>
+              </div>
+            </footer>
+          </article>
+
+          <article class="reveal reveal-delay-3 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]">
+            <div class="flex items-center gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <blockquote class="text-[var(--fg-muted)] mb-6">
+              "Our team's productivity has increased by 3x since adopting QuillAI. The collaboration features and consistent output quality are game-changers."
+            </blockquote>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-semibold" aria-hidden="true">ER</div>
+              <div>
+                <cite class="not-italic font-semibold">Emily Rodriguez</cite>
+                <p class="text-sm text-[var(--fg-muted)]">Head of Content, TechStart</p>
+              </div>
+            </footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 lg:py-32 bg-[var(--bg-secondary)]" aria-labelledby="faq-heading">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <h2 id="faq-heading" class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p class="text-lg text-[var(--fg-muted)]">
+            Everything you need to know about QuillAI
+          </p>
+        </div>
+
+        <div class="reveal space-y-0" role="list">
+          <div class="faq-item" role="listitem">
+            <button class="faq-question w-full text-left" aria-expanded="false" onclick="toggleFaq(this)">
+              <span class="font-semibold">How does QuillAI generate content?</span>
+              <svg class="faq-icon flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="faq-answer text-[var(--fg-muted)]">
+              QuillAI uses advanced large language models trained on diverse, high-quality content. When you provide a prompt or topic, the AI analyzes your input and generates relevant, coherent content based on patterns it has learned. Our models are continuously improved to ensure quality and relevance.
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question w-full text-left" aria-expanded="false" onclick="toggleFaq(this)">
+              <span class="font-semibold">Can I use QuillAI for commercial purposes?</span>
+              <svg class="faq-icon flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="faq-answer text-[var(--fg-muted)]">
+              Yes! All content generated with QuillAI is yours to use however you like. You retain full ownership and can use it for commercial purposes, client work, publications, or any other purpose without attribution required.
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question w-full text-left" aria-expanded="false" onclick="toggleFaq(this)">
+              <span class="font-semibold">What languages does QuillAI support?</span>
+              <svg class="faq-icon flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="faq-answer text-[var(--fg-muted)]">
+              QuillAI currently supports over 25 languages including English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Chinese, Japanese, Korean, and Arabic. We're constantly adding more language support based on user demand.
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question w-full text-left" aria-expanded="false" onclick="toggleFaq(this)">
+              <span class="font-semibold">Is my data secure with QuillAI?</span>
+              <svg class="faq-icon flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="faq-answer text-[var(--fg-muted)]">
+              Absolutely. We use enterprise-grade encryption for all data in transit and at rest. Your content is never used to train our models without explicit consent. We're SOC 2 Type II compliant and GDPR compliant, ensuring your data meets the highest security standards.
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button class="faq-question w-full text-left" aria-expanded="false" onclick="toggleFaq(this)">
+              <span class="font-semibold">Can I cancel my subscription anytime?</span>
+              <svg class="faq-icon flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="faq-answer text-[var(--fg-muted)]">
+              Yes, you can cancel your subscription at any time with no questions asked. Your access will continue until the end of your current billing period. We also offer a full refund within the first 14 days if you're not satisfied.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-20 lg:py-32" aria-labelledby="newsletter-heading">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal bg-gradient-to-br from-[var(--card)] to-[var(--bg-secondary)] rounded-3xl p-8 sm:p-12 border border-[var(--border)] text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/5 to-transparent"></div>
+          <div class="relative">
+            <h2 id="newsletter-heading" class="text-2xl sm:text-3xl font-bold mb-4">
+              Stay Updated with QuillAI
+            </h2>
+            <p class="text-[var(--fg-muted)] mb-8 max-w-lg mx-auto">
+              Get the latest tips, feature updates, and AI writing insights delivered to your inbox weekly.
+            </p>
+            <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action="#" method="POST">
+              <label for="email-signup" class="sr-only">Email address</label>
+              <input 
+                type="email" 
+                id="email-signup"
+                name="email"
+                placeholder="Enter your email" 
+                required
+                class="flex-1 px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] transition-colors"
+                aria-describedby="email-help"
+              >
+              <button type="submit" class="btn-primary whitespace-nowrap">
+                Subscribe
+              </button>
+            </form>
+            <p id="email-help" class="text-xs text-[var(--fg-muted)] mt-4">
+              No spam, unsubscribe anytime. Read our <a href="#privacy" class="text-[var(--accent)] hover:underline">Privacy Policy</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 lg:py-32 bg-[var(--bg-secondary)]" aria-labelledby="contact-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="reveal">
+            <h2 id="contact-heading" class="text-3xl sm:text-4xl font-bold mb-4">
+              Get in Touch
+            </h2>
+            <p class="text-lg text-[var(--fg-muted)] mb-8">
+              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <path d="M22 6l-10 7L2 6"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm text-[var(--fg-muted)]">Email</p>
+                  <a href="mailto:hello@quillai.com" class="font-medium hover:text-[var(--accent)] transition-colors">hello@quillai.com</a>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" aria-hidden="true">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm text-[var(--fg-muted)]">Location</p>
+                  <p class="font-medium">San Francisco, CA</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form class="reveal reveal-delay-2 bg-[var(--card)] rounded-2xl p-8 border border-[var(--border)]" action="#" method="POST">
+            <div class="space-y-6">
+              <div>
+                <label for="contact-name" class="block text-sm font-medium mb-2">Name</label>
+                <input 
+                  type="text" 
+                  id="contact-name"
+                  name="name"
+                  required
+                  class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] transition-colors"
+                >
+              </div>
+              <div>
+                <label for="contact-email" class="block text-sm font-medium mb-2">Email</label>
+                <input 
+                  type="email" 
+                  id="contact-email"
+                  name="email"
+                  required
+                  class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] transition-colors"
+                >
+              </div>
+              <div>
+                <label for="contact-message" class="block text-sm font-medium mb-2">Message</label>
+                <textarea 
+                  id="contact-message"
+                  name="message"
+                  rows="4"
+                  required
+                  class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] transition-colors resize-none"
+                ></textarea>
+              </div>
+              <button type="submit" class="w-full btn-primary">Send Message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-[var(--border)]" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div>
+          <a href="#" class="flex items-center gap-2 mb-4" aria-label="QuillAI Home">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M8 24L24 8M24 8H12M24 8V20" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="text-xl font-bold">QuillAI</span>
+          </a>
+          <p class="text-sm text-[var(--fg-muted)]">
+            AI-powered writing assistant for professionals and teams.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Product</h4>
+          <nav aria-label="Product links">
+            <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+              <li><a href="#features" class="hover:text-[var(--fg)] transition-colors">Features</a></li>
+              <li><a href="#pricing" class="hover:text-[var(--fg)] transition-colors">Pricing</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">API</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">Integrations</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Company</h4>
+          <nav aria-label="Company links">
+            <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">About</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">Blog</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">Careers</a></li>
+              <li><a href="#contact" class="hover:text-[var(--fg)] transition-colors">Contact</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Legal</h4>
+          <nav aria-label="Legal links">
+            <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+              <li><a href="#privacy" class="hover:text-[var(--fg)] transition-colors">Privacy Policy</a></li>
+              <li><a href="#terms" class="hover:text-[var(--fg)] transition-colors">Terms of Service</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">Cookie Policy</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)] transition-colors">GDPR</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[var(--border)] gap-4">
+        <p class="text-sm text-[var(--fg-muted)]">
+          &copy; 2024 QuillAI. All rights reserved.
+        </p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-[var(--fg-muted)] hover:text-[var(--accent)] transition-colors" aria-label="Twitter">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+          <a href="#" class="text-[var(--fg-muted)] hover:text-[var(--accent)] transition-colors" aria-label="LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+          <a href="#" class="text-[var(--fg-muted)] hover:text-[var(--accent)] transition-colors" aria-label="GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.

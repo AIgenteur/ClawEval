@@ -1,0 +1,22 @@
+```
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        for field, expected in schema.items():
+            if field in data:
+                if field not in expected:
+                    errors.append(f"Field '{field}' is missing in the data.")
+            elif expected["min"] and field in data:
+                if expected["min"] and field not in data:
+                    errors.append(f"Field '{field}' must be at least '{expected['min']}'.")
+            elif expected["max"] and field in data:
+                if expected["max"] and field not in data:
+                    errors.append(f"Field '{field}' must be at most '{expected['max']}'.")
+            elif expected["min_length"] and field in data:
+                if expected["min_length"] and field not in data:
+                    errors.append(f"Field '{field}' must be at least '{expected['min_length']}'.")
+            elif expected["max_length"] and field in data:
+                if expected["max_length"] and field not in data:
+                    errors.append(f"Field '{field}' must be at most '{expected['max_length']}'.")
+        return {"valid": errors}
+```

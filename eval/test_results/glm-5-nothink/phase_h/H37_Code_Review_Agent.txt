@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount logic. 'SAVE20' should reduce the subtotal by 20% (multiply by 0.80), but this line sets the subtotal to 20% of its original value (an 80% discount).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount logic. 'SAVE10' intends to reduce the subtotal by 10%, but subtracting 'subtotal * 10' subtracts 1000% of the subtotal, resulting in a massive negative number. It should be 'subtotal * 0.10'.",
+      "severity": "critical"
+    },
+    {
+      "line": 20,
+      "bug": "Modifies the input data directly. 'item['stock'] -= ...' alters the original order dictionary passed into the function, causing side effects outside the function scope.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "Empty error handling block. The code detects negative stock but does nothing ('pass'), allowing orders to proceed with invalid inventory levels.",
+      "severity": "critical"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax/Logic error. '=+' is interpreted as assignment of a positive value, overwriting 'total_revenue' in every iteration instead of accumulating the sum. It should be '+='.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "ZeroDivisionError risk. If the 'orders' list is empty, 'len(orders)' is 0, causing the program to crash.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "ValueError risk. If 'orders' is empty, 'results' is empty, and calling 'max()' on an empty sequence raises a ValueError.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient validation. Checking only for '@' allows invalid emails like '@' or 'user@' without a domain. A more robust regex or validation library should be used.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Calculation error. 'distance + per_km' adds the rate to the distance instead of multiplying them. It should be 'distance * per_km'.",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code. The condition 'weight > 50' is a subset of 'weight > 30' (checked in the preceding 'if'), so this block will never execute.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Loss of precision. 'round(cost)' rounds to the nearest integer, losing cents required for currency. It should use 'round(cost, 2)'.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "Reference assignment. 'merged = profile_a' makes 'merged' refer to the original dictionary. Modifying 'merged' overwrites the contents of 'profile_a' (side effect). Should use '.copy()'.",
+      "severity": "critical"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date. The 'updated_at' field is set to a static string '2024-01-01' instead of the current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive CSV parsing. Using 'split(',')' fails if a CSV field contains a comma within quotes (e.g., '\"Doe, John\"').",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Performance/Logic issue. Using a list 'seen' for membership checks results in O(N) lookups, making the overall function O(N^2). It should use a set for O(1) lookups.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

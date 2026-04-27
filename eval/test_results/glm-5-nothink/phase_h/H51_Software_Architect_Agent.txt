@@ -1,0 +1,19 @@
+```json
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types). It allows for offline editing and concurrent updates without requiring a central lock manager or complex server-side transformation logic (OT), ensuring eventual consistency.",
+  "q2": "WebSocket. Unlike SSE, WebSockets provide full-duplex communication, which is necessary for the high-frequency, bidirectional traffic of sending local keystrokes and receiving remote updates simultaneously with low latency.",
+  "q3": "MongoDB. It offers a flexible document model suitable for storing hierarchical document data (JSON/BSON) and supports sharding natively to handle the high write throughput required by real-time updates.",
+  "q4": "Local storage (IndexedDB) to persist changes locally, combined with a client-side CRDT state. Upon reconnection, the client syncs the missing operations (deltas) to the server to merge with the master copy.",
+  "q5": "Redis Pub/Sub. It provides extremely low latency for broadcasting messages between WebSocket server instances, ensuring that updates from one user are quickly propagated to all other connected clients.",
+  "q6": "Use a Redis Pub/Sub backplane to broadcast messages across all server instances. A Layer 7 Load Balancer (with sticky sessions) should route users to the specific server instance holding their WebSocket connection.",
+  "q7": "Broadcast cursor coordinates as lightweight, transient 'presence' events via WebSocket. These should not be persisted to the main database but stored temporarily in Redis with a TTL (Time To Live) to handle user disconnections.",
+  "q8": "OAuth 2.0 / OpenID Connect. It delegates identity management to trusted providers (like Google/GitHub), simplifying user management, while using JWTs (JSON Web Tokens) to authenticate the initial WebSocket handshake.",
+  "q9": "Store immutable snapshots of the document at fixed intervals (e.g., every 50 edits) in object storage (S3), while maintaining an append-only log of operations (deltas) in the main database to reconstruct intermediate states.",
+  "q10": "Serve static assets (JS/CSS) via a global CDN with cache-control headers. Use versioned URLs or fingerprinting to ensure users receive the latest client code immediately upon deployment.",
+  "q11": "Implement document chunking (sharding) where the document is split into sections. The client lazy-loads only the chunks currently in the viewport, and the CRDT engine manages synchronization per chunk to reduce memory and bandwidth usage.",
+  "q12": "Token bucket algorithm applied at the API Gateway level for HTTP requests, and application-level throttling on the WebSocket server to limit the rate of operations per second per user to prevent spam/DoS.",
+  "q13": "Continuous Point-in-Time Recovery (PITR) using database backups (e.g., MongoDB Atlas backups) stored in geo-redundant cloud storage (S3/GCS) to allow restoration to any specific second within a retention window.",
+  "q14": "Use pre-signed URLs to upload images directly to object storage (S3) bypassing the API server. Once uploaded, the client sends a message to insert the image reference (URL) into the document structure.",
+  "q15": "Prometheus for metrics collection, Grafana for visualization dashboards, and the ELK Stack (Elasticsearch, Logstash, Kibana) or Loki for centralized logging to debug real-time synchronization issues."
+}
+```

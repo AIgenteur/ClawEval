@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Missing asyncio.Lock for thread-safety.",
+      "fix": "Initialize self.lock = asyncio.Lock() to protect shared state."
+    },
+    {
+      "line": "11",
+      "bug": "Deprecated asyncio API usage.",
+      "fix": "Use asyncio.get_running_loop().time() instead of get_event_loop()."
+    },
+    {
+      "line": "13",
+      "bug": "Race condition on shared list modification.",
+      "fix": "Protect the list filtering and modification with self.lock."
+    },
+    {
+      "line": "15",
+      "bug": "Sleeping while holding logic state (thundering herd).",
+      "fix": "Use a lock or loop to re-check condition after sleeping to prevent multiple tasks from waking and proceeding simultaneously."
+    },
+    {
+      "line": "17",
+      "bug": "Appends stale timestamp 'now'.",
+      "fix": "Recalculate 'now' after sleeping to record the actual time the request was granted."
+    },
+    {
+      "line": "17",
+      "bug": "Race condition allows exceeding rate limit.",
+      "fix": "Wrap the check and append in a lock or use an atomic check-and-update pattern."
+    },
+    {
+      "line": "20",
+      "bug": "Rate limiter blocks semaphore.",
+      "fix": "Move 'await limiter.acquire()' outside the 'async with semaphore:' block to avoid holding the concurrency slot while waiting for the rate limit."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new session per request.",
+      "fix": "Create aiohttp.ClientSession once outside the loop and pass it in, or use a context manager in fetch_all."
+    },
+    {
+      "line": "27",
+      "bug": "Incorrect timeout argument type.",
+      "fix": "Use aiohttp.ClientTimeout(total=30) instead of an integer."
+    },
+    {
+      "line": "29",
+      "bug": "Dictionary key collision on duplicate URLs.",
+      "fix": "Use a list of tuples for results or handle duplicate URLs differently (e.g., index or unique ID)."
+    },
+    {
+      "line": "31",
+      "bug": "Catching generic Exception.",
+      "fix": "Catch specific exceptions like aiohttp.ClientError or asyncio.TimeoutError."
+    },
+    {
+      "line": "32",
+      "bug": "Redundant pass statement.",
+      "fix": "Remove the pass statement; it serves no purpose."
+    },
+    {
+      "line": "45",
+      "bug": "Async generator signature mismatch.",
+      "fix": "Remove 'yield' and collect results in a list to return, or change caller to use 'async for'."
+    },
+    {
+      "line": "60",
+      "bug": "Pool size limit not enforced.",
+      "fix": "Check if len(self.pool) < self.size before appending, or discard connection if full."
+    },
+    {
+      "line": "68",
+      "bug": "Logic error due to duplicate keys.",
+      "fix": "The result dictionary has size 1 due to duplicate keys in input; fix data structure in fetch_all."
+    }
+  ],
+  "count": 15
+}
+```

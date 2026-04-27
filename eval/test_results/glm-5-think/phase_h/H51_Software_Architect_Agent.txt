@@ -1,0 +1,19 @@
+```json
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types). It allows for easier offline support and eliminates the need for a central locking server, resolving conflicts automatically on merge.",
+  "q2": "WebSocket. It provides the necessary bidirectional, low-latency communication channel required for real-time typing and cursor updates, unlike SSE which is server-to-client only.",
+  "q3": "PostgreSQL. It offers ACID compliance for user data/metadata and JSONB support for storing document snapshots or CRDT state, balancing reliability with query flexibility.",
+  "q4": "Client-side persistence (e.g., IndexedDB) to store changes locally while offline, which are then synced using the CRDT merge algorithm upon reconnection.",
+  "q5": "Redis. Specifically Redis Pub/Sub is used for its ultra-low latency to broadcast document changes between different WebSocket server instances.",
+  "q6": "Stateless WebSocket servers behind a Load Balancer with Sticky Sessions disabled, using Redis Pub/Sub to fan-out messages to all connected clients across different nodes.",
+  "q7": "Broadcast lightweight cursor position objects via the WebSocket connection; apply client-side throttling/debouncing (e.g., every 50ms) to prevent network flooding.",
+  "q8": "JWT (JSON Web Tokens). They allow for stateless authentication verification during the WebSocket handshake without querying the database for every connection.",
+  "q9": "Append-only log of operations stored in the database, combined with periodic snapshots (every N revisions) to allow fast restoration of specific historical states.",
+  "q10": "Serve all static frontend assets (JS/CSS) via a CDN with cache-busting filenames; use the CDN for user-uploaded media with long cache expiry headers.",
+  "q11": "Virtual scrolling to render only the visible viewport; server-side CRDT tombstone garbage collection to reduce memory footprint; and chunking the document for transmission.",
+  "q12": "Token bucket algorithm applied per-user and per-document to limit the frequency of operations (e.g., max 100 updates/second) to prevent abuse and server overload.",
+  "q13": "Continuous Write-Ahead Logs (WAL) archiving to object storage (S3) for Point-in-Time Recovery (PITR), combined with daily encrypted snapshots.",
+  "q14": "Upload directly to Object Storage (S3) using presigned URLs to keep binary data off the WebSocket server, then embed the resulting URL into the document CRDT state.",
+  "q15": "Prometheus for metrics collection, Grafana for visualization, and the ELK Stack (Elasticsearch, Logstash, Kibana) or Loki for centralized logging and debugging."
+}
+```

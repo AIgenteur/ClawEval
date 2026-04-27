@@ -1,0 +1,68 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Validation_Triage_Agent",
+      "input": "Raw customer refund request (JSON)",
+      "output": "Validated request data or Rejection Error",
+      "next": "Fraud_Check_Agent",
+      "fallback": "Notification_Agent",
+      "timeout_seconds": 5,
+      "audit_log": "Log request ID, timestamp, and validation status"
+    },
+    {
+      "name": "Fraud_Check_Agent",
+      "input": "Validated request data",
+      "output": "Risk Score (Low/High)",
+      "next": "IF risk_score == 'Low' THEN Approval_Agent ELSE Human_Escalation_Agent",
+      "fallback": "Human_Escalation_Agent",
+      "timeout_seconds": 10,
+      "audit_log": "Log transaction ID and calculated risk score"
+    },
+    {
+      "name": "Human_Escalation_Agent",
+      "input": "Flagged request data from Fraud or Fallback",
+      "output": "Manual Review Ticket ID",
+      "next": "Notification_Agent",
+      "fallback": "Notification_Agent",
+      "timeout_seconds": 5,
+      "audit_log": "Log escalation reason and assigned reviewer queue"
+    },
+    {
+      "name": "Approval_Agent",
+      "input": "Verified low-risk request data",
+      "output": "Approval Decision (Approved/Denied)",
+      "next": "IF decision == 'Approved' THEN Payment_Processing_Agent ELSE Notification_Agent",
+      "fallback": "Notification_Agent",
+      "timeout_seconds": 5,
+      "audit_log": "Log approval decision and policy rule applied"
+    },
+    {
+      "name": "Payment_Processing_Agent",
+      "input": "Approved refund request",
+      "output": "Payment Confirmation ID",
+      "next": "Notification_Agent",
+      "fallback": "Notification_Agent",
+      "timeout_seconds": 15,
+      "audit_log": "Log payment gateway response and transaction amount"
+    },
+    {
+      "name": "Notification_Agent",
+      "input": "Final status payload (Success/Failure/Review)",
+      "output": "Customer Notification Receipt",
+      "next": "END",
+      "fallback": "System_Error_Logger",
+      "timeout_seconds": 5,
+      "audit_log": "Log notification channel (Email/SMS) and content summary"
+    }
+  ],
+  "constraints": {
+    "total_agents": 6,
+    "processing_time_limit_seconds": 60,
+    "branching_logic": "Implemented via Fraud_Check_Agent and Approval_Agent",
+    "circular_dependencies": false,
+    "start_node": "Validation_Triage_Agent",
+    "end_node": "Notification_Agent"
+  }
+}
+```

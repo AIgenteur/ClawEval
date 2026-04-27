@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Project kickoff & requirements gathering",
+      "depends_on": [],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Define microservice boundaries and contracts",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Set up version control monorepo and service scaffolding",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Design API gateway architecture (routing, auth)",
+      "depends_on": [2, 3],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Create CI/CD pipeline templates for backend services (build, test, deploy)",
+      "depends_on": [3],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Implement frontend CI/CD pipeline (build, lint, test)",
+      "depends_on": [3],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 7,
+      "task": "Containerize existing Django app (Dockerfile)",
+      "depends_on": [3],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Extract user service from monolith",
+      "depends_on": [2, 7],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Extract order service from monolith",
+      "depends_on": [2, 7],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Database schema refactoring plan (split tables)",
+      "depends_on": [2],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Implement database migration scripts (data split)",
+      "depends_on": [10],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 12,
+      "task": "Set up API gateway (install, configure)",
+      "depends_on": [4, 5],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 13,
+      "task": "Deploy user service to staging environment",
+      "depends_on": [8, 5, 12],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 14,
+      "task": "Deploy order service to staging environment",
+      "depends_on": [9, 5, 12],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 15,
+      "task": "Frontend UI adjustments for new APIs (update endpoints)",
+      "depends_on": [13, 14],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 16,
+      "task": "Frontend unit testing for new API contracts",
+      "depends_on": [15],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 17,
+      "task": "Integration testing of services via gateway (including frontend)",
+      "depends_on": [13, 14, 16],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "End‑to‑end testing (UI + services)",
+      "depends_on": [17],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Performance testing and load‑balancing configuration",
+      "depends_on": [13, 14],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 20,
+      "task": "Production rollout, monitoring setup, and post‑migration validation",
+      "depends_on": [18, 19, 11],
+      "effort_days": 6,
+      "team": "qa"
+    }
+  ]
+}

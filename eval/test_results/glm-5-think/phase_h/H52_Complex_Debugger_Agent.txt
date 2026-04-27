@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "self.requests = []",
+      "bug": "Race condition: shared list accessed without synchronization",
+      "fix": "Use an asyncio.Lock to protect access to self.requests"
+    },
+    {
+      "line": "now = asyncio.get_event_loop().time()",
+      "bug": "Deprecated API call",
+      "fix": "Use asyncio.get_running_loop().time()"
+    },
+    {
+      "line": "now = asyncio.get_event_loop().time()",
+      "bug": "Stale timestamp: 'now' is captured before waiting, skewing the rate limit window",
+      "fix": "Capture 'now' after the sleep, or adjust the timestamp logic"
+    },
+    {
+      "line": "async with aiohttp.ClientSession() as session:",
+      "bug": "Inefficient resource usage: ClientSession created inside the loop",
+      "fix": "Create ClientSession outside fetch_one and reuse it"
+    },
+    {
+      "line": "response = await session.get(url, timeout=30)",
+      "bug": "Incorrect timeout argument type for aiohttp",
+      "fix": "Use aiohttp.ClientTimeout(total=30)"
+    },
+    {
+      "line": "results[url] = data",
+      "bug": "Race condition: concurrent writes to shared dictionary",
+      "fix": "Use a thread-safe structure or Lock, or return data from gather"
+    },
+    {
+      "line": "results[url] = data",
+      "bug": "Key collision: duplicate URLs overwrite results",
+      "fix": "Use a list of results or unique keys"
+    },
+    {
+      "line": "results[url] = None",
+      "bug": "Logic error: overwrites valid data on failure for duplicate URLs",
+      "fix": "Store error objects or handle duplicates separately"
+    },
+    {
+      "line": "pass",
+      "bug": "Silent exception handling",
+      "fix": "Log the exception"
+    },
+    {
+      "line": "await asyncio.gather(*tasks)",
+      "bug": "Return value ignored: gather returns the results list",
+      "fix": "Use 'results = await asyncio.gather(*tasks)' instead of side-effects"
+    },
+    {
+      "line": "task = process_item(item)",
+      "bug": "Misleading comment: code is correct for concurrency, but comment suggests missing await",
+      "fix": "Remove the misleading comment or clarify that concurrency is intended"
+    },
+    {
+      "line": "yield r",
+      "bug": "Function type confusion: 'yield' makes this an async generator, not a coroutine",
+      "fix": "Replace 'yield' with 'results.append(r)' and return list, or iterate correctly"
+    },
+    {
+      "line": "self.pool = []",
+      "bug": "Race condition: shared pool list accessed without synchronization",
+      "fix": "Use an asyncio.Lock to protect pool access"
+    },
+    {
+      "line": "self.pool.append(conn)",
+      "bug": "Resource leak: pool can grow indefinitely, ignoring size limit",
+      "fix": "Check 'len(self.pool) < self.size' before appending"
+    },
+    {
+      "line": "async def release(self, conn):",
+      "bug": "Unnecessary async: function contains no awaitable operations",
+      "fix": "Remove 'async' keyword or add actual async operations"
+    }
+  ],
+  "count": 15
+}
+```

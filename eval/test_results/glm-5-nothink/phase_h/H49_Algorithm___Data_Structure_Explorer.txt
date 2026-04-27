@@ -1,0 +1,150 @@
+```python
+class LRUCache:
+    class Node:
+        def __init__(self, key=0, val=0):
+            self.key = key
+            self.val = val
+            self.prev = None
+            self.next = None
+    
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self.Node()
+        self.tail = self.Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+    
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+    
+    def _add_to_front(self, node):
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+    
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._add_to_front(node)
+        return node.val
+    
+    def put(self, key, value):
+        if key in self.cache:
+            node = self.cache[key]
+            node.val = value
+            self._remove(node)
+            self._add_to_front(node)
+        else:
+            if len(self.cache) >= self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+            new_node = self.Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_front(new_node)
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+    
+    def push(self, val):
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            self.stack.append((val, min(val, self.stack[-1][1])))
+    
+    def pop(self):
+        return self.stack.pop()[0]
+    
+    def top(self):
+        return self.stack[-1][0]
+    
+    def get_min(self):
+        return self.stack[-1][1]
+
+
+def find_median(stream):
+    class MinHeap:
+        def __init__(self):
+            self.data = []
+        
+        def push(self, val):
+            self.data.append(val)
+            self._sift_up(len(self.data) - 1)
+        
+        def pop(self):
+            if not self.data:
+                return None
+            if len(self.data) == 1:
+                return self.data.pop()
+            result = self.data[0]
+            self.data[0] = self.data.pop()
+            self._sift_down(0)
+            return result
+        
+        def peek(self):
+            return self.data[0] if self.data else None
+        
+        def __len__(self):
+            return len(self.data)
+        
+        def _sift_up(self, idx):
+            parent = (idx - 1) // 2
+            if idx > 0 and self.data[idx] < self.data[parent]:
+                self.data[idx], self.data[parent] = self.data[parent], self.data[idx]
+                self._sift_up(parent)
+        
+        def _sift_down(self, idx):
+            smallest = idx
+            left, right = 2 * idx + 1, 2 * idx + 2
+            if left < len(self.data) and self.data[left] < self.data[smallest]:
+                smallest = left
+            if right < len(self.data) and self.data[right] < self.data[smallest]:
+                smallest = right
+            if smallest != idx:
+                self.data[idx], self.data[smallest] = self.data[smallest], self.data[idx]
+                self._sift_down(smallest)
+    
+    class MaxHeap:
+        def __init__(self):
+            self.heap = MinHeap()
+        
+        def push(self, val):
+            self.heap.push(-val)
+        
+        def pop(self):
+            return -self.heap.pop()
+        
+        def peek(self):
+            return -self.heap.peek() if self.heap.peek() is not None else None
+        
+        def __len__(self):
+            return len(self.heap)
+    
+    lower, upper = MaxHeap(), MinHeap()
+    result = []
+    
+    for num in stream:
+        if len(lower) == 0 or num <= lower.peek():
+            lower.push(num)
+        else:
+            upper.push(num)
+        
+        if len(lower) > len(upper) + 1:
+            upper.push(lower.pop())
+        elif len(upper) > len(lower):
+            lower.push(upper.pop())
+        
+        if len(lower) > len(upper):
+            result.append(float(lower.peek()))
+        else:
+            result.append((lower.peek() + upper.peek()) / 2.0)
+    
+    return result
+```

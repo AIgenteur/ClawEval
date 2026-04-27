@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Replicas set to 1 creates a single point of failure; high availability requires at least 2 replicas.",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "Using the ':latest' image tag makes the deployment non-reproducible and can lead to unexpected version drift.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "No resource requests or limits defined for the 'api' container, risking node resource starvation.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Running as root (runAsRoot: true) is a critical security vulnerability.",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "Running in privileged mode grants the container full access to the host system, compromising security.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Hardcoding sensitive data (DB_PASSWORD) in plain text is a critical security risk; use Secrets instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "Hardcoding sensitive data (API_KEY) in plain text is a critical security risk; use Secrets instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "34",
+      "issue": "Sidecar container defines resource requests but omits limits, allowing potential resource overconsumption.",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "Excessive resource requests (8 CPU, 10Gi Memory) for a logging sidecar may prevent scheduling or waste capacity.",
+      "severity": "major"
+    },
+    {
+      "line": "40",
+      "issue": "Using a hostPath volume ties the pod to a specific node and can cause data loss or security issues.",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "Missing livenessProbe prevents Kubernetes from restarting the container if it deadlocks.",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "Missing readinessProbe allows traffic to be sent to the container before it is fully started.",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Service type LoadBalancer exposes the application publicly; an Ingress is often preferred for cost and control.",
+      "severity": "minor"
+    },
+    {
+      "line": "19",
+      "issue": "Container port 8080 is not named, which is best practice for easier service mapping.",
+      "severity": "minor"
+    },
+    {
+      "line": "3",
+      "issue": "No namespace defined; resources are deployed to the 'default' namespace, which is discouraged for production.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

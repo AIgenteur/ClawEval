@@ -1,0 +1,143 @@
+```python
+def is_valid_password(password):
+    # Check length
+    if len(password) < 8 or len(password) > 64:
+        return False
+    
+    # Check for spaces
+    if ' ' in password:
+        return False
+    
+    # Check if starts with digit
+    if password[0].isdigit():
+        return False
+    
+    # Check for uppercase
+    if not any(char.isupper() for char in password):
+        return False
+    
+    # Check for lowercase
+    if not any(char.islower() for char in password):
+        return False
+    
+    # Check for digit
+    if not any(char.isdigit() for char in password):
+        return False
+    
+    # Check for special character
+    special_chars = "!@#$%^&*()-_+="
+    if not any(char in special_chars for char in password):
+        return False
+    
+    # Check for more than 3 consecutive identical characters
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i-1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+    
+    # Check for "password" (case-insensitive)
+    if "password" in password.lower():
+        return False
+    
+    return True
+
+
+def run_tests():
+    tests = []
+    
+    # Test 1: Valid password
+    password = "Abcdefg1!"
+    expected = True
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 2: Too short (7 characters)
+    password = "Abc1!gh"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 3: Too long (65 characters)
+    password = "A" + "a" * 62 + "1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 4: No uppercase
+    password = "abcdefgh1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 5: No lowercase
+    password = "ABCDEFGH1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 6: No digit
+    password = "Abcdefgh!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 7: No special character
+    password = "Abcdefgh1"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 8: Contains space
+    password = "Abc defg1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 9: Starts with digit
+    password = "1Abcdefg!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 10: More than 3 consecutive identical chars (4 d's)
+    password = "Abcddddefg1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 11: Contains "password"
+    password = "AbpasswordC1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 12: Contains "PASSWORD"
+    password = "AbPASSWORDC1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 13: Contains "Password"
+    password = "AbPasswordC1!"
+    expected = False
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 14: Exactly 8 characters (valid boundary)
+    password = "Abcdef1!"
+    expected = True
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    # Test 15: Exactly 64 characters (valid boundary)
+    password = "Aa1!" * 16
+    expected = True
+    actual = is_valid_password(password)
+    tests.append((password, expected, actual))
+    
+    return tests
+```

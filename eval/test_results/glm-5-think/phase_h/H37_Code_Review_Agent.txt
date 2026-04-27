@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount logic: 'SAVE20' sets subtotal to 20% of its value (80% discount) rather than applying a 20% discount (multiplying by 0.80 or subtracting 20%).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount logic: 'SAVE10' subtracts 10 times the subtotal (1000% discount) rather than 10% (0.10).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Empty 'pass' block: The code detects negative inventory stock but fails to handle the error, allowing orders to proceed with invalid inventory.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax/Logic error: The operator '=+' assigns the positive value of 'total', overwriting 'total_revenue' each iteration instead of accumulating it. Should be '+='.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Runtime error: Division by zero occurs if the 'orders' list is empty.",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "Runtime error: 'max()' raises a ValueError if 'results' is empty (when 'orders' is empty).",
+      "severity": "critical"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient validation: Checking only for the presence of '@' allows invalid email formats (e.g., 'user@', '@domain.com').",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Calculation error: Adds 'per_km' rate directly to the cost instead of multiplying it by 'distance'.",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Logic error: 'elif weight > 50' is unreachable because any weight > 50 is also > 30, so the preceding 'if' block always executes first.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Precision loss: 'round(cost)' rounds to the nearest integer, losing decimal precision required for currency.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "Side effect: Assigning 'merged = profile_a' creates a reference, meaning modifications to 'merged' mutate the original 'profile_a' input dictionary.",
+      "severity": "major"
+    },
+    {
+      "line": 65,
+      "bug": "Logic error: The condition 'if key not in merged' prevents 'profile_b' values from updating existing keys in 'profile_a', ignoring valid updates.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded value: The 'updated_at' timestamp is hardcoded to a static string instead of using the current datetime.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Parsing error: 'split(',') fails to handle standard CSV quoting, causing incorrect splits on fields containing commas.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Performance: Using a list 'seen' for membership testing results in O(N^2) complexity; should use a set for O(1) lookups.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

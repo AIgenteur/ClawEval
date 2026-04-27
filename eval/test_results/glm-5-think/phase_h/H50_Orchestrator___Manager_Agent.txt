@@ -1,0 +1,68 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Validation Agent",
+      "input": "Raw Customer Request (Order ID, Reason, Amount)",
+      "output": "Validated Request Object",
+      "next": "Fraud Detection Agent",
+      "fallback": "Error Notification Agent",
+      "timeout": "5s"
+    },
+    {
+      "name": "Fraud Detection Agent",
+      "input": "Validated Request Object",
+      "output": "Risk Assessment Score",
+      "next": "IF risk_score < 50 THEN Approval Agent ELSE Human Escalation Agent",
+      "fallback": "Human Escalation Agent",
+      "timeout": "10s"
+    },
+    {
+      "name": "Human Escalation Agent",
+      "input": "Flagged Request Object",
+      "output": "Manual Review Decision",
+      "next": "IF approved THEN Approval Agent ELSE Notification Agent",
+      "fallback": "System Admin Alert",
+      "timeout": "1800s"
+    },
+    {
+      "name": "Approval Agent",
+      "input": "Validated Request + Fraud Status",
+      "output": "Approval Decision",
+      "next": "IF approved THEN Payment Processing Agent ELSE Notification Agent",
+      "fallback": "Human Escalation Agent",
+      "timeout": "5s"
+    },
+    {
+      "name": "Payment Processing Agent",
+      "input": "Approved Request Details",
+      "output": "Payment Transaction ID",
+      "next": "Audit Logging Agent",
+      "fallback": "Notification Agent",
+      "timeout": "15s"
+    },
+    {
+      "name": "Audit Logging Agent",
+      "input": "Transaction Details & Status",
+      "output": "Audit Log Confirmation",
+      "next": "Notification Agent",
+      "fallback": "System Admin Alert",
+      "timeout": "5s"
+    },
+    {
+      "name": "Notification Agent",
+      "input": "Final Status (Success/Rejection)",
+      "output": "Customer Receipt (Email/SMS)",
+      "next": "END",
+      "fallback": "Retry Queue",
+      "timeout": "5s"
+    }
+  ],
+  "constraints": {
+    "processing_time_sla": "45s (automated path)",
+    "branching_logic": "Conditional routing based on fraud score and approval status",
+    "escalation_path": "Human Escalation Agent triggered by fraud detection or approval failure",
+    "audit_compliance": "Audit Logging Agent records all successful transactions"
+  }
+}
+```

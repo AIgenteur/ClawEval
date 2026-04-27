@@ -1,0 +1,17 @@
+{
+  "q1": "Use a CRDT‑based approach (e.g., sequence CRDT such as Yjs or Automerge) for conflict‑free merging of concurrent edits, falling back to OT only for legacy clients.",
+  "q2": "WebSocket – provides low‑latency, full‑duplex communication needed for real‑time cursor/operation sync. SSE can be offered as a read‑only fallback for browsers that cannot maintain WebSocket connections.",
+  "q3": "CockroachDB – a distributed, strongly consistent SQL database that scales horizontally, offers ACID transactions for document metadata and can store large JSONB blobs for the document content.",
+  "q4": "Client‑side CRDT library buffers local operations while offline; on reconnection it syncs the buffered ops to the server, where CRDT merging guarantees eventual consistency without manual conflict resolution.",
+  "q5": "NATS JetStream – lightweight, high‑throughput publish/subscribe with built‑in persistence and at‑least‑once delivery, ideal for broadcasting edit events to all interested WebSocket nodes.",
+  "q6": "Deploy stateless WebSocket instances behind a layer‑7 load balancer with sticky sessions (or use a connection‑broker like NATS/Redis Streams). Share state via the message broker so any node can push updates to any client, enabling horizontal scaling.",
+  "q7": "Publish a lightweight cursor‑update message (userId, blockId, offset, selectionRange) over the WebSocket channel. Clients render remote cursors using the received data; optionally compress updates with delta encoding to reduce bandwidth.",
+  "q8": "OAuth 2.0 with OpenID Connect, issuing short‑lived JWT access tokens signed by the auth server. Tokens are validated at the API gateway and passed to WebSocket connections during the handshake.",
+  "q9": "Implement event‑sourced versioning: each edit operation is stored as an immutable event. Periodically (e.g., every N edits or time interval) create a snapshot stored in object storage (S3). To reconstruct a version, load the nearest snapshot and replay subsequent events.",
+  "q10": "Serve all static assets (JS, CSS, fonts, images) through an edge CDN such as Amazon CloudFront or Cloudflare. Use versioned filenames and Cache‑Control: max‑age=1y, immutable, with a fallback origin for cache busting on releases.",
+  "q11": "Chunk the document into logical blocks (paragraphs, sections) stored separately. Use virtual scrolling on the client to load/render only visible blocks. Keep a memory‑budgeted cache and persist large blocks to the DB/Blob store, loading them on demand.",
+  "q12": "Token‑bucket rate limiting at the API gateway (Envoy/Traefik) per user and per IP: limit edit‑op messages (e.g., 20 ops/sec) and upload requests (e.g., 5 uploads/min). Exceeding the bucket returns 429 Too Many Requests.",
+  "q13": "Daily logical backups of CockroachDB plus continuous WAL archiving for point‑in‑time recovery. Store document blobs in S3 with versioning enabled; replicate backups to a secondary region for disaster recovery.",
+  "q14": "Generate pre‑signed S3 URLs for each image upload. Clients upload directly to S3, then send metadata (URL, size, checksum) to the backend, which validates and records the image reference in the document. Use optimistic concurrency (document version) to detect conflicting uploads.",
+  "q15": "Observability stack: Prometheus for metrics collection, Grafana for dashboards, Loki for centralized log aggregation, Jaeger for distributed tracing, and Alertmanager for alerting on latency, error rates, and resource exhaustion."
+}

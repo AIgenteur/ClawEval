@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() – line constructing the SQL query",
+      "severity": "high"
+    },
+    {
+      "type": "Reflected Cross‑Site Scripting (XSS)",
+      "location": "profile() – render_template_string with unsanitized username",
+      "severity": "high"
+    },
+    {
+      "type": "Reflected Cross‑Site Scripting (XSS)",
+      "location": "search() – returns user‑supplied query parameter directly in HTML",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() – subprocess.run(cmd, shell=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Arbitrary File Upload / Path Traversal",
+      "location": "upload() – saves file using the original filename without validation",
+      "severity": "high"
+    },
+    {
+      "type": "Directory Traversal / Insecure File Download",
+      "location": "download() – send_file(filepath) with user‑controlled path",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure YAML Deserialization",
+      "location": "load_config() – yaml.load(data) without a safe loader",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Pickle Deserialization",
+      "location": "restore_session() – pickle.loads(data) on attacker‑controlled input",
+      "severity": "critical"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "export_data() – os.system(cmd) where fmt comes from request args",
+      "severity": "high"
+    },
+    {
+      "type": "Hard‑coded Secret / Insecure Authentication",
+      "location": "admin() – token compared to static SECRET via GET parameter",
+      "severity": "medium"
+    },
+    {
+      "type": "Weak Token Generation (Predictable MD5)",
+      "location": "login() – token = hashlib.md5(user.encode()).hexdigest()",
+      "severity": "medium"
+    },
+    {
+      "type": "Debug Mode Enabled in Production",
+      "location": "if __name__ == \"__main__\": app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "medium"
+    },
+    {
+      "type": "Use of Weak Cryptographic Hash (MD5)",
+      "location": "login() – MD5 used for token creation",
+      "severity": "low"
+    },
+    {
+      "type": "Missing CSRF Protection",
+      "location": "State‑changing endpoints (login, upload, run_command, load_config, restore_session, export_data)",
+      "severity": "medium"
+    },
+    {
+      "type": "Plain‑text Password Verification",
+      "location": "login() – compares supplied password directly to DB value, implying passwords are stored unhashed",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}
+```

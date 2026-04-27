@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "Hardcoded Secret",
+      "location": "Line 5 (SECRET = \"admin123\")",
+      "severity": "high"
+    },
+    {
+      "type": "SQL Injection",
+      "location": "Line 11 (query = f\"SELECT * FROM users...\")",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Hashing Algorithm",
+      "location": "Line 14 (hashlib.md5(user.encode()))",
+      "severity": "medium"
+    },
+    {
+      "type": "Predictable Token",
+      "location": "Line 14 (Token generation based on username)",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "Line 18 (render_template_string(template))",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "Line 23 (return f\"...Results for: {q}...\")",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "Line 27 (subprocess.run(cmd, shell=True...))",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "Line 31 (os.path.join(UPLOAD_DIR, f.filename))",
+      "severity": "high"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "Line 32 (f.save(path))",
+      "severity": "high"
+    },
+    {
+      "type": "Arbitrary File Read",
+      "location": "Line 37 (send_file(filepath))",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Deserialization (YAML)",
+      "location": "Line 41 (yaml.load(data))",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Deserialization (Pickle)",
+      "location": "Line 46 (pickle.loads(data))",
+      "severity": "critical"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "Line 58 (os.system(cmd))",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "Line 60 (app.run(debug=True))",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Host Binding",
+      "location": "Line 60 (host=\"0.0.0.0\")",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

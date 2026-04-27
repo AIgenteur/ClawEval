@@ -1,0 +1,56 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "customer_id",
+      "output": "approved",
+      "next": "payment",
+      "fallback": "rejected"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "customer_id",
+      "output": "approved",
+      "next": "approval",
+      "fallback": "rejected"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "approved",
+      "output": "payment",
+      "next": "notification",
+      "fallback": "pending"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "customer_notification",
+      "output": "notification",
+      "next": "notification",
+      "fallback": "not_processed"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "payment_status",
+      "output": "approved",
+      "next": "notification",
+      "fallback": "rejected"
+    },
+    {
+      "name": "EscalationAgent",
+      "input": "customer_escalation",
+      "output": "human_escalation",
+      "next": "not_processed",
+      "fallback": "not_available"
+    }
+  ],
+  "constraints": {
+    "minimum": 6,
+    "required": true,
+    "conditions": [
+      "if (customer_id % 10)",
+      "if (fraud_check_status)"
+    ]
+  }
+}
+```

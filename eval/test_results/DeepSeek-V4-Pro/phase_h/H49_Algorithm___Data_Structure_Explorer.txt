@@ -1,102 +1,172 @@
 ```python
-class LRUCache:
-    class Node:
-        def __init__(self, key=0, value=0):
-            self.key = key
-            self.value = value
-            self.prev = None
-            self.next = None
+class _Node:
+    """Doubly linked list node for LRUCache."""
+    __slots__ = ('key', 'val', 'prev', 'next')
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
 
+class LRUCache:
+    """Least Recently Used Cache with O(1) get/put."""
     def __init__(self, capacity: int):
         self.capacity = capacity
-        self.cache = {}  # key -> Node
-        self.head = self.Node()  # dummy head
-        self.tail = self.Node()  # dummy tail
+        self.cache = {}
+        # sentinel head and tail
+        self.head = _Node(0, 0)
+        self.tail = _Node(0, 0)
         self.head.next = self.tail
         self.tail.prev = self.head
 
-    def _add_node(self, node):
-        # Insert right before tail (marks as most recently used)
-        node.prev = self.tail.prev
-        node.next = self.tail
-        self.tail.prev.next = node
-        self.tail.prev = node
+    def _remove(self, node: _Node) -> None:
+        p, n = node.prev, node.next
+        p.next = n
+        n.prev = p
 
-    def _remove_node(self, node):
-        node.prev.next = node.next
-        node.next.prev = node.prev
+    def _add_to_front(self, node: _Node) -> None:
+        """Insert right after head."""
+        nxt = self.head.next
+        self.head.next = node
+        node.prev = self.head
+        node.next = nxt
+        nxt.prev = node
 
-    def _move_to_front(self, node):
-        self._remove_node(node)
-        self._add_node(node)
-
-    def _pop_tail(self):
-        # Remove least recently used (right after head)
-        node = self.head.next
-        self._remove_node(node)
-        return node
-
-    def get(self, key):
+    def get(self, key: int) -> int:
         if key in self.cache:
             node = self.cache[key]
-            self._move_to_front(node)
-            return node.value
+            self._remove(node)
+            self._add_to_front(node)
+            return node.val
         return -1
 
-    def put(self, key, value):
+    def put(self, key: int, value: int) -> None:
         if key in self.cache:
             node = self.cache[key]
-            node.value = value
-            self._move_to_front(node)
+            node.val = value
+            self._remove(node)
+            self._add_to_front(node)
         else:
-            if len(self.cache) >= self.capacity:
-                lru = self._pop_tail()
+            node = _Node(key, value)
+            self.cache[key] = node
+            self._add_to_front(node)
+            if len(self.cache) > self.capacity:
+                # evict LRU (least recently used) – node just before tail
+                lru = self.tail.prev
+                self._remove(lru)
                 del self.cache[lru.key]
-            new_node = self.Node(key, value)
-            self.cache[key] = new_node
-            self._add_node(new_node)
 
 
 class MinStack:
+    """Stack supporting push, pop, top, and get_min in O(1)."""
     def __init__(self):
         self.stack = []
         self.min_stack = []
 
-    def push(self, val):
+    def push(self, val: int) -> None:
         self.stack.append(val)
         if not self.min_stack:
             self.min_stack.append(val)
         else:
             self.min_stack.append(min(val, self.min_stack[-1]))
 
-    def pop(self):
-        self.stack.pop()
-        self.min_stack.pop()
+    def pop(self) -> None or int:
+        if self.stack:
+            self.min_stack.pop()
+            return self.stack.pop()
 
-    def top(self):
-        return self.stack[-1]
+    def top(self) -> int:
+        if self.stack:
+            return self.stack[-1]
 
-    def get_min(self):
-        return self.min_stack[-1]
+    def get_min(self) -> int:
+        if self.min_stack:
+            return self.min_stack[-1]
 
 
-def find_median(stream):
-    left = []   # max-heap simulated with negative values
-    right = []  # min-heap
-    medians = []
+class Heap:
+    """Binary heap supporting min or max behaviour via factor."""
+    def __init__(self, is_min: bool = True):
+        self.heap = []
+        self.factor = 1 if is_min else -1
+
+    def push(self, val: int) -> None:
+        v = val * self.factor
+        self.heap.append(v)
+        self._sift_up(len(self.heap) - 1)
+
+    def pop(self) -> int:
+        if not self.heap:
+            return None
+        if len(self.heap) == 1:
+            return self.heap.pop() * self.factor
+        root = self.heap[0]
+        self.heap[0] = self.heap.pop()
+        self._sift_down(0)
+        return root * self.factor
+
+    def peek(self) -> int:
+        if not self.heap:
+            return None
+        return self.heap[0] * self.factor
+
+    def __len__(self) -> int:
+        return len(self.heap)
+
+    def _sift_up(self, idx: int) -> None:
+        while idx > 0:
+            parent = (idx - 1) // 2
+            if self.heap[idx] < self.heap[parent]:
+                self.heap[idx], self.heap[parent] = self.heap[parent], self.heap[idx]
+                idx = parent
+            else:
+                break
+
+    def _sift_down(self, idx: int) -> None:
+        n = len(self.heap)
+        while True:
+            left = 2 * idx + 1
+            right = 2 * idx + 2
+            smallest = idx
+            if left < n and self.heap[left] < self.heap[smallest]:
+                smallest = left
+            if right < n and self.heap[right] < self.heap[smallest]:
+                smallest = right
+            if smallest != idx:
+                self.heap[idx], self.heap[smallest] = self.heap[smallest], self.heap[idx]
+                idx = smallest
+            else:
+                break
+
+
+def find_median(stream: list[int]) -> list[float]:
+    """
+    Running median after each element from *stream*.
+    Returns a list of floats.
+    """
+    # max-heap for lower half, min-heap for upper half
+    small = Heap(is_min=False)   # max-heap
+    large = Heap(is_min=True)    # min-heap
+    result = []
 
     for num in stream:
-        # push to left, then balance
-        heapq.heappush(left, -num)
-        heapq.heappush(right, -heapq.heappop(left))
-
-        if len(right) > len(left):
-            heapq.heappush(left, -heapq.heappop(right))
-
-        if len(left) > len(right):
-            medians.append(float(-left[0]))
+        if len(small) == 0 or num <= small.peek():
+            small.push(num)
         else:
-            medians.append((-left[0] + right[0]) / 2.0)
+            large.push(num)
 
-    return medians
+        # balance: small can have at most one extra element
+        if len(small) > len(large) + 1:
+            large.push(small.pop())
+        elif len(large) > len(small):
+            small.push(large.pop())
+
+        # compute median
+        if len(small) == len(large):
+            median = (small.peek() + large.peek()) / 2.0
+        else:
+            median = float(small.peek())
+        result.append(median)
+
+    return result
 ```

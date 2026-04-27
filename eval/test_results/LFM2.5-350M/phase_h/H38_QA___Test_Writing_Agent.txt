@@ -1,0 +1,59 @@
+```
+import re
+
+def is_valid_password(password):
+    # Rule 1: At least 8 characters
+    if len(password) < 8:
+        return False
+    
+    # Rule 2: At most 64 characters
+    if len(password) > 64:
+        return False
+    
+    # Rule 3: Contains at least 1 uppercase letter
+    if not re.search("[A-Z]", password):
+        return False
+    
+    # Rule 4: Contains at least 1 lowercase letter
+    if not re.search("[a]", password):
+        return False
+    
+    # Rule 5: Contains at least 1 digit
+    if not re.search("[0-9]", password):
+        return False
+    
+    # Rule 6: Contains at least 1 special character
+    if not re.search("[!@#$%^&*()\\]{}]", password):
+        return False
+    
+    # Rule 7: No spaces allowed
+    if not re.search("[", password):
+        return False
+    
+    # Rule 8: Cannot start with a digit
+    if re.search("[", password[0]):
+        return False
+    
+    # Rule 9: Cannot contain more than 3 consecutive identical characters
+    if any(char.isspace() for char in password):
+        return False
+    
+    # Rule 10: Cannot contain the word "password" (case-insensitive)
+    if re.search("password", password.lower()):
+        return False
+    
+    # Rule 11: No spaces in the password
+    if not re.search("", password):
+        return True
+    
+    # Run tests
+    test_cases = []
+    for _ in range(15):
+        input_password = input("Enter password: ")
+        actual_password = input_password
+        result = is_valid_password(input_password)
+        test_cases.append((input_password, actual_password, result))
+    return test_cases
+
+run_tests()
+```

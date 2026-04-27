@@ -1,0 +1,107 @@
+```python
+class LRUCache:
+    class _Node:
+        __slots__ = ('key', 'value', 'prev', 'next')
+        def __init__(self, key, value):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity: int):
+        self._capacity = capacity
+        self._cache = {}                     # key -> _Node
+        # dummy head and tail to avoid edge checks
+        self._head = self._Node(0, 0)        # most‑recently used right after head
+        self._tail = self._Node(0, 0)        # least‑recently used right before tail
+        self._head.next = self._tail
+        self._tail.prev = self._head
+
+    # ----- internal helpers -------------------------------------------------
+    def _remove(self, node: '_Node') -> None:
+        """Detach node from the linked list."""
+        prev, nxt = node.prev, node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def _add_to_front(self, node: '_Node') -> None:
+        """Insert node right after head (most‑recent position)."""
+        node.prev = self._head
+        node.next = self._head.next
+        self._head.next.prev = node
+        self._head.next = node
+
+    # ----- public API -------------------------------------------------------
+    def get(self, key: int) -> int:
+        """Return value for key, or -1 if absent. Marks key as recently used."""
+        node = self._cache.get(key)
+        if not node:
+            return -1
+        # move accessed node to front
+        self._remove(node)
+        self._add_to_front(node)
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        """Insert or update key/value. Evicts LRU entry if over capacity."""
+        node = self._cache.get(key)
+        if node:                                 # update existing
+            node.value = value
+            self._remove(node)
+            self._add_to_front(node)
+        else:                                    # insert new
+            if len(self._cache) >= self._capacity:
+                # evict least‑recently used (node before tail)
+                lru = self._tail.prev
+                self._remove(lru)
+                del self._cache[lru.key]
+            new_node = self._Node(key, value)
+            self._cache[key] = new_node
+            self._add_to_front(new_node)
+```
+
+```python
+class MinStack:
+    def __init__(self):
+        self._stack = []          # stores all values
+        self._mins = []           # mins[i] = minimum of stack[:i+1]
+
+    def push(self, val: int) -> None:
+        self._stack.append(val)
+        if not self._mins or val < self._mins[-1]:
+            self._mins.append(val)
+        else:
+            self._mins.append(self._mins[-1])
+
+    def pop(self) -> None:
+        if self._stack:
+            self._stack.pop()
+            self._mins.pop()
+
+    def top(self) -> int:
+        return self._stack[-1] if self._stack else -1
+
+    def get_min(self) -> int:
+        return self._mins[-1] if self._mins else -1
+```
+
+```python
+def find_median(stream):
+    """
+    Running median of an integer stream.
+    Returns a list of floats where each element is the median after processing
+    the corresponding input element.
+    """
+    medians = []
+    sorted_vals = []
+    for x in stream:
+        sorted_vals.append(x)
+        sorted_vals.sort()                     # O(n log n) per step – acceptable without imports
+        n = len(sorted_vals)
+        if n % 2:                              # odd count
+            median = float(sorted_vals[n // 2])
+        else:                                  # even count
+            median = (sorted_vals[n // 2 - 1] + sorted_vals[n // 2]) / 2.0
+        medians.append(median)
+    return medians
+```

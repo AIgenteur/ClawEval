@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "17",
+      "issue": "Image tag uses mutable `latest`; version is not pinned.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Resources block is empty – no CPU/memory limits or requests for the main container.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Container is allowed to run as root (`runAsRoot: true`).",
+      "severity": "major"
+    },
+    {
+      "line": "23",
+      "issue": "Privileged mode is enabled (`privileged: true`).",
+      "severity": "critical"
+    },
+    {
+      "line": "25-28",
+      "issue": "Sensitive data (DB_PASSWORD, API_KEY) is stored in plain‑text environment variables.",
+      "severity": "critical"
+    },
+    {
+      "line": "36-37",
+      "issue": "Sidecar container requests an excessively high amount of resources (10 Gi memory, 8 CPU) without justification.",
+      "severity": "major"
+    },
+    {
+      "line": "34-37",
+      "issue": "Sidecar container defines only resource **requests**; no limits are set.",
+      "severity": "major"
+    },
+    {
+      "line": "40-41",
+      "issue": "Use of a `hostPath` volume is non‑portable and poses security risks.",
+      "severity": "major"
+    },
+    {
+      "line": "40-41",
+      "issue": "`hostPath` does not specify a `type` field, making the intent unclear and increasing the chance of misconfiguration.",
+      "severity": "minor"
+    },
+    {
+      "line": "15-31",
+      "issue": "Pod lacks liveness and readiness probes, reducing reliability and self‑healing capability.",
+      "severity": "major"
+    },
+    {
+      "line": "15-31",
+      "issue": "Pod security context does not drop unnecessary Linux capabilities or set a read‑only root filesystem.",
+      "severity": "minor"
+    },
+    {
+      "line": "48",
+      "issue": "`LoadBalancer` service type may be unsupported in on‑premise clusters, causing the service to remain pending.",
+      "severity": "minor"
+    },
+    {
+      "line": "6",
+      "issue": "Replica count is set to 1, creating a single point of failure.",
+      "severity": "minor"
+    },
+    {
+      "line": "15-31",
+      "issue": "No PodDisruptionBudget is defined, so voluntary disruptions could evict the only replica.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "`imagePullPolicy` is omitted; with a mutable `latest` tag this may lead to stale images being used.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

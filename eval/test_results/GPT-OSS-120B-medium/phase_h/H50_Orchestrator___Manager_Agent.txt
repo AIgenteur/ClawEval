@@ -1,0 +1,97 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "RawRefundRequest (customerId, orderId, amount, reason)",
+      "output": "ValidatedRequest, ValidationLog",
+      "next": "FraudCheckAgent",
+      "fallback": "ValidationErrorHandler",
+      "timeout_seconds": 8
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "ValidatedRequest",
+      "output": "FraudAssessment (status: \"clear\" | \"suspect\"), FraudLog",
+      "next": {
+        "if": "FraudAssessment.status == \"clear\"",
+        "then": "ApprovalAgent",
+        "else": "RejectionAgent"
+      },
+      "fallback": "FraudCheckErrorHandler",
+      "timeout_seconds": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "ValidatedRequest",
+      "output": "ApprovalDecision (decision: \"approved\" | \"rejected\"), ApprovalLog",
+      "next": {
+        "if": "ApprovalDecision.decision == \"approved\"",
+        "then": "PaymentAgent",
+        "else": "RejectionAgent"
+      },
+      "fallback": "ApprovalErrorHandler",
+      "timeout_seconds": 12
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "ValidatedRequest + ApprovalDecision",
+      "output": "PaymentConfirmation, PaymentLog",
+      "next": "NotificationAgent",
+      "fallback": "PaymentErrorHandler",
+      "timeout_seconds": 15
+    },
+    {
+      "name": "RejectionAgent",
+      "input": "ValidatedRequest + Reason (fraud suspect | approval reject)",
+      "output": "RejectionRecord, RejectionLog",
+      "next": "NotificationAgent",
+      "fallback": "RejectionErrorHandler",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Outcome (approved | rejected), AllLogs",
+      "output": "CustomerNotificationSent, NotificationLog",
+      "next": "End",
+      "fallback": "NotificationErrorHandler",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "EscalationAgent",
+      "input": "ErrorContext (from any fallback) OR FraudAssessment.status == \"suspect\"",
+      "output": "EscalationTicket, EscalationLog",
+      "next": "NotificationAgent",
+      "fallback": "EscalationErrorHandler",
+      "timeout_seconds": 7
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents": [
+      "ValidationAgent",
+      "FraudCheckAgent",
+      "ApprovalAgent",
+      "PaymentAgent",
+      "NotificationAgent"
+    ],
+    "conditional_branching": true,
+    "fallback_defined_for_each_agent": true,
+    "first_agent": "ValidationAgent",
+    "last_agent": "NotificationAgent",
+    "ordering_rules": {
+      "fraud_before_approval": true,
+      "payment_after_approval": true
+    },
+    "max_total_processing_time_seconds": 60,
+    "outcome_handling": [
+      "approved",
+      "rejected"
+    ],
+    "logging_audit_at_each_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": "EscalationAgent",
+    "timeout_defined_per_agent": true
+  }
+}
+```

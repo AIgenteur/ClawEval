@@ -1,0 +1,75 @@
+```python
+def is_valid_password(password: str) -> bool:
+    # Length check
+    if not (8 <= len(password) <= 64):
+        return False
+
+    # No spaces
+    if ' ' in password:
+        return False
+
+    # Cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Must contain at least one uppercase, one lowercase, one digit, one special
+    specials = set('!@#$%^&*()-_+=')
+    has_upper = has_lower = has_digit = has_special = False
+    for ch in password:
+        if ch.isupper():
+            has_upper = True
+        elif ch.islower():
+            has_lower = True
+        elif ch.isdigit():
+            has_digit = True
+        if ch in specials:
+            has_special = True
+
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    # Cannot contain the word "password" (case‑insensitive)
+    if 'password' in password.lower():
+        return False
+
+    # No more than 3 consecutive identical characters
+    prev = ''
+    count = 0
+    for ch in password:
+        if ch == prev:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            prev = ch
+            count = 1
+
+    return True
+
+
+def run_tests():
+    tests = [
+        # (password, expected_result)
+        ("Abcdef1!", True),                     # valid minimal
+        ("abcdef1!", False),                    # missing uppercase
+        ("ABCDEF1!", False),                    # missing lowercase
+        ("Abcdefgh!", False),                   # missing digit
+        ("Abcdef12", False),                    # missing special
+        ("Abc def1!", False),                   # contains space
+        ("1Abcdef1!", False),                   # starts with digit
+        ("Abcdef111!", True),                   # three identical digits allowed
+        ("Abcdef1111!", False),                 # four identical digits not allowed
+        ("Abcdef1!password", False),           # contains forbidden word
+        ("Abcdef1!PassWord", False),           # contains forbidden word (case‑insensitive)
+        ("Abcdef1!Pa", False),                  # too short (7 chars)
+        ("A" * 65, False),                      # too long (65 chars)
+        ("StrongPass1!_With-Various+Chars", True),  # valid longer password
+        ("Ab1!" * 16, True),                    # exactly 64 chars, all rules satisfied
+    ]
+
+    results = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```

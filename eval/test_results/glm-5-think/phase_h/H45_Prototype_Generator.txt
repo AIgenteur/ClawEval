@@ -1,0 +1,89 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        """
+        Validates JSON-like data against a provided schema.
+        
+        Args:
+            data (dict): The JSON-like data to validate.
+            schema (dict): The schema definition.
+            
+        Returns:
+            dict: {"valid": bool, "errors": list[str]}
+        """
+        errors = []
+        
+        # Ensure data is a dictionary before proceeding
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data root must be a dictionary."]}
+
+        for field_name, constraints in schema.items():
+            # Check if field is required and present
+            is_required = constraints.get("required", False)
+            field_exists = field_name in data
+            
+            if not field_exists:
+                if is_required:
+                    errors.append(f"Field '{field_name}' is required but missing.")
+                continue
+            
+            value = data[field_name]
+            expected_type = constraints.get("type")
+            
+            # 1. Type Validation
+            if expected_type:
+                if not self._check_type(value, expected_type):
+                    actual_type = type(value).__name__
+                    errors.append(f"Field '{field_name}' has incorrect type. Expected '{expected_type}', got '{actual_type}'.")
+                    # If type is incorrect, we usually stop validation for this field
+                    # to avoid errors when checking constraints (e.g., len() on an int)
+                    continue
+            
+            # 2. Value Constraints
+            if expected_type in ("int", "float"):
+                self._validate_number(value, constraints, field_name, errors)
+            elif expected_type in ("str", "list"):
+                self._validate_length(value, constraints, field_name, errors)
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _check_type(self, value, type_str):
+        """Helper to check if value matches the expected type string."""
+        if type_str == "str":
+            return isinstance(value, str)
+        elif type_str == "int":
+            # In Python, bool is a subclass of int, so we need to exclude it explicitly
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif type_str == "float":
+            return isinstance(value, float)
+        elif type_str == "bool":
+            return isinstance(value, bool)
+        elif type_str == "list":
+            return isinstance(value, list)
+        elif type_str == "dict":
+            return isinstance(value, dict)
+        return False
+
+    def _validate_number(self, value, constraints, field_name, errors):
+        """Validates min/max constraints for numbers."""
+        min_val = constraints.get("min")
+        max_val = constraints.get("max")
+        
+        if min_val is not None and value < min_val:
+            errors.append(f"Field '{field_name}' value {value} is less than minimum {min_val}.")
+        if max_val is not None and value > max_val:
+            errors.append(f"Field '{field_name}' value {value} is greater than maximum {max_val}.")
+
+    def _validate_length(self, value, constraints, field_name, errors):
+        """Validates min_length/max_length constraints for strings and lists."""
+        min_len = constraints.get("min_length")
+        max_len = constraints.get("max_length")
+        
+        # We assume value is str or list here, so len() is safe
+        current_len = len(value)
+        
+        if min_len is not None and current_len < min_len:
+            errors.append(f"Field '{field_name}' length {current_len} is less than min_length {min_len}.")
+        if max_len is not None and current_len > max_len:
+            errors.append(f"Field '{field_name}' length {current_len} is greater than max_length {max_len}.")
+```

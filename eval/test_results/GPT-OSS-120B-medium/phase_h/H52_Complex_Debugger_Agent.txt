@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "self.requests = []  # Line 8: Bug",
+      "bug": "The list of request timestamps is recreated for every RateLimiter instance but is not protected against concurrent modifications, which can cause race‑conditions in an async environment.",
+      "fix": "Replace the list with an asyncio‑compatible queue (e.g., `collections.deque`) and protect modifications with an `asyncio.Lock`.\n```python\nfrom collections import deque\nimport asyncio\n\nclass RateLimiter:\n    def __init__(self, max_requests, period):\n        self.max_requests = max_requests\n        self.period = period\n        self.requests = deque()\n        self._lock = asyncio.Lock()\n```"
+    },
+    {
+      "line": "now = asyncio.get_event_loop().time()  # Line 11: Bug",
+      "bug": "`asyncio.get_event_loop()` is deprecated in modern Python and may return a closed loop, causing a `RuntimeError`.",
+      "fix": "Use `asyncio.get_running_loop()` inside the coroutine.\n```python\nnow = asyncio.get_running_loop().time()\n```"
+    },
+    {
+      "line": "async with aiohttp.ClientSession() as session:  # Line 25: Bug",
+      "bug": "A new `ClientSession` is created for every request, which is expensive and can exhaust system resources.",
+      "fix": "Create a single session outside the inner function and reuse it for all requests.\n```python\nasync def fetch_all(urls, max_concurrent=10):\n    async with aiohttp.ClientSession() as session:\n        ...\n        async def fetch_one(url):\n            async with semaphore:\n                await limiter.acquire()\n                try:\n                    async with session.get(url, timeout=30) as response:\n                        data = await response.json()\n                        results[url] = data\n                ...\n```"
+    },
+    {
+      "line": "response = await session.get(url, timeout=30)  # Line 27: Bug",
+      "bug": "`session.get` returns a `ClientResponse` that must be used as an async context manager; otherwise the connection is never released. Also, `timeout` expects an `aiohttp.ClientTimeout` object.",
+      "fix": "Use an async context manager and proper timeout object.\n```python\ntimeout = aiohttp.ClientTimeout(total=30)\nasync with session.get(url, timeout=timeout) as response:\n    data = await response.json()\n```"
+    },
+    {
+      "line": "results[url] = data  # Line 29: Bug",
+      "bug": "The code stores the JSON payload without checking the HTTP status; non‑200 responses will raise an exception later or store invalid data.",
+      "fix": "Validate the response status before reading JSON.\n```python\nif response.status == 200:\n    data = await response.json()\n    results[url] = data\nelse:\n    results[url] = None\n```"
+    },
+    {
+      "line": "results[url] = None  # Line 31: Bug",
+      "bug": "Swallowing all exceptions and merely inserting `None` loses diagnostic information, making debugging difficult.",
+      "fix": "Log the exception (or store it) before assigning `None`.\n```python\nexcept Exception as exc:\n    logging.exception(\"Failed to fetch %s\", url)\n    results[url] = None\n```"
+    },
+    {
+      "line": "pass  # Line 32: Bug",
+      "bug": "The `pass` statement inside the `except` block is redundant and suggests that the error handling was incomplete.",
+      "fix": "Remove the `pass` statement; the block already handles the error.\n```python\nexcept Exception as exc:\n    logging.exception(...)\n    results[url] = None\n```"
+    },
+    {
+      "line": "await asyncio.gather(*tasks)  # Line 35: Bug",
+      "bug": "`asyncio.gather` is awaited but its result is ignored; if any task raises, the exception is propagated but the caller cannot know which URL failed.",
+      "fix": "Capture the results and optionally handle exceptions.\n```python\nresponses = await asyncio.gather(*tasks, return_exceptions=True)\n# Optionally process `responses` here\n```"
+    },
+    {
+      "line": "task = process_item(item)  # Line 42: Bug - missing await",
+      "bug": "`process_item` returns a coroutine; storing it without awaiting or scheduling may lead to unexecuted coroutines if later code changes.",
+      "fix": "Wrap the coroutine in a task to ensure it runs concurrently.\n```python\ntask = asyncio.create_task(process_item(item))\n```"
+    },
+    {
+      "line": "yield r  # Line 45: Bug",
+      "bug": "`process_batch` is an async function that yields values, making it an async generator. However, the function is later used as a regular coroutine, which will raise `RuntimeError: async generator didn't stop` if iterated incorrectly.",
+      "fix": "Document that `process_batch` returns an async generator and consume it with `async for`.\n```python\nasync for result in process_batch(items):\n    ...\n```"
+    },
+    {
+      "line": "self.pool = []  # Line 52: Bug",
+      "bug": "Using a plain list for a connection pool does not enforce the maximum size and can lead to uncontrolled growth.",
+      "fix": "Initialize the pool as a `collections.deque` with a maximum length.\n```python\nfrom collections import deque\nself.pool = deque(maxlen=self.size)\n```"
+    },
+    {
+      "line": "self.pool.append(conn)  # Line 60: Bug",
+      "bug": "Releasing a connection blindly appends it even when the pool is already full, potentially exceeding the intended pool size.",
+      "fix": "Only append if the pool is not full; otherwise close/discard the connection.\n```python\nif len(self.pool) < self.size:\n    self.pool.append(conn)\nelse:\n    await conn.close()  # or appropriate cleanup\n```"
+    },
+    {
+      "line": "return object()  # Line 63: Bug",
+      "bug": "`create_connection` returns a generic `object`, which is not a usable connection for any real I/O operation.",
+      "fix": "Replace with actual connection creation logic (e.g., an `aiohttp.ClientSession`).\n```python\nasync def create_connection(self):\n    return aiohttp.ClientSession()\n```"
+    },
+    {
+      "line": "print(f\"Got {len(results)} results\")  # Line 68: Bug",
+      "bug": "`len(results)` reports the number of keys in the dictionary, not the number of successful fetches; failed URLs are counted as well, which can be misleading.",
+      "fix": "Count only successful results.\n```python\nsuccessful = sum(1 for v in results.values() if v is not None)\nprint(f\"Got {successful} successful results out of {len(results)}\")\n```"
+    },
+    {
+      "line": "self.requests.append(now)  # after waiting in RateLimiter.acquire",
+      "bug": "After awaiting the required sleep, the timestamp `now` is not refreshed, so the recorded time may be earlier than the actual request, allowing bursts that exceed the rate limit.",
+      "fix": "Re‑compute `now` after the sleep before appending.\n```python\nif len(self.requests) >= self.max_requests:\n    wait = self.requests[0] + self.period - now\n    await asyncio.sleep(wait)\n    now = asyncio.get_running_loop().time()\nself.requests.append(now)\n```"
+    }
+  ],
+  "count": 15
+}
+```

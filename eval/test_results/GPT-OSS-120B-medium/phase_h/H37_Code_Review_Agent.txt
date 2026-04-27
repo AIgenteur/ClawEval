@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 13,
+      "bug": "SAVE20 discount applies 80% discount instead of 20% (subtotal multiplied by 0.20).",
+      "severity": "major"
+    },
+    {
+      "line": 15,
+      "bug": "SAVE10 discount subtracts ten times the subtotal (subtotal -= subtotal * 10) instead of 10% discount.",
+      "severity": "major"
+    },
+    {
+      "line": 25,
+      "bug": "When inventory goes negative the code does nothing (pass). It should raise an error or prevent the sale.",
+      "severity": "major"
+    },
+    {
+      "line": 36,
+      "bug": "Uses `total_revenue =+ total` which resets revenue each iteration instead of accumulating (`+=`).",
+      "severity": "critical"
+    },
+    {
+      "line": 39,
+      "bug": "Average order is calculated as `total_revenue / len(orders)`, which can divide by zero and uses the wrong denominator; should use `len(results)` and guard against empty list.",
+      "severity": "major"
+    },
+    {
+      "line": 40,
+      "bug": "`max()` on an empty `results` list raises a ValueError when there are no orders.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Email validation only checks for the presence of '@', allowing many invalid addresses.",
+      "severity": "minor"
+    },
+    {
+      "line": 61,
+      "bug": "Shipping cost formula adds `distance + per_km` instead of multiplying distance by per‑km rate; should be `distance * per_km`.",
+      "severity": "major"
+    },
+    {
+      "line": 66,
+      "bug": "`elif weight > 50` is unreachable because the preceding `if weight > 30` captures all weights >30.",
+      "severity": "minor"
+    },
+    {
+      "line": 69,
+      "bug": "`round(cost)` removes decimal precision; should round to two decimals (`round(cost, 2)`).",
+      "severity": "minor"
+    },
+    {
+      "line": 72,
+      "bug": "`merged = profile_a` creates a reference, so modifications affect the original profile; should copy (`profile_a.copy()`).",
+      "severity": "major"
+    },
+    {
+      "line": 74,
+      "bug": "When merging profiles, keys present in both profiles are never overwritten; profile_b should be allowed to override profile_a.",
+      "severity": "major"
+    },
+    {
+      "line": 76,
+      "bug": "`updated_at` is hard‑coded to a static date, losing the actual update time.",
+      "severity": "minor"
+    },
+    {
+      "line": 80,
+      "bug": "CSV parsing simply splits on commas and fails for quoted fields containing commas.",
+      "severity": "minor"
+    },
+    {
+      "line": 88,
+      "bug": "`find_duplicates` may record the same duplicate multiple times; it should return each duplicate only once.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

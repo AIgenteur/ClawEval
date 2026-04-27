@@ -1,0 +1,114 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        """
+        Validate JSON-like data against a schema.
+        
+        Args:
+            data: Dictionary to validate
+            schema: Schema definition with field rules
+            
+        Returns:
+            Dictionary with 'valid' (bool) and 'errors' (list of strings)
+        """
+        errors = []
+        
+        # Map schema type names to Python types
+        type_map = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict
+        }
+        
+        for field_name, field_schema in schema.items():
+            # Check if required field is missing
+            if field_schema.get("required", False) and field_name not in data:
+                errors.append(f"Field '{field_name}' is required")
+                continue
+            
+            # Skip validation if field is not present (and not required)
+            if field_name not in data:
+                continue
+            
+            value = data[field_name]
+            expected_type = field_schema.get("type")
+            type_valid = True
+            
+            # Type validation
+            if expected_type in type_map:
+                if expected_type == "int":
+                    # bool is subclass of int in Python, so exclude it
+                    if not isinstance(value, int) or isinstance(value, bool):
+                        errors.append(f"Field '{field_name}' must be of type int")
+                        type_valid = False
+                elif expected_type == "float":
+                    # Allow int for float type (common in JSON), but not bool
+                    if not isinstance(value, (int, float)) or isinstance(value, bool):
+                        errors.append(f"Field '{field_name}' must be of type float")
+                        type_valid = False
+                elif expected_type == "bool":
+                    if not isinstance(value, bool):
+                        errors.append(f"Field '{field_name}' must be of type bool")
+                        type_valid = False
+                else:
+                    if not isinstance(value, type_map[expected_type]):
+                        errors.append(f"Field '{field_name}' must be of type {expected_type}")
+                        type_valid = False
+            
+            # Skip constraint validation if type is invalid
+            if not type_valid:
+                continue
+            
+            # Numeric constraints (min/max)
+            if expected_type in ("int", "float"):
+                if "min" in field_schema and value < field_schema["min"]:
+                    errors.append(f"Field '{field_name}' must be >= {field_schema['min']}")
+                if "max" in field_schema and value > field_schema["max"]:
+                    errors.append(f"Field '{field_name}' must be <= {field_schema['max']}")
+            
+            # String/List length constraints
+            if expected_type in ("str", "list"):
+                if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                    errors.append(f"Field '{field_name}' length must be >= {field_schema['min_length']}")
+                if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                    errors.append(f"Field '{field_name}' length must be <= {field_schema['max_length']}")
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+```
+
+**Example usage:**
+
+```python
+validator = JSONValidator()
+
+# Valid data
+data1 = {"name": "John", "age": 25, "tags": ["a", "b"]}
+schema1 = {
+    "name": {"type": "str", "required": True, "min_length": 1},
+    "age": {"type": "int", "min": 0, "max": 120},
+    "tags": {"type": "list", "max_length": 5}
+}
+print(validator.validate(data1, schema1))
+# {'valid': True, 'errors': []}
+
+# Multiple errors
+data2 = {"age": -5, "name": ""}
+schema2 = {
+    "name": {"type": "str", "required": True, "min_length": 2},
+    "age": {"type": "int", "min": 0, "max": 100},
+    "email": {"type": "str", "required": True}
+}
+print(validator.validate(data2, schema2))
+# {'valid': False, 'errors': ["Field 'age' must be >= 0", 
+#                             "Field 'name' length must be >= 2", 
+#                             "Field 'email' is required"]}
+
+# Extra fields allowed
+data3 = {"name": "Alice", "extra": "ignored"}
+schema3 = {"name": {"type": "str"}}
+print(validator.validate(data3, schema3))
+# {'valid': True, 'errors': []}
+```
