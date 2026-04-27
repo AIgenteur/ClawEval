@@ -1,0 +1,94 @@
+Here's the JSON response identifying all 15 bugs in the provided Python code:
+
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount application: multiplying subtotal by 0.20 instead of subtracting 20% (should be `subtotal *= 0.80`).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount application: subtracting 10% of subtotal instead of multiplying by 0.90 (should be `subtotal *= 0.90`).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Silent inventory underflow: no handling of negative stock levels (should either raise an error or skip the order).",
+      "severity": "critical"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax error: `total_revenue =+ total` should be `total_revenue += total` (missing `+=` operator).",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero risk: `total_revenue / len(orders)` could fail if `orders` is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "Incorrect max calculation: `max(r['total'] for r in results)` will fail if `results` is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation: only checks for presence of '@' symbol, missing domain validation.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect shipping cost calculation: adding `distance + per_km` instead of multiplying by distance (should be `distance * per_km`).",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable condition: `elif weight > 50` is unreachable because `elif weight > 30` already covers all cases.",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Precision loss: `round(cost)` truncates decimal places instead of rounding to nearest integer.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Inefficient merge: `merged = profile_a` creates a shallow copy instead of deep merging profiles.",
+      "severity": "minor"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date: `merged['updated_at'] = '2024-01-01'` should use current timestamp or configurable value.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "No handling of CSV parsing: `line.split(',')` doesn't account for quoted fields or escaped commas.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "Duplicate detection inefficiency: appending items to `seen` before checking for duplicates causes incorrect results.",
+      "severity": "minor"
+    },
+    {
+      "line": 31 (revisited),
+      "bug": "Potential integer overflow: `total_revenue += total` could cause integer overflow with large numbers.",
+      "severity": "minor"
+    },
+    {
+      "line": 34 (revisited),
+      "bug": "Missing empty list check: No validation for empty `orders` list before division.",
+      "severity": "minor"
+    },
+    {
+      "line": 35 (revisited),
+      "bug": "Missing empty results check: No validation for empty `results` list before max calculation.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

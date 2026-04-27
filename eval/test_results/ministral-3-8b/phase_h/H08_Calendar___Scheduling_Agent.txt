@@ -1,0 +1,105 @@
+```json
+{
+  "1": "No, there is no free 30-minute slot between 09:00 and 10:30. The only gap is 30 minutes (10:00-10:30), but it is immediately followed by a meeting at 10:30.",
+
+  "2": "No, there is no 1-hour slot available between 11:30 and 12:00. The gap is only 30 minutes.",
+
+  "3": "The earliest available 45-minute slot after 10:00 is **10:30-11:15** (assuming the client call starts at 10:30, but since the client call starts at 10:30, the earliest possible 45-minute slot is **11:30-12:15**, but that overlaps with lunch. The next available slot is **16:30-17:15** (after the 1-on-1 meeting). However, if we consider the gap between 10:00 and 10:30 (30 minutes), it is insufficient. The next possible slot is **12:00-12:45** (after lunch), but lunch ends at 13:00. The correct earliest available 45-minute slot is **16:30-17:15** (after the 1-on-1 meeting).",
+
+  "4": {
+    "total_meeting_minutes": 360,
+    "breakdown": {
+      "Team standup (09:00-10:00)": 60,
+      "Client call with Acme Corp (10:30-11:30)": 60,
+      "Sprint planning (14:00-15:30)": 90,
+      "1-on-1 with manager (16:00-16:30)": 30
+    }
+  },
+
+  "5": {
+    "longest_free_gap": 150,
+    "time_slot": "12:00-12:45 (after lunch, before next meeting)"
+  },
+
+  "6": "No, there is no 2-hour slot available between 09:00 and 17:00. The longest contiguous free block is 150 minutes (12:00-12:45 is only 45 minutes, but the actual longest free gap is 12:00-14:00, which is 120 minutes).",
+
+  "7": "No, the slot 15:30-16:00 is not free. It is between the sprint planning (ends at 15:30) and the 1-on-1 meeting (starts at 16:00).",
+
+  "8": {
+    "meetings_before_lunch": 2,
+    "meetings": [
+      "Team standup (09:00-10:00)",
+      "Client call with Acme Corp (10:30-11:30)"
+    ]
+  },
+
+  "9": {
+    "percentage_booked": 45,
+    "explanation": "Total working hours from 09:00-17:00 is 8 hours (480 minutes). Total meeting time is 360 minutes. (360/480) * 100 = 75%. However, the question asks for the percentage booked, which is 360/480 = 75%. Rounded to the nearest integer, it is 75%."
+  },
+
+  "10": {
+    "new_longest_free_gap": 180,
+    "explanation": "If the client call is moved to 13:00-14:00, the new schedule would be:
+    - 09:00-10:00: Team standup
+    - 10:30-11:30: Free
+    - 11:30-12:00: Free
+    - 12:00-13:00: Lunch
+    - 13:00-14:00: Client call with Acme Corp
+    - 14:00-15:30: Sprint planning
+    - 15:30-16:00: Free
+    - 16:00-16:30: 1-on-1 with manager
+    The longest free gap is now 120 minutes (10:30-12:00). However, if we consider the gap between 12:00 and 13:00 (lunch) and 13:00-14:00 (client call), the longest free gap is actually 120 minutes (10:30-12:00). Wait, let's re-evaluate:
+    - 10:30-12:00: 90 minutes free
+    - 15:30-16:00: 30 minutes free
+    - 16:30-17:00: 30 minutes free
+    The longest free gap is 90 minutes (10:30-12:00). However, if we consider the gap between 12:00 and 13:00 (lunch) and 13:00-14:00 (client call), there is no free time between them. The longest free gap is 90 minutes (10:30-12:00).",
+    "correction": "Upon re-evaluation, the longest free gap after moving the client call to 13:00-14:00 is **120 minutes (10:30-12:30)**. This is because the gap between 10:30 and 12:00 (90 minutes) plus the lunch break (12:00-13:00) and the client call (13:00-14:00) creates a longer contiguous free period if we consider the gap between 10:30 and 12:00 as a single block. However, the actual longest contiguous free block is 120 minutes (10:30-12:30)."
+  },
+
+  "11": "No, there is no free time between 13:00 and 14:00. The client call is scheduled for 13:00-14:00.",
+
+  "12": {
+    "last_meeting_end_time": "16:30",
+    "meeting": "1-on-1 with manager"
+  },
+
+  "13": {
+    "earliest_90_min_slot": "10:30-12:00",
+    "explanation": "If the standup is canceled, the earliest 90-minute slot is between 10:30 and 12:00."
+  },
+
+  "14": {
+    "meetings_longer_than_30_minutes": 3,
+    "meetings": [
+      "Team standup (09:00-10:00)",
+      "Client call with Acme Corp (10:30-11:30)",
+      "Sprint planning (14:00-15:30)"
+    ]
+  },
+
+  "15": "No, there is no overlap between existing meetings.",
+
+  "16": {
+    "total_free_time": 120,
+    "explanation": "Total working hours from 09:00-17:00 is 8 hours (480 minutes). Total meeting time is 360 minutes. Free time is 480 - 360 = 120 minutes."
+  },
+
+  "17": "No, there is no 30-minute meeting slot available at 11:30. The client call starts at 11:30.",
+
+  "18": {
+    "is_15_00_16_00_free": "No",
+    "explanation": "If sprint planning ends 30 minutes early (at 15:00), the next meeting is the 1-on-1 at 16:00. The slot 15:00-16:00 is free."
+  },
+
+  "19": {
+    "back_to_back_meetings": 0,
+    "explanation": "There are no back-to-back meetings with no gap in between."
+  },
+
+  "20": {
+    "average_meeting_duration": 72,
+    "explanation": "Total meeting time is 360 minutes, and there are 5 meetings. Average duration is 360/5 = 72 minutes."
+  }
+}
+```

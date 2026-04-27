@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Discount calculation for 'SAVE20' is incorrect. It should be `subtotal *= 0.80` (subtracting 20%) instead of multiplying by 0.20 (which gives 20% of the subtotal).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Discount calculation for 'SAVE10' is incorrect. It should be `subtotal *= 0.90` (subtracting 10%) or `subtotal -= subtotal * 0.10` (which is correct but redundant with the previous line's style).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "The code silently ignores negative stock levels with `pass`. This should either raise an error (e.g., `raise ValueError('Insufficient stock for item')`) or skip the inventory update for that item.",
+      "severity": "critical"
+    },
+    {
+      "line": 31,
+      "bug": "Typo in assignment operator: `total_revenue =+ total` should be `total_revenue += total`.",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero risk if `len(orders)` is 0. Should use `len(orders)` check or `statistics.mean` with error handling.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "If `results` is empty, `max(r['total'] for r in results)` will raise `ValueError`. Should handle empty case or use `max((r['total'] for r in results), default=0)`.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation is insufficient. It only checks for '@' but doesn't validate domain structure, TLD, or other common email rules. Use a regex or library like `email-validator`.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect formula for shipping cost: `distance + per_km` should be `distance * per_km` (adding distance and per_km is nonsensical).",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "The `elif weight > 50` condition is unreachable because the previous condition (`weight > 30`) already covers all cases where `weight > 50` is true. Remove this line.",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Using `round(cost)` loses decimal precision. For financial calculations, consider using `round(cost, 2)` or a decimal module for exact arithmetic.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "The function creates a shallow copy of `profile_a` but doesn't handle nested dictionaries or lists. This can lead to unintended side effects if `profile_a` is modified later. Use `copy.deepcopy(profile_a)` instead.",
+      "severity": "critical"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date `'2024-01-01'` is inflexible. Use `datetime.datetime.now().isoformat()` or a parameter to make it dynamic.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "`parse_csv_line` assumes CSV lines are comma-separated without handling edge cases like quoted fields, escaped commas, or different delimiters. Use a library like `csv` module for robust parsing.",
+      "severity": "critical"
+    },
+    {
+      "line": 78,
+      "bug": "The `find_duplicates` function has O(n²) time complexity due to `if item in seen` (list lookup is O(n)). Use a `set` for O(1) lookups: `if item in seen: ...` and `seen.add(item)`.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "The `find_duplicates` function appends duplicates to `duplicates` but doesn't handle the case where the same duplicate appears multiple times. Use a `set` for `duplicates` to avoid duplicates in the result.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

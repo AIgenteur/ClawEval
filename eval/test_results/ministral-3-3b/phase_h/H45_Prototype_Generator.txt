@@ -1,0 +1,185 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against a schema without using any imports:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        self._validate_data(data, schema, errors)
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _validate_data(self, data, schema, errors):
+        if isinstance(schema, dict):
+            for field_name, field_schema in schema.items():
+                if field_name in data:
+                    self._validate_field(data[field_name], field_schema, errors)
+                elif field_schema.get("required", False):
+                    errors.append(f"Missing required field: {field_name}")
+        elif isinstance(schema, list):
+            # Handle list schema (though schema is typically dict for fields)
+            pass  # This case is not covered by the schema format you provided
+        else:
+            # Handle top-level schema (though schema is typically dict for fields)
+            pass
+
+    def _validate_field(self, value, schema, errors):
+        field_type = schema.get("type")
+        required = schema.get("required", False)
+
+        # Check type
+        if field_type == "str":
+            if not isinstance(value, str):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be string")
+            else:
+                min_len = schema.get("min_length")
+                max_len = schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at least {min_len} characters long")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at most {max_len} characters long")
+
+        elif field_type == "int":
+            if not isinstance(value, int):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be integer")
+            else:
+                min_val = schema.get("min")
+                max_val = schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at least {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at most {max_val}")
+
+        elif field_type == "float":
+            if not isinstance(value, (int, float)):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be float")
+            else:
+                min_val = schema.get("min")
+                max_val = schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at least {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be at most {max_val}")
+
+        elif field_type == "bool":
+            if not isinstance(value, bool):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be boolean")
+            else:
+                pass  # No additional checks for bool
+
+        elif field_type == "list":
+            if not isinstance(value, list):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be list")
+            else:
+                min_len = schema.get("min_length")
+                max_len = schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must have at least {min_len} items")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{schema.get('field_name', 'unknown')}' must have at most {max_len} items")
+
+        elif field_type == "dict":
+            if not isinstance(value, dict):
+                errors.append(f"Field '{schema.get('field_name', 'unknown')}' must be dictionary")
+            else:
+                pass  # No additional checks for dict
+
+        else:
+            errors.append(f"Unknown type '{field_type}' for field '{schema.get('field_name', 'unknown')}'")
+
+    def validate_schema(self, schema):
+        # Helper method to validate the schema itself (not part of the requirements)
+        pass
+```
+
+However, I notice that the original class doesn't properly handle the field names in the schema. Here's a corrected version that properly tracks field names:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        self._validate_data(data, schema, errors)
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _validate_data(self, data, schema, errors):
+        if isinstance(schema, dict):
+            for field_name, field_schema in schema.items():
+                if field_name in data:
+                    self._validate_field(data[field_name], field_schema, field_name, errors)
+                elif field_schema.get("required", False):
+                    errors.append(f"Missing required field: {field_name}")
+        else:
+            # Handle top-level schema (though schema is typically dict for fields)
+            pass
+
+    def _validate_field(self, value, schema, field_name, errors):
+        field_type = schema.get("type")
+        required = schema.get("required", False)
+
+        # Check type
+        if field_type == "str":
+            if not isinstance(value, str):
+                errors.append(f"Field '{field_name}' must be string")
+            else:
+                min_len = schema.get("min_length")
+                max_len = schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field_name}' must be at least {min_len} characters long")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field_name}' must be at most {max_len} characters long")
+
+        elif field_type == "int":
+            if not isinstance(value, int):
+                errors.append(f"Field '{field_name}' must be integer")
+            else:
+                min_val = schema.get("min")
+                max_val = schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}' must be at least {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}' must be at most {max_val}")
+
+        elif field_type == "float":
+            if not isinstance(value, (int, float)):
+                errors.append(f"Field '{field_name}' must be float")
+            else:
+                min_val = schema.get("min")
+                max_val = schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}' must be at least {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}' must be at most {max_val}")
+
+        elif field_type == "bool":
+            if not isinstance(value, bool):
+                errors.append(f"Field '{field_name}' must be boolean")
+
+        elif field_type == "list":
+            if not isinstance(value, list):
+                errors.append(f"Field '{field_name}' must be list")
+            else:
+                min_len = schema.get("min_length")
+                max_len = schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field_name}' must have at least {min_len} items")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field_name}' must have at most {max_len} items")
+
+        elif field_type == "dict":
+            if not isinstance(value, dict):
+                errors.append(f"Field '{field_name}' must be dictionary")
+            else:
+                # Validate nested schema if provided
+                if "items" in schema:
+                    for key, item_value in value.items():
+                        self._validate_field(item_value, schema["items"], key, errors)
+```
+
+This version properly tracks the field name throughout the validation process. The class will:
+
+1. Check if all required fields are present
+2. Validate the type of each field
+3. For numbers, check min/max values if specified
+4. For strings, check min/max length if specified
+5. For lists, check min/max length if specified
+6. Collect all errors and return them in the result
+
+The errors will include specific information about which field failed validation and why.

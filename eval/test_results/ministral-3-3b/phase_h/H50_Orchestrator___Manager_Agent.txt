@@ -1,0 +1,253 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Validation/Triage Agent",
+      "input": {
+        "customer_request": {
+          "refund_id": "string",
+          "amount": "float",
+          "reason": "string",
+          "customer_details": {
+            "id": "string",
+            "email": "string",
+            "phone": "string"
+          },
+          "transaction_history": "array[transaction]"
+        },
+        "metadata": {
+          "timestamp": "datetime",
+          "source": "string"
+        }
+      },
+      "output": {
+        "status": "valid|invalid|pending_fraud_check",
+        "validation_errors": "array[string]",
+        "triage_notes": "string",
+        "next_agent": "string"
+      },
+      "next": {
+        "if": {
+          "status": "invalid",
+          "then": "Fallback_Handler"
+        },
+        "else": "Fraud_Check_Agent"
+      },
+      "fallback": "Fallback_Handler",
+      "timeout": 10,
+      "audit_log": {
+        "action": "validation",
+        "details": "Triage completed",
+        "status": "valid|invalid|pending_fraud_check"
+      }
+    },
+    {
+      "name": "Fraud_Check_Agent",
+      "input": {
+        "customer_request": "object",
+        "validation_result": "object"
+      },
+      "output": {
+        "fraud_status": "clean|flagged",
+        "fraud_reason": "string",
+        "next_agent": "Approval_Agent"
+      },
+      "next": {
+        "if": {
+          "fraud_status": "flagged",
+          "then": {
+            "conditional": {
+              "if": {
+                "fraud_reason": "high_risk",
+                "then": "Human_Escalation_Agent"
+              },
+              "else": "Approval_Agent"
+            }
+          }
+        },
+        "else": "Approval_Agent"
+      },
+      "fallback": "Fallback_Handler",
+      "timeout": 20,
+      "audit_log": {
+        "action": "fraud_check",
+        "details": "Fraud assessment completed",
+        "status": "clean|flagged"
+      }
+    },
+    {
+      "name": "Approval_Agent",
+      "input": {
+        "customer_request": "object",
+        "fraud_result": "object"
+      },
+      "output": {
+        "approval_status": "approved|rejected|pending",
+        "approval_notes": "string",
+        "next_agent": "string"
+      },
+      "next": {
+        "if": {
+          "approval_status": "rejected",
+          "then": "Notification_Agent"
+        },
+        "else": {
+          "if": {
+            "approval_status": "approved",
+            "then": "Payment_Processing_Agent"
+          },
+          "else": "Human_Escalation_Agent"
+        }
+      },
+      "fallback": "Fallback_Handler",
+      "timeout": 15,
+      "audit_log": {
+        "action": "approval",
+        "details": "Approval decision made",
+        "status": "approved|rejected|pending"
+      }
+    },
+    {
+      "name": "Payment_Processing_Agent",
+      "input": {
+        "customer_request": "object",
+        "approval_result": "object"
+      },
+      "output": {
+        "payment_status": "success|failed|pending",
+        "payment_details": "object",
+        "next_agent": "Notification_Agent"
+      },
+      "next": {
+        "if": {
+          "payment_status": "failed",
+          "then": "Notification_Agent"
+        },
+        "else": "Notification_Agent"
+      },
+      "fallback": "Fallback_Handler",
+      "timeout": 30,
+      "audit_log": {
+        "action": "payment_processing",
+        "details": "Payment transaction completed",
+        "status": "success|failed|pending"
+      }
+    },
+    {
+      "name": "Notification_Agent",
+      "input": {
+        "customer_request": "object",
+        "payment_result": "object"
+      },
+      "output": {
+        "notification_status": "sent|failed",
+        "notification_details": "object",
+        "final_status": "completed|error"
+      },
+      "next": "End",
+      "fallback": "Fallback_Handler",
+      "timeout": 10,
+      "audit_log": {
+        "action": "notification",
+        "details": "Customer notified",
+        "status": "sent|failed"
+      }
+    },
+    {
+      "name": "Human_Escalation_Agent",
+      "input": {
+        "customer_request": "object",
+        "fraud_result": "object",
+        "approval_result": "object"
+      },
+      "output": {
+        "escalation_status": "handled|pending",
+        "escalation_notes": "string",
+        "next_agent": "Approval_Agent"
+      },
+      "next": {
+        "if": {
+          "escalation_status": "handled",
+          "then": "Approval_Agent"
+        },
+        "else": "Notification_Agent"
+      },
+      "fallback": "Fallback_Handler",
+      "timeout": 60,
+      "audit_log": {
+        "action": "escalation",
+        "details": "Human review initiated",
+        "status": "handled|pending"
+      }
+    },
+    {
+      "name": "Fallback_Handler",
+      "input": {
+        "error_details": "object",
+        "previous_agent": "string"
+      },
+      "output": {
+        "error_status": "handled|unhandled",
+        "error_message": "string",
+        "final_status": "failed|error"
+      },
+      "next": "Notification_Agent",
+      "fallback": "Notification_Agent",
+      "timeout": 30,
+      "audit_log": {
+        "action": "fallback",
+        "details": "Error handling completed",
+        "status": "handled|unhandled"
+      }
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud_check", "approval", "payment", "notification", "escalation", "fallback"],
+    "routing_requirements": {
+      "fraud_check_before_approval": true,
+      "payment_after_approval": true,
+      "conditional_branch": true,
+      "human_escalation": true
+    },
+    "time_constraints": {
+      "total_processing_time": "<= 60",
+      "agent_timeouts": {
+        "validation": 10,
+        "fraud_check": 20,
+        "approval": 15,
+        "payment": 30,
+        "notification": 10,
+        "escalation": 60,
+        "fallback": 30
+      }
+    },
+    "audit_requirements": {
+      "logging_required": true,
+      "audit_logs": ["validation", "fraud_check", "approval", "payment", "notification", "escalation", "fallback"]
+    },
+    "dependency_requirements": {
+      "no_circular_dependencies": true,
+      "required_paths": [
+        {
+          "path": ["Validation_Agent", "Fraud_Check_Agent", "Approval_Agent", "Payment_Processing_Agent", "Notification_Agent"],
+          "status": "success"
+        },
+        {
+          "path": ["Validation_Agent", "Fraud_Check_Agent", "Human_Escalation_Agent", "Approval_Agent", "Notification_Agent"],
+          "status": "success"
+        }
+      ]
+    },
+    "error_handling": {
+      "fallback_for_all_agents": true,
+      "escalation_path": true,
+      "timeout_handling": true
+    },
+    "final_status_requirements": {
+      "successful_completion": ["notification"],
+      "error_handling": ["fallback", "notification"]
+    }
+  }
+}
+```

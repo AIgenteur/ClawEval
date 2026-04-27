@@ -1,0 +1,117 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against a schema without using any imports:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        valid = True
+
+        # Check all required fields are present
+        for field_name in schema:
+            if schema[field_name].get("required", False) and field_name not in data:
+                errors.append(f"Missing required field: '{field_name}'")
+                valid = False
+
+        # Validate each field in the data that has a schema definition
+        for field_name in data:
+            if field_name in schema:
+                field_schema = schema[field_name]
+                field_value = data[field_name]
+
+                # Check type
+                expected_type = field_schema["type"]
+                if not self._check_type(field_value, expected_type):
+                    errors.append(f"Field '{field_name}' must be of type {expected_type}")
+                    valid = False
+                else:
+                    # Additional type-specific validations
+                    if expected_type == "int":
+                        self._validate_number(field_value, field_schema, field_name, errors)
+                    elif expected_type == "float":
+                        self._validate_number(field_value, field_schema, field_name, errors)
+                    elif expected_type == "str":
+                        self._validate_string(field_value, field_schema, field_name, errors)
+                    elif expected_type == "list":
+                        self._validate_list(field_value, field_schema, field_name, errors)
+                    elif expected_type == "dict":
+                        self._validate_dict(field_value, field_schema, field_name, errors)
+
+        return {"valid": valid, "errors": errors}
+
+    def _check_type(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        elif expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif expected_type == "float":
+            return isinstance(value, float)
+        elif expected_type == "bool":
+            return isinstance(value, bool)
+        elif expected_type == "list":
+            return isinstance(value, list)
+        elif expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+
+    def _validate_number(self, value, schema, field_name, errors):
+        min_val = schema.get("min")
+        max_val = schema.get("max")
+
+        if min_val is not None and value < min_val:
+            errors.append(f"Field '{field_name}' must be >= {min_val}")
+        if max_val is not None and value > max_val:
+            errors.append(f"Field '{field_name}' must be <= {max_val}")
+
+    def _validate_string(self, value, schema, field_name, errors):
+        min_length = schema.get("min_length")
+        max_length = schema.get("max_length")
+
+        if min_length is not None and len(value) < min_length:
+            errors.append(f"Field '{field_name}' must have at least {min_length} characters")
+        if max_length is not None and len(value) > max_length:
+            errors.append(f"Field '{field_name}' must have at most {max_length} characters")
+
+    def _validate_list(self, value, schema, field_name, errors):
+        min_length = schema.get("min_length")
+        max_length = schema.get("max_length")
+
+        if min_length is not None and len(value) < min_length:
+            errors.append(f"Field '{field_name}' must have at least {min_length} items")
+        if max_length is not None and len(value) > max_length:
+            errors.append(f"Field '{field_name}' must have at most {max_length} items")
+
+    def _validate_dict(self, value, schema, field_name, errors):
+        # For dicts, we don't validate the contents here - just check type
+        # Additional validation would require recursive validation
+        pass
+```
+
+This implementation:
+
+1. Checks for required fields that are missing
+2. Validates each field's type matches the schema
+3. For numbers (int/float), checks min/max values if specified
+4. For strings, checks min_length/max_length if specified
+5. For lists, checks min_length/max_length for the list length
+6. Collects all errors and returns them in a dictionary with a validity flag
+7. Allows extra fields not in the schema (as specified)
+8. Handles boolean values correctly (they're not considered ints)
+
+Example usage:
+```python
+validator = JSONValidator()
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 2, "max_length": 50},
+    "age": {"type": "int", "required": False, "min": 0, "max": 120},
+    "scores": {"type": "list", "required": False, "min_length": 0, "max_length": 10}
+}
+
+data = {
+    "name": "Alice",
+    "age": 30,
+    "scores": [95, 88, 92]
+}
+
+result = validator.validate(data, schema)
+print(result)  # {'valid': True, 'errors': []}
+```

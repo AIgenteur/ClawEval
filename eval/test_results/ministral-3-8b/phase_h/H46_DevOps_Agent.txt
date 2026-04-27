@@ -1,0 +1,87 @@
+```json
+{
+  "issues": [
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica makes the pod vulnerable to node failures (no high availability). Consider setting replicas to at least 3 for production environments.",
+      "severity": "critical"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Running as root is a security risk. Avoid using root privileges unless absolutely necessary. Use a non-root user with minimal required permissions instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Privileged containers have full access to the host system, which is a significant security risk. Only use this for debugging or specific use cases where it's absolutely required.",
+      "severity": "critical"
+    },
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using 'latest' tag is not recommended for production as it makes versioning unpredictable and rollbacks difficult. Use a specific version or tag (e.g., '1.2.3').",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "Hardcoding sensitive values like passwords in the deployment config is insecure. Use Kubernetes Secrets or environment variable substitution from a secure secrets manager.",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "Hardcoding sensitive API keys in the deployment config is insecure. Use Kubernetes Secrets or environment variable substitution from a secure secrets manager.",
+      "severity": "critical"
+    },
+    {
+      "line": "hostPath: path: /tmp/data",
+      "issue": "Using hostPath with a temporary directory (/tmp) is not persistent across pod restarts or node reboots. Use a more stable path or a proper volume type like PersistentVolumeClaim.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "Empty resources section means no CPU/memory limits or requests are set, which can lead to resource starvation or unpredictable behavior. Define at least requests for critical resources.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: requests: memory: \"10Gi\"",
+      "issue": "The sidecar container requests 10Gi of memory, which is extremely high for most use cases. This could cause resource contention and is likely unnecessary for a logger sidecar.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: requests: cpu: \"8\"",
+      "issue": "The sidecar container requests 8 CPU cores, which is excessive for a logger sidecar. This could cause resource contention and is likely unnecessary.",
+      "severity": "major"
+    },
+    {
+      "line": "name: sidecar",
+      "issue": "The sidecar container is not properly integrated with the main application. There's no clear purpose or configuration for how it interacts with the main container (e.g., shared volumes, network policies).",
+      "severity": "minor"
+    },
+    {
+      "line": "name: sidecar",
+      "issue": "The sidecar container has no liveness or readiness probes defined, making it impossible to detect failures or health issues.",
+      "severity": "minor"
+    },
+    {
+      "line": "name: sidecar",
+      "issue": "The sidecar container has no resource limits defined, which could lead to resource exhaustion and impact the main application.",
+      "severity": "minor"
+    },
+    {
+      "line": "name: sidecar",
+      "issue": "The sidecar container's image is tagged 'v1', which is not a specific version. While better than 'latest', it's still not ideal for production. Use a specific version tag.",
+      "severity": "minor"
+    },
+    {
+      "line": "ports: - containerPort: 8080",
+      "issue": "No port name is specified for the containerPort, which makes it harder to reference in other configurations (e.g., Service). Consider adding a name like 'http'.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec: type: LoadBalancer",
+      "issue": "LoadBalancer service type is typically used in cloud environments. If running in a non-cloud environment (e.g., on-prem), consider using NodePort or ClusterIP instead.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

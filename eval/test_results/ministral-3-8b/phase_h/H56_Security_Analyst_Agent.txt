@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - line with query construction (f-string)",
+      "severity": "critical"
+    },
+    {
+      "type": "Server-Side Template Injection (SSRF)",
+      "location": "profile(username) - render_template_string() with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search() - direct string interpolation in HTML response",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() - subprocess.run() with user-controlled cmd",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "upload() - os.path.join() with user-controlled filename",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "download() - send_file() with user-controlled filepath",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Direct Object Reference (IDOR)",
+      "location": "profile(username) - direct access to user profile via URL parameter",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "location": "restore_session() - pickle.loads() with user-controlled data",
+      "severity": "critical"
+    },
+    {
+      "type": "YAML Deserialization Vulnerability",
+      "location": "load_config() - yaml.load() with user-controlled data (no safe_loader)",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Secret Management",
+      "location": "SECRET variable (admin123) - hardcoded secret",
+      "severity": "high"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "app.run() - debug=True exposed to public network",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure File Export",
+      "location": "export_data() - os.system() with user-controlled format parameter",
+      "severity": "high"
+    },
+    {
+      "type": "Missing CSRF Protection",
+      "location": "All forms (login, upload, etc.) - no CSRF tokens",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Input Validation",
+      "location": "Multiple endpoints (login, upload, etc.) - no validation on user input",
+      "severity": "medium"
+    },
+    {
+      "type": "Insecure File Permissions",
+      "location": "UPLOAD_DIR - /tmp/uploads with default permissions",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

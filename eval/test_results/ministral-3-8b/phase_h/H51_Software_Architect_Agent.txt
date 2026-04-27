@@ -1,0 +1,311 @@
+```json
+{
+  "q1": {
+    "strategy": "Operational Transformation (OT) with CRDT-inspired optimizations",
+    "details": {
+      "primary": "OT (Operational Transformation) for text/structural changes (e.g., insert/delete) due to its proven scalability and simplicity in collaborative editing.",
+      "fallback": "Hybrid CRDT (Conflict-Free Replicated Data Type) for metadata (e.g., cursor positions, selections) where CRDTs are more natural (e.g., using `last-write-wins` or `vector clocks` for non-conflicting operations).",
+      "why_not_locking": "Locking is too restrictive for real-time collaboration. OT/CRDTs enable concurrent edits without blocking.",
+      "why_not_pure_crdt": "Pure CRDTs are complex to implement for rich text (e.g., nested structures like tables, lists). OT handles this better with transformations."
+    }
+  },
+  "q2": {
+    "protocol": "WebSockets (WS) with fallback to Server-Sent Events (SSE)",
+    "details": {
+      "ws": {
+        "use_case": "Primary choice for bidirectional real-time sync (e.g., typing, cursor updates).",
+        "protocol": "WSS (WebSocket Secure) for encrypted connections.",
+        "fallback": "SSE for browsers that don’t support WS (e.g., older Android versions).",
+        "compression": "Per-message deflate for large payloads (e.g., document diffs)."
+      },
+      "sse": {
+        "use_case": "One-way updates (e.g., notifications, version history changes).",
+        "limitations": "No client-to-server messages; only server-to-client."
+      }
+    }
+  },
+  "q3": {
+    "database": "PostgreSQL with TimescaleDB extension",
+    "details": {
+      "primary_reason": "Combines relational integrity (for document structure) with time-series capabilities (for version history and audit logs).",
+      "schema": {
+        "documents": "JSONB column for document content (stored as OT operations or CRDT state).",
+        "versions": "TimescaleDB hypertable for version history (time-partitioned for scalability).",
+        "metadata": "Separate tables for user permissions, document metadata (e.g., last edited, size)."
+      },
+      "alternatives_considered": [
+          "MongoDB (flexible schema but lacks strong consistency for OT).",
+          "ScyllaDB (high-performance but complex for JSONB).",
+          "DynamoDB (serverless but limited query flexibility)."
+        ],
+      "replication": "Synchronous multi-AZ replication for durability."
+    }
+  },
+  "q4": {
+    "strategy": "Optimistic Offline Editing with Conflict Resolution",
+    "details": {
+      "local_storage": {
+        "type": "IndexedDB (for browser) or SQLite (for mobile apps).",
+        "content": "Full document state (OT/CRDT state) + pending operations.",
+        "sync_queue": "Queue of operations to sync when back online."
+      },
+      "conflict_resolution": {
+        "algorithm": "OT-based merge with user prompts for ambiguous conflicts (e.g., overlapping edits).",
+        "fallback": "Last-write-wins for non-critical metadata (e.g., cursor positions)."
+      },
+      "sync_process": {
+        "trigger": "Network reconnect or manual sync button.",
+        "steps": [
+          "1. Fetch server state (latest OT operations/CRDT state).",
+          "2. Apply local operations to server state (OT transformations).",
+          "3. Resolve conflicts (if any) via UI prompts.",
+          "4. Commit merged state to server."
+        ]
+      },
+      "expiry": "Local edits expire after 7 days of inactivity (configurable)."
+    }
+  },
+  "q5": {
+    "broker": "Apache Kafka with Kafka Streams",
+    "details": {
+      "why_kafka": {
+        "scalability": "Horizontal scaling for high-throughput event streams (e.g., 10K+ concurrent users).",
+        "durability": "Persistent event log for replayability (critical for offline sync).",
+        "exactly_once": "At-least-once delivery semantics for OT operations."
+      },
+      "topics": {
+        "document_updates": "OT operations or CRDT diffs (partitioned by document ID).",
+        "cursor_updates": "Cursor position events (partitioned by user/document).",
+        "metadata_changes": "Document metadata (e.g., title, permissions)."
+      },
+      "consumers": {
+        "web_socket_gateway": "Kafka consumer for real-time WebSocket pushes.",
+        "version_history": "Kafka Streams app to index versions in TimescaleDB."
+      },
+      "alternatives": [
+        "NATS (lightweight but less durable than Kafka).",
+        "Redis Streams (simpler but not as scalable)."
+      ]
+    }
+  },
+  "q6": {
+    "strategy": "WebSocket Gateway with Load Balancing + Session Affinity",
+    "details": {
+      "architecture": {
+        "layer1": "NGINX/Envoy as WebSocket load balancer (round-robin or least connections).",
+        "layer2": "Stateless WebSocket servers (e.g., Node.js, Go) with connection pooling.",
+        "layer3": "Session affinity via cookie-based routing (for OT state consistency)."
+      },
+      "scaling": {
+        "horizontal": "Add more WebSocket servers behind the load balancer.",
+        "vertical": "Increase worker processes/memory per server (e.g., 100K concurrent WS connections per server)."
+      },
+      "optimizations": {
+        "connection_reuse": "Keep-alive for WebSocket connections (reduce handshake overhead).",
+        "compression": "Per-message deflate for large OT diffs.",
+        "heartbeats": "Ping/pong every 30s to detect dead connections."
+      },
+      "failover": "Automatic reconnection to a new WebSocket server if primary fails."
+    }
+  },
+  "q7": {
+    "strategy": "CRDT for Cursor Positions + OT for Edits",
+    "details": {
+      "cursor_crdt": {
+        "type": "Last-Write-Wins (LWW) CRDT for cursor positions (simpler than OT).",
+        "fields": {
+          "user_id": "String",
+          "position": "Object (line, char, selection_start, selection_end)",
+          "timestamp": "Vector clock or LWW timestamp",
+          "color": "User-specific cursor color (metadata)"
+        },
+        "merge": "Server resolves conflicts by timestamp (or UI prompt if ambiguous)."
+      },
+      "optimization": {
+        "throttling": "Debounce cursor updates (e.g., 100ms delay) to reduce network load.",
+        "batch": "Send cursor updates in batches with other OT operations."
+      },
+      "visualization": {
+        "client_side": "Render cursors based on CRDT state (no server-side rendering).",
+        "conflict_ui": "Highlight conflicting cursors (e.g., overlapping selections)."
+      }
+    }
+  },
+  "q8": {
+    "protocol": "OAuth 2.0 with JWT + Session Tokens",
+    "details": {
+      "flow": {
+        "auth": "OAuth 2.0 (Google/Facebook login) or email/password.",
+        "token": "Short-lived JWT (15min expiry) + long-lived refresh token.",
+        "session": "Server-side session token (stored in Redis) for WebSocket auth."
+      },
+      "web_socket_auth": {
+        "handshake": "Client sends JWT in first WebSocket message; server validates and issues session token.",
+        "session_store": "Redis (for fast lookup and TTL-based invalidation)."
+      },
+      "permissions": {
+        "document_level": "ACL stored in PostgreSQL (read/write/share permissions).",
+        "real-time_enforcement": "WebSocket gateway checks permissions before allowing operations."
+      },
+      "alternatives": [
+        "OpenID Connect (for SSO integration).",
+        "Custom JWT-only (less flexible than OAuth)."
+      ]
+    }
+  },
+  "q9": {
+    "strategy": "Version History via OT + TimescaleDB",
+    "details": {
+      "storage": {
+        "format": "OT operations + document state snapshots (every 5 edits or 10s).",
+        "location": "TimescaleDB hypertable (time-partitioned for scalability)."
+      },
+      "triggers": {
+        "auto_save": "Snapshot on every 5th OT operation or 10s of inactivity.",
+        "manual_save": "User-triggered (e.g., "Save" button)."
+      },
+      "recovery": {
+        "ui": "Timeline view to revert to any version (with conflict warnings).",
+        "diff_tool": "Side-by-side comparison of old/new versions."
+      },
+      "retention": {
+        "policy": "Keep 30 days of versions; older versions archived to S3."
+      },
+      "offline": "Local IndexedDB stores a limited history (e.g., last 5 versions)."
+    }
+  },
+  "q10": {
+    "strategy": "Multi-CDN with Edge Caching",
+    "details": {
+      "assets": {
+        "static": "CSS, JS, images (cached at CDN edge).",
+        "dynamic": "WebSocket gateway behind CDN (e.g., Cloudflare Workers)."
+      },
+      "cdn": {
+        "primary": "Cloudflare CDN (global coverage, low latency).",
+        "fallback": "Fastly or Akamai for regions with poor Cloudflare coverage."
+      },
+      "cache_invalidation": {
+        "strategy": "Short TTL (1h) for JS/CSS; long TTL (1d) for images.",
+        "trigger": "Versioned filenames (e.g., `app-v2.3.4.js`)."
+      },
+      "edge_compute": {
+        "use_case": "Run WebSocket gateway logic at edge (e.g., Cloudflare Workers).",
+        "limitations": "Not suitable for complex OT transformations (offload to backend)."
+      }
+    }
+  },
+  "q11": {
+    "strategy": "Chunked Document Storage + Lazy Loading",
+    "details": {
+      "chunking": {
+        "size": "10KB–100KB chunks (adaptive based on content).",
+        "format": "OT operations or CRDT state per chunk (e.g., per section).",
+        "metadata": "Chunk dependencies (e.g., "chunk A depends on chunk B")."
+      },
+      "storage": {
+        "primary": "PostgreSQL JSONB (for small chunks) + S3 (for large chunks).",
+        "indexing": "PostgreSQL GiST index for fast chunk lookup by position."
+      },
+      "loading": {
+        "lazy": "Load chunks on-demand (e.g., only render visible sections).",
+        "prefetch": "Predict next chunks based on scroll position."
+      },
+      "sync": {
+        "delta_sync": "Only sync changed chunks (not full document).",
+        "conflict_resolution": "OT transformations applied per chunk."
+      },
+      "fallback": "For >10,000 pages: Split into sub-documents (e.g., "Chapter 1", "Chapter 2")."
+    }
+  },
+  "q12": {
+    "strategy": "Rate Limiting + Token Bucket",
+    "details": {
+      "layers": {
+        "api_gateway": "NGINX rate limiting (e.g., 1000 requests/min per user).",
+        "websocket": "Token bucket per user (e.g., 100 operations/sec).",
+        "database": "PostgreSQL `pg_stat_statements` to detect slow queries."
+      },
+      "metrics": {
+        "tracked": "Requests per user, operations per document, bytes uploaded.",
+        "alerts": "Prometheus alerts for anomalies (e.g., >10K ops/sec on a doc)."
+      },
+      "bypass": {
+        "admin_users": "Whitelisted IPs for admins.",
+        "emergency": "Temporary rate limit increases for DDoS mitigation."
+      },
+      "offline": "Throttle local sync queue (e.g., 1 operation/sec offline)."
+    }
+  },
+  "q13": {
+    "strategy": "Multi-Region Replication + Point-in-Time Recovery",
+    "details": {
+      "backup": {
+        "frequency": "Hourly full backups + continuous WAL archiving (PostgreSQL).",
+        "storage": "S3 Glacier Deep Archive (cold storage) + EBS snapshots (hot)."
+      },
+      "replication": {
+        "primary": "PostgreSQL logical replication to 3 regions (e.g., US, EU, APAC).",
+        "kafka": "Kafka mirroring across regions for event durability."
+      },
+      "restore": {
+        "point_in_time": "Restore to any second in the last 7 days (via WAL).",
+        "disaster_recovery": "Failover to secondary region in <15min."
+      },
+      "immutable": {
+        "versions": "Version history snapshots stored in S3 with object locking."
+      }
+    }
+  },
+  "q14": {
+    "strategy": "Batch Uploads + Resumable Transfers",
+    "details": {
+      "upload": {
+        "method": "Chunked uploads (e.g., 5MB chunks) with MD5 hashing.",
+        "protocol": "Resumable HTTP (e.g., `Range: bytes=0-4999999`)."
+      },
+      "queue": {
+        "per_user": "Redis queue for pending image uploads (FIFO).",
+        "prioritization": "Smaller images first (to reduce latency)."
+      },
+      "processing": {
+        "worker": "Async task queue (e.g., Celery + RabbitMQ) for image processing (resize, OCR).",
+        "storage": "S3 with CloudFront CDN for fast delivery."
+      },
+      "conflict": {
+        "dedupe": "Check S3 ETag before processing duplicates.",
+        "replacement": "Update document with new image URL (OT operation)."
+      },
+      "offline": "Local IndexedDB cache for uploaded but not synced images."
+    }
+  },
+  "q15": {
+    "stack": {
+      "monitoring": {
+        "metrics": "Prometheus + Grafana (real-time dashboards).",
+        "logs": "Loki + Grafana (aggregated logs).",
+        "traces": "Jaeger or OpenTelemetry (distributed tracing)."
+      },
+      "alerts": {
+        "tools": "Alertmanager (for Prometheus alerts).",
+        "channels": "Slack, PagerDuty, email (for critical issues)."
+      },
+      "key_metrics": [
+        "WebSocket connection count",
+        "OT operation latency (P99)",
+        "Cursor sync conflicts",
+        "Document load time (CDN vs. origin)",
+        "Offline edit sync failures"
+      ],
+      "synthetic": {
+        "tests": "k6 or Locust for load testing (simulate 10K users).",
+        "geos": "Test from multiple regions (e.g., US, EU, APAC)."
+      },
+      "observability": {
+        "client_side": "Rum (Real User Monitoring) via Sentry or New Relic.",
+        "errors": "Error tracking for client-side JS crashes."
+      }
+    }
+  }
+}
+```

@@ -1,0 +1,355 @@
+```json
+{
+  "agents": [
+    {
+      "name": "RefundRequestValidator",
+      "input": {
+        "type": "customer_refund_request",
+        "fields": ["request_id", "customer_id", "amount", "reason", "order_id", "timestamp", "metadata"]
+      },
+      "output": {
+        "type": "validation_result",
+        "fields": {
+          "is_valid": "boolean",
+          "errors": "array<string>",
+          "validated_data": "object",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_valid === true",
+          "next_agent": "FraudCheckAgent"
+        },
+        "else": {
+          "next_agent": "ErrorHandlerAgent",
+          "message": "Invalid request: {errors}"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Validation agent failed to process request",
+        "timeout": 10000,
+        "retry": false
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "customer_id", "validation_result"]
+      }
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": {
+        "type": "validation_result",
+        "fields": ["validated_data", "request_id"]
+      },
+      "output": {
+        "type": "fraud_check_result",
+        "fields": {
+          "is_fraudulent": "boolean",
+          "risk_score": "number",
+          "suspicious_patterns": "array<string>",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_fraudulent === true",
+          "next_agent": "HumanEscalationAgent",
+          "message": "Fraud detected: {suspicious_patterns}"
+        },
+        "else": {
+          "next_agent": "ApprovalAgent",
+          "message": "Fraud check passed"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Fraud check agent failed to process request",
+        "timeout": 10000,
+        "retry": false
+      },
+      "timeout": 15000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "fraud_check_result"]
+      }
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": {
+        "type": "fraud_check_result",
+        "fields": ["validated_data", "request_id"]
+      },
+      "output": {
+        "type": "approval_result",
+        "fields": {
+          "is_approved": "boolean",
+          "approver": "string",
+          "reason": "string",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_approved === true",
+          "next_agent": "PaymentProcessingAgent"
+        },
+        "else": {
+          "next_agent": "NotificationAgent",
+          "message": "Request rejected: {reason}"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Approval agent failed to process request",
+        "timeout": 10000,
+        "retry": false
+      },
+      "timeout": 20000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "approval_result"]
+      }
+    },
+    {
+      "name": "PaymentProcessingAgent",
+      "input": {
+        "type": "approval_result",
+        "fields": ["validated_data", "request_id"]
+      },
+      "output": {
+        "type": "payment_result",
+        "fields": {
+          "is_successful": "boolean",
+          "transaction_id": "string",
+          "amount": "number",
+          "status": "string",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_successful === true",
+          "next_agent": "NotificationAgent",
+          "message": "Payment processed successfully"
+        },
+        "else": {
+          "next_agent": "ErrorHandlerAgent",
+          "message": "Payment failed: {status}"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Payment processing agent failed to process request",
+        "timeout": 15000,
+        "retry": false
+      },
+      "timeout": 10000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "payment_result"]
+      }
+    },
+    {
+      "name": "NotificationAgent",
+      "input": {
+        "type": "any",
+        "fields": ["request_id", "customer_id", "message", "status"]
+      },
+      "output": {
+        "type": "notification_result",
+        "fields": {
+          "is_successful": "boolean",
+          "notification_ids": "array<string>",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_successful === true",
+          "next_agent": "null",
+          "message": "Process completed"
+        },
+        "else": {
+          "next_agent": "ErrorHandlerAgent",
+          "message": "Notification failed"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Notification agent failed to process request",
+        "timeout": 10000,
+        "retry": false
+      },
+      "timeout": 8000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "notification_result"]
+      }
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": {
+        "type": "fraud_check_result",
+        "fields": ["validated_data", "request_id", "suspicious_patterns"]
+      },
+      "output": {
+        "type": "escalation_result",
+        "fields": {
+          "escalation_status": "string",
+          "reviewer": "string",
+          "decision": "string",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "decision === 'approve'",
+          "next_agent": "PaymentProcessingAgent"
+        },
+        "else": {
+          "next_agent": "NotificationAgent",
+          "message": "Request rejected by human review: {decision}"
+        }
+      },
+      "fallback": {
+        "action": "log_error",
+        "message": "Human escalation agent failed to process request",
+        "timeout": 30000,
+        "retry": false
+      },
+      "timeout": 30000,
+      "logging": {
+        "action": "log_audit",
+        "fields": ["request_id", "escalation_result"]
+      }
+    },
+    {
+      "name": "ErrorHandlerAgent",
+      "input": {
+        "type": "any",
+        "fields": ["request_id", "error_message", "previous_step"]
+      },
+      "output": {
+        "type": "error_result",
+        "fields": {
+          "is_resolved": "boolean",
+          "resolution": "string",
+          "timestamp": "string"
+        }
+      },
+      "next": {
+        "if": {
+          "condition": "is_resolved === true",
+          "next_agent": "NotificationAgent",
+          "message": "Error resolved"
+        },
+        "else": {
+          "next_agent": "null",
+          "message": "Process terminated due to unresolved error"
+        }
+      },
+      "fallback": {
+        "action": "log_critical_error",
+        "message": "Error handler failed to process request",
+        "timeout": 5000,
+        "retry": false
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_critical_audit",
+        "fields": ["request_id", "error_result"]
+      }
+    }
+  ],
+  "constraints": {
+    "total_processing_time": {
+      "max": 60000,
+      "actual": 30000, // Estimated based on agent timeouts
+      "notes": "Sum of all agent timeouts + network latency (assumed 5s)"
+    },
+    "agent_count": {
+      "min": 6,
+      "actual": 7,
+      "notes": "Includes 1 error handler and 1 escalation agent"
+    },
+    "required_agents": {
+      "validation": true,
+      "fraud_check": true,
+      "approval": true,
+      "payment": true,
+      "notification": true
+    },
+    "conditional_branching": {
+      "count": 3,
+      "examples": [
+        {
+          "agent": "RefundRequestValidator",
+          "condition": "is_valid"
+        },
+        {
+          "agent": "FraudCheckAgent",
+          "condition": "is_fraudulent"
+        },
+        {
+          "agent": "ApprovalAgent",
+          "condition": "is_approved"
+        }
+      ]
+    },
+    "circular_dependencies": {
+      "exists": false,
+      "notes": "Each agent has a single next step or conditional branch"
+    },
+    "human_escalation": {
+      "path": "FraudCheckAgent → HumanEscalationAgent → [Approval/Payment/Notification]",
+      "notes": "Only triggered when fraud is detected"
+    },
+    "logging_requirements": {
+      "audit_logs": true,
+      "critical_logs": true,
+      "fields": ["request_id", "timestamp", "status", "result"]
+    },
+    "fallback_handlers": {
+      "count": 7,
+      "coverage": "All agents have defined fallbacks"
+    },
+    "timeout_values": {
+      "all_agents": true,
+      "values": {
+        "RefundRequestValidator": 5000,
+        "FraudCheckAgent": 15000,
+        "ApprovalAgent": 20000,
+        "PaymentProcessingAgent": 10000,
+        "NotificationAgent": 8000,
+        "HumanEscalationAgent": 30000,
+        "ErrorHandlerAgent": 5000
+      }
+    },
+    "processing_outcomes": {
+      "approved": true,
+      "rejected": true,
+      "partial": false,
+      "notes": "Only fully approved or rejected paths exist"
+    },
+    "fraud_check_position": {
+      "before_approval": true,
+      "notes": "Fraud check occurs before ApprovalAgent"
+    },
+    "payment_position": {
+      "after_approval": true,
+      "notes": "Payment only processed if approved"
+    },
+    "first_agent": {
+      "type": "validation",
+      "name": "RefundRequestValidator"
+    },
+    "last_agent": {
+      "type": "notification",
+      "name": "NotificationAgent"
+    }
+  }
+}
+```

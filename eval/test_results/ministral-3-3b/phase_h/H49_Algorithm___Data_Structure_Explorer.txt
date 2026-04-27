@@ -1,0 +1,67 @@
+```python
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.order = []
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        self.order.remove(key)
+        self.order.append(key)
+        return self.cache[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self.order.remove(key)
+        else:
+            if len(self.cache) >= self.capacity:
+                lru_key = self.order.pop(0)
+                del self.cache[lru_key]
+        self.cache[key] = value
+        self.order.append(key)
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self) -> None:
+        if self.stack[-1] == self.min_stack[-1]:
+            self.min_stack.pop()
+        self.stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def get_min(self) -> int:
+        return self.min_stack[-1]
+
+def find_median(stream: list[int]) -> list[float]:
+    import heapq
+    left = []
+    right = []
+    medians = []
+
+    for num in stream:
+        heapq.heappush(left, -num)
+        heapq.heappush(right, num)
+
+        if len(left) > len(right):
+            heapq.heappop(right)
+        elif len(right) > len(left):
+            heapq.heappop(left)
+
+        if len(left) == len(right):
+            medians.append((-left[0] + right[0]) / 2)
+        else:
+            medians.append(-left[0])
+
+    return medians
+```

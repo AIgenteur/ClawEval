@@ -1,0 +1,87 @@
+```json
+{
+  "issues": [
+    {
+      "line": "spec.containers[0].securityContext.runAsRoot: true",
+      "issue": "Running container as root user is a security risk. This allows the container to execute any command with root privileges, potentially compromising the host system or other containers.",
+      "severity": "critical"
+    },
+    {
+      "line": "spec.containers[0].securityContext.privileged: true",
+      "issue": "Setting `privileged: true` grants the container full access to the host's resources and capabilities, which is a major security risk. This can lead to host compromise or privilege escalation.",
+      "severity": "critical"
+    },
+    {
+      "line": "spec.containers[0].env[0].value: \"sup3rs3cret!\"",
+      "issue": "Plaintext environment variable values (especially passwords) are insecure. This exposes sensitive data in logs, container images, and Kubernetes API traffic. Use Kubernetes Secrets instead.",
+      "severity": "critical"
+    },
+    {
+      "line": "spec.containers[0].env[1].value: \"ak_live_12345\"",
+      "issue": "Plaintext API key is exposed similarly to the DB password. This is a security risk if the image or logs are compromised. Use Kubernetes Secrets or encrypted values.",
+      "severity": "critical"
+    },
+    {
+      "line": "spec.containers[0].resources: {}",
+      "issue": "Missing explicit resource requests/limits. This can lead to resource starvation, unstable deployments, or performance issues. Always define resource requirements.",
+      "severity": "major"
+    },
+    {
+      "line": "spec.containers[1].resources.requests.memory: \"10Gi\"",
+      "issue": "The sidecar container's memory request is extremely high (10Gi) for a typical logging sidecar. This may cause resource contention or unnecessary costs. Use more reasonable values like 1Gi or 2Gi.",
+      "severity": "major"
+    },
+    {
+      "line": "spec.containers[1].resources.requests.cpu: \"8\"",
+      "issue": "The sidecar container's CPU request is unrealistic (8 cores). Logging sidecars typically require much less CPU. This could lead to resource starvation or unnecessary costs.",
+      "severity": "major"
+    },
+    {
+      "line": "spec.template.spec.volumes[0].hostPath.path: \"/tmp/data\"",
+      "issue": "Using `hostPath` for persistent storage is not recommended in production. It is not portable across environments and can lead to data loss if the host is restarted or moved. Use PersistentVolumeClaims (PVCs) instead.",
+      "severity": "major"
+    },
+    {
+      "line": "spec.template.spec.volumes[0].name: \"data-vol\"",
+      "issue": "The volume name `data-vol` is not referenced in the `volumeMounts` of the sidecar container. This will cause the volume to be unused and potentially lead to resource waste.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.template.spec.containers[0].ports[0].containerPort: 8080",
+      "issue": "The container port (8080) is not explicitly exposed in the Service. While the Service's `targetPort` is correctly set, the `port` field should be defined to avoid ambiguity and ensure proper logging in the Service.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.template.spec.containers[0].image: \"myapp:latest\"",
+      "issue": "Using `latest` tag for production images is risky. It can lead to unexpected behavior if the image is updated without notice. Use a specific version tag (e.g., `myapp:1.0.0`) instead.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.template.spec.containers[1].image: \"logger:v1\"",
+      "issue": "The sidecar image tag `v1` is not versioned. While not as critical as `latest`, it lacks version control, which can lead to inconsistencies across environments.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.template.spec.containers[0].env[0].name: \"DB_PASSWORD\"",
+      "issue": "Using a generic name like `DB_PASSWORD` for sensitive values is not ideal. Consider using a more specific or unique name to avoid confusion or accidental exposure.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.template.spec.containers[0].env[1].name: \"API_KEY\"",
+      "issue": "Using `API_KEY` as a generic name for sensitive values is not ideal. Consider using a more specific or unique name to avoid confusion or accidental exposure.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.type: LoadBalancer",
+      "issue": "Using `LoadBalancer` service type may not be suitable for all environments (e.g., cloud providers with strict security policies or air-gapped environments). Consider using `ClusterIP` for internal-only services or `NodePort` for simpler setups.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec.ports[0].port: 80",
+      "issue": "The Service's `port` is set to 80, which is a common HTTP port. However, the container's port is 8080. This could lead to confusion or misconfiguration if the application expects traffic on 8080 but the Service routes it to 80.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

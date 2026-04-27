@@ -1,0 +1,131 @@
+```json
+{
+  "issues": [
+    {
+      "id": 1,
+      "issue": "Duplicate `<h1>` tags: The page contains two `<h1>` elements ('Best Products' and 'Shop Now'), which can confuse search engines and users. SEO best practice is to use only one primary `<h1>` per page.",
+      "severity": "major",
+      "fix": "Replace one of the `<h1>` tags with `<h2>` or `<h3>` (e.g., use `<h2>Shop Now</h2>` for secondary importance). Ensure the primary heading is unique and descriptive."
+    },
+    {
+      "id": 2,
+      "issue": "Poor heading hierarchy: The `<h2>` ('Welcome to Our Store') is followed by two `<h1>` tags, which breaks the logical hierarchy. Headings should follow a strict order (e.g., `<h1>` → `<h2>` → `<h3>`).",
+      "severity": "major",
+      "fix": "Rearrange headings to follow a logical structure: `<h1>Welcome to Our Store</h1>` → `<h2>Best Products</h2>` → `<h2>Shop Now</h2>` (or use `<h3>` for subsections)."
+    },
+    {
+      "id": 3,
+      "issue": "Missing meta description: The `<meta name="description">` tag is missing, which is critical for SEO. Search engines use this to display a snippet in search results.",
+      "severity": "critical",
+      "fix": "Add a concise, keyword-rich meta description (e.g., `<meta name="description" content="Discover the best deals on premium products at our store. Shop now for discounts and exclusive offers!">`)."
+    },
+    {
+      "id": 4,
+      "issue": "Missing canonical URL: No `<link rel="canonical">` tag is present, which can cause duplicate content issues if the page is dynamically generated or has multiple URLs serving the same content.",
+      "severity": "major",
+      "fix": "Add a canonical URL pointing to the primary version of the page (e.g., `<link rel="canonical" href="https://example.com/page-1234">`)."
+    },
+    {
+      "id": 5,
+      "issue": "Missing structured data (Schema.org): No structured data (e.g., `Article`, `Product`, or `Breadcrumb`) is implemented, which can hinder search engine understanding of the page’s content and context.",
+      "severity": "minor",
+      "fix": "Add JSON-LD or microdata for key entities (e.g., products, reviews, or breadcrumbs). Example for a product page:
+```json
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Product Name",
+  "description": "Brief description of the product",
+  "offers": {
+    "@type": "Offer",
+    "price": "19.99",
+    "url": "https://example.com/products/product1"
+  }
+}
+</script>
+```"
+    },
+    {
+      "id": 6,
+      "issue": "Overuse of `<meta name="keywords">` tag: The `<meta name="keywords">` tag is deprecated by Google and ignored in rankings. Instead, rely on natural keyword placement in content and headers.",
+      "severity": "minor",
+      "fix": "Remove the `<meta name="keywords">` tag entirely. Use keywords organically in headings, content, and alt text."
+    },
+    {
+      "id": 7,
+     "issue": "Hidden text in `<div style="display:none">`: The text 'cheap shoes buy online discount sale best price' is hidden via CSS, which is irrelevant for SEO and may trigger penalties for spammy content.",
+      "severity": "major",
+      "fix": "Remove or refactor this hidden text. If it’s part of a JavaScript-rendered page, ensure it’s not duplicated in the HTML (e.g., via server-side rendering)."
+    },
+    {
+      "id": 8,
+      "issue": "Lack of alt text for images: The `<img>` tags lack `alt` attributes, which are critical for accessibility and SEO. Search engines rely on alt text to understand image content.",
+      "severity": "major",
+      "fix": "Add descriptive `alt` attributes to all images:
+```html
+<img src="product1.jpg" alt="Premium leather shoes with discount offer">
+<img src="product2.jpg" alt="Trendy bags available at best prices">
+<img src="banner.jpg" alt="Discount sale banner for summer collection">
+```"
+    },
+    {
+      "id": 9,
+      "issue": "No internal linking strategy: The page lacks links to other relevant pages (e.g., product categories, blogs, or related content), which can hurt crawlability and user engagement.",
+      "severity": "minor",
+      "fix": "Add internal links to:
+- Product category pages (e.g., `<a href="https://example.com/products">Shop All</a>`).
+- Blog/news (if applicable).
+- Related products or services."
+    },
+    {
+      "id": 10,
+      "issue": "No mobile-friendly testing: The page lacks evidence of being tested for mobile responsiveness, which is critical for modern SEO (Google prioritizes mobile-first indexing).",
+      "severity": "minor",
+      "fix": "Test the page using Google’s Mobile-Friendly Test ([link](https://search.google.com/test/mobile-friendly)) and ensure:
+- Readable text.
+- Touch-friendly buttons.
+- Optimized images (e.g., via `srcset` or responsive images)."
+    },
+    {
+      "id": 11,
+      "issue": "No URL parameters optimization: The URL `example.com/page-1234?ref=123&utm=utm=abc` includes unnecessary query parameters (`ref`, `utm`), which can confuse search engines and dilute ranking signals.",
+      "severity": "minor",
+      "fix": "Remove or consolidate query parameters. If they’re tracking (e.g., `utm`), use canonical URLs or rel=”nofollow” for non-critical links."
+    },
+    {
+      "id": 12,
+      "issue": "Lack of schema markup for product pages: While not directly on this page, if this is a product page, it should include schema markup for `Product` or `Offer` to improve visibility in rich snippets.",
+      "severity": "minor",
+      "fix": "Add schema markup for products (see Issue 5 for an example)."
+    },
+    {
+      "id": 13,
+      "issue": "Poor internal linking to product pages: The page links to external URLs (`example.com/products`, `example.com/about`) but lacks clear internal links to products (e.g., `<a href="product1.html">View Product</a>`).",
+      "severity": "minor",
+      "fix": "Add internal links to product pages (e.g., `<a href="product1.html">Check Out Our Best-Selling Shoes</a>`)."
+    },
+    {
+      "id": 14,
+      "issue": "Lack of breadcrumbs: Missing breadcrumb navigation (e.g., `<nav aria-label="Breadcrumb">Home > Products > Shoes</nav>`) can confuse users and search engines about the page’s location in the site hierarchy.",
+      "severity": "minor",
+      "fix": "Add breadcrumbs using either HTML or schema markup:
+```html
+<nav aria-label="Breadcrumb">
+  <a href="/">Home</a> > <a href="/products">Products</a> > <a href="/products/shoes">Shoes</a>
+</nav>
+```"
+    },
+    {
+      "id": 15,
+      "issue": "Lack of focus on user intent: The page’s content ('Buy our stuff. Click here for more.') lacks clarity on what users will find, which can lead to high bounce rates and poor rankings. Ensure the content aligns with search intent (e.g., 'discount shoes online').",
+      "severity": "minor",
+      "fix": "Refine the content to:
+- Clearly state the page’s purpose (e.g., 'Find the best deals on shoes, bags, and clothes at our store').
+- Include a call-to-action (CTA) that guides users (e.g., 'Shop Now' with a clear link).
+- Add a brief, engaging introduction (e.g., 'Discover exclusive discounts on premium products—shop today!')."
+    }
+  ],
+  "count": 15
+}
+```

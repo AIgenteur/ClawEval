@@ -1,0 +1,29 @@
+```json
+{
+  "q1": "Conflict resolution strategy: **Operational Transformation (OT)** with **Conflict-Free Replicated Data Types (CRDTs)** for core document state (e.g., text, formatting). OT handles cursor/selection conflicts by transforming operations to ensure consistency across clients, while CRDTs (e.g., for metadata like document metadata or collaborative state) provide eventual consistency for simpler fields. Locking is used sparingly for critical sections (e.g., file metadata updates) to prevent race conditions.",
+  "q2": "Real-time sync protocol: **WebSocket (long-polling)** for bidirectional communication. SSE (Server-Sent Events) is insufficient for bidirectional editing (e.g., client-to-server cursor updates). WebSocket enables efficient two-way communication with low latency.",
+  "q3": "Database for document storage: **MongoDB (with GridFS for large files)** or **PostgreSQL (with JSONB extensions)**. MongoDB’s schema flexibility and scalability make it ideal for collaborative documents, while PostgreSQL offers strong transactional guarantees for metadata (e.g., version history). GridFS handles large files (images, PDFs) via sharded storage.",
+  "q4": "Handling offline editing: **Conflict-Free Replicated Data Types (CRDTs)** for document state (e.g., text, formatting) and **local versioning** (e.g., Git-like diffs) for offline edits. On reconnect, client merges local changes with server state using OT/CRDT reconciliation. Offline sync queue stores pending operations until connectivity resumes.",
+  "q5": "Message broker for real-time events: **Apache Kafka** or **RabbitMQ**. Kafka’s scalability and durability make it ideal for high-throughput real-time sync, while RabbitMQ offers simpler event routing for smaller-scale deployments. Both support partitioning for horizontal scaling.",
+  "q6": "Horizontal scaling strategy for WebSocket servers: **Sharded WebSocket connections** (e.g., per document ID) using a load balancer (e.g., NGINX, AWS ALB) with sticky sessions for document-specific clients. Alternatively, **WebSocket proxy** (e.g., Socket.IO) routes connections to backend instances based on document ID.",
+  "q7": "Handling cursor position sharing: **OT-based cursor transformation** (e.g., using the **CursorSync** protocol) to propagate cursor positions across clients. Clients apply relative transformations to maintain consistency. For complex documents, use **vector diffs** to track cursor movements accurately.",
+  "q8": "Authentication protocol: **OAuth 2.0 (OpenID Connect)** for user authentication. Supports single sign-on (SSO) via providers like Google, Microsoft, or custom LDAP. For document-level permissions, use **JWT (JSON Web Tokens)** with fine-grained role-based access control (RBAC).",
+  "q9": "Implementing version history: **PostgreSQL (with JSONB) or MongoDB with timestamps + version vectors** for document state. Store full document snapshots (e.g., every 5 minutes) or use **delta encoding** (e.g., Git-like diffs) to reduce storage. For large documents, use **object versioning** (e.g., GridFS with versioned objects).",
+  "q10": "CDN strategy for static assets: **Cloudflare CDN** or **AWS CloudFront** for caching static assets (JS, CSS, fonts). Use **edge caching** to reduce latency for global users. For dynamic assets (e.g., generated thumbnails), use **CDN edge functions** or **serverless caching** (e.g., Vercel, Netlify).",
+  "q11": "Handling large documents (1000+ pages): **Chunked document storage** (e.g., split into 100KB–1MB chunks) with **client-side merging** during sync. Use **Delta encoding** (e.g., Git-like diffs) to minimize sync bandwidth. For rendering, implement **lazy loading** (e.g., load chunks on demand) and **virtual scrolling** (e.g., React Window).",
+  "q12": "Rate limiting approach: **Token bucket algorithm** or **Leaky bucket** for API endpoints (e.g., document updates, image uploads). Use **Redis** to track user sessions and enforce per-user rate limits. For WebSocket connections, implement **connection-level throttling** (e.g., limit concurrent edits per user).",
+  "q13": "Data backup strategy: **Automated daily snapshots** (e.g., PostgreSQL logical backups + MongoDB snapshots) using tools like **pg_dump** or **MongoDB’s built-in snapshots**. For critical data, use **multi-region replication** (e.g., AWS Global Database) and **immutable backups** (e.g., S3 versioning). Test backups via **disaster recovery drills**.",
+  "q14": "Handling concurrent image uploads: **Multi-part uploads** (e.g., AWS S3 multipart uploads) with **concurrency control** (e.g., semaphores or Redis locks). Use **queue-based processing** (e.g., Kafka + worker pool) to handle bursts. For real-time feedback, implement **pre-upload progress tracking** (e.g., via WebSocket).",
+  "q15": "Monitoring and observability stack:
+  - **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana) or AWS CloudWatch for centralized logs.
+  - **Metrics**: Prometheus + Grafana for real-time metrics (e.g., WebSocket latency, sync throughput).
+  - **Tracing**: Jaeger or OpenTelemetry for distributed tracing (e.g., WebSocket connection paths).
+  - **Alerting**: PagerDuty or Opsgenie for critical alerts (e.g., sync failures, high latency).
+  - **Performance Testing**: Locust or k6 for load testing (e.g., 1000+ concurrent users).
+  - **Infrastructure**: Terraform for IaC + Ansible for configuration management.
+  - **Security**: OpenTelemetry for security monitoring (e.g., API abuse detection).
+  - **Incident Response**: SRE practices (e.g., runbooks for common issues like sync conflicts).
+  - **User Feedback**: Heatmaps (e.g., Hotjar) + error tracking (e.g., Sentry) for UX insights.
+  "
+}
+```

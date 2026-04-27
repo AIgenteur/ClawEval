@@ -1,0 +1,92 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "Line 23 (login function, query construction)",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "Line 21 (profile function, template rendering)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "Line 35 (run_command function, subprocess.run with shell=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Directory Traversal",
+      "location": "Line 39 (download function, filepath parameter)",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure File Upload",
+      "location": "Line 33 (upload function, no file type validation)",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "location": "Line 43 (restore_session function, pickle.loads)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Credentials",
+      "location": "Line 12 (SECRET variable)",
+      "severity": "high"
+    },
+    {
+      "type": "Missing Input Validation",
+      "location": "Line 21 (profile function, no sanitization of username)",
+      "severity": "medium"
+    },
+    {
+      "type": "Insecure Session Handling",
+      "location": "Line 24 (login function, MD5 token generation)",
+      "severity": "high"
+    },
+    {
+      "type": "Information Exposure",
+      "location": "Line 39 (download function, filepath parameter not validated)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Rate Limiting",
+      "location": "No explicit rate limiting in application",
+      "severity": "medium"
+    },
+    {
+      "type": "Improper Error Handling",
+      "location": "No error handling for database operations or file operations",
+      "severity": "medium"
+    },
+    {
+      "type": "Insecure External Command Execution",
+      "location": "Line 47 (export_data function, os.system with shell=True)",
+      "severity": "high"
+    },
+    {
+      "type": "Missing CSRF Protection",
+      "location": "No CSRF tokens in forms (login, upload, etc.)",
+      "severity": "medium"
+    },
+    {
+      "type": "Insecure Configuration",
+      "location": "Line 12 (SECRET hardcoded in code)",
+      "severity": "high" (duplicate of #7, but also affects admin route)
+    },
+    {
+      "type": "Improper File Permissions",
+      "location": "Line 13 (UPLOAD_DIR path, no permission checks)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Input Sanitization for Search",
+      "location": "Line 27 (search function, no sanitization of query)",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```
