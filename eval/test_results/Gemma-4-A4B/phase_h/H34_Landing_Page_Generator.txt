@@ -4,280 +4,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="QuillAI is the ultimate AI writing assistant designed to supercharge your creativity and productivity.">
-    <title>QuillAI - Your Advanced AI Writing Assistant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="QuillAI is the ultimate AI writing assistant designed to help you craft perfect content using advanced artificial intelligence.">
+    <title>QuillAI - Your Ultimate AI Writing Assistant</title>
     <style>
-        html { scroll-behavior: smooth; }
-        .feature-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        /* Basic styling to make the structure visible and professional */
+        :root {
+            --primary: #6366f1;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --accent: #f43f5e;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; line-height: 1.6; color: var(--dark); scroll-behavior: smooth; }
+        header { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; max-width: 1200px; margin: auto; }
+        nav ul { display: flex; list-style: none; gap: 20px; }
+        nav a { text-decoration: none; color: var(--dark); font-weight: 500; }
+        section { padding: 80px 5%; max-width: 1200px; margin: auto; }
+        .hero { text-align: center; padding: 100px 5%; background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%); }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.25rem; color: #64748b; margin-bottom: 2rem; }
+        .btn { padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; display: inline-block; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--dark); color: white; }
+        .social-proof { margin-top: 40px; font-size: 0.9rem; color: #94a3b8; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+        .card { padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center; }
+        .card .icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .pricing-card { border: 2px solid #e2e8f0; transition: transform 0.3s; }
+        .pricing-card.popular { border-color: var(--primary); transform: scale(1.05); }
+        .comparison-box { display: flex; gap: 20px; background: #f1f5f9; padding: 30px; border-radius: 15px; }
+        .comparison-item { flex: 1; padding: 20px; background: white; border-radius: 8px; }
+        .testimonial-card { font-style: italic; border-left: 4px solid var(--primary); padding-left: 20px; margin-bottom: 30px; }
+        .faq-item { margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        footer { background: var(--dark); color: white; padding: 50px 5%; text-align: center; }
+        .footer-links { margin: 20px 0; }
+        .footer-links a { color: #cbd5e1; margin: 0 10px; text-decoration: none; }
+        form { background: #f8fafc; padding: 40px; border-radius: 12px; text-align: center; }
+        input[type="email"] { padding: 12px; width: 250px; border: 1px solid #cbd5e1; border-radius: 6px; margin-right: 10px; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .comparison-box { flex-direction: column; }
+            nav ul { display: none; } /* Simplified for mobile demo */
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+<body>
 
-    <!-- 2. Navigation Bar -->
-    <header class="fixed w-full bg-white/90 backdrop-blur-md z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center" aria-label="Main Navigation">
-            <div class="text-2xl font-bold text-indigo-600">
-                <a href="#" aria-label="QuillAI Home">QuillAI</a>
-            </div>
-            <ul class="hidden md:flex space-x-8 font-medium">
-                <li><a href="#features" class="hover:text-indigo-600 transition">Features</a></li>
-                <li><a href="#how-it-works" class="hover:text-indigo-600 transition">How it Works</a></li>
-                <li><a href="#pricing" class="hover:text-indigo-600 transition">Pricing</a></li>
-                <li><a href="#testimonials" class="hover:text-indigo-600 transition">Testimonials</a></li>
-                <li><a href="#contact" class="hover:text-indigo-600 transition">Contact</a></li>
+    <header>
+        <nav aria-label="Main Navigation">
+            <div class="logo"><strong>QuillAI</strong></div>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How it Works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
-            <a href="#pricing" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition">Get Started</a>
         </nav>
     </header>
 
     <main>
-        <!-- 1. Hero Section & 18. Mention AI -->
-        <section class="pt-32 pb-20 px-6 text-center bg-gradient-to-b from-indigo-50 to-white">
-            <div class="container mx-auto">
-                <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-                    Supercharge your creativity with <span class="text-indigo-600">Artificial Intelligence</span>
-                </h1>
-                <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                    QuillAI helps you write better, faster, and smarter. From emails to epic novels, our AI assistant has your back.
-                </p>
-                <!-- 12. CTA Button 1 -->
-                <div class="flex justify-center gap-4">
-                    <a href="#pricing" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 shadow-lg transition">Start Free Trial</a>
-                    <a href="#how-it-works" class="bg-white text-indigo-600 border border-indigo-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-50 transition">Learn More</a>
+        <!-- 1. Hero Section & 18. AI Mention & 12. CTA 1 & 13. Social Proof -->
+        <section class="hero">
+            <h1>Write Smarter with QuillAI</h1>
+            <p>Harness the power of advanced <strong>artificial intelligence</strong> to transform your ideas into professional content in seconds.</p>
+            <a href="#pricing" class="btn btn-primary" aria-label="Start your free trial">Start Free Trial</a>
+            <div class="social-proof">
+                <p>⭐ Trusted by 10,000+ writers, marketers, and creators worldwide</p>
+            </div>
+        </section>
+
+        <!-- 20. Comparison Element -->
+        <section id="comparison">
+            <h2 style="text-align: center;">See the Difference</h2>
+            <div class="comparison-box">
+                <div class="comparison-item">
+                    <h3>Before QuillAI</h3>
+                    <p style="color: #94a3b8;">"i want to go to store but i forgot my wallet and i am sad and i dont know what to do next"</p>
                 </div>
-                <!-- 13. Social Proof -->
-                <p class="mt-12 text-sm text-gray-500 font-medium uppercase tracking-widest">
-                    Trusted by 10,000+ writers and creators worldwide
-                </p>
+                <div class="comparison-item">
+                    <h3>After QuillAI</h3>
+                    <p style="color: var(--primary); font-weight: 500;">"I intended to visit the store, but unfortunately, I realized I had forgotten my wallet. This unexpected setback left me feeling quite disappointed."</p>
+                </div>
             </div>
         </section>
 
         <!-- 14. How it Works Section -->
-        <section id="how-it-works" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-16">How It Works</h2>
-                <div class="grid md:grid-cols-3 gap-12">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">1</div>
-                        <h3 class="text-xl font-semibold mb-3">Connect Your Ideas</h3>
-                        <p class="text-gray-600">Input your rough notes, bullet points, or even a single sentence.</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">2</div>
-                        <h3 class="text-xl font-semibold mb-3">Choose Your Tone</h3>
-                        <p class="text-gray-600">Select from professional, witty, casual, or academic styles.</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">3</div>
-                        <h3 class="text-xl font-semibold mb-3">Refine & Publish</h3>
-                        <p class="text-gray-600">Watch QuillAI polish your text into a masterpiece in seconds.</p>
-                    </div>
+        <section id="how-it-works">
+            <h2 style="text-align: center;">How It Works</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="icon" aria-hidden="true">✍️</div>
+                    <h3>1. Input Prompt</h3>
+                    <p>Type a rough idea or a few bullet points into our intuitive editor.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- 20. Comparison/Before-After Element -->
-        <section class="py-20 bg-gray-50">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-12">See the Difference</h2>
-                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <div class="bg-white p-8 rounded-xl shadow-sm border-l-4 border-red-400">
-                        <span class="text-red-500 font-bold text-sm uppercase">Before QuillAI</span>
-                        <p class="mt-4 text-gray-500 italic">"i need to tell the client that the project is late because of some stuff that happened but i want to sound professional and not like i messed up too bad"</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-sm border-l-4 border-green-400">
-                        <span class="text-green-500 font-bold text-sm uppercase">After QuillAI</span>
-                        <p class="mt-4 text-gray-800 font-medium">"I am writing to provide an update regarding our project timeline. Due to unforeseen technical complexities, we have adjusted our schedule to ensure the highest quality delivery."</p>
-                    </div>
+                <div class="card">
+                    <div class="icon" aria-hidden="true">🤖</div>
+                    <h3>2. AI Processing</h3>
+                    <p>Our neural engine analyzes context, tone, and grammar instantly.</p>
+                </div>
+                <div class="card">
+                    <div class="icon" aria-hidden="true">✨</div>
+                    <h3>3. Refine & Polish</h3>
+                    <p>Choose from various styles and export your perfect text.</p>
                 </div>
             </div>
         </section>
 
         <!-- 3. Features Section -->
-        <section id="features" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-16">Powerful Features</h2>
-                <div class="grid md:grid-cols-4 gap-8">
-                    <!-- Feature Card 1 -->
-                    <div class="feature-card p-6 bg-gray-50 rounded-xl">
-                        <div class="text-3xl mb-4" aria-hidden="true">✍️</div>
-                        <h3 class="text-lg font-bold mb-2">Tone Adjustment</h3>
-                        <p class="text-gray-600 text-sm">Instantly switch between formal, friendly, or persuasive tones.</p>
-                    </div>
-                    <!-- Feature Card 2 -->
-                    <div class="feature-card p-6 bg-gray-50 rounded-xl">
-                        <div class="text-3xl mb-4" aria-hidden="true">🔍</div>
-                        <h3 class="text-lg font-bold mb-2">Grammar Pro</h3>
-                        <p class="text-gray-600 text-sm">Advanced error detection that goes beyond simple spellcheck.</p>
-                    </div>
-                    <!-- Feature Card 3 -->
-                    <div class="feature-card p-6 bg-gray-50 rounded-xl">
-                        <div class="text-3xl mb-4" aria-hidden="true">💡</div>
-                        <h3 class="text-lg font-bold mb-2">Idea Generator</h3>
-                        <p class="text-gray-600 text-sm">Stuck? Let our AI brainstorm outlines and topics for you.</p>
-                    </div>
-                    <!-- Feature Card 4 -->
-                    <div class="feature-card p-6 bg-gray-50 rounded-xl">
-                        <div class="text-3xl mb-4" aria-hidden="true">📝</div>
-                        <h3 class="text-lg font-bold mb-2">Summarization</h3>
-                        <p class="text-gray-600 text-sm">Turn long documents into concise, actionable summaries.</p>
-                    </div>
+        <section id="features">
+            <h2 style="text-align: center;">Powerful Features</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="icon" aria-hidden="true">🎭</div>
+                    <h3>Tone Adjustment</h3>
+                    <p>Switch between professional, witty, or casual tones with one click.</p>
+                </div>
+                <div class="card">
+                    <div class="icon" aria-hidden="true">🔍</div>
+                    <h3>Grammar Guard</h3>
+                    <p>Advanced error detection that goes beyond simple spellcheck.</p>
+                </div>
+                <div class="card">
+                    <div class="icon" aria-hidden="true">🚀</div>
+                    <h3>SEO Optimizer</h3>
+                    <p>Automatically integrate keywords to boost your search rankings.</p>
+                </div>
+                <div class="card">
+                    <div class="icon" aria-hidden="true">📝</div>
+                    <h3>Content Expansion</h3>
+                    <p>Turn a single sentence into a full-length, engaging paragraph.</p>
                 </div>
             </div>
         </section>
 
         <!-- 4. Pricing Section -->
-        <section id="pricing" class="py-20 bg-gray-50">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-16">Simple, Transparent Pricing</h2>
-                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto" aria-label="Pricing Tiers">
-                    <!-- Free Tier -->
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center">
-                        <h3 class="text-xl font-bold mb-4">Free</h3>
-                        <div class="text-4xl font-bold mb-6">$0<span class="text-lg text-gray-500 font-normal">/mo</span></div>
-                        <ul class="text-gray-600 space-y-3 mb-8 text-sm">
-                            <li>10 AI generations / month</li>
-                            <li>Basic grammar check</li>
-                            <li>Standard templates</li>
-                        </ul>
-                        <a href="#" class="block w-full py-3 rounded-lg border border-indigo-600 text-indigo-600 font-semibold hover:bg-indigo-50 transition">Get Started</a>
-                    </div>
-                    <!-- Pro Tier -->
-                    <div class="bg-white p-8 rounded-2xl shadow-xl border-2 border-indigo-600 text-center relative transform scale-105">
-                        <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase">Most Popular</span>
-                        <h3 class="text-xl font-bold mb-4">Pro</h3>
-                        <div class="text-4xl font-bold mb-6">$19<span class="text-lg text-gray-500 font-normal">/mo</span></div>
-                        <ul class="text-gray-600 space-y-3 mb-8 text-sm">
-                            <li>Unlimited AI generations</li>
-                            <li>Advanced tone control</li>
-                            <li>Priority support</li>
-                            <li>Custom brand voice</li>
-                        </ul>
-                        <!-- 12. CTA Button 2 -->
-                        <a href="#" class="block w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">Get Started Now</a>
-                    </div>
-                    <!-- Enterprise Tier -->
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 text-center">
-                        <h3 class="text-xl font-bold mb-4">Enterprise</h3>
-                        <div class="text-4xl font-bold mb-6">Custom</div>
-                        <ul class="text-gray-600 space-y-3 mb-8 text-sm">
-                            <li>Unlimited users</li>
-                            <li>API Access</li>
-                            <li>Dedicated Manager</li>
-                            <li>SSO & Security</li>
-                        </ul>
-                        <a href="#contact" class="block w-full py-3 rounded-lg border border-indigo-600 text-indigo-600 font-semibold hover:bg-indigo-50 transition">Contact Sales</a>
-                    </div>
+        <section id="pricing">
+            <h2 style="text-align: center;">Simple, Transparent Pricing</h2>
+            <div class="grid">
+                <div class="card pricing-card">
+                    <h3>Free</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">$0</p>
+                    <p>1,000 words / month</p>
+                    <p>Basic AI models</p>
+                    <a href="#" class="btn btn-secondary">Get Started</a>
+                </div>
+                <div class="card pricing-card popular">
+                    <h3>Pro</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">$19<small>/mo</small></p>
+                    <p>Unlimited words</p>
+                    <p>Advanced AI models</p>
+                    <a href="#" class="btn btn-primary">Start Free Trial</a>
+                </div>
+                <div class="card pricing-card">
+                    <h3>Enterprise</h3>
+                    <p style="font-size: 2rem; font-weight: bold;">Custom</p>
+                    <p>Team collaboration</p>
+                    <p>Dedicated support</p>
+                    <a href="#contact" class="btn btn-secondary">Contact Us</a>
                 </div>
             </div>
         </section>
 
         <!-- 5. Testimonials Section -->
-        <section id="testimonials" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-16">What Our Users Say</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="p-6 bg-gray-50 rounded-xl">
-                        <p class="text-gray-600 italic mb-6">"QuillAI has completely transformed my workflow. I save at least 5 hours a week on content creation."</p>
-                        <div class="font-bold">Sarah Jenkins</div>
-                        <div class="text-sm text-gray-500">Freelance Content Strategist</div>
-                    </div>
-                    <div class="p-6 bg-gray-50 rounded-xl">
-                        <p class="text-gray-600 italic mb-6">"The tone adjustment feature is magic. It makes my emails sound professional even when I'm in a rush."</p>
-                        <div class="font-bold">Marcus Thorne</div>
-                        <div class="text-sm text-gray-500">Marketing Manager</div>
-                    </div>
-                    <div class="p-6 bg-gray-50 rounded-xl">
-                        <p class="text-gray-600 italic mb-6">"Finally, an AI that actually understands nuance and context. Highly recommended for students!"</p>
-                        <div class="font-bold">Elena Rodriguez</div>
-                        <div class="text-sm text-gray-500">Graduate Student</div>
-                    </div>
+        <section id="testimonials">
+            <h2 style="text-align: center;">What Our Users Say</h2>
+            <div class="grid">
+                <div class="testimonial-card">
+                    <p>"QuillAI has cut my content creation time in half. It's a game changer!"</p>
+                    <p><strong>— Sarah Jenkins</strong><br><small>Content Strategist</small></p>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The tone adjustment feature is incredibly accurate. Highly recommended."</p>
+                    <p><strong>— Mark Thompson</strong><br><small>Freelance Copywriter</small></p>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Finally, an AI that actually understands nuance and context."</p>
+                    <p><strong>— Elena Rodriguez</strong><br><small>Marketing Director</small></p>
                 </div>
             </div>
         </section>
 
         <!-- 6. FAQ Section -->
-        <section class="py-20 bg-gray-50">
-            <div class="container mx-auto px-6 max-w-3xl">
-                <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-                <div class="space-y-4">
-                    <details class="group bg-white p-6 rounded-xl shadow-sm cursor-pointer">
-                        <summary class="font-bold list-none flex justify-between items-center">
-                            Is my data secure with QuillAI?
-                            <span class="group-open:rotate-180 transition-transform">▼</span>
-                        </summary>
-                        <p class="mt-4 text-gray-600">Yes, we use enterprise-grade encryption and never use your private data to train our public models.</p>
-                    </details>
-                    <details class="group bg-white p-6 rounded-xl shadow-sm cursor-pointer">
-                        <summary class="font-bold list-none flex justify-between items-center">
-                            Can I cancel my subscription anytime?
-                            <span class="group-open:rotate-180 transition-transform">▼</span>
-                        </summary>
-                        <p class="mt-4 text-gray-600">Absolutely. You can cancel your subscription through your dashboard settings at any time.</p>
-                    </details>
-                    <details class="group bg-white p-6 rounded-xl shadow-sm cursor-pointer">
-                        <summary class="font-bold list-none flex justify-between items-center">
-                            Does it support multiple languages?
-                            <span class="group-open:rotate-180 transition-transform">▼</span>
-                        </summary>
-                        <p class="mt-4 text-gray-600">Currently, we support English, Spanish, French, German, and Japanese.</p>
-                    </details>
-                    <details class="group bg-white p-6 rounded-xl shadow-sm cursor-pointer">
-                        <summary class="font-bold list-none flex justify-between items-center">
-                            Can I use it for academic writing?
-                            <span class="group-open:rotate-180 transition-transform">▼</span>
-                        </summary>
-                        <p class="mt-4 text-gray-600">Yes, our academic tone setting is specifically designed for research and essays.</p>
-                    </details>
-                    <details class="group bg-white p-6 rounded-xl shadow-sm cursor-pointer">
-                        <summary class="font-bold list-none flex justify-between items-center">
-                            Is there a mobile app?
-                            <span class="group-open:rotate-180 transition-transform">▼</span>
-                        </summary>
-                        <p class="mt-4 text-gray-600">We are currently developing our iOS and Android apps, coming late 2024!</p>
-                    </details>
-                </div>
+        <section id="faq">
+            <h2 style="text-align: center;">Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <h3>Can I use QuillAI for commercial purposes?</h3>
+                <p>Yes, all content generated with a Pro or Enterprise plan is yours to own and use commercially.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How does the AI learn my style?</h3>
+                <p>Our advanced models analyze your previous writing samples to mimic your unique voice.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Is my data kept private?</h3>
+                <p>Absolutely. We use enterprise-grade encryption and never sell your data to third parties.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Do you offer a mobile app?</h3>
+                <p>Yes, QuillAI is fully responsive and available as a web app for all mobile devices.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I cancel my subscription anytime?</h3>
+                <p>Yes, you can cancel your subscription at any time through your account settings.</p>
             </div>
         </section>
 
         <!-- 10. Newsletter & 17. Contact Section -->
-        <section id="contact" class="py-20 bg-indigo-900 text-white">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-3xl font-bold mb-4">Stay in the Loop</h2>
-                <p class="text-indigo-200 mb-10">Get the latest AI writing tips and product updates.</p>
-                
-                <form class="max-w-md mx-auto flex flex-col md:flex-row gap-4 mb-16">
-                    <input type="email" placeholder="Enter your email" required aria-label="Email for newsletter" class="flex-1 px-6 py-3 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 px-8 py-3 rounded-full font-bold transition">Subscribe</button>
-                </form>
-
-                <div class="border-t border-indigo-800 pt-10">
-                    <h3 class="text-xl font-semibold mb-4">Need help?</h3>
-                    <p class="text-indigo-200">Email us at <a href="mailto:hello@quillai.com" class="text-white underline">hello@quillai.com</a></p>
-                </div>
+        <section id="contact">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2>Stay Updated</h2>
+                <p>Join our newsletter to get the latest AI writing tips.</p>
+            </div>
+            <form aria-label="Newsletter Signup">
+                <input type="email" placeholder="Enter your email" required aria-label="Email address">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+            <div style="text-align: center; margin-top: 50px;">
+                <h3>Get in Touch</h3>
+                <p>Have questions? Email us at: <a href="mailto:hello@quillai.com">hello@quillai.com</a></p>
             </div>
         </section>
     </main>
 
-    <!-- 7. Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-12">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-6 md:mb-0">
-                    <span class="text-2xl font-bold text-white">QuillAI</span>
-                    <p class="text-sm mt-2">&copy; 2023 QuillAI Inc. All rights reserved.</p>
-                </div>
-                <div class="flex space-x-6 mb-6 md:mb-0">
-                    <a href="#" class="hover:text-white transition" aria-label="Twitter">Twitter</a>
-                    <a href="#" class="hover:text-white transition" aria-label="LinkedIn">LinkedIn</a>
-                    <a href="#" class="hover:text-white transition" aria-label="Instagram">Instagram</a>
-                </div>
-                <div class="flex space-x-6 text-sm">
-                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Terms of Service</a>
-                </div>
-            </div>
+    <!-- 7. Footer Section -->
+    <footer>
+        <p>&copy; 2023 QuillAI Inc. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">Twitter</a> | 
+            <a href="#">LinkedIn</a> | 
+            <a href="#">Facebook</a>
+        </div>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a> | 
+            <a href="#">Terms of Service</a>
         </div>
     </footer>
 

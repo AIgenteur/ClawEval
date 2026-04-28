@@ -1,0 +1,136 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against a schema as specified — with **no imports**, and returning all errors in a structured format:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        # Check each field in the schema
+        for field_name, field_schema in schema.items():
+            required = field_schema.get("required", False)
+            field_type = field_schema.get("type")
+            
+            # Check if field is present
+            if field_name not in data:
+                if required:
+                    errors.append(f"Field '{field_name}' is required but missing")
+                continue  # Skip further checks if missing and not required
+            
+            value = data[field_name]
+            
+            # Type checking
+            type_ok = False
+            if field_type == "str":
+                type_ok = isinstance(value, str)
+            elif field_type == "int":
+                type_ok = isinstance(value, int) and not isinstance(value, bool)  # bool is subclass of int in Python
+            elif field_type == "float":
+                type_ok = isinstance(value, float) or isinstance(value, int)  # Allow int as float (e.g., 5 -> 5.0)
+            elif field_type == "bool":
+                type_ok = isinstance(value, bool)
+            elif field_type == "list":
+                type_ok = isinstance(value, list)
+            elif field_type == "dict":
+                type_ok = isinstance(value, dict)
+            else:
+                # Invalid type in schema
+                errors.append(f"Field '{field_name}': Invalid type '{field_type}' in schema")
+                continue
+            
+            if not type_ok:
+                errors.append(f"Field '{field_name}': Expected type '{field_type}', got {type(value).__name__}")
+                continue  # Skip further validation if type is wrong
+            
+            # Value-specific constraints
+            if field_type in ["int", "float"]:
+                min_val = field_schema.get("min")
+                max_val = field_schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}': Value {value} is less than minimum {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}': Value {value} is greater than maximum {max_val}")
+            
+            elif field_type == "str":
+                min_len = field_schema.get("min_length")
+                max_len = field_schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field_name}': String length {len(value)} is less than minimum {min_len}")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field_name}': String length {len(value)} is greater than maximum {max_len}")
+            
+            elif field_type == "list":
+                min_len = field_schema.get("min_length")
+                max_len = field_schema.get("max_length")
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field_name}': List length {len(value)} is less than minimum {min_len}")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field_name}': List length {len(value)} is greater than maximum {max_len}")
+            
+            # For dict, no length constraints by default (could be extended, but not required per spec)
+        
+        # No error for extra fields — they are allowed
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+```
+
+### ✅ Features:
+- **No imports** — pure Python.
+- **Type checking**: Handles `str`, `int`, `float`, `bool`, `list`, `dict`.
+  - Special care: `bool` is not treated as `int` (since `isinstance(True, int)` is `True` in Python).
+  - `float` accepts `int` values (e.g., `5` is valid for `float` type).
+- **Constraints**:
+  - Numbers: `min`, `max`
+  - Strings: `min_length`, `max_length`
+  - Lists: `min_length`, `max_length` (on list length)
+- **Required fields**: Flagged if missing and `required: true`.
+- **Extra fields**: Ignored (allowed).
+- **All errors collected**: Returns list of all validation failures.
+
+### 📝 Usage Example:
+
+```python
+validator = JSONValidator()
+
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 2, "max_length": 50},
+    "age": {"type": "int", "required": True, "min": 0, "max": 150},
+    "active": {"type": "bool", "required": False},
+    "tags": {"type": "list", "required": False, "min_length": 1, "max_length": 10},
+    "metadata": {"type": "dict", "required": False}
+}
+
+data = {
+    "name": "Al",
+    "age": 25,
+    "active": True,
+    "tags": ["python", "json"],
+    "metadata": {"role": "admin"},
+    "extra": "ignored"  # allowed
+}
+
+result = validator.validate(data, schema)
+print(result)
+# Output: {'valid': True, 'errors': []}
+
+# Test invalid data
+data_invalid = {
+    "name": "A",  # too short
+    "age": 200,   # too high
+    "tags": []    # too short
+}
+result = validator.validate(data_invalid, schema)
+print(result)
+# Output: {
+#   'valid': False,
+#   'errors': [
+#       "Field 'name': String length 1 is less than minimum 2",
+#       "Field 'age': Value 200 is greater than maximum 150",
+#       "Field 'tags': List length 0 is less than minimum 1"
+#   ]
+# }
+```
+
+This implementation is robust, clear, and adheres strictly to the specification.

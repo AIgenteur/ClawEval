@@ -1,0 +1,17 @@
+{
+  "q1": "CRDT (Conflict-free Replicated Data Type) for eventual consistency and offline support, with optional OT (Operational Transformation) for real-time cursor and selection sync where low-latency precision is critical.",
+  "q2": "WebSocket for bidirectional, low-latency real-time communication; SSE is insufficient for client-to-server edits and cursor updates.",
+  "q3": "PostgreSQL with JSONB for document snapshots and metadata; chosen for ACID compliance, rich querying, and mature ecosystem — single best choice for structured + semi-structured data.",
+  "q4": "Offline editing via local CRDT state persistence (IndexedDB) + sync queue; changes are queued and replicated when connectivity resumes, with conflict resolution via CRDT merge semantics.",
+  "q5": "Apache Kafka for high-throughput, durable event streaming of document edits, presence, and cursor events; enables replay, scaling, and decoupling of services.",
+  "q6": "Horizontal scaling via sticky sessions (session affinity) using a load balancer (e.g., NGINX or AWS ALB) with Redis-backed session store; WebSocket connections are routed to the same instance based on user/document ID hash.",
+  "q7": "Cursor positions shared via lightweight WebSocket messages (e.g., {type: 'cursor', userId, docId, position, timestamp}) — debounced and throttled to reduce noise; rendered as remote selections in the UI.",
+  "q8": "OAuth 2.0 with OpenID Connect (OIDC) for authentication; JWTs issued by auth service (e.g., Auth0 or Keycloak) and validated via JWKS endpoint; short-lived access tokens with refresh token rotation.",
+  "q9": "Version history via immutable snapshots stored in object storage (e.g., S3) every N operations or time interval (e.g., every 30s or 100 ops), with delta encoding between snapshots for storage efficiency; metadata indexed in PostgreSQL.",
+  "q10": "CDN (e.g., CloudFront or Cloudflare) for static assets (JS, CSS, images) with cache-control headers, versioned filenames, and edge caching; dynamic content (documents, auth) bypasses CDN.",
+  "q11": "Large documents handled via operational chunking: document split into logical blocks (e.g., paragraphs or sections); only edited blocks are transmitted; CRDT state maintained per block with global conflict resolution via block-level IDs.",
+  "q12": "Rate limiting via token bucket algorithm at API gateway (e.g., Kong or AWS API Gateway) per user/IP; WebSocket message rates limited per connection (e.g., 10 msg/sec for edits, 1 msg/sec for cursor); burst allowance with exponential backoff.",
+  "q13": "Backup strategy: daily logical backups of PostgreSQL (pg_dump) + continuous WAL archiving; object storage snapshots versioned with lifecycle rules (e.g., 30-day hot, 90-day cold, 1-year glacier); tested restore drills quarterly.",
+  "q14": "Concurrent image uploads handled via resumable, chunked uploads to presigned S3 URLs (via STS); metadata (URL, dimensions, uploader) sent via WebSocket as a CRDT-embedded object; thumbnails generated asynchronously via Lambda; deduplication via content-addressable storage (SHA-256).",
+  "q15": "Monitoring and observability: Prometheus + Grafana for metrics (latency, error rates, connection count); Loki for log aggregation; Jaeger for distributed tracing; Alertmanager for PagerDuty integration; synthetic transactions via synthetic users editing test docs every 5min."
+}

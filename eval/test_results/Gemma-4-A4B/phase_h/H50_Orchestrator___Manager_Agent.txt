@@ -1,0 +1,69 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "raw_refund_request",
+      "output": "validated_request_with_audit_log",
+      "next": "FraudCheckAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request_with_audit_log",
+      "output": "fraud_assessment_with_audit_log",
+      "next": "ApprovalAgent if fraud_score < 0.7 else HumanEscalationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_assessment_with_audit_log",
+      "output": "approval_decision_with_audit_log",
+      "next": "PaymentAgent if status == 'approved' else NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "approval_decision_with_audit_log",
+      "output": "payment_confirmation_with_audit_log",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 15
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "escalated_request_with_audit_log",
+      "output": "human_decision_with_audit_log",
+      "next": "NotificationAgent",
+      "fallback": "NotificationAgent",
+      "timeout": 10
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_outcome_with_audit_log",
+      "output": "notification_sent_status_with_audit_log",
+      "next": "null",
+      "fallback": "NotificationAgent",
+      "timeout": 5
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "max_total_processing_time_seconds": 60,
+    "required_agents": [
+      "validation",
+      "fraud-check",
+      "approval",
+      "payment",
+      "notification"
+    ],
+    "audit_requirement": "Every agent output must append an audit_log entry",
+    "routing_logic": "Conditional branching based on fraud_score and approval_status",
+    "error_handling": "All failures must route to HumanEscalationAgent or retry via NotificationAgent",
+    "dependency_rule": "No circular dependencies allowed"
+  }
+}
+```

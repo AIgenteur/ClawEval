@@ -1,19 +1,19 @@
 ```json
 {
-  "q1": "CRDT (Conflict-free Replicated Data Types) to allow for decentralized, peer-to-peer style merging and superior offline support compared to OT.",
-  "q2": "WebSockets, to provide the full-duplex, low-latency bidirectional communication required for real-time character-by-character updates.",
-  "q3": "PostgreSQL, utilizing JSONB for storing document state/CRDT structures and relational tables for user metadata and permissions.",
-  "q4": "Use IndexedDB in the browser to persist local CRDT operations, which are then synchronized and merged with the server once connectivity is restored.",
-  "q5": "Redis Pub/Sub, for high-speed, low-latency message broadcasting between distributed WebSocket server nodes.",
-  "q6": "Deploy a fleet of WebSocket servers behind a Load Balancer, using a Redis Pub/Sub backbone to ensure messages are propagated to all clients regardless of which server they are connected to.",
-  "q7": "Broadcast cursor coordinates (index/offset) as ephemeral, non-persistent messages via WebSockets to minimize database write overhead.",
-  "q8": "OAuth 2.0 with JWT (JSON Web Tokens) for stateless, scalable authentication across microservices.",
-  "q9": "Store periodic full document snapshots in the database alongside an immutable log of all CRDT operations (deltas) to allow point-in-time reconstruction.",
-  "q10": "Use a global CDN (e.g., CloudFront or Cloudflare) to serve the frontend application (HTML, JS, CSS) from edge locations to reduce latency.",
-  "q11": "Implement document chunking (splitting the document into logical sections) and client-side windowing/virtualization to only render the visible portion of the document.",
-  "q12": "Token Bucket algorithm implemented at the API Gateway level to manage request rates per user/IP.",
-  "q13": "Automated daily full backups and continuous Write-Ahead Log (WAL) archiving to multi-region object storage (e.g., AWS S3).",
-  "q14": "Use pre-signed URLs to allow clients to upload images directly to object storage (e.g., S3), bypassing the application servers to prevent bottlenecks.",
-  "q15": "Prometheus and Grafana for metrics, ELK Stack (Elasticsearch, Logstash, Kibana) for centralized logging, and Jaeger for distributed tracing."
+  "q1": "CRDT (Conflict-free Replicated Data Types) to allow for decentralized, peer-to-peer compatible merging without a central sequencer.",
+  "q2": "WebSockets, to provide the low-latency, full-duplex communication required for bidirectional real-time updates.",
+  "q3": "PostgreSQL (using JSONB for document snapshots and relational tables for metadata/permissions).",
+  "q4": "Local-first architecture using IndexedDB to store the CRDT state locally, synchronizing changes via a reconciliation protocol once connectivity is restored.",
+  "q5": "Redis Pub/Sub for high-throughput, low-latency broadcasting of ephemeral real-time events.",
+  "q6": "A distributed WebSocket layer using a Load Balancer with sticky sessions and a Redis Pub/Sub backbone to synchronize messages across server nodes.",
+  "q7": "Broadcast ephemeral, non-persistent JSON payloads (user_id, cursor_index, selection_range) via WebSockets/Redis, bypassing the primary database.",
+  "q8": "OAuth 2.0 / OpenID Connect (OIDC) with JWTs (JSON Web Tokens) for stateless, scalable authentication.",
+  "q9": "A hybrid approach of periodic full-state snapshots combined with an append-only operation log (delta storage) for granular reconstruction.",
+  "q10": "Edge-cached CDN (e.g., CloudFront or Cloudflare) to serve the frontend application, CSS, and JavaScript assets from locations closest to the user.",
+  "q11": "Document chunking and virtualization; only loading and rendering the current viewport and a small buffer of surrounding pages into the DOM.",
+  "q12": "Token Bucket algorithm implemented at the API Gateway level to prevent operation flooding and DDoS attacks.",
+  "q13": "Automated daily snapshots of the database stored in immutable S3 buckets, supplemented by Point-in-Time Recovery (PITR) for the primary database.",
+  "q14": "Client-side direct upload to Object Storage (e.g., S3) using pre-signed URLs, followed by inserting the resulting URL as a metadata operation in the document.",
+  "q15": "Prometheus for metrics collection, Grafana for visualization, and the ELK stack (Elasticsearch, Logstash, Kibana) for centralized logging."
 }
 ```
