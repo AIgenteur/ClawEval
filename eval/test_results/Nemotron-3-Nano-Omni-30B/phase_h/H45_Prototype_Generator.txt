@@ -1,0 +1,97 @@
+**Pythoncode**
+
+```python
+class JSONValidator:
+    """
+    Validates JSON‑like data against a simple schema.
+
+    Schema format (example):
+        {
+            "name":   {"type": "str",        "required": true,  "min_length": 1},
+            "age":    {"type": "int",        "required": true,  "min": 0,   "max": 150},
+            "score":  {"type": "float",      "required": false, "min": 0.0, "max": 1.0},
+            "active": {"type": "bool",       "required": true},
+            "tags":   {"type": "list",       "required": false, "min_length": 1, "max_length": 5},
+            "meta":   {"type": "dict",       "required": false}
+        }
+    """
+
+    def validate(self, data, schema):
+        """
+        Validate *data* (a dict) against *schema* (a dict).
+
+        Returns
+        -------
+        dict
+            {"valid": True/False, "errors": [list of error messages]}
+        """
+        errors = []
+        for field, rules in schema.items():
+            required = rules.get("required", True)          # default = required
+            if field not in data:
+                if required:
+                    errors.append(f"Field '{field}' is required but missing.")
+                continue
+
+            value = data[field]
+            exp_type = rules.get("type")
+            if exp_type is None:               # no type constraint → skip further checks
+                continue
+
+            # ----- type check -------------------------------------------------
+            ok, msg = self._check_type(value, exp_type)
+            if not ok:
+                errors.append(f"Field '{field}' has wrong type (expected {exp_type}, got {type(value).__name__}): {msg}")
+                continue
+
+            # ----- numeric limits ---------------------------------------------
+            if "min" in rules or "max" in rules:
+                if isinstance(value, (int, float)):
+                    min_val = rules.get("min")
+                    max_val = rules.get("max")
+                    if min_val is not None and value < min_val:
+                        errors.append(f"Field '{field}' value {value} is less than min {min_val}.")
+                    if max_val is not None and value > max_val:
+                        errors.append(f"Field '{field}' value {value} is greater than max {max_val}.")
+
+            # ----- length constraints (strings / lists) -----------------------
+            if "min_length" in rules or "max_length" in rules:
+                if isinstance(value, (str, list)):
+                    length = len(value)
+                    min_len = rules.get("min_length")
+                    max_len = rules.get("max_length")
+                    if min_len is not None and length < min_len:
+                        errors.append(f"Field '{field}' length {length} is less than min_length {min_len}.")
+                    if max_len is not None and length > max_len:
+                        errors.append(f"Field '{field}' length {length} is greater than max_length {max_len}.")
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    # ----------------------------------------------------------------------
+    def _check_type(self, value, expected):
+        """Return (is_correct, message)."""
+        if expected == "str":
+            return isinstance(value, str), ""
+        if expected == "int":
+            return isinstance(value, int) and not isinstance(value, bool), ""
+        if expected == "float":
+            return isinstance(value, float), ""
+        if expected == "bool":
+            return isinstance(value, bool), ""
+        if expected == "list":
+            return isinstance(value, list), ""
+        if expected == "dict":
+            return isinstance(value, dict), ""
+        return False, f"unknown type '{expected}'"
+```
+
+**Explanation of the implementation**
+
+* **`validate`** iterates over every field defined in the schema.
+* If a required field is absent, an error is added.
+* The helper `_check_type` ensures the actual Python type matches the schema‑specified type (`str`, `int`, `float`, `bool`, `list`, `dict`).  
+  It also guards against `bool` being counted as an `int`.
+* After a successful type check, the method applies any numeric limits (`min`, `max`) and length limits (`min_length`, `max_length`) that are relevant for the current type.
+* All errors are collected; the method finally returns a dictionary indicating overall validity and the list of error messages.
+
+No external modules are imported, satisfying the “NO imports needed” requirement.

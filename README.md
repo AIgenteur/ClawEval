@@ -147,20 +147,21 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 9 | **Nemotron-3-Super Think** | ☁️ Ollama | 1016/1220 | **83.3%** | 20 |
 | 10 | **MiniMax-M2.7 Medium** | ☁️ Ollama | 1014/1220 | **83.1%** | 20 |
 | 11 | **Nemotron-3-Super NoThink** | ☁️ Ollama | 996/1220 | **81.6%** | 21 |
-| 12 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
-| 13 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
-| 14 | **MiniMax-M2.7 Think** | ☁️ Ollama | 978/1220 | **80.2%** | 18 |
-| 15 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
-| 16 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
-| 17 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
-| 18 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
-| 19 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 20 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 21 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 22 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 23 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 24 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 25 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 12 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
+| 13 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
+| 14 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
+| 15 | **MiniMax-M2.7 Think** | ☁️ Ollama | 978/1220 | **80.2%** | 18 |
+| 16 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
+| 17 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
+| 18 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
+| 19 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
+| 20 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 21 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
+| 22 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 23 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 24 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 25 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 26 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
 
 > All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)**
 
@@ -174,7 +175,7 @@ These runs are kept **separate from the main leaderboard** because the variable 
 
 | Model | KV Mode | Context | Score | % | Baseline | Δ |
 |-------|---------|---------|-------|---|----------|---|
-| Gemma-4-31B | turbo3 (3-bit) | 262K | _running_ | — | 76.0% (q8₀, 53K) | — |
+| Gemma-4-31B | turbo3 (3-bit) | 262K | 915/1220 | **75.0%** | 76.0% (q8₀, 53K) | **−1.0%** |
 
 > Full methodology: **[TurboQuant Experiment →](docs/results-turboquant.md)**
 

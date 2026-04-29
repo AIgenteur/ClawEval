@@ -1,0 +1,117 @@
+{
+  "agents": [
+    {
+      "name": "ValidationTriage",
+      "input": "refund_request",
+      "output": "validated_request",
+      "next": "AuditLogger_Validation",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "AuditLogger_Validation",
+      "input": "validated_request",
+      "output": "audit_record_validation",
+      "next": "FraudCheck",
+      "fallback": "HumanEscalation",
+      "timeout": 2
+    },
+    {
+      "name": "FraudCheck",
+      "input": "audit_record_validation",
+      "output": "fraud_status",
+      "next": "AuditLogger_Fraud",
+      "fallback": "HumanEscalation",
+      "timeout": 8
+    },
+    {
+      "name": "AuditLogger_Fraud",
+      "input": "fraud_status",
+      "output": "audit_record_fraud",
+      "next": "Approval",
+      "fallback": "HumanEscalation",
+      "timeout": 2
+    },
+    {
+      "name": "Approval",
+      "input": "audit_record_fraud",
+      "output": "approval_decision",
+      "next": "AuditLogger_Approval",
+      "fallback": "HumanEscalation",
+      "timeout": 4
+    },
+    {
+      "name": "AuditLogger_Approval",
+      "input": "approval_decision",
+      "output": "audit_record_approval",
+      "next": "ConditionalHandler",
+      "fallback": "HumanEscalation",
+      "timeout": 2
+    },
+    {
+      "name": "ConditionalHandler",
+      "input": "audit_record_approval",
+      "output": "next_action",
+      "next": "AuditLogger_Conditional",
+      "fallback": "HumanEscalation",
+      "timeout": 3
+    },
+    {
+      "name": "AuditLogger_Conditional",
+      "input": "next_action",
+      "output": "audit_record_conditional",
+      "next": "Payment",
+      "fallback": "HumanEscalation",
+      "timeout": 2
+    },
+    {
+      "name": "Payment",
+      "input": "approved_request",
+      "output": "payment_status",
+      "next": "AuditLogger_Payment",
+      "fallback": "HumanEscalation",
+      "timeout": 10
+    },
+    {
+      "name": "AuditLogger_Payment",
+      "input": "payment_status",
+      "output": "audit_record_payment",
+      "next": "Notification",
+      "fallback": "HumanEscalation",
+      "timeout": 2
+    },
+    {
+      "name": "Notification",
+      "input": "payment_status",
+      "output": "notification_sent",
+      "next": null,
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "HumanEscalation",
+      "input": "error_context",
+      "output": "escalation_status",
+      "next": null,
+      "fallback": "LogErrorAndEscalate",
+      "timeout": 10
+    }
+  ],
+  "constraints": {
+    "1": "Minimum 6 agents in the pipeline",
+    "2": "Must include validation, fraud-check, approval, payment, notification agents",
+    "3": "Each agent must have defined input, output, and next step",
+    "4": "Must have at least 1 conditional branch (if/else routing)",
+    "5": "Must have a fallback/error handler for each agent",
+    "6": "First agent must be a validation/triage agent",
+    "7": "Last agent must be a notification agent",
+    "8": "Fraud check must happen before approval",
+    "9": "Payment processing must happen after approval",
+    "10": "Total expected processing time must be under 60 seconds",
+    "11": "Must handle both approved and rejected outcomes",
+    "12": "Must include logging/audit at each step",
+    "13": "No circular dependencies",
+    "14": "Must include human escalation path for edge cases",
+    "15": "Each agent must have a timeout value"
+  }
+}

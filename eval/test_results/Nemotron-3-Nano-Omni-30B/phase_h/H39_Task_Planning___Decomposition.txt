@@ -1,0 +1,24 @@
+{
+  "tasks": [
+{"id": 1, "task": "Gather requirements and define architecture", "depends_on": [], "effort_days": 3, "team": "devops"},
+    {"id": 2, "task": "Set up version control repository and initial Django scaffold", "depends_on": [1], "effort_days": 5, "team": "backend"},
+    {"id": 3, "task": "Set up front-end repository and build pipeline", "depends_on": [1], "effort_days": 5, "team": "frontend"},
+    {"id": 4, "task": "Design database schema and plan migration", "depends_on": [2], "effort_days": 4, "team": "backend"},
+    {"id": 5, "task": "Implement database migration scripts", "depends_on": [4], "effort_days": 6, "team": "backend"},
+    {"id": 6, "task": "Containerize Django app with Docker", "depends_on": [5], "effort_days": 5, "team": "devops"},
+    {"id": 7, "task": "Set up API gateway and routing", "depends_on": [6], "effort_days": 4, "team": "devops"},
+    {"id": 8, "task": "Create API endpoints for core features", "depends_on": [7], "effort_days": 8, "team": "backend"},
+    {"id": 9, "task": "Develop front-end UI components", "depends_on": [8], "effort_days": 7, "team": "frontend"},
+    {"id": 10, "task": "Integrate front-end with API gateway", "depends_on": [9, 8], "effort_days": 5, "team": "frontend"},
+    {"id": 11, "task": "Configure CI/CD pipeline (GitHub Actions)", "depends_on": [6, 7], "effort_days": 6, "team": "devops"},
+    {"id": 12, "task": "Set up automated testing framework", "depends_on": [5, 8], "effort_days": 5, "team": "qa"},
+    {"id": 13, "task": "Write unit tests for Django services", "depends_on": [8], "effort_days": 6, "team": "qa"},
+    {"id": 14, "task": "Write end-to-end tests for UI", "depends_on": [9, 10], "effort_days": 5, "team": "qa"},
+    {"id": 15, "task": "Perform integration testing and bug fixing", "depends_on": [13, 14], "effort_days": 7, "team": "qa"},
+    {"id": 16, "task": "Implement authentication and authorization layer", "depends_on": [8], "effort_days": 5, "team": "backend"},
+    {"id": 17, "task": "Deploy services to staging environment", "depends_on": [6, 7, 11], "effort_days": 4, "team": "devops"},
+    {"id": 18, "task": "Set up monitoring and logging", "depends_on": [17], "effort_days": 3, "team": "devops"},
+    {"id": 19, "task": "Conduct performance testing and optimization", "depends_on": [15, 18], "effort_days": 5, "team": "qa"},
+    {"id": 20, "task": "Finalize release preparation and documentation", "depends_on": [15, 19, 18], "effort_days": 4, "team": "devops"}
+  ]
+}

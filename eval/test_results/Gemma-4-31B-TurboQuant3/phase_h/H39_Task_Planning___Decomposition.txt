@@ -1,0 +1,146 @@
+```json
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Analyze monolithic codebase and define microservice boundaries",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Design microservices architecture and API contracts",
+      "depends_on": [1],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Define containerization strategy and Dockerfiles",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Provision Kubernetes cluster and namespaces",
+      "depends_on": [3],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Implement API Gateway for request routing",
+      "depends_on": [4],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Setup CI/CD pipelines for automated deployment",
+      "depends_on": [4],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 7,
+      "task": "Implement centralized logging and monitoring stack",
+      "depends_on": [6],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 8,
+      "task": "Extract User domain logic into a standalone service",
+      "depends_on": [2, 4],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Migrate User data to a dedicated database",
+      "depends_on": [8],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Implement User service REST API endpoints",
+      "depends_on": [9],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Perform integration testing for User service",
+      "depends_on": [10],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 12,
+      "task": "Extract Order domain logic into a standalone service",
+      "depends_on": [2, 4],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 13,
+      "task": "Migrate Order data to a dedicated database",
+      "depends_on": [12],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 14,
+      "task": "Implement Order service REST API endpoints",
+      "depends_on": [13],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 15,
+      "task": "Perform integration testing for Order service",
+      "depends_on": [14],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 16,
+      "task": "Update frontend to route requests through API Gateway",
+      "depends_on": [5, 11, 15],
+      "effort_days": 7,
+      "team": "frontend"
+    },
+    {
+      "id": 17,
+      "task": "Implement frontend error handling for distributed services",
+      "depends_on": [16],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 18,
+      "task": "Develop frontend service health dashboard",
+      "depends_on": [16],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 19,
+      "task": "Execute end-to-end system regression testing",
+      "depends_on": [15, 18],
+      "effort_days": 7,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Final production cutover and sign-off",
+      "depends_on": [19, 7],
+      "effort_days": 6,
+      "team": "qa"
+    }
+  ]
+}
+```

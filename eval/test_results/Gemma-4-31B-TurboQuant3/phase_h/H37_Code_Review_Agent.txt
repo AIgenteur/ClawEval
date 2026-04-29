@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount calculation: sets subtotal to 20% of its value instead of subtracting 20%.",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount multiplier: subtracts 10 times the subtotal (1000%) instead of 10% (0.10).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Logic error: 'pass' allows inventory to become negative without raising an error or handling the shortage.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax error: '=+' is an assignment of a positive value, not an addition; total_revenue only stores the last order's total.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Runtime error: ZeroDivisionError occurs if the 'orders' list is empty.",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "Runtime error: max() raises a ValueError if the 'results' list is empty.",
+      "severity": "critical"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient validation: only checks for the presence of '@', allowing invalid emails like '@' or 'user@'.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Calculation error: adds 'distance' and 'per_km' separately instead of multiplying distance by the per_km rate.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code: 'elif weight > 50' is never reached because 'weight > 30' is checked first.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Precision loss: round() converts the shipping cost to an integer, losing decimal cents.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Reference mutation: 'merged = profile_a' creates a reference, meaning modifications to 'merged' mutate the original 'profile_a'.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded value: 'updated_at' is set to a static date instead of the current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive CSV parsing: split(',') fails to handle fields containing commas enclosed in quotes.",
+      "severity": "major"
+    },
+    {
+      "line": 77,
+      "bug": "Logic error: adds the same item to 'duplicates' every time it is encountered after the first, resulting in duplicate entries in the results.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Performance bug: using a list for 'seen' makes the lookup 'item in seen' O(n), making the overall function O(n^2).",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

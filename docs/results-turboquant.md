@@ -27,7 +27,7 @@ The variable being studied is **KV-cache precision**, not model capability. Turb
 | KV Mode | Context | Score | % | Avg t/s | Notes |
 |---------|---------|-------|---|---------|-------|
 | q8_0 (baseline) | 53,248 | 927/1220 | 76.0% | 28.1 | Standard llama.cpp |
-| turbo3 (3-bit) | 262,144 | _pending_ | — | — | TurboQuant fork |
+| turbo3 (3-bit) | 262,144 | 915/1220 | 75.0% | 27.1 | TurboQuant fork — **−1.0% score, −3.6% speed for 4.9× context** |
 
 **Context expansion**: 53K → 262K = **4.9× improvement** on the same 24GB GPU.
 

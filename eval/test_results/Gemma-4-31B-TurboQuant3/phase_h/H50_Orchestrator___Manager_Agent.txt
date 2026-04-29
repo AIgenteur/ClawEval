@@ -1,0 +1,75 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "customer_refund_request",
+      "output": "validated_request_data",
+      "next": "FraudCheckAgent",
+      "fallback": "NotificationAgent",
+      "timeout_seconds": 5,
+      "logging": "audit_log_validation"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request_data",
+      "output": "fraud_risk_score",
+      "next": "ApprovalAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "logging": "audit_log_fraud"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_risk_score",
+      "output": "approval_decision",
+      "next": {
+        "approved": "PaymentAgent",
+        "rejected": "NotificationAgent",
+        "escalate": "HumanEscalationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "logging": "audit_log_approval"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "approval_decision",
+      "output": "transaction_receipt",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 15,
+      "logging": "audit_log_payment"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "edge_case_payload",
+      "output": "manual_resolution",
+      "next": {
+        "approved": "PaymentAgent",
+        "rejected": "NotificationAgent"
+      },
+      "fallback": "NotificationAgent",
+      "timeout_seconds": 15,
+      "logging": "audit_log_human_review"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_status_report",
+      "output": "customer_notification_sent",
+      "next": "END",
+      "fallback": "SystemErrorLog",
+      "timeout_seconds": 5,
+      "logging": "audit_log_notification"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "total_max_processing_time_seconds": 60,
+    "execution_order": "Validation -> FraudCheck -> Approval -> (Payment | Notification | HumanEscalation)",
+    "logging_required": true,
+    "circular_dependencies": "forbidden",
+    "human_in_the_loop": "enabled_for_edge_cases"
+  }
+}
+```

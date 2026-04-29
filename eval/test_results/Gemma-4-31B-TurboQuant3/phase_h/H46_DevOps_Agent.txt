@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Replicas set to 1 provides no high availability; a single node failure will take down the service.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Using the ':latest' image tag is non-deterministic and can lead to inconsistent deployments across environments.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Missing CPU resource requests for the 'api' container, risking node over-commitment.",
+      "severity": "critical"
+    },
+    {
+      "line": "20",
+      "issue": "Missing memory resource requests for the 'api' container, risking node over-commitment.",
+      "severity": "critical"
+    },
+    {
+      "line": "20",
+      "issue": "Missing CPU resource limits for the 'api' container, allowing the container to consume all node CPU.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Missing memory resource limits for the 'api' container, risking OOMKills of other pods on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true allows the container to run as the root user, increasing the attack surface.",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true grants the container access to the host's kernel and devices, a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Sensitive data (DB_PASSWORD) is stored in plaintext in the deployment config instead of using a Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "Sensitive data (API_KEY) is stored in plaintext in the deployment config instead of using a Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "36",
+      "issue": "Excessive memory request (10Gi) for a sidecar container is wasteful and may prevent the pod from scheduling.",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "Excessive CPU request (8 cores) for a sidecar container is wasteful and may prevent the pod from scheduling.",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "The 'sidecar' container is missing resource limits, allowing it to potentially starve the main 'api' container.",
+      "severity": "major"
+    },
+    {
+      "line": "40",
+      "issue": "Using hostPath volumes creates a dependency on the host filesystem and poses a security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "16",
+      "issue": "The 'api' container is missing liveness and readiness probes, meaning Kubernetes cannot monitor the health of the app.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

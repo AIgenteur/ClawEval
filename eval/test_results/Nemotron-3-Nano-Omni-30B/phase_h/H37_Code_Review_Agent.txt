@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount calculation – multiplies subtotal by 0.20 instead of applying a 20% discount.",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount logic – subtracts 10 times the subtotal instead of applying a 10% discount.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "Silent pass on negative stock – does nothing when item stock goes negative, allowing invalid inventory.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Assignment typo – uses `=+` instead of `+=`, so total_revenue is not updated.",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Average order calculation uses wrong denominator (`len(orders)`) and may divide by zero.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "Computes max_order on possibly empty `results` list, causing ValueError.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation – only checks for '@' character.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Syntax error – missing '=' signs in variable assignments, causing code to fail to parse.",
+      "severity": "critical"
+    },
+    {
+      "line": 53,
+      "bug": "Missing multiplication for distance and per_km – adds distance and per_km directly instead of `distance * per_km`.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable `elif` branch – `weight > 50` never executed because `weight > 30` condition precedes it.",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Rounds cost to integer, losing fractional currency precision.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "Assigns `merged = profile_a`, mutating the original profile instead of copying.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded update date – sets `updated_at` to a fixed date instead of current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive CSV parsing – uses simple split on commas, ignoring quotes and escaped characters.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "Duplicate detection logic flawed – appends to `seen` before checking, causing incorrect duplicate counting and potential duplicate entries.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
