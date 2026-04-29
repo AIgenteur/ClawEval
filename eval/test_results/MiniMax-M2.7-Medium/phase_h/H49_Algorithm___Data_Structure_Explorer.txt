@@ -1,0 +1,128 @@
+
+```python
+class LRUCache:
+    """Least Recently Used (LRU) cache with O(1) get and put operations."""
+    
+    class _Node:
+        """Doubly‑linked list node."""
+        __slots__ = ('key', 'val', 'prev', 'next')
+        def __init__(self, key=0, val=0):
+            self.key = key
+            self.val = val
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}                     # key -> _Node
+        self.head = self._Node()            # dummy head
+        self.tail = self._Node()            # dummy tail
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        """Unlink node from the doubly linked list."""
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_to_front(self, node):
+        """Insert node right after the dummy head (most recent)."""
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        """Return value for key or -1 if absent; marks key as most recent."""
+        if self.capacity <= 0:
+            return -1
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._add_to_front(node)
+        return node.val
+
+    def put(self, key: int, value: int) -> None:
+        """Insert or update key; evict least recent if over capacity."""
+        if self.capacity <= 0:
+            return
+        if key in self.cache:
+            node = self.cache[key]
+            node.val = value
+            self._remove(node)
+            self._add_to_front(node)
+        else:
+            node = self._Node(key, value)
+            self.cache[key] = node
+            self._add_to_front(node)
+            if len(self.cache) > self.capacity:
+                # Evict the node just before the dummy tail (least recent)
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+
+
+class MinStack:
+    """Stack that supports O(1) push, pop, top, and get_min."""
+
+    def __init__(self):
+        self._stack = []  # each element is a tuple (value, current_min)
+
+    def push(self, val: int) -> None:
+        """Push value onto stack; track running minimum."""
+        if not self._stack:
+            self._stack.append((val, val))
+        else:
+            current_min = val if val < self._stack[-1][1] else self._stack[-1][1]
+            self._stack.append((val, current_min))
+
+    def pop(self) -> int:
+        """Remove and return top element."""
+        if self._stack:
+            return self._stack.pop()[0]
+        return None
+
+    def top(self) -> int:
+        """Return top element without removing it."""
+        if self._stack:
+            return self._stack[-1][0]
+        return None
+
+    def get_min(self) -> int:
+        """Return the smallest element currently in the stack."""
+        if self._stack:
+            return self._stack[-1][1]
+        return None
+
+
+def find_median(stream):
+    """
+    Compute the running median of a stream of integers.
+    Returns a list of floats where the i‑th float is the median after
+    processing the first i elements of `stream`.
+    """
+    sorted_vals = []   # maintains numbers in sorted order
+    medians = []
+
+    for num in stream:
+        # Insert `num` into `sorted_vals` keeping it sorted (binary search + insert)
+        lo, hi = 0, len(sorted_vals)
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if sorted_vals[mid] < num:
+                lo = mid + 1
+            else:
+                hi = mid
+        sorted_vals.insert(lo, num)
+
+        # Compute current median
+        n = len(sorted_vals)
+        if n % 2 == 1:
+            median = float(sorted_vals[n // 2])
+        else:
+            median = (sorted_vals[n // 2 - 1] + sorted_vals[n // 2]) / 2.0
+        medians.append(median)
+
+    return medians
+```

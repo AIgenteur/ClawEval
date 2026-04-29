@@ -1,0 +1,84 @@
+
+
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount applies 20% of original (keeps only 20%) instead of subtracting 20% (keeping 80%). Should be: subtotal = subtotal * 0.80",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 discount uses multiplication by 10 instead of 0.10, causing negative subtotal. Should be: subtotal -= subtotal * 0.10",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is silently ignored with pass; should raise an exception or handle inventory shortage properly",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Assignment operator is '=+' (positive unary operator), not '+=' (augmented assignment). Revenue is not accumulated, just assigned each iteration",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero if orders list is empty; should check len(orders) > 0 before dividing",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "ValueError if results list is empty; max() fails on empty sequence, should handle empty case",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for '@' character; no domain validation, regex check, or format verification",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "per_km rate is added as constant instead of being multiplied by distance. Should be: distance * per_km",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "elif weight > 50 is unreachable because if weight > 30 catches all weights above 30 first",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "round(cost) loses decimal precision; should return cost as-is or use proper currency formatting",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Creates reference to profile_a instead of copying; modifications to merged will mutate profile_a",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date '2024-01-01' instead of using actual current timestamp (e.g., datetime.now().isoformat())",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Simple split() doesn't handle quoted fields containing commas or proper CSV escaping",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Using list for 'seen' results in O(n) lookup time; should use set for O(1) membership checking",
+      "severity": "minor"
+    },
+    {
+      "line": 82,
+      "bug": "Duplicate detection logic marks first occurrence as duplicate instead of subsequent ones, or logic should check BEFORE appending",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,159 @@
+
+
+```json
+{
+  "agents": [
+    {
+      "name": "validation_agent",
+      "input": {
+        "refund_request": "<raw refund request JSON>"
+      },
+      "output": {
+        "valid": true,
+        "request_id": "<generated UUID>",
+        "customer_info": "<parsed customer data>",
+        "log": "<audit log entry>"
+      },
+      "next": "fraud_check_agent",
+      "fallback": {
+        "action": "log_and_escalate",
+        "next": "human_escalation_agent"
+      },
+      "timeout_seconds": 5
+    },
+    {
+      "name": "fraud_check_agent",
+      "input": {
+        "request_id": "<from validation>",
+        "customer_info": "<from validation>"
+      },
+      "output": {
+        "fraud_status": "pass|fail",
+        "details": "<risk analysis result>",
+        "log": "<audit log entry>"
+      },
+      "next": "if fraud_status == 'pass' then approval_agent else rejection_notification_agent",
+      "fallback": {
+        "action": "flag_for_review",
+        "next": "human_escalation_agent"
+      },
+      "timeout_seconds": 10
+    },
+    {
+      "name": "approval_agent",
+      "input": {
+        "request_id": "<from fraud_check>",
+        "customer_info": "<from fraud_check>",
+        "amount": "<refund amount>"
+      },
+      "output": {
+        "approval_status": "approved|rejected",
+        "approved_by": "<approver ID or policy reason>",
+        "log": "<audit log entry>"
+      },
+      "next": "if approval_status == 'approved' then payment_agent else rejection_notification_agent",
+      "fallback": {
+        "action": "reject_and_notify",
+        "next": "rejection_notification_agent"
+      },
+      "timeout_seconds": 15
+    },
+    {
+      "name": "payment_agent",
+      "input": {
+        "request_id": "<approved request ID>",
+        "amount": "<refund amount>",
+        "transaction_details": "<payment gateway payload>"
+      },
+      "output": {
+        "payment_status": "success|failure",
+        "transaction_id": "<gateway transaction ID>",
+        "log": "<audit log entry>"
+      },
+      "next": "if payment_status == 'success' then success_notification_agent else human_escalation_agent",
+      "fallback": {
+        "action": "retry_or_escalate",
+        "next": "human_escalation_agent"
+      },
+      "timeout_seconds": 20
+    },
+    {
+      "name": "success_notification_agent",
+      "input": {
+        "request_id": "<from payment>",
+        "payment_status": "<success>",
+        "transaction_id": "<from payment>"
+      },
+      "output": {
+        "notification_sent": true,
+        "channel": "email",
+        "log": "<audit log entry>"
+      },
+      "next": "END",
+      "fallback": {
+        "action": "retry_notification",
+        "next": "human_escalation_agent"
+      },
+      "timeout_seconds": 5
+    },
+    {
+      "name": "rejection_notification_agent",
+      "input": {
+        "request_id": "<from approval or fraud_check>",
+        "rejection_reason": "<reason string>"
+      },
+      "output": {
+        "notification_sent": true,
+        "channel": "email",
+        "log": "<audit log entry>"
+      },
+      "next": "END",
+      "fallback": {
+        "action": "retry_notification",
+        "next": "human_escalation_agent"
+      },
+      "timeout_seconds": 5
+    },
+    {
+      "name": "human_escalation_agent",
+      "input": {
+        "issue": "<description of issue that triggered escalation>",
+        "context": "<relevant data at point of escalation>"
+      },
+      "output": {
+        "escalation_id": "<ticket ID>",
+        "assigned_to": "support_team",
+        "log": "<audit log entry>"
+      },
+      "next": "END",
+      "fallback": {
+        "action": "log_and_alert",
+        "next": "END"
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "includes_required_agents": [
+      "validation_agent",
+      "fraud_check_agent",
+      "approval_agent",
+      "payment_agent",
+      "success_notification_agent"
+    ],
+    "conditional_branch": true,
+    "fallback_per_agent": true,
+    "first_agent_is_validation": true,
+    "last_agent_is_notification": true,
+    "fraud_check_before_approval": true,
+    "payment_after_approval": true,
+    "total_expected_processing_time_under_60_seconds": true,
+    "handles_approved_and_rejected_outcomes": true,
+    "logging_audit_at_each_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_per_agent": true
+  }
+}
+```

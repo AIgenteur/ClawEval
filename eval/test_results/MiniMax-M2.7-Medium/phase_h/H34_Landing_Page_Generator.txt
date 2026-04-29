@@ -1,0 +1,371 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="QuillAI is an AI‑powered writing assistant that helps you create content faster, improve readability, and boost productivity.">
+  <title>QuillAI - AI Writing Assistant</title>
+  <style>
+    /* Reset & base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    img { max-width: 100%; height: auto; }
+
+    /* Utility classes */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 80px 0; }
+    .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 40px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+    /* Header */
+    header { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+    .logo { font-size: 1.5rem; font-weight: bold; color: #2c3e50; }
+    .nav-links { display: flex; gap: 25px; }
+    .nav-links a { font-weight: 500; color: #555; transition: color .3s; }
+    .nav-links a:hover { color: #007bff; }
+    .cta-btn { background: #007bff; color: #fff; padding: 10px 20px; border-radius: 5px; font-weight: bold; transition: background .3s; }
+    .cta-btn:hover { background: #0056b3; }
+
+    /* Hero */
+    #hero { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: #fff; text-align: center; padding: 120px 20px; }
+    #hero h1 { font-size: 3rem; margin-bottom: 20px; }
+    #hero p { font-size: 1.25rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .hero-cta { display: inline-block; background: #fff; color: #2575fc; padding: 15px 30px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; transition: transform .2s; }
+    .hero-cta:hover { transform: scale(1.05); }
+    .hero-cta-secondary { display: inline-block; margin-left: 15px; background: transparent; border: 2px solid #fff; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; transition: background .3s; }
+    .hero-cta-secondary:hover { background: rgba(255,255,255,0.2); }
+
+    /* Social proof */
+    #social-proof { background: #f8f9fa; padding: 40px 0; text-align: center; }
+    .social-proof-text { font-size: 1.2rem; color: #555; margin-bottom: 20px; }
+    .logos { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+    .logos img { width: 120px; opacity: .7; }
+
+    /* How it works */
+    #how-it-works { background: #fff; }
+    .steps { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
+    .step { flex: 1 1 250px; text-align: center; max-width: 300px; }
+    .step-icon { font-size: 3rem; margin-bottom: 15px; color: #007bff; }
+    .step h3 { margin-bottom: 10px; }
+
+    /* Features */
+    #features { background: #f8f9fa; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+    .feature-card { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+    .feature-icon { width: 60px; height: 60px; margin-bottom: 15px; }
+
+    /* Pricing */
+    #pricing { background: #fff; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+    .pricing-card { border: 2px solid #e9ecef; border-radius: 10px; padding: 40px; text-align: center; transition: transform .3s; }
+    .pricing-card:hover { transform: translateY(-5px); border-color: #007bff; }
+    .pricing-card h3 { margin-bottom: 15px; }
+    .price { font-size: 2.5rem; font-weight: bold; color: #007bff; margin-bottom: 20px; }
+    .price span { font-size: 1rem; color: #666; }
+    .features-list { margin-bottom: 25px; text-align: left; }
+    .features-list li { margin-bottom: 10px; }
+
+    /* Testimonials */
+    #testimonials { background: #f8f9fa; }
+    .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+    .testimonial { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .quote { font-style: italic; margin-bottom: 15px; }
+    .author { font-weight: bold; }
+    .role { font-size: .9rem; color: #666; }
+
+    /* FAQ */
+    #faq { background: #fff; }
+    .faq-item { margin-bottom: 20px; border-bottom: 1px solid #e9ecef; padding-bottom: 15px; }
+    .faq-question { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; }
+    .faq-answer { color: #555; }
+
+    /* Contact */
+    #contact { background: #f8f9fa; text-align: center; }
+    .contact-email { font-size: 1.2rem; color: #007bff; margin-top: 10px; }
+
+    /* Newsletter */
+    #newsletter { background: #2c3e50; color: #fff; padding: 60px 0; text-align: center; }
+    .newsletter-form { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .newsletter-form input[type="email"] { padding: 12px 20px; border: none; border-radius: 5px; width: 300px; max-width: 100%; }
+    .newsletter-form button { padding: 12px 25px; background: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+    /* Before/After */
+    #compare { background: #fff; }
+    .compare-container { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
+    .compare-box { flex: 1 1 400px; max-width: 500px; background: #f8f9fa; padding: 20px; border-radius: 8px; }
+    .compare-box h4 { margin-bottom: 15px; }
+    .compare-box p { line-height: 1.8; }
+
+    /* Footer */
+    footer { background: #2c3e50; color: #fff; padding: 40px 0; }
+    .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: #ccc; transition: color .3s; }
+    .footer-links a:hover { color: #fff; }
+    .social-icons { display: flex; gap: 15px; }
+    .social-icons a { color: #ccc; font-size: 1.2rem; transition: color .3s; }
+    .social-icons a:hover { color: #007bff; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links { display: none; } /* Ideally a hamburger menu */
+      #hero h1 { font-size: 2rem; }
+      .hero-cta-secondary { margin-left: 0; margin-top: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header role="banner">
+    <nav role="navigation" aria-label="Main navigation">
+      <a href="#" class="logo" aria-label="QuillAI Home">QuillAI</a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#pricing" class="cta-btn" aria-label="Start free trial">Start Free Trial</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section id="hero" aria-label="Hero section">
+      <div class="container">
+        <h1>Create Content Faster with QuillAI</h1>
+        <p>Harness the power of artificial intelligence to write blog posts, emails, and social media updates in seconds. Our AI writing assistant helps you craft clear, engaging, and error‑free copy.</p>
+        <a href="#newsletter" class="hero-cta" aria-label="Start Free Trial">Start Free Trial</a>
+        <a href="#how-it-works" class="hero-cta-secondary" aria-label="See how it works">See How It Works</a>
+      </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section id="social-proof" aria-label="Social proof">
+      <div class="container">
+        <p class="social-proof-text">Trusted by <strong>10,000+</strong> marketers, writers, and teams worldwide</p>
+        <div class="logos" aria-label="Partner logos">
+          <img src="https://placehold.co/120x40?text=Company+1" alt="Company 1 logo">
+          <img src="https://placehold.co/120x40?text=Company+2" alt="Company 2 logo">
+          <img src="https://placehold.co/120x40?text=Company+3" alt="Company 3 logo">
+          <img src="https://placehold.co/120x40?text=Company+4" alt="Company 4 logo">
+        </div>
+      </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how-it-works" class="section" aria-label="How it works">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">1️⃣</div>
+            <h3>Choose a Template</h3>
+            <p>Select from dozens of pre‑built templates for blogs, ads, emails, and more.</p>
+          </div>
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">2️⃣</div>
+            <h3>Enter Your Idea</h3>
+            <p>Provide a brief description or bullet points. Our AI analyzes your input.</p>
+          </div>
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">3️⃣</div>
+            <h3>Review & Edit</h3>
+            <p>Get a polished draft in seconds. Fine‑tune the output with our intuitive editor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section" aria-label="Features">
+      <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid">
+          <article class="feature-card">
+            <img src="https://placehold.co/60x60?text=AI" alt="AI‑powered suggestions icon" class="feature-icon" aria-hidden="true">
+            <h3>AI‑Powered Suggestions</h3>
+            <p>Get real‑time recommendations to improve tone, clarity, and SEO.</p>
+          </article>
+          <article class="feature-card">
+            <img src="https://placehold.co/60x60?text=Fast" alt="Fast content generation icon" class="feature-icon" aria-hidden="true">
+            <h3>Instant Generation</h3>
+            <p>Produce full articles, ads, and emails in under 30 seconds.</p>
+          </article>
+          <article class="feature-card">
+            <img src="https://placehold.co/60x60?text=Multi" alt="Multi‑language support icon" class="feature-icon" aria-hidden="true">
+            <h3>Multilingual</h3>
+            <p>Write and translate content in over 30 languages with one click.</p>
+          </article>
+          <article class="feature-card">
+            <img src="https://placehold.co/60x60?text=Team" alt="Team collaboration icon" class="feature-icon" aria-hidden="true">
+            <h3>Team Collaboration</h3>
+            <p>Invite team members, leave comments, and manage workflows seamlessly.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section" aria-label="Pricing">
+      <div class="container">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <div class="pricing-grid">
+          <!-- Free Tier -->
+          <div class="pricing-card">
+            <h3>Free</h3>
+            <div class="price">$0<span>/month</span></div>
+            <ul class="features-list">
+              <li>5,000 words per month</li>
+              <li>Basic templates</li>
+              <li>Email support</li>
+              <li>1 user</li>
+            </ul>
+            <a href="#newsletter" class="cta-btn" aria-label="Get started with Free plan">Get Started</a>
+          </div>
+          <!-- Pro Tier -->
+          <div class="pricing-card">
+            <h3>Pro</h3>
+            <div class="price">$29<span>/month</span></div>
+            <ul class="features-list">
+              <li>Unlimited words</li>
+              <li>All advanced templates</li>
+              <li>Priority support</li>
+              <li>Up to 5 users</li>
+            </ul>
+            <a href="#newsletter" class="cta-btn" aria-label="Get started with Pro plan">Get Started</a>
+          </div>
+          <!-- Enterprise Tier -->
+          <div class="pricing-card">
+            <h3>Enterprise</h3>
+            <div class="price">Custom</div>
+            <ul class="features-list">
+              <li>Everything in Pro</li>
+              <li>Dedicated account manager</li>
+              <li>Custom integrations</li>
+              <li>Unlimited users</li>
+            </ul>
+            <a href="#contact" class="cta-btn" aria-label="Contact us for Enterprise plan">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="section" aria-label="Testimonials">
+      <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        <div class="testimonial-grid">
+          <article class="testimonial">
+            <p class="quote">"QuillAI cut our blog production time in half. The AI suggestions are spot‑on and make our copy shine."</p>
+            <p class="author">Sarah Johnson</p>
+            <p class="role">Content Manager, TechFlow</p>
+          </article>
+          <article class="testimonial">
+            <p class="quote">"I love how easy it is to generate email sequences. The multilingual support is a game‑changer for our global campaigns."</p>
+            <p class="author">David Lee</p>
+            <p class="role">Marketing Lead, Globex</p>
+          </article>
+          <article class="testimonial">
+            <p class="quote">"The team collaboration features keep everyone on the same page. QuillAI is now a core part of our workflow."</p>
+            <p class="author">Emily Chen</p>
+            <p class="role">Copywriter, CreativeStudio</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section" aria-label="Frequently Asked Questions">
+      <div class="container">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div class="faq-item">
+          <p class="faq-question">How does QuillAI generate content?</p>
+          <p class="faq-answer">QuillAI uses state‑of‑the‑art natural language processing models trained on billions of sentences to understand context and produce coherent text.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Is my data secure?</p>
+          <p class="faq-answer">Yes. All data is encrypted in transit and at rest. We do not store your generated content beyond your session unless you choose to save it.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Can I use QuillAI for languages other than English?</p>
+          <p class="faq-answer">Absolutely. QuillAI supports 30+ languages, and you can even translate existing content with a single click.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">What happens if I exceed my word limit on the Free plan?</p>
+          <p class="faq-answer">You can upgrade to the Pro plan for unlimited words, or purchase a one‑time word pack to bridge the gap.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Do you offer a free trial for the Pro plan?</p>
+          <p class="faq-answer">Yes! When you sign up, you automatically get a 14‑day free trial of the Pro features. No credit card required.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Before & After Comparison -->
+    <section id="compare" class="section" aria-label="Before and after comparison">
+      <div class="container">
+        <h2 class="section-title">See the Difference</h2>
+        <div class="compare-container">
+          <div class="compare-box">
+            <h4>Before QuillAI</h4>
+            <p>“We need a product description that highlights our software's key benefits and appeals to busy professionals.”</p>
+            <p>Manual drafting took 2–3 hours, with multiple revisions to achieve a clear tone.</p>
+          </div>
+          <div class="compare-box">
+            <h4>After QuillAI</h4>
+            <p>“QuillAI streamlines your workflow, delivering concise, persuasive copy in seconds—perfect for professionals on the go.”</p>
+            <p>Generated instantly, refined in minutes, and optimized for SEO automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section" aria-label="Contact us">
+      <div class="container">
+        <h2 class="section-title">Get in Touch</h2>
+        <p>Have questions or need a custom demo? Our team is here to help.</p>
+        <p class="contact-email">Email us at <a href="mailto:support@quillai.com" aria-label="Send email to QuillAI support">support@quillai.com</a></p>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section id="newsletter" aria-label="Newsletter signup">
+      <div class="container">
+        <h2>Stay Updated</h2>
+        <p>Join 10,000+ marketers receiving tips, updates, and exclusive offers.</p>
+        <form class="newsletter-form" action="#" method="post" aria-label="Newsletter subscription form">
+          <label for="email-input" class="sr-only">Email address</label>
+          <input type="email" id="email-input" name="email" placeholder="Enter your email" required aria-required="true">
+          <button type="submit" aria-label="Subscribe to newsletter">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2026 QuillAI, Inc. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#" aria-label="Privacy Policy">Privacy Policy</a>
+          <a href="#" aria-label="Terms of Service">Terms of Service</a>
+          <a href="#contact" aria-label="Contact us">Contact</a>
+        </div>
+        <div class="social-icons">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">LinkedIn</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+```

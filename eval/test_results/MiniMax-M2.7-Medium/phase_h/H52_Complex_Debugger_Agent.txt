@@ -1,0 +1,81 @@
+
+
+```json
+{"bugs": [
+  {
+    "line": "8",
+    "bug": "self.requests = [] - Initialization is correct, but the rate limiter doesn't track time windows properly. The logic should use a deque for O(1) operations and properly track timestamps for rate limiting.",
+    "fix": "Use collections.deque with maxlen for efficient sliding window rate limiting"
+  },
+  {
+    "line": "11",
+    "bug": "asyncio.get_event_loop().time() - Uses deprecated get_event_loop() which may raise RuntimeError in Python 3.10+ when no running loop exists",
+    "fix": "Use asyncio.get_running_loop().time() instead"
+  },
+  {
+    "line": "25",
+    "bug": "Creating a new aiohttp.ClientSession() for each fetch_one call - This is highly inefficient; sessions should be reused across requests",
+    "fix": "Pass a shared session to fetch_one or create session once outside the inner function"
+  },
+  {
+    "line": "27",
+    "bug": "timeout=30 - aiohttp expects a ClientTimeout object, not an integer for the timeout parameter",
+    "fix": "Use timeout=aiohttp.ClientTimeout(total=30) or timeout=aiohttp.ClientTimeout(sock_read=30)"
+  },
+  {
+    "line": "29",
+    "bug": "results[url] = data - Race condition: multiple concurrent coroutines writing to shared dict without synchronization",
+    "fix": "Use asyncio.Lock to protect writes: async with lock: results[url] = data"
+  },
+  {
+    "line": "31",
+    "bug": "Bare except Exception catches everything including KeyboardInterrupt and SystemExit, masking serious errors",
+    "fix": "Catch specific exceptions: except (aiohttp.ClientError, asyncio.TimeoutError) as e"
+  },
+  {
+    "line": "32",
+    "bug": "Redundant pass statement after setting results[url] = None serves no purpose",
+    "fix": "Remove the pass statement or add logging before it"
+  },
+  {
+    "line": "35",
+    "bug": "await asyncio.gather(*tasks) - By default, gather cancels and raises exception on first task failure; partial results are lost",
+    "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) to capture all results"
+  },
+  {
+    "line": "42",
+    "bug": "task = process_item(item) - process_item is an async function; calling without await returns a coroutine object, not a task",
+    "fix": "Use task = asyncio.create_task(process_item(item)) or await process_item(item) directly"
+  },
+  {
+    "line": "45",
+    "bug": "yield r inside asyncio.gather context - gather expects awaitables, not a generator; yield won't work correctly with gather",
+    "fix": "Either return a list from process_batch or use async iteration pattern outside gather"
+  },
+  {
+    "line": "52",
+    "bug": "self.pool = [] - Empty pool with no connections pre-created; connections are only created on-demand, causing latency spikes",
+    "fix": "Pre-initialize pool: for _ in range(size): self.pool.append(await self.create_connection())"
+  },
+  {
+    "line": "60",
+    "bug": "self.pool.append(conn) - No size limit check; releasing more connections than pool size causes unbounded memory growth",
+    "fix": "Check size before appending: if len(self.pool) < self.size: self.pool.append(conn)"
+  },
+  {
+    "line": "63",
+    "bug": "return object() - Returns a generic placeholder object instead of a real connection; no actual network connection is created",
+    "fix": "Implement actual connection creation logic (e.g., asyncpg pool, aiohttp TCPConnector, etc.)"
+  },
+  {
+    "line": "68",
+    "bug": "len(results) may not equal len(urls) due to race conditions and unhandled exceptions; print output could be misleading",
+    "fix": "Use a counter with lock or validate results count matches expected URLs before printing"
+  },
+  {
+    "line": "17",
+    "bug": "RateLimiter allows 10 concurrent requests (semaphore=10) but only 100/60≈1.67 per second; max_concurrent setting is incompatible with rate limit, causing slowdowns",
+    "fix": "Adjust semaphore or rate limit: semaphore = asyncio.Semaphore(100) to match rate limiter capacity"
+  }
+], "count": 15}
+```

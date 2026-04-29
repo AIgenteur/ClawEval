@@ -1,0 +1,89 @@
+
+
+def is_valid_password(password):
+    # Basic type check
+    if not isinstance(password, str):
+        return False
+
+    n = len(password)
+
+    # Length constraints
+    if n < 8 or n > 64:
+        return False
+
+    # No spaces allowed
+    if ' ' in password:
+        return False
+
+    # Cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Flags for required character categories
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+    special_chars = "!@#$%^&*()-_+="
+
+    i = 0
+    while i < n:
+        ch = password[i]
+
+        # Update category flags
+        if ch.isupper():
+            has_upper = True
+        elif ch.islower():
+            has_lower = True
+        elif ch.isdigit():
+            has_digit = True
+
+        if ch in special_chars:
+            has_special = True
+
+        # Check for more than three consecutive identical characters
+        run_len = 1
+        j = i + 1
+        while j < n and password[j] == ch:
+            run_len += 1
+            j += 1
+        if run_len > 3:
+            return False
+
+        i = j  # Move to the end of the current run
+
+    # Ensure all required categories are present
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    # Disallow the word "password" (case‑insensitive)
+    if "password" in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Aa1!bcDe", True),                                           # valid
+        ("Ab1!a", False),                                            # too short
+        ("A" * 65, False),                                           # too long
+        ("ab1!cdefg", False),                                        # missing uppercase
+        ("AB1!CDEFG", False),                                        # missing lowercase
+        ("Abcdef!G", False),                                          # missing digit
+        ("AbcdefG1", False),                                         # missing special
+        ("Abc1! def", False),                                        # contains space
+        ("1Abcdef!", False),                                         # starts with digit
+        ("Abc1111!", False),                                         # >3 identical chars
+        ("AbcPassWord1!", False),                                    # contains "password"
+        ("Password1!abc", False),                                    # contains "password"
+        ("ABCpassWord1!", False),                                    # contains "password"
+        ("Aa1!bcdeAa1!bcdeAa1!bcdeAa1!bcdeAa1!bcdeAa1!bcdeAa1!bcdeAa1!bcde", True),  # 64‑char valid
+        ("Aa0!xyzA", True),                                          # valid 8‑char password
+    ]
+
+    result = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        result.append((pwd, expected, actual))
+    return result

@@ -1,0 +1,20 @@
+{
+  "issues": [
+    {"line": "17", "issue": "Image tag 'latest' used for container 'api' - prevents deterministic deployments and may cause unexpected version changes", "severity": "major"},
+    {"line": "25", "issue": "Plain-text secret 'DB_PASSWORD' stored in environment variable - exposes sensitive credentials in the manifest", "severity": "critical"},
+    {"line": "27", "issue": "Plain-text secret 'API_KEY' stored in environment variable - exposes sensitive credentials in the manifest", "severity": "critical"},
+    {"line": "22", "issue": "Container runs as root (runAsRoot: true) - violates principle of least privilege and can lead to privilege escalation", "severity": "critical"},
+    {"line": "23", "issue": "Container is privileged (privileged: true) - gives the container full host access, a severe security risk", "severity": "critical"},
+    {"line": "20", "issue": "Resource requests/limits are empty for container 'api' - may lead to resource contention and uncontrolled scheduling", "severity": "major"},
+    {"line": "36", "issue": "Sidecar container 'logger' requests an unrealistic 10Gi memory - likely to cause scheduling failures and resource waste", "severity": "major"},
+    {"line": "41", "issue": "hostPath volume points to /tmp/data on the host - insecure and may be overwritten or used for host compromise", "severity": "major"},
+    {"line": "30", "issue": "Volume mount for 'data-vol' is not read‑only - container can modify host filesystem, increasing attack surface", "severity": "major"},
+    {"line": "48", "issue": "Service type LoadBalancer exposed without source IP restrictions - allows traffic from any IP, increasing exposure", "severity": "major"},
+    {"line": "15", "issue": "No readinessProbe or livenessProbe defined for containers - may route traffic to pods that are not ready", "severity": "major"},
+    {"line": "6", "issue": "Deployment has only a single replica (replicas: 1) - no high availability; creates a single point of failure", "severity": "major"},
+    {"line": "5", "issue": "Missing PodDisruptionBudget - no guarantee of availability during voluntary disruptions such as node drains", "severity": "minor"},
+    {"line": "46", "issue": "Service name 'web-api' duplicates the Deployment name - may cause confusion and potential selector collisions in tooling", "severity": "minor"},
+    {"line": "50", "issue": "Service port definition lacks a name (only port number is set) - reduces clarity for debugging and service mesh policies", "severity": "minor"}
+  ],
+  "count": 15
+}

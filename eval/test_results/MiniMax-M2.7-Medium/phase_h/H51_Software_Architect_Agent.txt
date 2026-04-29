@@ -1,0 +1,35 @@
+
+
+```json
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) - Use Yjs or Automerge library. CRDTs provide automatic conflict resolution without central coordination, support true offline editing with eventual consistency, and scale better than OT for distributed teams. OT requires central transformation server; CRDTs are peer-to-peer friendly and handle network partitions gracefully.",
+  
+  "q2": "WebSocket - Bidirectional, lower latency for frequent editor changes, better for high-frequency cursor updates. SSE is simpler but unidirectional (client cannot send through same connection). WebSocket's overhead is minimal with keep-alive; chosen for real-time collaborative editing where both directions are equally active.",
+  
+  "q3": "MongoDB - Native document store matches document structure (JSON-like), supports flexible schema for different content types (text, images, tables), handles large documents with GridFS for blobs, horizontal sharding for scale. PostgreSQL with JSONB is viable alternative but MongoDB's document model aligns better with collaborative editing data structures.",
+  
+  "q4": "Local-first architecture with IndexedDB persistence, operation queue for pending changes, periodic local snapshots, sync on reconnect using CRDT merge. Implement exponential backoff reconnection with CRDT-based conflict resolution. Use Service Workers for background sync when connectivity returns.",
+  
+  "q5": "Redis Pub/Sub with Redis Streams for persistence - ultra-low latency (<1ms) for real-time document sync, supports fan-out to multiple WebSocket servers, horizontal scaling via clustering. Kafka is overkill for real-time sync but valuable for audit/analytics. Redis handles both real-time delivery and room-based pub/sub.",
+  
+  "q6": "Consistent hashing ring for document room routing, sticky sessions via Redis with 5-minute TTL, dedicated WebSocket servers per document cluster. Each document session assigned to specific server using hash(document_id) % servers. Redis adapter broadcasts changes to all servers managing same document room.",
+  
+  "q7": "WebSocket broadcast with 50ms throttle, store in Redis sorted set (user_id -> cursor_position as JSON), garbage collect stale cursors on server. Client interpolates positions for smooth movement. Include selection ranges alongside cursor positions. Use presence protocol for online status.",
+  
+  "q8": "JWT (access tokens, 15-min expiry) + Refresh tokens (7-day, stored in httpOnly cookie), OAuth 2.0 for SSO providers. JWT contains user_id, permissions, document access list. RBAC with document-level permissions (owner, editor, commenter, viewer). Short-lived tokens reduce security exposure.",
+  
+  "q9": "Hybrid approach: periodic snapshots (every 100 ops or 5 min) stored as compressed JSON + operation log. Reconstruction by replaying ops from nearest snapshot. PostgreSQL with version column for optimistic locking, or dedicated version store with operation compression. Prune old versions beyond retention threshold (e.g., keep 30 days of detailed history).",
+  
+  "q10": "Edge caching for app shell, JS bundles, CSS (immutable with hash filenames). Static assets with long TTL (1 year), bust cache on deploy. HTML document shells not cached (dynamic). Serve fonts from CDN, inline critical CSS. Use Cloudflare/Fastly with stale-while-revalidate for high availability.",
+  
+  "q11": "Virtual DOM rendering (only render visible viewport + buffer), lazy loading of document sections, chunked save (10KB ops), background autosave with debouncing. Server-side pagination with cursor-based pagination. Compression (gzip/brotli) for wire transfer. Protobuf for efficient binary encoding of operations.",
+  
+  "q12": "Token bucket per user (100 req/sec) + sliding window per document (50 ops/sec per doc). Redis-based distributed rate limiter at API gateway. Circuit breaker pattern for abuse protection. Separate limits for read vs write operations. Client-side exponential backoff with jitter.",
+  
+  "q13": "Continuous archiving to S3/GCS with point-in-time recovery, 3-2-1 strategy (3 copies, 2 different media, 1 offsite). MongoDB oplog for incremental backup. Daily full snapshots, hourly incremental. Cross-region replication for disaster recovery. Version snapshots retained 90 days, archives in cold storage after.",
+  
+  "q14": "Presigned S3 URLs for direct browser-to-storage upload (bypasses app server). Multipart upload for large files. Store metadata in separate DB collection. Background job queue (Redis + Bull) for thumbnail generation. Idempotency key prevents duplicate processing. Concurrent uploads per document limited via semaphore.",
+  
+  "q15": "Prometheus + Grafana (metrics), Jaeger/Zipkin (distributed tracing), ELK/Loki (centralized logging), Sentry (error tracking). Custom dashboards: DAU, documents edited, WebSocket connections, op sync latency, conflict resolution rate. P99 latency alerts, error rate thresholds, autoscaling triggers based on queue depth."
+}
+```
