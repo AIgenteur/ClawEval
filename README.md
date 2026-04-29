@@ -166,6 +166,20 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 
 ---
 
+### 🧪 TurboQuant KV-Cache Experiment (Local · RTX 3090)
+
+> **What is this?** [TurboQuant](https://arxiv.org/abs/2504.19874) compresses the attention KV cache from 8-bit (`q8_0`) down to 2/3/4-bit using Walsh–Hadamard + Lloyd–Max quantization. **Model weights are untouched** — only the KV cache changes. This trades a small amount of precision for massive context expansion (e.g. 53K → 262K on the same 24GB GPU).
+
+These runs are kept **separate from the main leaderboard** because the variable being studied is KV-cache precision, not model capability. Compare each row against its baseline in the main table above.
+
+| Model | KV Mode | Context | Score | % | Baseline | Δ |
+|-------|---------|---------|-------|---|----------|---|
+| Gemma-4-31B | turbo3 (3-bit) | 262K | _running_ | — | 76.0% (q8₀, 53K) | — |
+
+> Full methodology: **[TurboQuant Experiment →](docs/results-turboquant.md)**
+
+---
+
 ## 🔬 Phase H — Dense Constraint Leaderboard (v1 · 53 tests)
 
 53 tests · 1,100 checkpoints · 30–50 checkpoints per test. **Baseline: Qwen3.6-35B-A3B — 871/1100 (79.2%)**
