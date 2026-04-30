@@ -165,7 +165,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 27 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
 | 28 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
 
-> All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)**
+> All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)** · **[RTX 3090 24GB Guide →](docs/results-rtx3090-24gb.md)**
 
 ---
 
