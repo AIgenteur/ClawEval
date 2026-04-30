@@ -157,11 +157,12 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 19 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
 | 20 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
 | 21 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 22 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 23 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 24 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 25 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 26 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 21 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 906/1220 | **74.3%** | 18 |
+| 23 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 24 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 25 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 26 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 27 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
 
 > All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)**
 

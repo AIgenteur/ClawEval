@@ -1,0 +1,137 @@
+**Python code**
+
+```python
+class JSONValidator:
+    """
+    Validates a JSON‑like Python data structure against a simple schema.
+
+    Schema format (dict):
+        {
+            "field_name": {
+                "type": "str|int|float|bool|list|dict",
+                "required": true|false,
+                "min": N,            # numeric only
+                "max": N,            # numeric only
+                "min_length": N,     # strings or lists
+                "max_length": N      # strings or lists
+            },
+            ...
+        }
+
+    The validator checks:
+        • presence of required fields,
+        • correct Python type,
+        • numeric limits (min / max) for int / float,
+        • length limits (min_length / max_length) for str / list,
+        • list length limits for list.
+
+    Extra fields that are not described in the schema are ignored.
+    All errors are collected and returned.
+    """
+
+    # Mapping from schema type string to the corresponding Python type
+    _TYPE_MAP = {
+        "str": str,
+        "int": int,
+        "float": float,
+        "bool": bool,
+        "list": list,
+        "dict": dict,
+    }
+
+    def validate(self, data, schema):
+        """
+        Validate *data* against *schema*.
+
+        Parameters
+        ----------
+        data : dict
+            The JSON‑like data to validate.
+        schema : dict
+            Description of the expected structure.
+
+        Returns
+        -------
+        dict
+            {"valid": True/False, "errors": [list of error messages]}
+        """
+        errors = []
+
+        for field_name, field_def in schema.items():
+            # ----- 1. Presence check -------------------------------------------------
+            if field_name not in data:
+                if field_def.get("required", False):
+                    errors.append(f"Field '{field_name}' is required but missing.")
+                # required = false → nothing more to check for this field
+                continue
+
+            value = data[field_name]
+            expected_type = self._TYPE_MAP.get(field_def.get("type"))
+            if expected_type is None:
+                # Unknown type – treat as error (should not happen with correct schema)
+                errors.append(f"Field '{field_name}' has unknown type '{field_def.get('type')}'.")
+                continue
+
+            # ----- 2. Type check ------------------------------------------------------
+            if not isinstance(value, expected_type):
+                # Special case for bool because bool is a subclass of int
+                if expected_type is bool and isinstance(value, int):
+                    errors.append(
+                        f"Field '{field_name}' has wrong type (expected bool, got int)."
+                    )
+                else:
+                    errors.append(
+                        f"Field '{field_name}' has wrong type, expected {expected_type.__name__}, got {type(value).__name__}."
+                    )
+                # Type mismatch – skip further checks for this field
+                continue
+
+            # ----- 3. Constraint checks (numeric / length) ---------------------------
+            # Helper to compare numeric values
+            def _check_num(val, lo, hi):
+                if lo is not None and val < lo:
+                    errors.append(f"Field '{field_name}' is less than min {lo}.")
+                if hi is not None and val > hi:
+                    errors.append(f"Field '{field_name}' is greater than max {hi}.")
+
+            # Numeric types (int / float)
+            if expected_type in (int, float):
+                if "min" in field_def:
+                    _check_num(value, field_def["min"], None)
+                if "max" in field_def:
+                    _check_num(value, None, field_def["max"])
+
+            # String type
+            elif expected_type is str:
+                if "min_length" in field_def and len(value) < field_def["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {len(value)} is less than min_length {field_def['min_length']}."
+                    )
+                if "max_length" in field_def and len(value) > field_def["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {len(value)} exceeds max_length {field_def['max_length']}."
+                    )
+
+            # List type
+            elif expected_type is list:
+                if "min_length" in field_def and len(value) < field_def["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {len(value)} is less than min_length {field_def['min_length']}."
+                    )
+                if "max_length" in field_def and len(value) > field_def["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {len(value)} exceeds max_length {field_def['max_length']}."
+                    )
+
+            # Dict type – no extra constraints defined in the spec
+
+        return {"valid": len(errors) == 0, "errors": errors}
+```
+
+**Explanation of the implementation**
+
+* **Type mapping** – a dictionary translates the schema’s `"type"` strings to the corresponding Python types.
+* **Presence check** – if a field is missing and marked `"required": true`, an error is recorded.
+* **Type validation** – `isinstance` is used; for `bool` we explicitly guard against the `bool`‑as‑`int` pitfall.
+* **Constraint handling** – after the type is confirmed, the code checks the numeric (`min`, `max`) and length (`min_length`, `max_length`) constraints that are relevant for the detected type.
+* **Error collection** – every problem found is appended to the `errors` list; the final result reports whether the data is valid and returns all collected messages.

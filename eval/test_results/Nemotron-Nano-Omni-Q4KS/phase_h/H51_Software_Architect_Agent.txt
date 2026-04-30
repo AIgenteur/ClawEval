@@ -1,0 +1,17 @@
+{
+  "q1": "CRDT (Conflict‑free Replicated Data Type) – e.g., LWW‑Transform or OR‑DT",
+  "q2": "WebSocket (full‑duplex, low‑latency) – SSE is simpler but unidirectional, so WebSocket is preferred for real‑time bidirectional sync",
+  "q3": "CockroachDB (distributed SQL with strong consistency and horizontal scalability)",
+  "q4": "Client‑side buffer using a local CRDT replica; persist edits in IndexedDB and replay them when the network is restored, merging with the server state on reconnection",
+  "q5": "Kafka (distributed log) – provides durable, ordered event streams for real‑time collaboration messages",
+  "q6": "Stateless WebSocket servers behind a load balancer with session affinity, and a shared Pub/Sub (e.g., Redis) to broadcast operations to all instances",
+  "q7": "Broadcast cursor deltas as CRDT awareness events; each client updates its local awareness map and reconciles positions using the same CRDT",
+  "q8": "OAuth 2.0 with OpenID Connect, issuing short‑lived JWT access tokens for API authentication",
+  "q9": "Append‑only log of operation entries (or snapshots) stored in the database, each with a monotonically increasing version ID and timestamp; periodic snapshots enable point‑in‑time recovery",
+  "q10": "Serve static assets through a global CDN (e.g., Cloudflare) with long cache‑TTL and versioned URLs for cache busting",
+  "q11": "Chunk the document into independently versioned page fragments (e.g., 10‑page chunks) and use lazy/virtual scrolling; CRDT operations target the relevant fragment, keeping memory usage low",
+  "q12": "Token‑bucket rate limiting enforced at the API gateway (e.g., Envoy/NGINX) with per‑user and per‑IP quotas, backed by Redis for distributed state",
+  "q13": "Automated daily incremental snapshots to encrypted object storage (e.g., S3) with cross‑region replication, complemented by point‑in‑time recovery logs",
+  "q14": "Use multipart upload to object storage with client‑side chunking; a dedicated upload service validates tokens and stores each part, then notifies the document service via the message bus",
+  "q15": "Prometheus for metrics, Grafana dashboards, Loki for logs, Jaeger (or OpenTelemetry) for distributed tracing, and Alertmanager for alerts"
+}

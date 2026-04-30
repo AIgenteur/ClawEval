@@ -1,0 +1,75 @@
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Using a plain list for request timestamps causes O(n) filtering and poor performance.",
+      "fix": "Replace self.requests with collections.deque for efficient popleft and append."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop().time() can raise RuntimeError when no running loop exists.",
+      "fix": "Use asyncio.get_running_loop().time() (or loop.time()) instead."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession for each request leaks resources and is inefficient.",
+      "fix": "Create a single ClientSession in fetch_all and reuse it across requests."
+    },
+    {
+      "line": "27",
+      "bug": "Timeout argument should be aiohttp.ClientTimeout(total=30) rather than a plain integer.",
+      "fix": "Pass timeout=aiohttp.ClientTimeout(total=30) to session.get."
+    },
+    {
+      "line": "29",
+      "bug": "Parsing JSON without checking HTTP status may raise on non‑200 responses.",
+      "fix": "Verify response.status == 200 before calling response.json()."
+    },
+    {
+      "line": "31",
+      "bug": "Swallowing exceptions and setting results[url] = None hides errors.",
+      "fix": "Log the exception or re‑raise it instead of silently setting None."
+    },
+    {
+      "line": "32",
+      "bug": "Redundant 'pass' after handling exception does nothing and can be misleading.",
+      "fix": "Remove the pass statement or handle the exception appropriately."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather may cancel remaining tasks on first exception; missing return_exceptions.",
+      "fix": "Call await asyncio.gather(*tasks, return_exceptions=True)."
+    },
+    {
+      "line": "42",
+      "bug": "process_item is called but not awaited, so the coroutine never runs.",
+      "fix": "Either await process_item(item) or create a task: task = asyncio.create_task(process_item(item))."
+    },
+    {
+      "line": "45",
+      "bug": "Using yield inside an async def is a syntax error.",
+      "fix": "Replace yield with return or change the function to a regular (non‑async) generator."
+    },
+    {
+      "line": "52",
+      "bug": "self.pool is initialized as a list, which is inefficient for pop operations.",
+      "fix": "Initialize self.pool as collections.deque() for O(1) pop."
+    },
+    {
+      "line": "60",
+      "bug": "Releasing a connection without protecting the pool can cause race conditions and unbounded growth.",
+      "fix": "Guard pool modifications with asyncio.Lock and enforce a maximum pool size."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection returns a dummy object instead of a real connection.",
+      "fix": "Return an actual connection object (e.g., aiohttp.ClientSession or a custom connector)."
+    },
+    {
+      "line": "68",
+      "bug": "main() is never awaited, so the program exits before async work completes.",
+      "fix": "Wrap the call with asyncio.run(main())."
+    }
+  ],
+  "count": 15
+}

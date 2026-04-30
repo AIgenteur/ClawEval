@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Analyze monolith and define microservice boundaries",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Set up version control repository and initial project structure",
+      "depends_on": [1],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 3,
+      "task": "Design database schema for each microservice",
+      "depends_on": [1],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 4,
+      "task": "Provision infrastructure (VMs, networking) for microservices",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Configure CI pipeline for building and testing",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Create initial QA test plan and environment setup",
+      "depends_on": [],
+      "effort_days": 3,
+      "team": "qa"
+    },
+    {
+      "id": 7,
+      "task": "Implement service A (core business logic) in Django",
+      "depends_on": [3, 5],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Develop frontend UI for service A",
+      "depends_on": [7, 2],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 9,
+      "task": "Containerize service A and create Docker image",
+      "depends_on": [7, 4],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 10,
+      "task": "Write unit and integration tests for service A",
+      "depends_on": [7, 6],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 11,
+      "task": "Set up API Gateway and routing rules",
+      "depends_on": [9, 5],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 12,
+      "task": "Implement service B (user management) in Django",
+      "depends_on": [3, 11],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 13,
+      "task": "Develop frontend UI for service B",
+      "depends_on": [12, 8],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 14,
+      "task": "Migrate database schema and data for service B",
+      "depends_on": [3, 12, 10],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 15,
+      "task": "Implement service C (order processing) in Django",
+      "depends_on": [3, 11, 9],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 16,
+      "task": "Develop frontend UI for service C",
+      "depends_on": [15, 8],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 17,
+      "task": "Set up monitoring, logging, and alerting",
+      "depends_on": [9, 11, 5],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 18,
+      "task": "Write end-to-end tests for critical user flows",
+      "depends_on": [7, 12, 15, 10],
+      "effort_days": 6,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Perform performance tuning and load testing",
+      "depends_on": [18, 17],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Deploy to production and conduct final validation",
+      "depends_on": [19, 17, 18],
+      "effort_days": 4,
+      "team": "qa"
+    }
+  ]
+}
