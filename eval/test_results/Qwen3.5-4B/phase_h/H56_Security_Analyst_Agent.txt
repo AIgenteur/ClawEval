@@ -1,0 +1,80 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "Hardcoded Secret Key",
+      "location": "Line 5 (SECRET = \"admin123\")",
+      "severity": "critical"
+    },
+    {
+      "type": "SQL Injection",
+      "location": "Line 14 (login function query construction)",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Password Hashing",
+      "location": "Line 17 (hashlib.md5)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "Line 30 (subprocess.run with shell=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "Line 62 (os.system)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "Line 45 (yaml.load)",
+      "severity": "high"
+    },
+    {
+      "type": "Unsafe Pickle Deserialization",
+      "location": "Line 50 (pickle.loads)",
+      "severity": "critical"
+    },
+    {
+      "type": "Arbitrary File Upload",
+      "location": "Line 36 (f.save)",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "Line 41 (send_file)",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "Line 26 (search function return)",
+      "severity": "medium"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "Line 21 (profile function template)",
+      "severity": "medium"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "Line 65 (app.run debug=True)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Authentication",
+      "location": "Line 20 (profile route)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Authentication",
+      "location": "Line 55 (admin route check)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Input Validation",
+      "location": "Line 11 (login function username)",
+      "severity": "low"
+    }
+  ],
+  "count": 15
+}
