@@ -1,0 +1,22 @@
+```json
+{
+  "issues": [
+    {"line": "6", "issue": "Single replica (replicas: 1) lacks high availability and fault tolerance.", "severity": "minor"},
+    {"line": "17", "issue": "Using ':latest' tag leads to unpredictable deployments and hinders reliable rollbacks.", "severity": "major"},
+    {"line": "20", "issue": "Empty resources block means no CPU/memory requests or limits, risking node instability and OOM kills.", "severity": "major"},
+    {"line": "22", "issue": "Invalid field 'runAsRoot'; causes validation failure. Should be 'runAsNonRoot' or 'runAsUser'.", "severity": "critical"},
+    {"line": "23", "issue": "Privileged container grants full host access, violating security least-privilege principles.", "severity": "critical"},
+    {"line": "26", "issue": "Hardcoded database password in plain text within the manifest.", "severity": "critical"},
+    {"line": "28", "issue": "Hardcoded API key in plain text within the manifest.", "severity": "critical"},
+    {"line": "36", "issue": "Excessive memory request (10Gi) for a logger sidecar, likely causing scheduling failures.", "severity": "major"},
+    {"line": "37", "issue": "Excessive CPU request (8 cores) for a sidecar container.", "severity": "major"},
+    {"line": "41", "issue": "Using hostPath volume for stateful data is unsafe and not persistent across node failures.", "severity": "major"},
+    {"line": "16", "issue": "Missing livenessProbe and readinessProbe for the 'api' container.", "severity": "major"},
+    {"line": "32", "issue": "Missing livenessProbe and readinessProbe for the 'sidecar' container.", "severity": "minor"},
+    {"line": "34", "issue": "Missing resource limits for the 'sidecar' container (only requests are defined).", "severity": "major"},
+    {"line": "15", "issue": "Missing explicit imagePullPolicy specification for containers.", "severity": "minor"},
+    {"line": "48", "issue": "LoadBalancer service missing externalTrafficPolicy, which can cause health check routing issues.", "severity": "minor"}
+  ],
+  "count": 15
+}
+```

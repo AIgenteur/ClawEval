@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {"id": 1, "task": "Architecture design and service boundary definition", "depends_on": [], "effort_days": 5, "team": "backend"},
+    {"id": 2, "task": "CI/CD pipeline setup for microservices", "depends_on": [1], "effort_days": 6, "team": "devops"},
+    {"id": 3, "task": "Database migration strategy and schema design", "depends_on": [1], "effort_days": 5, "team": "backend"},
+    {"id": 4, "task": "API gateway setup and routing configuration", "depends_on": [2], "effort_days": 5, "team": "devops"},
+    {"id": 5, "task": "Core service extraction for user authentication", "depends_on": [3], "effort_days": 7, "team": "backend"},
+    {"id": 6, "task": "Frontend adaptation for microservice endpoints", "depends_on": [4], "effort_days": 6, "team": "frontend"},
+    {"id": 7, "task": "QA test environment setup and automation framework", "depends_on": [2], "effort_days": 5, "team": "qa"},
+    {"id": 8, "task": "Data migration script development", "depends_on": [3], "effort_days": 6, "team": "backend"},
+    {"id": 9, "task": "Service communication protocol setup", "depends_on": [5], "effort_days": 5, "team": "backend"},
+    {"id": 10, "task": "Secondary service extraction for order processing", "depends_on": [5], "effort_days": 7, "team": "backend"},
+    {"id": 11, "task": "Frontend integration with new microservice APIs", "depends_on": [6], "effort_days": 6, "team": "frontend"},
+    {"id": 12, "task": "Testing tasks for extracted microservices", "depends_on": [7, 9], "effort_days": 5, "team": "qa"},
+    {"id": 13, "task": "Performance and load testing", "depends_on": [12], "effort_days": 6, "team": "qa"},
+    {"id": 14, "task": "Monitoring and logging infrastructure setup", "depends_on": [4], "effort_days": 5, "team": "devops"},
+    {"id": 15, "task": "Frontend security compliance and accessibility audit", "depends_on": [12], "effort_days": 5, "team": "frontend"},
+    {"id": 16, "task": "Staging deployment and integration testing", "depends_on": [10, 14], "effort_days": 5, "team": "devops"},
+    {"id": 17, "task": "Production readiness review and rollback planning", "depends_on": [13, 15], "effort_days": 4, "team": "backend"},
+    {"id": 18, "task": "Blue-green deployment execution", "depends_on": [16, 17], "effort_days": 4, "team": "devops"},
+    {"id": 19, "task": "Post-migration monitoring and alert configuration", "depends_on": [18], "effort_days": 4, "team": "devops"},
+    {"id": 20, "task": "Final validation and project handover", "depends_on": [18, 19], "effort_days": 5, "team": "qa"}
+  ]
+}

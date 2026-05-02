@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Using a list for `self.requests` is inefficient for frequent left-side removals in a sliding window rate limiter.",
+      "fix": "Use `collections.deque()` for O(1) popleft operations."
+    },
+    {
+      "line": "11",
+      "bug": "`asyncio.get_event_loop().time()` is deprecated in Python 3.10+ and may raise a DeprecationWarning or fail in newer environments.",
+      "fix": "Replace with `asyncio.get_running_loop().time()`."
+    },
+    {
+      "line": "15",
+      "bug": "`wait` can evaluate to <= 0 if requests arrive exactly at the boundary, causing `asyncio.sleep()` to raise a ValueError.",
+      "fix": "Add a guard: `if wait > 0: await asyncio.sleep(wait)`."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new `aiohttp.ClientSession` inside the loop per request causes resource leaks, port exhaustion, and defeats connection pooling.",
+      "fix": "Create the session once outside the loop or use a shared session context manager."
+    },
+    {
+      "line": "27",
+      "bug": "`timeout=30` passes a raw integer, which is deprecated in favor of explicit timeout objects in modern aiohttp.",
+      "fix": "Use `timeout=aiohttp.ClientTimeout(total=30)`."
+    },
+    {
+      "line": "27",
+      "bug": "Missing HTTP status check before parsing JSON. Non-200 responses will either raise on `.json()` or return invalid data.",
+      "fix": "Add `await response.raise_for_status()` before `.json()`."
+    },
+    {
+      "line": "29",
+      "bug": "Concurrent writes to the shared `results` dictionary can cause race conditions in non-CPython async implementations.",
+      "fix": "Protect writes with an `asyncio.Lock()` or use `results.setdefault()` with a lock."
+    },
+    {
+      "line": "31",
+      "bug": "`except Exception:` is too broad and catches unexpected errors like `MemoryError` or `SystemExit`.",
+      "fix": "Catch specific network errors: `except aiohttp.ClientError:`."
+    },
+    {
+      "line": "32",
+      "bug": "`pass` silently swallows all errors, making debugging impossible and hiding failed requests.",
+      "fix": "Replace with `logging.exception(f"Failed to fetch {url}")` or re-raise."
+    },
+    {
+      "line": "35",
+      "bug": "`asyncio.gather(*tasks)` stops and raises on the first exception, ignoring remaining results.",
+      "fix": "Add `return_exceptions=True` to `asyncio.gather()`."
+    },
+    {
+      "line": "42",
+      "bug": "`task = process_item(item)` creates a coroutine object, not a scheduled task. While `gather` accepts coroutines, it's inconsistent with async best practices.",
+      "fix": "Use `task = asyncio.create_task(process_item(item))`."
+    },
+    {
+      "line": "45",
+      "bug": "`process_batch` is an async generator but lacks documentation/context on how to consume it. Callers must use `async for`, which isn't shown.",
+      "fix": "Document usage or wrap in `async for r in process_batch(items):` in the caller."
+    },
+    {
+      "line": "52",
+      "bug": "`self.size` is initialized but never enforced, allowing the pool to grow unbounded and defeat the purpose of a fixed-size pool.",
+      "fix": "Check `len(self.pool) < self.size` before creating new connections."
+    },
+    {
+      "line": "60",
+      "bug": "`self.pool.append(conn)` blindly appends without checking pool capacity, potentially exceeding `self.size`.",
+      "fix": "Add capacity check: `if len(self.pool) < self.size: self.pool.append(conn)`."
+    },
+    {
+      "line": "63",
+      "bug": "`return object()` returns a generic dummy object that lacks connection methods, causing `AttributeError` when used as a real connection.",
+      "fix": "Return a proper mock/connection object or implement actual connection logic."
+    }
+  ],
+  "count": 15
+}
+```

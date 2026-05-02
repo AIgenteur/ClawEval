@@ -1,0 +1,79 @@
+{
+  "agents": [
+    {
+      "name": "validation_agent",
+      "input": "customer_refund_request",
+      "output": "validated_request",
+      "next": "fraud_check_agent",
+      "fallback": "error_handler",
+      "timeout": 3,
+      "audit_log": true
+    },
+    {
+      "name": "fraud_check_agent",
+      "input": "validated_request",
+      "output": "fraud_assessment",
+      "next": "approval_agent",
+      "fallback": "error_handler",
+      "timeout": 5,
+      "audit_log": true
+    },
+    {
+      "name": "approval_agent",
+      "input": "fraud_assessment",
+      "output": "approval_decision",
+      "next": "payment_agent",
+      "fallback": "error_handler",
+      "timeout": 3,
+      "routing": {
+        "approved": "payment_agent",
+        "rejected_or_edge_case": "human_escalation_agent"
+      },
+      "audit_log": true
+    },
+    {
+      "name": "payment_agent",
+      "input": "approval_decision",
+      "output": "payment_receipt",
+      "next": "notification_agent",
+      "fallback": "error_handler",
+      "timeout": 10,
+      "audit_log": true
+    },
+    {
+      "name": "human_escalation_agent",
+      "input": "fraud_assessment OR rejection_decision",
+      "output": "manual_review_ticket",
+      "next": "notification_agent",
+      "fallback": "error_handler",
+      "timeout": 15,
+      "audit_log": true
+    },
+    {
+      "name": "notification_agent",
+      "input": "payment_receipt OR manual_review_ticket",
+      "output": "customer_notification",
+      "next": null,
+      "fallback": "error_handler",
+      "timeout": 2,
+      "audit_log": true
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branch": true,
+    "fallback_per_agent": true,
+    "first_agent": "validation_agent",
+    "last_agent": "notification_agent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time_seconds": 60,
+    "expected_processing_time_seconds": 38,
+    "handles_approved_rejected": true,
+    "logging_audit_enabled": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_per_agent_seconds": [3, 5, 3, 10, 15, 2]
+  }
+}

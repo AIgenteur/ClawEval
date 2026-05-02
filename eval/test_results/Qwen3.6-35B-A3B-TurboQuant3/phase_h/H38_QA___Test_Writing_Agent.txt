@@ -1,0 +1,59 @@
+```python
+def is_valid_password(password):
+    if not isinstance(password, str):
+        return False
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if ' ' in password:
+        return False
+    if password[0].isdigit():
+        return False
+    if 'password' in password.lower():
+        return False
+
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+    special_chars = set("!@#$%^&*()-_+=")
+
+    consecutive_count = 1
+    for i, c in enumerate(password):
+        if c.isupper():
+            has_upper = True
+        if c.islower():
+            has_lower = True
+        if c.isdigit():
+            has_digit = True
+        if c in special_chars:
+            has_special = True
+
+        if i > 0 and c == password[i-1]:
+            consecutive_count += 1
+            if consecutive_count > 3:
+                return False
+        else:
+            consecutive_count = 1
+
+    return has_upper and has_lower and has_digit and has_special
+
+
+def run_tests():
+    return [
+        ("Str0ng!Pass", True, is_valid_password("Str0ng!Pass")),
+        ("Ab1!xYz", False, is_valid_password("Ab1!xYz")),
+        ("A"*8 + "B"*56 + "1!", False, is_valid_password("A"*8 + "B"*56 + "1!")),
+        ("str0ng!pass", False, is_valid_password("str0ng!pass")),
+        ("STR0NG!PASS", False, is_valid_password("STR0NG!PASS")),
+        ("StrongPass1", False, is_valid_password("StrongPass1")),
+        ("Strong!Pass", False, is_valid_password("Strong!Pass")),
+        ("Str 0ng!Pass", False, is_valid_password("Str 0ng!Pass")),
+        ("1Strong!Pass", False, is_valid_password("1Strong!Pass")),
+        ("AAAAB1!xYz", False, is_valid_password("AAAAB1!xYz")),
+        ("PassWord1!x", False, is_valid_password("PassWord1!x")),
+        ("Ab1!xYz2", True, is_valid_password("Ab1!xYz2")),
+        ("Ab1!xYz2"*8, True, is_valid_password("Ab1!xYz2"*8)),
+        ("AAAB1!xYz", True, is_valid_password("AAAB1!xYz")),
+        ("pAsSwOrD1!x", False, is_valid_password("pAsSwOrD1!x")),
+    ]
+```

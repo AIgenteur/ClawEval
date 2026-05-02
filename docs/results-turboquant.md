@@ -35,6 +35,17 @@ The variable being studied is **KV-cache precision**, not model capability. Turb
 
 > Note: This benchmark uses short prompts (Phase H tests are 8K–32K context). TurboQuant's impact may differ at longer contexts (>100K) where distant-token recall matters more.
 
+### Qwen3.6-35B-A3B (UD-Q4_K_M weights, MoE 3B active)
+
+| KV Mode | Context | Score | % | Avg t/s | Notes |
+|---------|---------|-------|---|---------|-------|
+| q8_0 (baseline) | 32,768 | 1029/1220 | 84.3% | 99.3 | Standard llama.cpp |
+| turbo3 (3-bit) | 262,144 | 976/1220 | 80.0% | 121.4 | TurboQuant fork — **−4.3% score, +22% speed for 8× context** |
+
+**Context expansion**: 32K → 262K = **8× improvement** on the same 24GB GPU.
+
+> MoE architecture shows a larger quality delta (−4.3%) than dense Gemma-4-31B (+7.1%), but gains a notable **+22% speed boost** — the smaller KV cache reduces memory bandwidth pressure. Zero infra errors, 4 tests scored 0% (all model failures: JSON parse + code naming).
+
 ## Methodology
 
 - Same 59 Phase H v2 tests, same scoring, same `run_phase_h.py` harness

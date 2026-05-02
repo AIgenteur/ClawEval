@@ -1,0 +1,22 @@
+```json
+{
+  "bugs": [
+    {"line": 13, "bug": "Applies 80% of subtotal instead of a 20% discount (should be * 0.80)", "severity": "critical"},
+    {"line": 15, "bug": "Subtracts 1000% of subtotal instead of 10% (should be * 0.10)", "severity": "critical"},
+    {"line": 25, "bug": "Silently allows negative inventory levels instead of raising an error or skipping", "severity": "major"},
+    {"line": 36, "bug": "=+ is not a valid augmented assignment; overwrites total_revenue with total instead of accumulating", "severity": "critical"},
+    {"line": 39, "bug": "Causes ZeroDivisionError if orders list is empty", "severity": "major"},
+    {"line": 40, "bug": "Causes ValueError if results list is empty", "severity": "major"},
+    {"line": 53, "bug": "Insufficient validation; accepts malformed emails like '@' or 'a@b'", "severity": "minor"},
+    {"line": 61, "bug": "Uses addition instead of multiplication for distance cost (should be distance * per_km)", "severity": "major"},
+    {"line": 66, "bug": "Unreachable code because weight > 30 already catches all heavier weights", "severity": "minor"},
+    {"line": 69, "bug": "Rounds to integer, losing decimal precision required for currency", "severity": "minor"},
+    {"line": 72, "bug": "Assigns reference instead of copying; mutations affect the original profile_a", "severity": "major"},
+    {"line": 76, "bug": "Hardcoded date instead of using current timestamp", "severity": "minor"},
+    {"line": 80, "bug": "Fails to parse CSV fields containing commas within quotes", "severity": "minor"},
+    {"line": 88, "bug": "Uses a list for seen, resulting in O(N^2) time complexity; should use a set", "severity": "minor"},
+    {"line": 42, "bug": "Return statement is indented inside the for loop, causing early return after processing only the first order", "severity": "critical"}
+  ],
+  "count": 15
+}
+```
