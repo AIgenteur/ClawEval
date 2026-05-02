@@ -150,7 +150,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 12 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
 | 13 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
 | 14 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
-| 15 | **MiniMax-M2.7 Think** | ☁️ Ollama | 978/1220 | **80.2%** | 18 |
+| 15 | **MiniMax-M2.7 Think** | ☁️ Ollama | 993/1220 | **81.4%** | 19 |
 | 16 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
 | 17 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
 | 18 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
