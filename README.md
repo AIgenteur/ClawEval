@@ -156,9 +156,9 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 18 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
 | 19 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
 | 20 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
-| 21 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 22 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 22 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 906/1220 | **74.3%** | 18 |
+| 21 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
+| 22 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 23 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
 | 24 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
 | 25 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
 | 26 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
