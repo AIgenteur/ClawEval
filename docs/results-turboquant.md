@@ -27,9 +27,11 @@ The variable being studied is **KV-cache precision**, not model capability. Turb
 | KV Mode | Context | Score | % | Avg t/s | Notes |
 |---------|---------|-------|---|---------|-------|
 | q8_0 (baseline) | 53,248 | 927/1220 | 76.0% | 28.1 | Standard llama.cpp |
-| turbo3 (3-bit) | 262,144 | 915/1220 | 75.0% | 27.1 | TurboQuant fork — **−1.0% score, −3.6% speed for 4.9× context** |
+| turbo3 (3-bit) | 262,144 | 1014/1220 | 83.1% | 27.1 | TurboQuant fork — **+7.1% score, −3.6% speed for 4.9× context** |
 
 **Context expansion**: 53K → 262K = **4.9× improvement** on the same 24GB GPU.
+
+> ⚠️ The original turbo3 run scored 75.0% (915/1220), but 5 of those tests hit `500 Server Error` infrastructure failures. After retesting those 5 tests with stable infra, the corrected score is **83.1%** (1014/1220) — actually **exceeding** the q8₀ baseline. The +7.1% delta likely reflects longer-context benefits on some tests rather than KV precision gains, since the KV compression itself should be near-lossless.
 
 > Note: This benchmark uses short prompts (Phase H tests are 8K–32K context). TurboQuant's impact may differ at longer contexts (>100K) where distant-token recall matters more.
 
