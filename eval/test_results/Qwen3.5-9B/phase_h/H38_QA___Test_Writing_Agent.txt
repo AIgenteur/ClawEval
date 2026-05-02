@@ -1,0 +1,86 @@
+```python
+def is_valid_password(password):
+    # Check length
+    if len(password) < 8 or len(password) > 64:
+        return False
+    
+    # Check for spaces
+    if ' ' in password:
+        return False
+    
+    # Check if starts with digit
+    if password and password[0].isdigit():
+        return False
+    
+    # Check for uppercase
+    has_upper = any(c.isupper() for c in password)
+    
+    # Check for lowercase
+    has_lower = any(c.islower() for c in password)
+    
+    # Check for digit
+    has_digit = any(c.isdigit() for c in password)
+    
+    # Check for special character
+    special_chars = '!@#$%^&*()-_+='
+    has_special = any(c in special_chars for c in password)
+    
+    # Check for consecutive identical characters (more than 3)
+    if len(password) >= 4:
+        for i in range(len(password) - 3):
+            if password[i] == password[i+1] == password[i+2] == password[i+3]:
+                return False
+    
+    # Check for "password" word (case-insensitive)
+    if 'password' in password.lower():
+        return False
+    
+    return has_upper and has_lower and has_digit and has_special
+
+
+def run_tests():
+    test_cases = [
+        # Valid passwords
+        ("Abc123!@#", True, True),
+        ("SecurePass1!", True, True),
+        ("MyP@ssw0rd1", True, True),
+        
+        # Invalid - too short
+        ("Abc123!", False, False),
+        
+        # Invalid - too long
+        ("A" * 65, False, False),
+        
+        # Invalid - no uppercase
+        ("abc123!@#", False, False),
+        
+        # Invalid - no lowercase
+        ("ABC123!@#", False, False),
+        
+        # Invalid - no digit
+        ("Abc!@#XYZ", False, False),
+        
+        # Invalid - no special character
+        ("Abc123XYZ", False, False),
+        
+        # Invalid - contains space
+        ("Abc 123!@#", False, False),
+        
+        # Invalid - starts with digit
+        ("1Abc123!@#", False, False),
+        
+        # Invalid - 4 consecutive identical characters
+        ("aaaa123!@#", False, False),
+        
+        # Invalid - contains "password"
+        ("MyPassword1!", False, False),
+        
+        # Invalid - 5 consecutive identical characters
+        ("aaaaa123!@#", False, False),
+        
+        # Valid edge case - exactly 8 characters
+        ("Abc123!@", True, True),
+    ]
+    
+    return test_cases
+```

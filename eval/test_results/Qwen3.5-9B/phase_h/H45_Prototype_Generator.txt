@@ -1,0 +1,65 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        if not isinstance(data, dict) or not isinstance(schema, dict):
+            return {"valid": False, "errors": ["Data and schema must be dictionaries"]}
+        
+        for field_name, field_schema in schema.items():
+            if field_name not in data:
+                if field_schema.get("required", False):
+                    errors.append(f"Missing required field: {field_name}")
+            else:
+                value = data[field_name]
+                self._validate_field(value, field_schema, field_name, errors)
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+    
+    def _validate_field(self, value, field_schema, field_name, errors):
+        expected_type = field_schema.get("type")
+        
+        if expected_type:
+            if not self._check_type(value, expected_type):
+                errors.append(f"Field '{field_name}' has wrong type. Expected {expected_type}, got {type(value).__name__}")
+                return
+        
+        if expected_type in ["int", "float"]:
+            if "min" in field_schema and value < field_schema["min"]:
+                errors.append(f"Field '{field_name}' value {value} is less than minimum {field_schema['min']}")
+            if "max" in field_schema and value > field_schema["max"]:
+                errors.append(f"Field '{field_name}' value {value} is greater than maximum {field_schema['max']}")
+        
+        if expected_type == "str":
+            if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                errors.append(f"Field '{field_name}' string length {len(value)} is less than minimum {field_schema['min_length']}")
+            if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                errors.append(f"Field '{field_name}' string length {len(value)} is greater than maximum {field_schema['max_length']}")
+        
+        if expected_type == "list":
+            if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                errors.append(f"Field '{field_name}' list length {len(value)} is less than minimum {field_schema['min_length']}")
+            if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                errors.append(f"Field '{field_name}' list length {len(value)} is greater than maximum {field_schema['max_length']}")
+        
+        if expected_type == "dict":
+            if "min_length" in field_schema and len(value) < field_schema["min_length"]:
+                errors.append(f"Field '{field_name}' dict length {len(value)} is less than minimum {field_schema['min_length']}")
+            if "max_length" in field_schema and len(value) > field_schema["max_length"]:
+                errors.append(f"Field '{field_name}' dict length {len(value)} is greater than maximum {field_schema['max_length']}")
+    
+    def _check_type(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        elif expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif expected_type == "float":
+            return isinstance(value, float)
+        elif expected_type == "bool":
+            return isinstance(value, bool)
+        elif expected_type == "list":
+            return isinstance(value, list)
+        elif expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+```
