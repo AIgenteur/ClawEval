@@ -185,7 +185,7 @@ These runs are kept **separate from the main leaderboard** because the variable 
 
 | Model | KV Mode | Context | Score | % | Baseline | Δ |
 |-------|---------|---------|-------|---|----------|---|
-| Gemma-4-31B | turbo3 (3-bit) | 262K | 915/1220 | **75.0%** | 76.0% (q8₀, 53K) | **−1.0%** |
+| Gemma-4-31B | turbo3 (3-bit) | 262K | 1014/1220 | **83.1%** | 76.0% (q8₀, 53K) | **+7.1%** |
 
 > Full methodology: **[TurboQuant Experiment →](docs/results-turboquant.md)**
 

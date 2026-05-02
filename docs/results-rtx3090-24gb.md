@@ -11,8 +11,8 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 | 🥇 | **Qwen3.6-35B-A3B** | UD-Q4_K_M | 35B MoE (3B active) | 1029/1220 | **84.3%** | 32K |
 | 🥈 | **Gemma-4-E2B** | BF16 | 2B | 981/1220 | **80.4%** | 32K |
 | 🥉 | **Nemotron-Nano-Omni** (IQ4) | IQ4_NL_XL | 30B MoE (3B active) | 948/1220 | **77.7%** | 262K |
-| 4 | **Gemma-4-31B** | Q4_K_M | 31B | 927/1220 | **76.0%** | 53K |
-| 5 | **Gemma-4-31B** (TurboQuant3) | Q4_K_M + turbo3 KV | 31B | 915/1220 | **75.0%** | 262K |
+| 4 | **Gemma-4-31B** (TurboQuant3) | Q4_K_M + turbo3 KV | 31B | 1014/1220 | **83.1%** | 262K |
+| 5 | **Gemma-4-31B** | Q4_K_M | 31B | 927/1220 | **76.0%** | 53K |
 | 6 | **Nemotron-Nano-Omni** (Q4) | Q4_K_S | 30B MoE (3B active) | 906/1220 | **74.3%** | 262K |
 | 7 | **Gemma-4-E4B** | BF16 | 4B | 867/1220 | **71.1%** | 32K |
 | 8 | **Ministral-3 3B** | Q4_K_M | 3B | 760/1220 | **62.3%** | 32K |
