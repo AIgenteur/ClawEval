@@ -1,0 +1,78 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Request Validation",
+      "input": "Refund request details (including customer ID, refund amount, reason, etc.)",
+      "output": "Validated request details or validation errors",
+      "next": "If valid, 'Customer Data Verification'; if invalid, 'Human Review'",
+      "fallback": "Error Handling (log error and route to human review if necessary)",
+      "timeout": 5
+    },
+    {
+      "name": "Customer Data Verification",
+      "input": "Refund request details, customer ID",
+      "output": "Verified customer data or verification errors (e.g., customer not found, account inactive)",
+      "next": "If verified, 'Fraud Check'; if not, 'Human Review'",
+      "fallback": "Error Handling (log error and route to human review if necessary)",
+      "timeout": 5
+    },
+    {
+      "name": "Fraud Check",
+      "input": "Verified refund request details",
+      "output": "Fraud risk assessment (low/high risk)",
+      "next": "If low risk, 'Approval'; if high risk, 'Human Review'",
+      "fallback": "Error Handling (log error and route to human review if necessary)",
+      "timeout": 14
+    },
+    {
+      "name": "Approval",
+      "input": "Fraud-checked request details",
+      "output": "Approval decision (approve or reject) with reason if rejected",
+      "next": "If approved, 'Payment'; if rejected, 'Notification' with rejection reason",
+      "fallback": "Error Handling (log error and route to human review if necessary)",
+      "timeout": 10
+    },
+    {
+      "name": "Payment",
+      "input": "Approved refund details",
+      "output": "Payment confirmation or failure",
+      "next": "If payment successful, 'Notification' with success message; if failed, 'Human Review'",
+      "fallback": "Error Handling (log error and route to human review if necessary)",
+      "timeout": 15
+    },
+    {
+      "name": "Human Review",
+      "input": "Refund request details with escalation reason",
+      "output": "Review decision (approve, reject, or further action)",
+      "next": "If approved, 'Payment'; if rejected, 'Notification' with rejection reason; if further action needed, end with instruction",
+      "fallback": "Error Handling (log error and end with instruction)",
+      "timeout": 30
+    },
+    {
+      "name": "Notification",
+      "input": "Refund status (approved, rejected, or failed), details",
+      "output": "Customer notification (email, SMS, etc.)",
+      "next": "End",
+      "fallback": "Log error and end",
+      "timeout": 5
+    }
+  ],
+  "constraints": {
+    "minimum_agents_count": 7,
+    "required_agents_included": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "has_conditional_branching": true,
+    "has_fallback_handlers": true,
+    "first_agent_is_validation": true,
+    "last_agent_is_notification": true,
+    "fraud_check_before_approval": true,
+    "payment_after_approval": true,
+    "total_processing_time_under_60_seconds": true,
+    "handles_both_approved_and_rejected_outcomes": true,
+    "includes_logging_audit": true,
+    "no_circular_dependencies": true,
+    "has_human_escalation_path": true,
+    "each_agent_has_timeout": true
+  }
+}
+```

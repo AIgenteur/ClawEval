@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": 17,
+      "issue": "Using 'latest' tag for image can lead to unexpected updates when the image is updated.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "issue": "Running as root is a security risk and should be avoided unless absolutely necessary.",
+      "severity": "critical"
+    },
+    {
+      "line": 23,
+      "issue": "Privileged mode gives the container access to the host system, which is a significant security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": 25,
+      "issue": "Hardcoded database password increases the risk of secret exposure.",
+      "severity": "critical"
+    },
+    {
+      "line": 27,
+      "issue": "Hardcoded API key with 'ak_live_' prefix is a critical security risk as it exposes live credentials.",
+      "severity": "critical"
+    },
+    {
+      "line": 36,
+      "issue": "Excessive resource requests for sidecar container (10Gi memory and 8 CPUs) could lead to resource starvation for other pods.",
+      "severity": "major"
+    },
+    {
+      "line": 20,
+      "issue": "No resource limits or requests set for main container, which could lead to resource exhaustion and affect other pods.",
+      "severity": "major"
+    },
+    {
+      "line": 40,
+      "issue": "Using hostPath volume is not portable and can cause issues if the pod is rescheduled to another node.",
+      "severity": "major"
+    },
+    {
+      "line": 6,
+      "issue": "Only one replica is configured, which does not provide high availability in case of node failures.",
+      "severity": "minor"
+    },
+    {
+      "line": 16,
+      "issue": "Missing liveness and readiness probes, which are crucial for ensuring that unhealthy pods are restarted and traffic is only sent to healthy pods.",
+      "severity": "major"
+    },
+    {
+      "line": 32,
+      "issue": "Sidecar container lacks a security context, which could lead to security vulnerabilities if not properly configured.",
+      "severity": "minor"
+    },
+    {
+      "line": 30,
+      "issue": "Volume mount does not specify 'readOnly' flag, which could be a security concern if the application writes to the mounted path.",
+      "severity": "minor"
+    },
+    {
+      "line": 17,
+      "issue": "No explicit image pull policy is set for 'myapp:latest', which could lead to confusion or unexpected behavior.",
+      "severity": "minor"
+    },
+    {
+      "line": 5,
+      "issue": "Missing affinity or anti-affinity rules, which could help ensure that pods are distributed across nodes for high availability.",
+      "severity": "minor"
+    },
+    {
+      "line": 5,
+      "issue": "Missing Horizontal Pod Autoscaler (HPA) configuration, which would be important for automatically scaling the number of pods based on load.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

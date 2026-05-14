@@ -1,0 +1,58 @@
+The solution to the problem involves creating a function `is_valid_password` that checks a password against a set of rules. The function is designed to be efficient by checking the most restrictive conditions first, such as the length of the password, which can quickly eliminate invalid passwords. The function then proceeds to check for the presence of required character types (uppercase, lowercase, digit, and special character) and ensures that the password does not contain spaces, does not start with a digit, does not have more than three consecutive identical characters, and does not contain the substring "password" in any case.
+
+The `run_tests` function is used to validate the correctness of the `is_valid_password` function by providing a set of test cases that cover all the rules. This ensures that the function behaves as expected under various conditions, including edge cases.
+
+Here is the code for the solution:
+
+```python
+def is_valid_password(password):
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if ' ' in password:
+        return False
+    if password[0].isdigit():
+        return False
+    if not any(c.isupper() for c in password):
+        return False
+    if not any(c.islower() for c in password):
+        return False
+    if not any(c.isdigit() for c in password):
+        return False
+    special_chars = '!@#$%^&*()-_+='
+
+    if not any(c in special_chars for c in password):
+        return False
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i-1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+    if 'password' in password.lower():
+        return False
+    return True
+
+def run_tests():
+    tests = [
+        ('abc123!A', False, is_valid_password('abc123!A')),
+        ('a' * 65, False, is_valid_password('a' * 65)),
+        ('abc123!a', False, is_valid_password('abc123!a')),
+        ('ABC123!A', False, is_valid_password('ABC123!A')),
+        ('Abcdefg!', False, is_valid_password('Abcdefg!')),
+        ('Abcdefg1', False, is_valid_password('Abcdefg1')),
+        ('A b1!cdef', False, is_valid_password('A b1!cdef')),
+        ('1Abcdefg!', False, is_valid_password('1Abcdefg!')),
+        ('Aa1!bbbb', False, is_valid_password('Aa1!bbbb')),
+        ('Password123!', False, is_valid_password('Password123!')),
+        ('Aa1!bbcc', True, is_valid_password('Aa1!bbcc')),
+        ('!Aa1bbcc', True, is_valid_password('!Aa1bbcc')),
+        ('Abcdefg1!', True, is_valid_password('Abcdefg1!')),
+        ('Aa~bc123', False, is_valid_password('Aa~bc123')),
+        ('Passw0rd1!', True, is_valid_password('Passw0rd1!'))
+    ]
+    return tests
+```
+
+The `is_valid_password` function checks the password against the specified rules in a logical order, ensuring that the most restrictive conditions are checked first. This approach optimizes the function's performance by quickly eliminating invalid passwords. The `run_tests` function provides a comprehensive set of test cases to validate the correctness of the `is_valid_password` function, covering all the rules and edge cases.

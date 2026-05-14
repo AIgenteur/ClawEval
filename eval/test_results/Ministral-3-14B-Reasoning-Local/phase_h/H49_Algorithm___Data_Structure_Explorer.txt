@@ -1,0 +1,115 @@
+The solution involves three distinct data structures: an LRUCache, a MinStack, and a function to find the median of a stream. Each is designed to meet specific performance requirements.
+
+1. **LRUCache**: This cache uses a doubly linked list and a hash map to achieve O(1) time complexity for both get and put operations. The doubly linked list maintains the order of usage, with the head representing the most recently used item and the tail the least recently used. The hash map provides quick access to nodes in the list. When the cache reaches its capacity, the least recently used item is evicted to make space for new items.
+
+2. **MinStack**: This stack supports push, pop, top, and get_min operations in O(1) time. It uses two stacks: one for the actual elements and another to track the minimum values. The minimum stack is updated whenever a new minimum is pushed or the current minimum is popped, ensuring that the minimum value can be retrieved instantly.
+
+3. **find_median**: This function computes the running median of a stream of integers. It maintains two sorted lists, `lower` and `upper`, to represent the lower and upper halves of the stream, respectively. The median is calculated based on the sizes of these lists, ensuring that the median is always the middle value or the average of the two middle values when the number of elements is even. The function balances the lists to maintain the correct order and size, allowing for efficient median computation.
+
+Here is the implementation of the three data structures:
+
+```python
+class LRUCache:
+    class Node:
+        def __init__(self, key, value):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self.Node(None, None)
+        self.tail = self.Node(None, None)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+
+    def _add_to_head(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add_to_head(node)
+            return node.value
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._add_to_head(node)
+        else:
+            if len(self.cache) == self.capacity:
+                lru_node = self.tail.prev
+                self._remove(lru_node)
+                del self.cache[lru_node.key]
+            new_node = self.Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_head(new_node)
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self):
+        val = self.stack.pop()
+        if val == self.min_stack[-1]:
+            self.min_stack.pop()
+
+    def top(self):
+        return self.stack[-1]
+
+    def get_min(self):
+        return self.min_stack[-1]
+
+def find_median(stream):
+    lower = []
+    upper = []
+    medians = []
+    
+    for num in stream:
+        if not lower or num <= lower[-1]:
+            i = 0
+            while i < len(lower) and lower[i] < num:
+                i += 1
+            lower.insert(i, num)
+        else:
+            i = 0
+            while i < len(upper) and upper[i] < num:
+                i += 1
+            upper.insert(i, num)
+        
+        if len(lower) > len(upper) + 1:
+            upper.insert(0, lower.pop())
+        elif len(upper) > len(lower):
+            lower.append(upper.pop(0))
+        
+        if len(lower) == len(upper):
+            median = (lower[-1] + upper[0]) / 2.0
+        else:
+            median = float(lower[-1])
+        medians.append(median)
+    
+    return medians
+```
+
+This implementation ensures that each data structure meets its performance requirements while maintaining the correct order and size of the underlying data structures.
