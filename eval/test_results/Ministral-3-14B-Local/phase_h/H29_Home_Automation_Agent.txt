@@ -1,0 +1,163 @@
+Here’s the JSON response with the correct actions for each scenario based on the given rules and house configuration:
+
+```json
+{
+  "1": {
+    "action": [
+      {"component": "blinds", "action": "open"},
+      {"component": "lights", "action": {"type": "kitchen", "action": "on"}},
+      {"component": "music", "action": {"playlist": "morning", "action": "play"}}
+    ],
+    "notes": "Morning routine triggered at 7 AM."
+  },
+  "2": {
+    "action": [
+      {"component": "doors", "action": "lock"},
+      {"component": "alarm", "action": "arm"},
+      {"component": "lights", "action": "off"},
+      {"component": "thermostat", "action": {"mode": "eco", "temp": 62}}
+    ],
+    "notes": "Nobody home, default security/energy-saving mode."
+  },
+  "3": {
+    "action": [
+      {"component": "thermostat", "action": {"mode": "cooling", "temp": 78}}
+    ],
+    "notes": "Temperature > 78°F, cooling activated (someone home)."
+  },
+  "4": {
+    "action": [
+      {"component": "alarm", "action": "disarm"},
+      {"component": "doors", "action": {"type": "front", "action": "unlock"}},
+      {"component": "lights", "action": {"type": "hall", "action": "on"}}
+    ],
+    "notes": "Family home, arrival protocol triggered."
+  },
+  "5": {
+    "action": [
+      {"component": "alarm", "action": "trigger"}
+    ],
+    "notes": "Motion detected at night + nobody home = alarm triggered."
+  },
+  "6": {
+    "action": [
+      {"component": "cameras", "action": {"type": "front", "action": "on"}},
+      {"component": "doors", "action": {"type": "front", "action": "unlock"}}
+    ],
+    "notes": "Doorbell rings + recognized face = unlock door."
+  },
+  "7": {
+    "action": [
+      {"component": "cameras", "action": {"type": "front", "action": "on"}},
+      {"component": "doors", "action": {"type": "front", "action": "ignore"}},
+      {"component": "alarm", "action": "trigger"}
+    ],
+    "notes": "Unknown person = show camera feed, no unlock, alarm triggered."
+  },
+  "8": {
+    "action": [
+      {"component": "alarm", "action": "disarm"},
+      {"component": "doors", "action": {"type": "front", "action": "unlock"}},
+      {"component": "lights", "action": {"type": "hall", "action": "on"}}
+    ],
+    "notes": "First person arrives home at 6 PM = arrival protocol."
+  },
+  "9": {
+    "action": [
+      {"component": "thermostat", "action": {"mode": "heating", "temp": 65}}
+    ],
+    "notes": "Temperature < 65°F + nobody home = heating activated (default eco mode overridden)."
+  },
+  "10": {
+    "action": [
+      {"component": "blinds", "action": "ignore"},
+      {"component": "lights", "action": {"type": "kitchen", "action": "ignore"}},
+      {"component": "music", "action": {"playlist": "morning", "action": "ignore"}}
+    ],
+    "notes": "Detected holiday = morning routine skipped."
+  },
+  "11": {
+    "action": [
+      {"component": "alarm", "action": "trigger"},
+      {"component": "lights", "action": {"type": "all", "action": "on"}},
+      {"component": "music", "action": {"emergency_siren", "action": "play"}},
+      {"component": "doors", "action": {"type": "all", "action": "unlock"}}
+    ],
+    "notes": "Smoke detector triggered = emergency protocol (not explicitly defined in rules, but standard response)."
+  },
+  "12": {
+    "action": [
+      {"component": "alarm", "action": "trigger"},
+      {"component": "lights", "action": {"type": "basement", "action": "on"}},
+      {"component": "music", "action": {"emergency_siren", "action": "play"}}
+    ],
+    "notes": "Water leak sensor = emergency protocol (not explicitly defined, but standard response)."
+  },
+  "13": {
+    "action": [
+      {"component": "lights", "action": {"type": "baby_room", "action": "on"}},
+      {"component": "cameras", "action": {"type": "baby_room", "action": "on"}},
+      {"component": "music", "action": {"white_noise", "action": "play"}}
+    ],
+    "notes": "Baby noise threshold exceeded = baby monitoring protocol (not explicitly defined, but logical)."
+  },
+  "14": {
+    "action": [
+      {"component": "alarm", "action": "trigger"},
+      {"component": "lights", "action": {"type": "all", "action": "on"}},
+      {"component": "music", "action": {"emergency_siren", "action": "play"}}
+    ],
+    "notes": "Guest WiFi device limit exceeded = potential security breach (not explicitly defined, but logical)."
+  },
+  "15": {
+    "action": [
+      {"component": "lights", "action": {"type": "all", "action": "on"}},
+      {"component": "thermostat", "action": {"mode": "off"}},
+      {"component": "music", "action": {"emergency_alert", "action": "play"}}
+    ],
+    "notes": "Power outage = backup protocol (UPS active)."
+  },
+  "16": {
+    "action": [
+      {"component": "blinds", "action": "open"},
+      {"component": "lights", "action": {"type": "all", "action": "on"}},
+      {"component": "thermostat", "action": {"mode": "ventilation", "action": "activate"}}
+    ],
+    "notes": "High CO2 + windows closed = ventilation protocol (not explicitly defined, but logical)."
+  },
+  "17": {
+    "action": [
+      {"component": "blinds", "action": {"type": "living_room", "action": "close"}}
+    ],
+    "notes": "Bright sunlight + living room occupied = close blinds (not explicitly defined, but logical)."
+  },
+  "18": {
+    "action": [
+      {"component": "lights", "action": {"type": "toddler_room", "action": "on"}},
+      {"component": "cameras", "action": {"type": "toddler_room", "action": "on"}},
+      {"component": "music", "action": {"white_noise", "action": "play"}}
+    ],
+    "notes": "Toddler's door opened at night = monitoring protocol (not explicitly defined, but logical)."
+  },
+  "19": {
+    "action": [
+      {"component": "alarm", "action": "trigger"},
+      {"component": "lights", "action": {"type": "garage", "action": "on"}},
+      {"component": "music", "action": {"emergency_siren", "action": "play"}}
+    ],
+    "notes": "Garage door open for 30+ mins + nobody in garage = potential security breach (not explicitly defined, but logical)."
+  },
+  "20": {
+    "action": [
+      {"component": "thermostat", "action": {"mode": "heating", "temp": 65}}
+    ],
+    "notes": "Outdoor temp < freezing + nobody home = heating activated (default eco mode overridden)."
+  }
+}
+```
+
+### Notes:
+1. **Scenarios 11–20** involve events not explicitly covered by the rules (e.g., smoke detector, water leak). I inferred standard emergency responses (e.g., triggering alarms, turning on lights, unlocking doors for evacuation).
+2. **Scenario 10** assumes the holiday overrides the morning routine (no explicit rule, but logical).
+3. **Scenario 17** assumes closing blinds for bright sunlight (not in rules, but common smart home logic).
+4. **Scenario 19** treats the garage door as a security risk (not in rules, but logical).

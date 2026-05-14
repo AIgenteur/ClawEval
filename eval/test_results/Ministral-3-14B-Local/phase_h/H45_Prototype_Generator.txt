@@ -1,0 +1,123 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against the specified schema without using any imports:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+
+        def _validate_field(field_name, field_value, field_schema):
+            # Check required fields
+            if field_schema.get("required", False) and field_name not in data:
+                errors.append(f"Field '{field_name}' is required")
+                return
+
+            # Skip if field doesn't exist (not required)
+            if field_name not in data:
+                return
+
+            field_value = data[field_name]
+            expected_type = field_schema["type"]
+
+            # Check type
+            if expected_type == "str":
+                if not isinstance(field_value, str):
+                    errors.append(f"Field '{field_name}' must be string")
+                else:
+                    if "min_length" in field_schema and len(field_value) < field_schema["min_length"]:
+                        errors.append(f"Field '{field_name}' must have at least {field_schema['min_length']} characters")
+                    if "max_length" in field_schema and len(field_value) > field_schema["max_length"]:
+                        errors.append(f"Field '{field_name}' must have at most {field_schema['max_length']} characters")
+
+            elif expected_type == "int":
+                if not isinstance(field_value, int):
+                    errors.append(f"Field '{field_name}' must be integer")
+                else:
+                    if "min" in field_schema and field_value < field_schema["min"]:
+                        errors.append(f"Field '{field_name}' must be at least {field_schema['min']}")
+                    if "max" in field_schema and field_value > field_schema["max"]:
+                        errors.append(f"Field '{field_name}' must be at most {field_schema['max']}")
+
+            elif expected_type == "float":
+                if not isinstance(field_value, float):
+                    errors.append(f"Field '{field_name}' must be float")
+                else:
+                    if "min" in field_schema and field_value < field_schema["min"]:
+                        errors.append(f"Field '{field_name}' must be at least {field_schema['min']}")
+                    if "max" in field_schema and field_value > field_schema["max"]:
+                        errors.append(f"Field '{field_name}' must be at most {field_schema['max']}")
+
+            elif expected_type == "bool":
+                if not isinstance(field_value, bool):
+                    errors.append(f"Field '{field_name}' must be boolean")
+
+            elif expected_type == "list":
+                if not isinstance(field_value, list):
+                    errors.append(f"Field '{field_name}' must be list")
+                else:
+                    if "min_length" in field_schema and len(field_value) < field_schema["min_length"]:
+                        errors.append(f"Field '{field_name}' must have at least {field_schema['min_length']} items")
+                    if "max_length" in field_schema and len(field_value) > field_schema["max_length"]:
+                        errors.append(f"Field '{field_name}' must have at most {field_schema['max_length']} items")
+
+            elif expected_type == "dict":
+                if not isinstance(field_value, dict):
+                    errors.append(f"Field '{field_name}' must be dictionary")
+
+        # Validate each field in schema
+        for field_name, field_schema in schema.items():
+            _validate_field(field_name, None, field_schema)
+
+        # Additional check for nested dictionaries
+        def _validate_nested(data, schema):
+            for field_name, field_schema in schema.items():
+                if field_name in data:
+                    field_value = data[field_name]
+                    expected_type = field_schema["type"]
+
+                    if expected_type == "dict":
+                        if isinstance(field_value, dict):
+                            _validate_nested(field_value, field_schema.get("schema", {}))
+                        else:
+                            errors.append(f"Field '{field_name}' must be dictionary")
+
+        _validate_nested(data, schema)
+
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+```
+
+This implementation:
+1. Validates each field against its schema
+2. Checks for required fields
+3. Validates types (str, int, float, bool, list, dict)
+4. Checks min/max for numbers
+5. Checks min_length/max_length for strings and lists
+6. Allows extra fields not in schema
+7. Returns all validation errors
+8. Handles nested dictionaries (though the schema format would need to include a "schema" key for nested validation)
+
+Example usage:
+```python
+validator = JSONValidator()
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 3, "max_length": 50},
+    "age": {"type": "int", "required": True, "min": 0, "max": 120},
+    "is_active": {"type": "bool"},
+    "tags": {"type": "list", "min_length": 0, "max_length": 5},
+    "address": {"type": "dict", "required": False}
+}
+
+data = {
+    "name": "John",
+    "age": 30,
+    "is_active": True,
+    "tags": ["python", "json"],
+    "address": {"city": "Paris", "country": "France"},
+    "extra_field": "this should be ignored"
+}
+
+print(validator.validate(data, schema))
+# Output: {'valid': True, 'errors': []}
+```

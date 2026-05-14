@@ -1,0 +1,75 @@
+```python
+def is_valid_password(password):
+    # Check length
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # Check no spaces
+    if ' ' in password:
+        return False
+
+    # Check starts with digit
+    if password[0].isdigit():
+        return False
+
+    # Check contains at least one uppercase, lowercase, digit, and special character
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+    special_chars = set('!@#$%^&*()-_+=')
+
+    for char in password:
+        if char.isupper():
+            has_upper = True
+        elif char.islower():
+            has_lower = True
+        elif char.isdigit():
+            has_digit = True
+        elif char in special_chars:
+            has_special = True
+
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    # Check no more than 3 consecutive identical characters
+    for i in range(len(password) - 2):
+        if password[i] == password[i+1] == password[i+2]:
+            return False
+
+    # Check for "password" (case-insensitive)
+    if 'password' in password.lower():
+        return False
+
+    return True
+
+def run_tests():
+    test_cases = [
+        # Valid passwords
+        ("Abcdef1!", (True,)),
+        ("A1b2c3d4!", (True,)),
+        ("P@ssw0rd!", (True,)),  # Contains special char, not the word "password"
+        ("XyZ9!@#$", (True,)),
+        ("ValidPass123!", (True,)),
+
+        # Invalid passwords
+        ("abcdef1!", (False,)),  # No uppercase
+        ("ABCDEF1!", (False,)),  # No lowercase
+        ("Abcdefgh", (False,)),  # No digit or special char
+        ("Abcdef1", (False,)),   # No special char
+        ("1Abcdef1!", (False,)), # Starts with digit
+        ("Abc def1!", (False,)), # Contains space
+        ("Abcdddd1!", (False,)), # More than 3 consecutive identical chars
+        ("Password1!", (False,)), # Contains "password"
+        ("A" * 65, (False,)),    # Too long
+        ("A" * 7, (False,)),     # Too short
+        ("Aa1!bbb", (False,)),   # More than 3 consecutive identical chars
+    ]
+
+    results = []
+    for password, expected in test_cases:
+        actual = is_valid_password(password)
+        results.append((password, expected[0], actual))
+
+    return results
+```

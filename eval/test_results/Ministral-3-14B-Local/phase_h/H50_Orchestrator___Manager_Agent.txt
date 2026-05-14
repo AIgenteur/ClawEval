@@ -1,0 +1,414 @@
+```json
+{
+  "agents": [
+    {
+      "name": "validation_triage",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "reason": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "metadata": { "type": "object" }
+        },
+        "required": ["request_id", "customer_id", "amount", "reason"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["valid", "invalid", "incomplete"] },
+          "errors": { "type": "array", "items": { "type": "string" } },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "amount": { "type": "number" },
+              "reason": { "type": "string" },
+              "validation_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [
+        {
+          "condition": "status === 'valid'",
+          "agent": "fraud_check"
+        },
+        {
+          "condition": "status === 'invalid' || status === 'incomplete'",
+          "agent": "notification_rejection"
+        }
+      ],
+      "fallback": {
+        "action": "log_error_and_escalate",
+        "description": "Log validation failure and escalate to human review if errors persist after retries (max 3 attempts)."
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_validation_attempt",
+        "fields": ["request_id", "customer_id", "status", "errors"]
+      }
+    },
+    {
+      "name": "fraud_check",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "reason": { "type": "string" },
+          "validation_timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "amount", "reason"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["clean", "suspicious", "fraudulent"] },
+          "risk_score": { "type": "number", "minimum": 0, "maximum": 1 },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "amount": { "type": "number" },
+              "fraud_check_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [
+        {
+          "condition": "status === 'clean' || (status === 'suspicious' && risk_score < 0.7)",
+          "agent": "approval"
+        },
+        {
+          "condition": "status === 'fraudulent' || (status === 'suspicious' && risk_score >= 0.7)",
+          "agent": "notification_rejection"
+        }
+      ],
+      "fallback": {
+        "action": "log_error_and_escalate",
+        "description": "Log fraud check failure and escalate to human review if fraud service is unavailable (max 2 retries)."
+      },
+      "timeout": 10000,
+      "logging": {
+        "action": "log_fraud_check",
+        "fields": ["request_id", "customer_id", "status", "risk_score"]
+      }
+    },
+    {
+      "name": "approval",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "reason": { "type": "string" },
+          "fraud_check_timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "amount", "reason"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["approved", "rejected"] },
+          "approval_reason": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "amount": { "type": "number" },
+              "approval_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [
+        {
+          "condition": "status === 'approved'",
+          "agent": "payment_processing"
+        },
+        {
+          "condition": "status === 'rejected'",
+          "agent": "notification_rejection"
+        }
+      ],
+      "fallback": {
+        "action": "log_error_and_escalate",
+        "description": "Log approval failure and escalate to human review if approval service is unavailable (max 2 retries)."
+      },
+      "timeout": 8000,
+      "logging": {
+        "action": "log_approval_decision",
+        "fields": ["request_id", "customer_id", "status", "approval_reason"]
+      }
+    },
+    {
+      "name": "payment_processing",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "approval_timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "amount"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["success", "partial", "failed"] },
+          "transaction_id": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "amount": { "type": "number" },
+              "payment_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [
+        {
+          "condition": "status === 'success' || status === 'partial'",
+          "agent": "notification_success"
+        },
+        {
+          "condition": "status === 'failed'",
+          "agent": "notification_failure"
+        }
+      ],
+      "fallback": {
+        "action": "log_error_and_escalate",
+        "description": "Log payment failure and escalate to human review if payment service is unavailable (max 3 retries)."
+      },
+      "timeout": 15000,
+      "logging": {
+        "action": "log_payment_attempt",
+        "fields": ["request_id", "customer_id", "status", "transaction_id"]
+      }
+    },
+    {
+      "name": "notification_success",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "payment_timestamp": { "type": "string", "format": "date-time" },
+          "transaction_id": { "type": "string" }
+        },
+        "required": ["request_id", "customer_id", "amount", "payment_timestamp"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["sent", "failed"] },
+          "notification_id": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "notification_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [],
+      "fallback": {
+        "action": "log_error_and_retry",
+        "description": "Log notification failure and retry once before escalating to human review."
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_notification_success",
+        "fields": ["request_id", "customer_id", "status", "notification_id"]
+      }
+    },
+    {
+      "name": "notification_rejection",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "reason": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "reason"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["sent", "failed"] },
+          "notification_id": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "notification_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [],
+      "fallback": {
+        "action": "log_error_and_retry",
+        "description": "Log notification failure and retry once before escalating to human review."
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_notification_rejection",
+        "fields": ["request_id", "customer_id", "status", "reason"]
+      }
+    },
+    {
+      "name": "notification_failure",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "payment_timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "amount"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["sent", "failed"] },
+          "notification_id": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "notification_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [],
+      "fallback": {
+        "action": "log_error_and_escalate",
+        "description": "Log notification failure and escalate to human review if notification service is unavailable."
+      },
+      "timeout": 5000,
+      "logging": {
+        "action": "log_notification_failure",
+        "fields": ["request_id", "customer_id", "status"]
+      }
+    },
+    {
+      "name": "human_escalation",
+      "input": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string" },
+          "customer_id": { "type": "string" },
+          "stage": { "type": "string" },
+          "error_details": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["request_id", "customer_id", "stage"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["resolved", "pending"] },
+          "resolution_notes": { "type": "string" },
+          "processed_data": {
+            "type": "object",
+            "properties": {
+              "request_id": { "type": "string" },
+              "customer_id": { "type": "string" },
+              "escalation_timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "next": [
+        {
+          "condition": "status === 'resolved'",
+          "agent": "notification_success"
+        },
+        {
+          "condition": "status === 'pending'",
+          "agent": "notification_failure"
+        }
+      ],
+      "fallback": {
+        "action": "log_error_and_alert",
+        "description": "Log escalation failure and alert support team."
+      },
+      "timeout": 30000,
+      "logging": {
+        "action": "log_human_escalation",
+        "fields": ["request_id", "customer_id", "stage", "status", "resolution_notes"]
+      }
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_routing": true,
+    "fallback_handling": true,
+    "first_agent": "validation_triage",
+    "last_agent": ["notification_success", "notification_rejection", "notification_failure"],
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time": 60000,
+    "handling_outcomes": ["approved", "rejected"],
+    "logging_requirement": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_requirement": true,
+    "timeout_values": {
+      "validation_triage": 5000,
+      "fraud_check": 10000,
+      "approval": 8000,
+      "payment_processing": 15000,
+      "notifications": 5000,
+      "human_escalation": 30000
+    },
+    "total_expected_time": {
+      "optimistic": 15000,
+      "pessimistic": 55000,
+      "average": 30000
+    }
+  },
+  "workflow_description": {
+    "start": "validation_triage",
+    "end": ["notification_success", "notification_rejection", "notification_failure"],
+    "branches": {
+      "validation": ["fraud_check", "notification_rejection"],
+      "fraud_check": ["approval", "notification_rejection"],
+      "approval": ["payment_processing", "notification_rejection"],
+      "payment_processing": ["notification_success", "notification_failure"]
+    },
+    "escalation_path": {
+      "trigger": "fallback in any agent",
+      "target": "human_escalation"
+    },
+    "logging": {
+      "centralized": true,
+      "audit_trail": true,
+      "immutable": true
+    }
+  }
+}
+```

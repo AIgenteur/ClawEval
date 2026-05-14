@@ -1,0 +1,109 @@
+Here’s the system architecture design for a real-time collaborative document editor in JSON format, addressing your 15 questions:
+
+```json
+{
+  "q1": {
+    "conflict_resolution_strategy": "Operational Transformation (OT) with CRDT (Conflict-free Replicated Data Types) fallback for metadata (e.g., user presence, cursors).",
+    "rationale": "OT ensures deterministic conflict resolution for text edits (like Google Docs), while CRDTs handle metadata (e.g., cursors, selections) without conflicts. Hybrid approach balances performance and correctness."
+  },
+  "q2": {
+    "real_time_sync_protocol": "WebSocket (primary) + Server-Sent Events (SSE) as fallback.",
+    "rationale": "WebSocket supports bidirectional real-time communication (critical for collaborative editing). SSE is used for non-critical updates (e.g., notifications) to reduce server load. Fallback ensures compatibility with older browsers."
+  },
+  "q3": {
+    "database_choice": "MongoDB (with Change Streams for real-time sync).",
+    "rationale": "MongoDB’s flexible schema handles nested document structures (e.g., rich text, comments) and Change Streams enable efficient real-time event propagation. Sharding supports horizontal scaling."
+  },
+  "q4": {
+    "offline_editing": "Offline-first with Operational Transformation (OT) + Conflict Resolution on Reconnect.",
+    "implementation": "
+      - Client-side queue for edits (using IndexedDB).
+      - Conflict resolution via server-mediated merge (e.g., 'last-write-wins' for metadata, OT for text).
+      - Sync on reconnect using a diff algorithm (e.g., Myers' diff) to minimize data transfer.",
+    "tools": "PouchDB/CouchDB for offline-first sync (optional hybrid layer)."
+  },
+  "q5": {
+    "message_broker": "NATS (or Kafka for high-throughput environments).",
+    "rationale": "NATS is lightweight, supports pub/sub for real-time events, and scales horizontally. Kafka is overkill unless event volume exceeds 100K+ ops/sec. Both support WebSocket bridging."
+  },
+  "q6": {
+    "horizontal_scaling_strategy": "
+      - Stateless WebSocket servers behind a load balancer (e.g., Nginx with WebSocket support).
+      - Session affinity (sticky sessions) for active editing sessions to avoid OT conflicts.
+      - Database read replicas for query scaling (write-through to primary).",
+    "tools": "Kubernetes (for orchestration) + Redis (for session affinity)."
+  },
+  "q7": {
+    "cursor_position_sharing": "CRDT-based (e.g., Observed-Remove Set for cursors) + Delta Encoding.",
+    "implementation": "
+      - Clients broadcast cursor positions as CRDTs (no conflicts).
+      - Delta encoding (e.g., only send changes in cursor position) to reduce bandwidth.
+      - Server aggregates cursors and broadcasts to all clients in a document."
+  },
+  "q8": {
+    "authentication_protocol": "OAuth 2.0 + JWT (JSON Web Tokens) for session management.",
+    "rationale": "OAuth 2.0 integrates with identity providers (Google, OAuth). JWTs are stateless and scalable. Short-lived tokens with refresh mechanisms."
+  },
+  "q9": {
+    "version_history": "Immutable document snapshots + Log-Structured Merge Tree (LSM).",
+    "implementation": "
+      - Store each edit as a diff (OT operations) in a write-ahead log (WAL).
+      - Periodically snapshot full document state (e.g., every 5 minutes or 100 edits).
+      - Use LSM (e.g., RocksDB) for efficient version queries. Users can 'undo' via diff replay."
+  },
+  "q10": {
+    "cdn_strategy": "
+      - Static assets (JS, CSS, images) served via Cloudflare or Fastly.
+      - Dynamic assets (e.g., user-uploaded images) use signed URLs with short TTL.
+      - Edge caching for API responses (e.g., document metadata) with cache invalidation on edit.",
+    "tools": "Vercel/Netlify for frontend hosting (if using SSR)."
+  },
+  "q11": {
+    "large_documents_handling": "
+      - Client-side pagination (render only visible content).
+      - Server-side chunking: Split document into logical sections (e.g., by paragraphs) stored as sub-documents in MongoDB.
+      - Lazy loading: Load sections on demand (e.g., when user scrolls).",
+    "optimizations": "
+      - Compress diffs (e.g., zstd) for large edits.
+      - Background sync for offline chunks."
+  },
+  "q12": {
+    "rate_limiting": "
+      - Token bucket algorithm per user (e.g., 1000 ops/minute).
+      - Burst limits for collaborative sessions (e.g., 500 ops/second per document).
+      - Whitelist high-frequency endpoints (e.g., cursor updates) from rate limiting.",
+    "tools": "Redis + Envoy rate-limiting filter."
+  },
+  "q13": {
+    "data_backup": "
+      - Daily snapshots of MongoDB (using `mongodump`).
+      - WAL archiving for point-in-time recovery.
+      - Cross-region replication for disaster recovery (e.g., MongoDB Atlas Global Clusters).",
+    "retention": "30-day backups for user-edited documents; 7-day for system logs."
+  },
+  "q14": {
+    "concurrent_image_uploads": "
+      - Client-side deduplication (hash filenames before upload).
+      - Chunked uploads (e.g., TUS protocol) with resumable transfers.
+      - Server-side: Store images in S3/Cloud Storage with CDN caching.
+      - Metadata (e.g., image URLs) stored in MongoDB as references.",
+    "conflict_handling": "Last-write-wins for metadata; client-side merge for overlapping edits (e.g., resizing)."
+  },
+  "q15": {
+    "monitoring_observability": "
+      - Metrics: Prometheus (WebSocket connections, edit latency, DB query time).
+      - Logging: ELK Stack (Elasticsearch, Logstash, Kibana) for structured logs.
+      - Tracing: Jaeger for distributed tracing (e.g., edit → OT → DB → broadcast).
+      - Alerts: Grafana + Alertmanager for SLA breaches (e.g., >100ms edit latency).",
+    "SLOs": "
+      - P99 edit latency: <150ms.
+      - WebSocket connection uptime: 99.99%."
+  }
+}
+```
+
+### Key Trade-offs:
+1. **OT vs. CRDT**: OT is simpler for text but requires server coordination; CRDTs are conflict-free but have higher memory overhead.
+2. **WebSocket vs. SSE**: WebSocket is bidirectional (needed for collaborative edits), while SSE is unidirectional (sufficient for notifications).
+3. **MongoDB vs. PostgreSQL**: MongoDB’s flexibility wins for nested document structures, but PostgreSQL could be considered for complex queries (e.g., full-text search).
+4. **Offline Handling**: PouchDB adds complexity but ensures seamless offline support; pure IndexedDB requires custom conflict resolution.
