@@ -1,0 +1,92 @@
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using a non-specific image tag (latest) can lead to unpredictable deployments.",
+      "severity": "major"
+    },
+    {
+      "line": "securityContext: runAsRoot: true",
+      "issue": "Running containers as root (runAsRoot: true) increases security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "securityContext: privileged: true",
+      "issue": "Enabling privileged mode (privileged: true) grants extensive host access, posing a significant security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "env: DB_PASSWORD",
+      "issue": "Sensitive environment variable (DB_PASSWORD) is stored in plain text.",
+      "severity": "critical"
+    },
+    {
+      "line": "env: API_KEY",
+      "issue": "Sensitive environment variable (API_KEY) is stored in plain text.",
+      "severity": "critical"
+    },
+    {
+      "line": "volumes: hostPath: path: /tmp/data",
+      "issue": "Using hostPath mounts can expose host system files and directories, leading to potential data leakage or corruption.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "No resource limits or requests defined for the API container, which can lead to resource contention or exhaustion.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: requests: memory: \"10Gi\", cpu: \"8\"",
+      "issue": "The sidecar container requests an excessive amount of CPU (8 cores) and memory (10Gi), which may not be available on all nodes.",
+      "severity": "major"
+    },
+    {
+      "line": "spec: replicas: 1",
+      "issue": "Only a single replica is specified, providing no redundancy or high availability.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec: selector: matchLabels: app: web-api",
+      "issue": "Selector and template labels are consistent, but consider using a more specific label set for future scaling.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec: template: metadata: labels: app: web-api",
+      "issue": "Labels are consistent with the selector, ensuring proper pod identification.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec: ports: - containerPort: 8080",
+      "issue": "Container exposes port 8080 without any network policy restrictions, potentially exposing the service to unauthorized access.",
+      "severity": "major"
+    },
+    {
+      "line": "spec: ports: - port: 80, targetPort: 8080",
+      "issue": "Service exposes port 80 to the external load balancer without additional security measures (e.g., TLS termination, network policies).",
+      "severity": "major"
+    },
+    {
+      "line": "spec: type: LoadBalancer",
+      "issue": "Using a LoadBalancer service type can incur higher costs and expose the service to the internet without additional security controls.",
+      "severity": "major"
+    },
+    {
+      "line": "spec: selector: app: web-api",
+      "issue": "Selector correctly matches the pod labels, ensuring proper service routing.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec: template: spec: containers: - name: sidecar, image: logger:v1",
+      "issue": "Sidecar container is defined but lacks resource limits, which could lead to resource contention.",
+      "severity": "major"
+    },
+    {
+      "line": "spec: template: spec: containers: - name: api, resources: {}",
+      "issue": "API container lacks resource requests and limits, which can cause unpredictable performance and resource exhaustion.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,106 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "Customer refund request details",
+      "output": "Validated request or rejection reason",
+      "next": "FraudCheckAgent",
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 5
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request",
+      "output": "Fraud check result (Pass/Fail)",
+      "next": {
+        "if": "output == 'Pass'",
+        "then": "ApprovalAgent",
+        "else": "RejectionAgent"
+      },
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Fraud check pass result",
+      "output": "Approval decision (Approved/Rejected)",
+      "next": "PaymentAgent",
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 5
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved decision",
+      "output": "Payment confirmation or error",
+      "next": "NotificationAgent",
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 15
+    },
+    {
+      "name": "RejectionAgent",
+      "input": "Fraud check fail result or manual rejection",
+      "output": "Rejection reason",
+      "next": "NotificationAgent",
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 5
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Approval or rejection outcome",
+      "output": "Customer notification (success or failure)",
+      "next": null,
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 5
+    },
+    {
+      "name": "ErrorHandlingAgent",
+      "input": "Any agent's error output",
+      "output": "Error log and escalation decision",
+      "next": {
+        "if": "error_severity == 'high'",
+        "then": "HumanEscalationAgent",
+        "else": "LoggingAgent"
+      },
+      "fallback": null,
+      "timeout": 2
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "Escalation request",
+      "output": "Human decision (Approve/Reject/Investigate)",
+      "next": {
+        "if": "output == 'Approve'",
+        "then": "ApprovalAgent",
+        "else": "RejectionAgent"
+      },
+      "fallback": "ErrorHandlingAgent",
+      "timeout": 30
+    },
+    {
+      "name": "LoggingAgent",
+      "input": "Error details",
+      "output": "Audit log entry",
+      "next": null,
+      "fallback": null,
+      "timeout": 2
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents": ["ValidationTriageAgent", "FraudCheckAgent", "ApprovalAgent", "PaymentAgent", "NotificationAgent"],
+    "conditional_branch": true,
+    "fallback_for_each": true,
+    "first_agent": "ValidationTriageAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "total_processing_time_seconds": 60,
+    "handle_approved_rejected": true,
+    "logging_at_each_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_for_each_agent": true
+  }
+}
+```

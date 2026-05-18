@@ -1,0 +1,19 @@
+```json
+{
+  "q1": "Conflict resolution strategy: Operational Transformation (OT) is preferred for real-time collaborative editors like Google Docs, as it ensures convergence of document states across multiple clients while maintaining a smooth user experience.",
+  "q2": "WebSocket is chosen for real-time sync due to its full-duplex communication channel, enabling low-latency bi-directional messaging between clients and servers, which is essential for real-time collaboration.",
+  "q3": "A document-oriented NoSQL database such as Apache Cassandra or MongoDB is recommended for document storage, offering flexible schema design, horizontal scalability, and efficient handling of large, mutable documents.",
+  "q4": "Offline editing is handled using a client-side operational transformation engine that records local operations in a local operation log. Upon reconnection, these operations are sent to the server for reconciliation using the chosen OT algorithm.",
+  "q5": "Apache Kafka is selected as the message broker for real-time events due to its high throughput, fault tolerance, and ability to handle large volumes of collaborative events across distributed systems.",
+  "q6": "Horizontal scaling for WebSocket servers is achieved through a stateless design, leveraging a load balancer (e.g., NGINX or HAProxy) to distribute connections across multiple WebSocket server instances, possibly using sticky sessions or a distributed session store like Redis.",
+  "q7": "Cursor position sharing is managed by broadcasting cursor state events over WebSockets, including user ID, document ID, and cursor coordinates, ensuring all participants see each other's cursors in real time.",
+  "q8": "Authentication is implemented using OAuth 2.0 with JWT (JSON Web Tokens) for secure, stateless authentication across the system, ensuring that only authorized users can access and edit documents.",
+  "q9": "Version history is implemented by periodically snapshotting the document state and storing these snapshots in a version control system-like database, allowing users to revert to previous versions or view revision history.",
+  "q10": "A Content Delivery Network (CDN) such as Cloudflare or AWS CloudFront is used for serving static assets (JS, CSS, images) to reduce latency and improve load times for users across geographically dispersed locations.",
+  "q11": "Large documents (1000+ pages) are handled by dividing the document into smaller chunks or pages that are loaded on-demand (lazy loading) and using efficient diffing algorithms to minimize the amount of data transmitted during collaboration.",
+  "q12": "Rate limiting is implemented using token bucket algorithms at the API gateway level, controlling the number of concurrent operations per user or IP to prevent abuse and ensure system stability.",
+  "q13": "Data backup strategy includes regular snapshots of the document database and version history store, stored in a geographically redundant storage solution like Amazon S3 or Google Cloud Storage, with automated backup and retention policies.",
+  "q14": "Concurrent image uploads are managed by queuing upload requests in a message broker (e.g., RabbitMQ or Kafka) and processing them asynchronously, ensuring that uploads do not block real-time editing operations.",
+  "q15": "Monitoring and observability are provided by a stack including Prometheus for metrics collection, Grafana for dashboards, ELK Stack (Elasticsearch, Logstash, Kibana) for log aggregation and analysis, and OpenTelemetry for distributed tracing across services."
+}
+```

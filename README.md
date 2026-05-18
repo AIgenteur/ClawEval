@@ -162,30 +162,31 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 20 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
 | 21 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
 | 22 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
-| 23 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
-| 24 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
-| 25 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
-| 26 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
-| 27 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 28 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
-| 29 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 30 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 31 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
-| 32 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
-| 33 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
-| 34 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 35 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
-| 36 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
-| 37 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 38 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
-| 39 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
-| 40 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
-| 41 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 42 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
-| 43 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
-| 44 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
-| 45 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
-| 46 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
+| 23 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
+| 24 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
+| 25 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
+| 26 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
+| 27 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
+| 28 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 29 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
+| 30 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
+| 31 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 32 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
+| 33 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
+| 34 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
+| 35 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 36 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
+| 37 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
+| 38 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 39 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
+| 40 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
+| 41 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
+| 42 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 43 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
+| 44 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
+| 45 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 46 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
+| 47 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 > All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)** · **[RTX 3090 24GB Guide →](docs/results-rtx3090-24gb.md)**
 >

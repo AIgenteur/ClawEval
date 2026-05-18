@@ -1,0 +1,83 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against a schema according to the specified rules, without using any imports:
+
+```python
+class JSONValidator:
+    @staticmethod
+    def validate(data, schema):
+        errors = []
+        
+        for field_name, field_schema in schema.items():
+            required = field_schema.get("required", False)
+            field_value = data.get(field_name)
+            
+            if required and field_value is None:
+                errors.append(f"Field '{field_name}' is required.")
+                continue
+            
+            field_type = field_schema["type"]
+            if field_type == "str":
+                if not isinstance(field_value, str):
+                    errors.append(f"Field '{field_name}' must be a string.")
+                if "min_length" in field_schema and len(field_value) < field_schema["min_length"]:
+                    errors.append(f"Field '{field_name}' must have at least {field_schema['min_length']} characters.")
+                if "max_length" in field_schema and len(field_value) > field_schema["max_length"]:
+                    errors.append(f"Field '{field_name}' must have at most {field_schema['max_length']} characters.")
+            
+            elif field_type == "int":
+                if not isinstance(field_value, int):
+                    errors.append(f"Field '{field_name}' must be an integer.")
+                if "min" in field_schema and field_value < field_schema["min"]:
+                    errors.append(f"Field '{field_name}' must be at least {field_schema['min']}.")
+                if "max" in field_schema and field_value > field_schema["max"]:
+                    errors.append(f"Field '{field_name}' must be at most {field_schema['max']}.")
+            
+            elif field_type == "float":
+                if not isinstance(field_value, float):
+                    errors.append(f"Field '{field_name}' must be a float.")
+                if "min" in field_schema and field_value < field_schema["min"]:
+                    errors.append(f"Field '{field_name}' must be at least {field_schema['min']}.")
+                if "max" in field_schema and field_value > field_schema["max"]:
+                    errors.append(f"Field '{field_name}' must be at most {field_schema['max']}.")
+            
+            elif field_type == "bool":
+                if not isinstance(field_value, bool):
+                    errors.append(f"Field '{field_name}' must be a boolean.")
+            
+            elif field_type == "list":
+                if not isinstance(field_value, list):
+                    errors.append(f"Field '{field_name}' must be a list.")
+                if "min_length" in field_schema and len(field_value) < field_schema["min_length"]:
+                    errors.append(f"Field '{field_name}' must contain at least {field_schema['min_length']} elements.")
+                if "max_length" in field_schema and len(field_value) > field_schema["max_length"]:
+                    errors.append(f"Field '{field_name}' must contain at most {field_schema['max_length']} elements.")
+                # Optionally, you can validate each item in the list if a schema for items is provided
+            
+            elif field_type == "dict":
+                if not isinstance(field_value, dict):
+                    errors.append(f"Field '{field_name}' must be a dictionary.")
+                # Optionally, you can validate each key-value pair in the dictionary if a schema for items is provided
+            
+            else:
+                errors.append(f"Unknown type '{field_type}' for field '{field_name}'.")
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+```
+
+This class provides a `validate` method that takes `data` and `schema` as input and returns a dictionary with the validation result and any encountered errors.
+
+The validation process follows these steps:
+
+1. Iterate over each field in the schema.
+2. Check if the field is required and present in the data. If not, add an error.
+3. Determine the expected type of the field based on the schema.
+4. Validate the field value according to its type:
+   - For strings, check the type and length constraints (`min_length`, `max_length`).
+   - For numbers (int and float), check the type and range constraints (`min`, `max`).
+   - For booleans, check the type.
+   - For lists, check the type and length constraints (`min_length`, `max_length`).
+   - For dictionaries, check the type.
+   - If an unknown type is encountered, add an error.
+5. Collect all errors encountered during validation.
+6. Return a dictionary with the `valid` status (True if no errors, False otherwise) and the list of `errors`.
+
+Note that this implementation assumes the schema follows the specified format and does not handle nested schemas or complex validation rules beyond the basic constraints mentioned.

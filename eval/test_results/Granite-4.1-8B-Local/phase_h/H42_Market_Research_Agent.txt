@@ -1,0 +1,88 @@
+To calculate the requested metrics, we'll use the provided SaaS market data. Let's go through each metric step by step.
+
+### Given Data:
+| Company | Revenue ($M) | Growth % | Customers | Employees | Market Share % |
+|---------|---------------|----------|-----------|-----------|-----------------|
+| AlphaCo | 450 | 28 | 12000 | 1200 | 18.0 |
+| BetaCo  | 380 | 15 | 9500  | 950   | 15.2 |
+| GammaCo | 310 | 42 | 7200  | 680   | 12.4 |
+| DeltaCo | 280 | 8  | 11000 | 720   | 11.2 |
+| EpsilCo | 220 | 35 | 5800  | 520   | 8.8  |
+| Others   | 860 | 12 | 45000 | 4200  | 34.4 |
+
+### Calculations:
+
+**m1: Total addressable market size ($M)**
+- Sum of all revenues: \(450 + 380 + 310 + 280 + 220 + 860 = 2700\)
+
+**m2: Top 5 companies combined market share (%)**
+- Top 5 companies: AlphaCo, BetaCo, GammaCo, DeltaCo, EpsilCo
+- Combined market share: \(18.0 + 15.2 + 12.4 + 11.2 + 8.8 = 65.6\%\)
+
+**m3: Revenue-weighted average growth rate for top 5 (%)**
+- Weighted average growth: \(\frac{(450 \times 28) + (380 \times 15) + (310 \times 42) + (280 \times 8) + (220 \times 35)}{450 + 380 + 310 + 280 + 220}\)
+- Calculation: \(\frac{12600 + 5700 + 13020 + 2240 + 7700}{1440} = \frac{35260}{1440} \approx 24.5\%\)
+
+**m4: AlphaCo revenue per customer ($)**  
+- Revenue per customer: \(\frac{450}{12000} \times 1000 = 37.5\)
+
+**m5: Average revenue per employee for top 5 ($K)**
+- Total revenue of top 5: \(450 + 380 + 310 + 280 + 220 = 1440\)
+- Total employees of top 5: \(1200 + 950 + 680 + 720 + 520 = 3670\)
+- Average revenue per employee: \(\frac{1440}{3670} \times 1000 \approx 392.3\)
+
+**m6: GammaCo projected revenue next year ($M) based on growth rate**
+- Projected revenue: \(310 \times (1 + 0.42) = 310 \times 1.42 = 439.9\)
+
+**m7: Market HHI (Herfindahl–Hirschman Index, sum of squared market shares)**
+- HHI: \(18.0^2 + 15.2^2 + 12.4^2 + 11.2^2 + 8.8^2 + 34.4^2\)
+- Calculation: \(324 + 231.04 + 153.76 + 125.44 + 77.44 + 1183.36 = 2114.96\)
+
+**m8: BetaCo revenue per employee ($K)**
+- Revenue per employee: \(\frac{380}{950} \times 1000 \approx 400.0\)
+
+**m9: Highest growth company's market share (%)**
+- Highest growth: GammaCo (42%)
+- Market share of GammaCo: 12.4%
+
+**m10: Customers per employee ratio for DeltaCo**
+- Customers per employee: \(\frac{11000}{720} \approx 15.3\)
+
+**m11: If GammaCo maintains growth for 2 years, projected revenue ($M)**
+- Projected revenue after 2 years: \(310 \times (1 + 0.42)^2 = 310 \times 1.42^2 = 310 \times 2.0164 \approx 625.2\)
+
+**m12: Top 3 market share combined (%)**
+- Top 3 companies: AlphaCo, BetaCo, GammaCo
+- Combined market share: \(18.0 + 15.2 + 12.4 = 45.6\%\)
+
+**m13: Average customers per company (top 5 only)**
+- Total customers of top 5: \(12000 + 9500 + 7200 + 11000 + 5800 = 45500\)
+- Average customers: \(\frac{45500}{5} = 9100\)
+
+**m14: Revenue needed for 20% market share ($M)**
+- Total market size: 2700 (from m1)
+- Revenue for 20%: \(0.20 \times 2700 = 540\)
+
+**m15: EpsilCo revenue per customer ($)**
+- Revenue per customer: \(\frac{220}{5800} \times 1000 \approx 37.9\)
+
+### JSON Response:
+```json
+{
+  "m1": 2700.0,
+  "m2": 65.6,
+  "m3": 24.5,
+  "m4": 37.5,
+  "m5": 392.3,
+  "m6": 439.9,
+  "m7": 2114.96,
+  "m8": 400.0,
+  "m9": 12.4,
+  "m10": 15.3,
+  "m11": 625.2,
+  "m12": 45.6,
+  "m13": 9100.0,
+  "m14": 540.0,
+  "m15": 37.9
+}
+```

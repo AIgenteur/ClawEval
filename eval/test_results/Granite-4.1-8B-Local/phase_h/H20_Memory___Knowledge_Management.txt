@@ -1,0 +1,51 @@
+**Step‑by‑step reasoning for each query**
+
+| # | Query | Evaluation | Reason |
+|---|-------|------------|--------|
+|1|Alice leads exactly 2 projects.|**TRUE**|Knowledge base: “Alice is a Senior Engineer. She manages 2 projects simultaneously.” Projects she leads are Alpha and Gamma.|
+|2|Bob has always been on Project Alpha.|**FALSE**|Bob transferred from Beta to Alpha in Feb 2024, so he was not always on Alpha.|
+|3|Project Beta uses PostgreSQL.|**FALSE**|Beta’s stack is Go, MongoDB, Kafka – no PostgreSQL.|
+|4|Project Gamma has the largest budget.|**TRUE**|Gamma’s budget is $200 K, larger than Alpha ($120 K) and Beta ($85 K).|
+|5|Dave's team currently has 3 members.|**TRUE**|Dave (lead) + Eve + Frank = 3 members (Frank is still listed).|
+|6|Carol is currently active on Project Alpha.|**FALSE**|Carol went on leave in Aug 2024 and was replaced by Ivy; Carol is not active.|
+|7|Alice works with PostgreSQL on at least one project.|**TRUE**|Alice leads Alpha, which uses PostgreSQL.|
+|8|All three projects use the same database.|**FALSE**|Alpha uses PostgreSQL, Beta uses MongoDB, Gamma uses PostgreSQL – not all the same.|
+|9|Project Alpha is the oldest project.|**TRUE**|Alpha started Jan 2024, earlier than Beta (Mar 2024) and Gamma (Jun 2024).|
+|10|Frank is still on Project Beta.|**FALSE**|Frank left the company in Jul 2024.|
+|11|Project Beta is in production.|**FALSE**|Beta’s status is “Development”.|
+|12|Ivy joined Project Alpha.|**TRUE**|Carol was replaced by Ivy on Project Alpha.|
+|13|Bob was originally on Project Beta.|**TRUE**|Bob transferred from Beta to Alpha, implying he started on Beta.|
+|14|Project Gamma uses Go.|**FALSE**|Gamma’s stack is Rust, PostgreSQL, gRPC – no Go.|
+|15|The total budget across all projects exceeds $400K.|**FALSE**|Total = $120 K + $85 K + $200 K = $405 K → exceeds $400 K? Wait, $405 K **does** exceed $400 K. Correction: **TRUE**.|
+|16|Alice and Dave work on the same project.|**FALSE**|Alice leads Alpha, Dave leads Beta – no overlap.|
+|17|Project Alpha uses Redis for caching.|**TRUE**|Alpha’s stack includes Redis.|
+|18|Henry works on Project Gamma.|**TRUE**|Gamma’s team includes Henry.|
+|19|Eve is on a project that uses Kafka.|**TRUE**|Beta’s stack includes Kafka, and Eve is a member of Beta.|
+|20|Carol's replacement (Ivy) works on the same project Carol was on.|**TRUE**|Carol was on Alpha; Ivy replaced her on Alpha.|
+
+**Final JSON response**
+
+```json
+{
+  "1": "TRUE",
+  "2": "FALSE",
+  "3": "FALSE",
+  "4": "TRUE",
+  "5": "TRUE",
+  "6": "FALSE",
+  "7": "TRUE",
+  "8": "FALSE",
+  "9": "TRUE",
+  "10": "FALSE",
+  "11": "FALSE",
+  "12": "TRUE",
+  "13": "TRUE",
+  "14": "FALSE",
+  "15": "TRUE",
+  "16": "FALSE",
+  "17": "TRUE",
+  "18": "TRUE",
+  "19": "TRUE",
+  "20": "TRUE"
+}
+```

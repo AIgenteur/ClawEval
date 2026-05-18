@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount application. The subtotal is multiplied by 0.20 instead of being reduced by 20%. It should be `subtotal = subtotal * 0.80`.",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount subtraction. The expression `subtotal -= subtotal * 10` subtracts 10 times the subtotal, which is incorrect. It should be `subtotal -= subtotal * 0.10`.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "No action taken when stock goes negative. The `pass` statement does nothing, so out-of-stock items are not handled properly.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Accidental use of `=+` instead of `+=`. This results in `total_revenue` being set to `total` each iteration rather than accumulating the total.",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero if `orders` is empty. The calculation of `avg_order` will raise a ZeroDivisionError.",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "Incorrect use of `max` with a generator expression that accesses `'total'` in each result dictionary. While this works, it is less efficient and could be clearer.",
+      "severity": "minor"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation. Only checks for the presence of '@', which does not guarantee a valid email format.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect shipping cost calculation. The formula `base_rate + weight * per_kg + distance + per_km` incorrectly adds `distance` directly instead of `distance * per_km`. It should be `base_rate + weight * per_kg + distance * per_km`.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code. The `elif weight > 50:` block is unreachable because the previous `if weight > 30:` condition is always true for weights greater than 30.",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Rounding cost to nearest integer. This loses decimal precision, which may be undesirable for financial calculations.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Mutable default argument. `merged = profile_a` reuses the same dictionary object across function calls, leading to potential state leakage.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded update date. The `updated_at` field is always set to '2024-01-01', which is not dynamic.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Simple CSV parsing without handling quoted fields or commas within quotes, leading to incorrect parsing of CSV lines.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Appending to `seen` after checking for duplicates. This results in duplicates being added to `seen`, causing incorrect duplicate detection.",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Incorrect variable name in analytics calculation. The variable `total_revenue` is not updated correctly due to the bug on line 31, leading to inaccurate `avg_order` calculation.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```
