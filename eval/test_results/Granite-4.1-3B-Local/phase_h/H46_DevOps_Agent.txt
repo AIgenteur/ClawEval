@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "1",
+      "issue": "Using legacy `apiVersion: apps/v1` for Deployment is acceptable but could be updated to newer versions if applicable.",
+      "severity": "minor"
+    },
+    {
+      "line": "5",
+      "issue": "The `resources` field is empty for the `api` container, which may lead to suboptimal resource allocation.",
+      "severity": "minor"
+    },
+    {
+      "line": "7",
+      "issue": "Setting `runAsRoot: true` and `privileged: true` in `securityContext` exposes the container to potential security risks.",
+      "severity": "critical"
+    },
+    {
+      "line": "9",
+      "issue": "Hardcoded sensitive values like `DB_PASSWORD` and `API_KEY` in the YAML file is a security vulnerability.",
+      "severity": "critical"
+    },
+    {
+      "line": "12",
+      "issue": "Using `hostPath` for volume mounting is not portable and can cause issues in different environments.",
+      "severity": "major"
+    },
+    {
+      "line": "14",
+      "issue": "The `Service` kind is defined with `type: LoadBalancer`, which may introduce external exposure and cost implications.",
+      "severity": "major"
+    },
+    {
+      "line": "18",
+      "issue": "The `selector` in the Service points to `app: web-api`, which may not match the `metadata.labels` if they differ.",
+      "severity": "minor"
+    },
+    {
+      "line": "22",
+      "issue": "The `cpu` resource request for the `sidecar` container is set to an unusually high value (`8` CPUs), which may lead to resource contention.",
+      "severity": "major"
+    },
+    {
+      "line": "24",
+      "issue": "The `memory` resource request for the `sidecar` container is set to a very high value (`10Gi`), which may exceed typical requirements.",
+      "severity": "major"
+    },
+    {
+      "line": "26",
+      "issue": "The `ports` section in the Service maps `port: 80` to `targetPort: 8080`, which may not align with the actual service port exposed by the Deployment.",
+      "severity": "minor"
+    },
+    {
+      "line": "28",
+      "issue": "No `terminationGracePeriodSeconds` is specified for the Deployment, which may lead to abrupt pod termination.",
+      "severity": "minor"
+    },
+    {
+      "line": "30",
+      "issue": "The `metadata` section for the Service does not include a `namespace`, which may cause deployment issues in multi-namespace environments.",
+      "severity": "minor"
+    },
+    {
+      "line": "32",
+      "issue": "The `kind` field is correctly set to `Service`, but the `apiVersion` should be `v1` for compatibility with older Kubernetes versions.",
+      "severity": "minor"
+    },
+    {
+      "line": "34",
+      "issue": "The `spec` section for the Service does not include `externalTrafficPolicy`, which could affect network policies and observability.",
+      "severity": "minor"
+    },
+    {
+      "line": "36",
+      "issue": "The `spec` section for the Deployment does not include `strategy`, which defaults to `Recreate` and may lead to downtime during updates.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

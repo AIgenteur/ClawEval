@@ -1,0 +1,44 @@
+```python
+def is_valid_password(password):
+    if not (8 <= len(password) <= 64):
+        return False
+    if any(char.isspace() for char in password):
+        return False
+    if password[0].isdigit():
+        return False
+    if "password" in password.lower():
+        return False
+    if not any(char.isupper() for char in password):
+        return False
+    if not any(char.islower() for char in password):
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not any(char in "!@#$%^&*()-_+=" for char in password):
+        return False
+    for i in range(len(password) - 3):
+        if password[i] == password[i+1] == password[i+2] == password[i+3]:
+            return False
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Pass1234", True, True),
+        ("password", False, False),
+        ("Pass123", False, False),
+        ("PASS1234", False, False),
+        ("pass1234", False, False),
+        ("Pass!@#", True, True),
+        ("Pass!@#1", True, True),
+        ("Pass!@#12", True, True),
+        ("Pass!@#123", True, True),
+        ("Pass!@#1234", True, True),
+        ("Pass!@#12345", True, True),
+        ("Pass!@#123456", True, True),
+        ("Pass!@#1234567", True, True),
+        ("Pass!@#12345678", True, True),
+        ("Pass!@#123456789", False, False),  # exceeds 64 characters
+    ]
+    return tests
+```

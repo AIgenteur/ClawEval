@@ -1,0 +1,23 @@
+```json
+{
+  "bugs": [
+    {"line": 12, "bug": "Discount is applied as a subtraction instead of multiplication, leading to incorrect discount calculation.", "severity": "major"},
+    {"line": 14, "bug": "Discount is incorrectly calculated using a decimal value (10) instead of a percentage (0.10).", "severity": "major"},
+    {"line": 22, "bug": "Negative stock is allowed without raising an error or skipping the order, which may lead to logical issues.", "severity": "minor"},
+    {"line": 31, "bug": "Using `total_revenue =+ total` is redundant; it should be `total_revenue += total` to correctly accumulate revenue.", "severity": "major"},
+    {"line": 34, "bug": "Average order calculation divides by `len(orders)`, which may include orders without a total (e.g., if an order fails), leading to incorrect results.", "severity": "major"},
+    {"line": 35, "bug": "Max order calculation uses `max(r['total'] for r in results)`, which will fail if `results` is empty, potentially causing an error.", "severity": "major"},
+    {"line": 46, "bug": "Email validation only checks for the presence of '@', which is insufficient; it does not validate domain or format.", "severity": "major"},
+    {"line": 53, "bug": "Cost calculation adds `distance` directly to the shipping cost, which may not be intended (e.g., distance might be in kilometers, not cost).", "severity": "major"},
+    {"line": 57, "bug": "The condition `weight > 50` is unreachable due to the earlier `elif weight > 50`, making it dead code.", "severity": "minor"},
+    {"line": 60, "bug": "Rounding the shipping cost to the nearest integer loses decimal precision, which may be important for financial calculations.", "severity": "minor"},
+    {"line": 63, "bug": "Merging profiles without checking for existing keys can overwrite data unintentionally.", "severity": "minor"},
+    {"line": 67, "bug": "Hardcoding the `updated_at` date may not reflect the actual time of merge, leading to inaccurate tracking.", "severity": "minor"},
+    {"line": 71, "bug": "Splits the line by commas, which assumes a specific CSV format and will fail if the line contains commas within fields.", "severity": "major"},
+    {"line": 78, "bug": "Appending `item` to `seen` after checking for duplicates means duplicates are not correctly identified.", "severity": "major"},
+    {"line": 12, "bug": "Discount logic should be applied to the subtotal before tax calculation to ensure accurate final totals.", "severity": "critical"},
+    {"line": 14, "bug": "Ensure discount percentage is correctly applied by multiplying subtotal by (1 - discount_rate).", "severity": "critical"}
+  ],
+  "count": 15
+}
+```

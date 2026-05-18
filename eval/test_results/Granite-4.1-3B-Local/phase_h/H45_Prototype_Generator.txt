@@ -1,0 +1,53 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        for field, rules in schema.items():
+            if field not in data:
+                if rules.get("required", False):
+                    errors.append(f"Field '{field}' is required.")
+                continue
+            
+            value = data[field]
+            
+            expected_type = rules.get("type")
+            if expected_type == "str":
+                if not isinstance(value, str):
+                    errors.append(f"Field '{field}' must be a string.")
+                if rules.get("min_length") is not None and len(value) < rules["min_length"]:
+                    errors.append(f"Field '{field}' must be at least {rules['min_length']} characters long.")
+                if rules.get("max_length") is not None and len(value) > rules["max_length"]:
+                    errors.append(f"Field '{field}' must be no longer than {rules['max_length']} characters.")
+            elif expected_type == "int":
+                if not isinstance(value, int):
+                    errors.append(f"Field '{field}' must be an integer.")
+                if rules.get("min") is not None and value < rules["min"]:
+                    errors.append(f"Field '{field}' must be at least {rules['min']}.")
+                if rules.get("max") is not None and value > rules["max"]:
+                    errors.append(f"Field '{field}' must be no greater than {rules['max']}.")
+            elif expected_type == "float":
+                if not isinstance(value, float):
+                    errors.append(f"Field '{field}' must be a float.")
+                if rules.get("min") is not None and value < rules["min"]:
+                    errors.append(f"Field '{field}' must be at least {rules['min']}.")
+                if rules.get("max") is not None and value > rules["max"]:
+                    errors.append(f"Field '{field}' must be no greater than {rules['max']}.")
+            elif expected_type == "bool":
+                if not isinstance(value, bool):
+                    errors.append(f"Field '{field}' must be a boolean.")
+            elif expected_type == "list":
+                if not isinstance(value, list):
+                    errors.append(f"Field '{field}' must be a list.")
+                if rules.get("min_length") is not None and len(value) < rules["min_length"]:
+                    errors.append(f"Field '{field}' must contain at least {rules['min_length']} items.")
+                if rules.get("max_length") is not None and len(value) > rules["max_length"]:
+                    errors.append(f"Field '{field}' must contain no more than {rules['max_length']} items.")
+            elif expected_type == "dict":
+                if not isinstance(value, dict):
+                    errors.append(f"Field '{field}' must be a dictionary.")
+            else:
+                errors.append(f"Unsupported type '{expected_type}' for field '{field}'.")
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+```
