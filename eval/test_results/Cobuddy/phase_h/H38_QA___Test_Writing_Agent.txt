@@ -1,0 +1,66 @@
+```python
+def is_valid_password(password):
+    # Length check
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # No spaces
+    if ' ' in password:
+        return False
+
+    # Cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Required character types
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    specials = set('!@#$%^&*()-_+=')
+    has_special = any(c in specials for c in password)
+
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    # Must not contain "password" (case‑insensitive)
+    if 'password' in password.lower():
+        return False
+
+    # No more than 3 consecutive identical characters
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i - 1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Abcdef1!", True),
+        ("aB3!cdef", True),
+        ("Short1!", False),                     # too short
+        ("a" * 65, False),                      # too long
+        ("uppercaseonly1!", False),             # no lowercase
+        ("lowercaseonly1!", False),             # no uppercase
+        ("NoDigitAb!", False),                  # no digit
+        ("NoSpecial123A", False),               # no special character
+        ("1StartWithDigit!", False),            # starts with digit
+        ("Valid Pass1!", False),                # contains space
+        ("Password123!", False),                # contains "password"
+        ("NoPasswor1!", True),                  # valid
+        ("AAAA123!", False),                    # 4 consecutive 'A's
+        ("Aaa1!bbb", True),                     # 3 consecutive 'b's allowed
+        ("Aa1!Aa1!", True),                     # valid
+    ]
+
+    results = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```

@@ -1,0 +1,22 @@
+```json
+{
+  "issues": [
+    {"line": "spec.replicas: 1", "issue": "Single replica provides no high availability or fault tolerance", "severity": "minor"},
+    {"line": "image: myapp:latest", "issue": "Using 'latest' tag causes unpredictable deployments and rollouts", "severity": "minor"},
+    {"line": "resources: {}", "issue": "No resource limits defined - risk of resource exhaustion", "severity": "major"},
+    {"line": "securityContext.runAsRoot: true", "issue": "Running as root is a security risk and violates least privilege", "severity": "major"},
+    {"line": "securityContext.privileged: true", "issue": "Privileged mode gives container full access to host, critical security risk", "severity": "critical"},
+    {"line": "env.DB_PASSWORD value: sup3rs3cret!", "issue": "Hardcoded database password in plain text - secrets should use Kubernetes Secrets", "severity": "critical"},
+    {"line": "env.API_KEY value: ak_live_12345", "issue": "Hardcoded API key in plain text - secrets should use Kubernetes Secrets", "severity": "critical"},
+    {"line": "volumeMounts.mountPath: /data", "issue": "Volume mount missing accessMode and security context settings", "severity": "minor"},
+    {"line": "hostPath.path: /tmp/data", "issue": "hostPath volume gives container direct host filesystem access - security risk", "severity": "major"},
+    {"line": "sidecar.resources.requests.memory: 10Gi", "issue": "Sidecar requesting 10Gi memory is excessive and may cause scheduling issues", "severity": "major"},
+    {"line": "sidecar.resources.requests.cpu: 8", "issue": "Sidecar requesting 8 CPU is excessive and may cause scheduling issues", "severity": "major"},
+    {"line": "sidecar.resources: only requests, no limits", "issue": "Sidecar has no resource limits defined", "severity": "major"},
+    {"line": "type: LoadBalancer", "issue": "LoadBalancer service type may incur unnecessary cloud costs; use ClusterIP if internal", "severity": "minor"},
+    {"line": "No liveness/readiness probes", "issue": "Missing health checks - container failures won't be detected automatically", "severity": "minor"},
+    {"line": "No TLS configuration", "issue": "Service exposes port 80 without TLS - data transmitted in plaintext", "severity": "major"}
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "self.requests is a plain list; using a list for time‑stamped entries makes the O(n) filtering inefficient and prone to race conditions when multiple coroutines call acquire concurrently.",
+      "fix": "Use collections.deque for self.requests (e.g., from collections import deque) and protect the manipulation with an asyncio.Lock."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop().time() is deprecated and may raise DeprecationWarning or fail in some environments.",
+      "fix": "Replace with asyncio.get_running_loop().time()."
+    },
+    {
+      "line": "25",
+      "bug": "A new aiohttp.ClientSession is created for every request, which is wasteful and can exhaust resources.",
+      "fix": "Create the ClientSession once (e.g., outside fetch_one) and reuse it for all requests."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 passes an integer, but aiohttp expects a ClientTimeout object (or a float in older versions). Passing an int can be ignored or cause unexpected behavior.",
+      "fix": "Use aiohttp.ClientTimeout(total=30) as the timeout argument."
+    },
+    {
+      "line": "29",
+      "bug": "results[url] = data overwrites any previous entry for the same URL, so duplicate URLs in the input list cause loss of data.",
+      "fix": "Store results in a list or include the request index, e.g., results.append(data) or results[url] = results.get(url, []) + [data]."
+    },
+    {
+      "line": "31",
+      "bug": "results[url] = None also overwrites previous results for duplicate URLs.",
+      "fix": "Handle duplicate URLs the same way as line 29 (e.g., append None to a list)."
+    },
+    {
+      "line": "32",
+      "bug": "A bare except Exception: with pass silently swallows all exceptions, including KeyboardInterrupt and system exits.",
+      "fix": "Catch specific exceptions (e.g., aiohttp.ClientError) and either log the error or re‑raise; avoid using a bare except."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather(*tasks) stops gathering as soon as the first task raises, so some results may be lost.",
+      "fix": "Call asyncio.gather(*tasks, return_exceptions=True) to collect results (or exceptions) from all tasks."
+    },
+    {
+      "line": "42",
+      "bug": "process_item(item) is called without awaiting, so task is a coroutine object rather than a scheduled coroutine.",
+      "fix": "Await the coroutine: task = await process_item(item) or schedule it with asyncio.create_task(process_item(item))."
+    },
+    {
+      "line": "45",
+      "bug": "process_batch is an async function that yields, making it an async generator. The caller does not consume it with async for, so the yielded values are never observed.",
+      "fix": "Either remove the yield and return results directly, or ensure the caller uses async for to consume the generator."
+    },
+    {
+      "line": "52",
+      "bug": "self.pool is a plain list; popping from the end is LIFO and inefficient for a connection pool.",
+      "fix": "Use collections.deque for self.pool to get O(1) append/pop operations."
+    },
+    {
+      "line": "60",
+      "bug": "Connections are appended to the pool without being closed, leading to resource leaks.",
+      "fix": "Close the connection (e.g., conn.close()) before appending it back to the pool."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection returns a generic object instead of a realistic connection object.",
+      "fix": "Return a proper connection object (or a mock that mimics a connection) instead of object()."
+    },
+    {
+      "line": "68",
+      "bug": "The printed count may be misleading because results can be incomplete due to duplicate‑URL overwriting, uncaught exceptions, or gather stopping early.",
+      "fix": "Ensure all results are collected (e.g., use return_exceptions=True) and count the actual items returned, or adjust the print statement to reflect the possible loss."
+    },
+    {
+      "line": "8",
+      "bug": "RateLimiter.acquire modifies self.requests without synchronization, causing race conditions when multiple coroutines acquire concurrently.",
+      "fix": "Add an asyncio.Lock in RateLimiter and acquire it around the list manipulation in acquire()."
+    }
+  ],
+  "count": 15
+}
+```

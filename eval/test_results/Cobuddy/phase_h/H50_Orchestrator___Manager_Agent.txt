@@ -1,0 +1,106 @@
+```json
+{
+  "agents": [
+    {
+      "name": "TriageValidator",
+      "role": "validation",
+      "input": "Raw refund request payload: {customer_id, order_id, amount, reason, timestamp, refund_channel}",
+      "output": "{request_id, request_data, validated: true/false, validation_errors[], priority_level, estimated_amount}",
+      "next": "AuditLoggerAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 8,
+      "description": "Validates required fields, checks order existence, verifies refund window eligibility, assigns priority."
+    },
+    {
+      "name": "AuditLoggerAgent",
+      "role": "logging",
+      "input": "TriageValidator output + request_id + timestamp + agent status",
+      "output": "{log_entry_id, request_id, event_type, agent_status, payload_hash, created_at}",
+      "next": "FraudCheckAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5,
+      "description": "Writes immutable audit record for every inbound and outbound message per agent step."
+    },
+    {
+      "name": "FraudCheckAgent",
+      "role": "fraud-check",
+      "input": "{request_id, customer_id, order_id, amount, validated_request_data}",
+      "output": "{fraud_score, risk_level: low/medium/high, flagged_reasons[], decision: proceed/reject/manual_review}",
+      "next": "conditional: if decision == 'proceed' -> ApprovalAgent; if decision == 'reject' -> PaymentProcessingAgent (void flow); if decision == 'manual_review' -> HumanEscalationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 12,
+      "description": "Runs rule-engine scoring, checks velocity limits, flags known chargeback patterns, queries fraud DB."
+    },
+    {
+      "name": "ApprovalAgent",
+      "role": "approval",
+      "input": "{request_id, fraud_clearance, customer_id, amount, reason}",
+      "output": "{approval_status: auto_approved/manual_pending, approver_id, approval_notes, ceiling_check_passed}",
+      "next": "conditional: if auto_approved -> PaymentProcessingAgent; if manual_pending -> HumanEscalationAgent; if ceiling_check_failed -> PaymentProcessingAgent (void flow with rejection)",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10,
+      "description": "Applies refund policy rules, checks against approval ceiling, auto-approves or routes for manager sign-off."
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "role": "human-escalation",
+      "input": "{request_id, escalation_reason, agent_context, previous_agent_output}",
+      "output": "{escalation_id, assigned_agent_id, sla_deadline, triage_notes, resolution_path}",
+      "next": "conditional: if resolved -> PaymentProcessingAgent; if unresolved after timeout -> NotificationAgent (rejected outcome with explanation)",
+      "fallback": "NotificationAgent",
+      "timeout": 20,
+      "description": "Routes edge cases to human reviewer, captures context, tracks SLA, returns resolved data or times out."
+    },
+    {
+      "name": "PaymentProcessingAgent",
+      "role": "payment",
+      "input": "{request_id, approval_data, customer_payment_method, amount, refund_type}",
+      "output": "{payment_status: success/failed/voided, transaction_id, refunded_amount, failure_reason, settled}",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 15,
+      "description": "Initiates refund via payment gateway, handles void flow for rejected cases, retries on transient failures."
+    },
+    {
+      "name": "NotificationAgent",
+      "role": "notification",
+      "input": "{request_id, final_outcome: approved/rejected/escalated, transaction_details, customer_contact_info}",
+      "output": "{notification_sent: true/false, channels: [email, sms, in_app], templates_used, delivery_status}",
+      "next": null,
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10,
+      "description": "Sends final customer notification, internal stakeholder alert, and closes the workflow loop."
+    }
+  ],
+  "constraints": {
+    "min_agents": 7,
+    "required_roles": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branches": 2,
+    "fallback_per_agent": true,
+    "first_agent": "TriageValidator",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time_seconds": 60,
+    "outcomes_handled": ["approved", "rejected", "escalated"],
+    "audit_per_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_per_agent": true
+  },
+  "workflow_dag": {
+    "TriageValidator": ["AuditLoggerAgent"],
+    "AuditLoggerAgent": ["FraudCheckAgent"],
+    "FraudCheckAgent": ["ApprovalAgent", "PaymentProcessingAgent (void flow)", "HumanEscalationAgent"],
+    "ApprovalAgent": ["PaymentProcessingAgent", "HumanEscalationAgent", "PaymentProcessingAgent (void flow)"],
+    "HumanEscalationAgent": ["PaymentProcessingAgent", "NotificationAgent"],
+    "PaymentProcessingAgent": ["NotificationAgent"],
+    "NotificationAgent": []
+  },
+  "total_expected_time_seconds": 55,
+  "conditional_branches": {
+    "FraudCheckAgent": "decision: proceed -> ApprovalAgent | reject -> PaymentProcessingAgent (void) | manual_review -> HumanEscalationAgent",
+    "ApprovalAgent": "auto_approved -> PaymentProcessingAgent | manual_pending -> HumanEscalationAgent | ceiling_failed -> PaymentProcessingAgent (void)"
+  }
+}
+```

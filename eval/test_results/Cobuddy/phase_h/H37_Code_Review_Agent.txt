@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Discount 'SAVE20' multiplies subtotal by 0.20, reducing it to 20 % of the original instead of applying a 20 % discount (should be subtotal * 0.80).",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "Discount 'SAVE10' subtracts subtotal * 10, which removes 1000 % of the subtotal; it should subtract 10 % (subtotal * 0.10).",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "When inventory stock goes negative the code only executes `pass`; it should raise an error or skip the order instead of silently ignoring the problem.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Total revenue is updated with `total_revenue =+ total`, which is an assignment with a unary plus; it should be `+=` to accumulate revenue.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Average order is calculated by dividing `total_revenue` by `len(orders)`. If `orders` is empty this causes a ZeroDivisionError.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "Maximum order uses `max(r['total'] for r in results)`. If `results` is empty (e.g., no orders processed) this raises a ValueError.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "validate_email returns True for any string containing '@', ignoring other required parts of an email address (e.g., domain, no spaces).",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "calculate_shipping adds `distance` directly and adds `per_km` as a constant; distance should be multiplied by `per_km` (distance * per_km).",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "The `elif weight > 50` branch is unreachable because the preceding `if weight > 30` already catches weights > 50.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "The function returns `round(cost)`, discarding decimal places and losing monetary precision; it should round to two decimals or return a float.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "merge_user_profiles assigns `merged = profile_a`, creating a shallow reference. Mutating `merged` (e.g., adding 'updated_at') also mutates the original `profile_a`.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "The merged profile hard‑codes `updated_at` to '2024-01-01'; it should use the current timestamp or a parameter.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "parse_csv_line splits on ',' without handling quoted fields, so commas inside quotes are incorrectly treated as delimiters.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "find_duplicates appends each item to `seen` after the duplicate check, causing O(n²) look‑ups and allowing duplicate entries in `seen`. A set should be used instead.",
+      "severity": "minor"
+    },
+    {
+      "line": 33,
+      "bug": "The order result always sets status to 'completed' even when inventory stock went negative; the status should reflect a failure in such cases.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

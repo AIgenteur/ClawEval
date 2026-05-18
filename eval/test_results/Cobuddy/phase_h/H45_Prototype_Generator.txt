@@ -1,0 +1,112 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        """
+        Validate data against schema.
+        
+        Args:
+            data: dict to validate
+            schema: dict with field schemas
+            
+        Returns:
+            dict with "valid" (bool) and "errors" (list)
+        """
+        errors = []
+        
+        # Check if data is a dict
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dictionary"]}
+        
+        # Validate each field in schema
+        for field_name, field_schema in schema.items():
+            # Check if field is present
+            if field_name not in data:
+                if field_schema.get("required", False):
+                    errors.append(f"Field '{field_name}' is required but missing")
+                continue
+            
+            value = data[field_name]
+            expected_type = field_schema.get("type")
+            
+            # Check type
+            if expected_type:
+                if not self._check_type(value, expected_type):
+                    errors.append(f"Field '{field_name}' has invalid type, expected '{expected_type}'")
+            
+            # Validate based on type
+            if expected_type == "str":
+                self._validate_string(value, field_name, field_schema, errors)
+            elif expected_type in ["int", "float"]:
+                self._validate_number(value, field_name, field_schema, errors)
+            elif expected_type == "bool":
+                self._validate_bool(value, field_name, field_schema, errors)
+            elif expected_type == "list":
+                self._validate_list(value, field_name, field_schema, errors)
+            elif expected_type == "dict":
+                self._validate_dict(value, field_name, field_schema, errors)
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+    
+    def _check_type(self, value, expected_type):
+        """Check if value matches expected type."""
+        type_map = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict
+        }
+        
+        if expected_type not in type_map:
+            return True  # Skip type check if type not specified
+        
+        actual_type = type_map[expected_type]
+        
+        # Special handling: int is also a valid float
+        if expected_type == "float":
+            return isinstance(value, (int, float))
+        
+        return isinstance(value, actual_type)
+    
+    def _validate_string(self, value, field_name, field_schema, errors):
+        """Validate string constraints."""
+        if "min_length" in field_schema:
+            if len(value) < field_schema["min_length"]:
+                errors.append(f"Field '{field_name}' length {len(value)} is less than min_length {field_schema['min_length']}")
+        
+        if "max_length" in field_schema:
+            if len(value) > field_schema["max_length"]:
+                errors.append(f"Field '{field_name}' length {len(value)} is greater than max_length {field_schema['max_length']}")
+    
+    def _validate_number(self, value, field_name, field_schema, errors):
+        """Validate number constraints."""
+        if "min" in field_schema:
+            if value < field_schema["min"]:
+                errors.append(f"Field '{field_name}' value {value} is less than min {field_schema['min']}")
+        
+        if "max" in field_schema:
+            if value > field_schema["max"]:
+                errors.append(f"Field '{field_name}' value {value} is greater than max {field_schema['max']}")
+    
+    def _validate_bool(self, value, field_name, field_schema, errors):
+        """Validate bool - no additional constraints needed."""
+        pass
+    
+    def _validate_list(self, value, field_name, field_schema, errors):
+        """Validate list constraints."""
+        if "min_length" in field_schema:
+            if len(value) < field_schema["min_length"]:
+                errors.append(f"Field '{field_name}' length {len(value)} is less than min_length {field_schema['min_length']}")
+        
+        if "max_length" in field_schema:
+            if len(value) > field_schema["max_length"]:
+                errors.append(f"Field '{field_name}' length {len(value)} is greater than max_length {field_schema['max_length']}")
+    
+    def _validate_dict(self, value, field_name, field_schema, errors):
+        """Validate dict - no additional constraints needed."""
+        pass
+```

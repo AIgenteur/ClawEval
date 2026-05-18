@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - f-string query construction",
+      "severity": "critical"
+    },
+    {
+      "type": "Stored XSS / Server-Side Template Injection",
+      "location": "profile() - render_template_string with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected XSS",
+      "location": "search() - user input reflected in HTML response",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() - subprocess.run with shell=True and user-supplied command",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "download() - filepath from request.args used directly with send_file",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Write",
+      "location": "upload() - filename from user used in os.path.join without validation",
+      "severity": "high"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "upload() - no file type or content validation",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization (pickle)",
+      "location": "restore_session() - pickle.loads on user-supplied data",
+      "severity": "critical"
+    },
+    {
+      "type": "YAML Deserialization (YAML Bomb / Code Execution)",
+      "location": "load_config() - yaml.load without SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Credential",
+      "location": "SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Weak / Predictable Token",
+      "location": "login() - token generated with MD5 hash of username",
+      "severity": "medium"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data() - os.system with user-supplied format parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled in Production",
+      "location": "app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Input Validation",
+      "location": "All routes - no sanitization of user input",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Authentication / Authorization",
+      "location": "profile(), search(), run_command(), upload(), download(), export_data() - no auth checks",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}
+```
