@@ -1,0 +1,128 @@
+```python
+class LRUCache:
+    class _Node:
+        def __init__(self, key, val):
+            self.key = key
+            self.val = val
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self._Node(0, 0)
+        self.tail = self._Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_to_head(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add_to_head(node)
+            return node.val
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            node.val = value
+            self._add_to_head(node)
+        else:
+            node = self._Node(key, value)
+            self.cache[key] = node
+            self._add_to_head(node)
+            if len(self.cache) > self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, val):
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            self.stack.append((val, min(val, self.stack[-1][1])))
+
+    def pop(self):
+        self.stack.pop()
+
+    def top(self):
+        return self.stack[-1][0]
+
+    def get_min(self):
+        return self.stack[-1][1]
+
+
+def find_median(stream):
+    lo, hi = [], []
+    res = []
+
+    def sift_up(heap, idx):
+        while idx > 0:
+            p = (idx - 1) // 2
+            if heap[idx] < heap[p]:
+                heap[idx], heap[p] = heap[p], heap[idx]
+                idx = p
+            else:
+                break
+
+    def sift_down(heap, idx, size):
+        while True:
+            smallest = idx
+            l, r = 2 * idx + 1, 2 * idx + 2
+            if l < size and heap[l] < heap[smallest]:
+                smallest = l
+            if r < size and heap[r] < heap[smallest]:
+                smallest = r
+            if smallest != idx:
+                heap[idx], heap[smallest] = heap[smallest], heap[idx]
+                idx = smallest
+            else:
+                break
+
+    for num in stream:
+        if not lo or num <= -lo[0]:
+            lo.append(-num)
+            sift_up(lo, len(lo) - 1)
+        else:
+            hi.append(num)
+            sift_up(hi, len(hi) - 1)
+
+        if len(lo) > len(hi) + 1:
+            val = -lo[0]
+            lo[0] = lo[-1]
+            lo.pop()
+            sift_down(lo, 0, len(lo))
+            hi.append(val)
+            sift_up(hi, len(hi) - 1)
+        elif len(hi) > len(lo):
+            val = hi[0]
+            hi[0] = hi[-1]
+            hi.pop()
+            sift_down(hi, 0, len(hi))
+            lo.append(-val)
+            sift_up(lo, len(lo) - 1)
+
+        if len(lo) > len(hi):
+            res.append(float(-lo[0]))
+        else:
+            res.append((-lo[0] + hi[0]) / 2.0)
+
+    return res
+```

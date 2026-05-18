@@ -1,0 +1,22 @@
+```json
+{
+  "issues": [
+    {"line": "6", "issue": "replicas set to 1 provides no high availability or fault tolerance", "severity": "major"},
+    {"line": "17", "issue": "Using ':latest' image tag prevents deterministic deployments and complicates rollbacks", "severity": "major"},
+    {"line": "20", "issue": "Empty resources block means no CPU/memory requests or limits are defined for the main container", "severity": "major"},
+    {"line": "22", "issue": "Invalid field 'runAsRoot: true' (should be runAsNonRoot/runAsUser) and implies running as root, a security risk", "severity": "critical"},
+    {"line": "23", "issue": "privileged: true grants full host access, creating a severe container escape risk", "severity": "critical"},
+    {"line": "25-26", "issue": "DB_PASSWORD hardcoded in plaintext; sensitive data should use Kubernetes Secrets", "severity": "critical"},
+    {"line": "27-28", "issue": "API_KEY hardcoded in plaintext; sensitive data should use Kubernetes Secrets", "severity": "critical"},
+    {"line": "16-31", "issue": "Main container missing livenessProbe and readinessProbe for health monitoring", "severity": "major"},
+    {"line": "32-37", "issue": "Sidecar container missing livenessProbe and readinessProbe for health monitoring", "severity": "major"},
+    {"line": "34-37", "issue": "Sidecar resources only define requests but lack limits, risking resource starvation", "severity": "major"},
+    {"line": "36-37", "issue": "Sidecar requests 10Gi memory and 8 CPU, which is excessively high for a logger sidecar", "severity": "major"},
+    {"line": "39-41", "issue": "hostPath volume is insecure, non-portable, and bypasses Kubernetes storage management", "severity": "major"},
+    {"line": "48", "issue": "LoadBalancer service type exposes the app directly without ingress or network policy controls", "severity": "major"},
+    {"line": "17,33", "issue": "Missing explicit imagePullPolicy; defaults may cause unexpected behavior across environments", "severity": "minor"},
+    {"line": "14-41", "issue": "Missing podSecurityContext (e.g., runAsNonRoot, fsGroup) and dedicated serviceAccountName", "severity": "major"}
+  ],
+  "count": 15
+}
+```

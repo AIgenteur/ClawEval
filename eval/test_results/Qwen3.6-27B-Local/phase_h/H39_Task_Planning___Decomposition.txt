@@ -1,0 +1,26 @@
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Assess monolithic architecture and define migration strategy", "depends_on": [], "effort_days": 3, "team": "backend"},
+    {"id": 2, "task": "Define microservice boundaries and domain models", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 3, "task": "Setup CI/CD pipeline for microservice deployment", "depends_on": [1], "effort_days": 5, "team": "devops"},
+    {"id": 4, "task": "Analyze existing database schema for splitting", "depends_on": [2], "effort_days": 4, "team": "backend"},
+    {"id": 5, "task": "Implement database migration scripts for service isolation", "depends_on": [4], "effort_days": 6, "team": "backend"},
+    {"id": 6, "task": "Setup API gateway for routing and load balancing", "depends_on": [3], "effort_days": 5, "team": "devops"},
+    {"id": 7, "task": "Extract and containerize User Management service", "depends_on": [5, 6], "effort_days": 7, "team": "backend"},
+    {"id": 8, "task": "Extract and containerize Order Processing service", "depends_on": [5, 6], "effort_days": 7, "team": "backend"},
+    {"id": 9, "task": "Update frontend routing to point to new service endpoints", "depends_on": [7, 8], "effort_days": 5, "team": "frontend"},
+    {"id": 10, "task": "Refactor frontend API client libraries for microservices", "depends_on": [9], "effort_days": 4, "team": "frontend"},
+    {"id": 11, "task": "Write integration tests for extracted microservices", "depends_on": [7, 8], "effort_days": 5, "team": "qa"},
+    {"id": 12, "task": "Perform load testing on microservice endpoints", "depends_on": [11], "effort_days": 4, "team": "qa"},
+    {"id": 13, "task": "Configure frontend build and deployment pipeline", "depends_on": [10], "effort_days": 3, "team": "frontend"},
+    {"id": 14, "task": "Migrate authentication and session management module", "depends_on": [5], "effort_days": 6, "team": "backend"},
+    {"id": 15, "task": "Update frontend state management for async service calls", "depends_on": [13], "effort_days": 5, "team": "frontend"},
+    {"id": 16, "task": "Conduct end-to-end testing across all microservices", "depends_on": [11, 12, 14, 15], "effort_days": 6, "team": "qa"},
+    {"id": 17, "task": "Deploy staging environment with full microservice mesh", "depends_on": [16], "effort_days": 4, "team": "devops"},
+    {"id": 18, "task": "Execute cutover plan and traffic shifting", "depends_on": [17], "effort_days": 5, "team": "devops"},
+    {"id": 19, "task": "Post-migration validation and bug triage", "depends_on": [18], "effort_days": 4, "team": "qa"},
+    {"id": 20, "task": "Production rollout and migration documentation", "depends_on": [16, 19], "effort_days": 3, "team": "devops"}
+  ]
+}
+```

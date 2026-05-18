@@ -1,0 +1,17 @@
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) for eventual consistency without central coordination, using libraries like Yjs or Automerge.",
+  "q2": "WebSocket for full-duplex, low-latency bidirectional communication required for real-time edits and presence updates.",
+  "q3": "PostgreSQL (with JSONB for flexible document structure, partitioning for scale, and ACID guarantees for metadata/permissions).",
+  "q4": "Store operations and document state locally in IndexedDB; CRDTs automatically merge offline changes upon reconnection without conflicts.",
+  "q5": "Redis Pub/Sub for low-latency inter-server message routing, with Kafka for durable event logging and analytics.",
+  "q6": "Stateless WebSocket servers behind a load balancer with Redis Pub/Sub for cross-server message routing; use consistent hashing or document ID-based routing to co-locate collaborators when possible.",
+  "q7": "Broadcast cursor/selection coordinates via a dedicated presence channel over WebSocket; throttle updates (e.g., 10-20Hz) and store ephemeral state in Redis with TTL.",
+  "q8": "OAuth 2.0 with OpenID Connect for authentication, issuing short-lived JWTs for API/WebSocket handshake validation.",
+  "q9": "Append-only operation log combined with periodic snapshots stored in object storage (S3); enable time-travel by replaying ops or loading historical snapshots.",
+  "q10": "Global CDN (e.g., CloudFront/Cloudflare) with cache-busting versioned filenames, edge caching, and Cache-Control headers for long-term caching of immutable assets.",
+  "q11": "Virtualized rendering (only render visible viewport), chunked document storage/sync, and lazy-loading of remote content; CRDT state is kept in memory but DOM is optimized via windowing.",
+  "q12": "Token bucket algorithm at the API gateway and WebSocket layer, with per-user and per-document limits; separate quotas for edits, presence, and media uploads.",
+  "q13": "Automated daily snapshots with cross-region replication, database PITR, and versioned object storage; immutable backups retained for compliance and disaster recovery.",
+  "q14": "Client uploads directly to object storage via presigned URLs; async worker pipeline processes/resizes images; deduplication via content hashing (MD5/SHA-256).",
+  "q15": "Prometheus + Grafana for metrics, OpenTelemetry for distributed tracing, Loki/ELK for logs, and PagerDuty for alerting; APM integrated for end-to-end performance tracking."
+}

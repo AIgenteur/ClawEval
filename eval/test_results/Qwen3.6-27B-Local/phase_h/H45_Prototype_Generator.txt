@@ -1,0 +1,69 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+
+        # Mapping for type checking logic
+        # Note: We handle specific type logic (like bool vs int) inside the loop
+        
+        for field_name, rules in schema.items():
+            # 1. Check if field exists in data
+            if field_name not in data:
+                if rules.get("required", False):
+                    errors.append(f"Missing required field: '{field_name}'")
+                continue # Skip further validation if field is missing
+
+            value = data[field_name]
+            expected_type_str = rules.get("type")
+
+            # 2. Type Validation
+            type_valid = False
+
+            if expected_type_str == "bool":
+                # Strict check: must be exactly bool (bool is a subclass of int in Python)
+                if type(value) is bool:
+                    type_valid = True
+            elif expected_type_str == "int":
+                # Strict check: must be int, but NOT bool
+                if type(value) is int:
+                    type_valid = True
+            elif expected_type_str == "float":
+                # Strict check: must be float
+                if type(value) is float:
+                    type_valid = True
+            elif expected_type_str == "str":
+                if isinstance(value, str):
+                    type_valid = True
+            elif expected_type_str == "list":
+                if isinstance(value, list):
+                    type_valid = True
+            elif expected_type_str == "dict":
+                if isinstance(value, dict):
+                    type_valid = True
+
+            if not type_valid:
+                errors.append(f"Field '{field_name}' type mismatch: expected '{expected_type_str}', got '{type(value).__name__}'")
+                continue # If type is wrong, skip constraint checks
+
+            # 3. Constraint Validation
+
+            # Numeric constraints (min, max) apply to int and float
+            if expected_type_str in ["int", "float"]:
+                if "min" in rules and value < rules["min"]:
+                    errors.append(f"Field '{field_name}' value {value} is less than min {rules['min']}")
+                if "max" in rules and value > rules["max"]:
+                    errors.append(f"Field '{field_name}' value {value} is greater than max {rules['max']}")
+
+            # Length constraints (min_length, max_length) apply to str and list
+            if expected_type_str in ["str", "list"]:
+                length = len(value)
+                if "min_length" in rules and length < rules["min_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is less than min_length {rules['min_length']}")
+                if "max_length" in rules and length > rules["max_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is greater than max_length {rules['max_length']}")
+
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+```

@@ -1,0 +1,76 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "raw_refund_request (customer_id, order_id, amount, reason, timestamp)",
+      "output": "validated_request | validation_error",
+      "next": "FraudCheckAgent (if valid) | NotificationAgent (if invalid)",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 4,
+      "audit_log": true
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request",
+      "output": "fraud_status (clear | suspicious)",
+      "next": "ApprovalAgent (if clear) | HumanEscalationAgent (if suspicious)",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 6,
+      "audit_log": true
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "validated_request, fraud_status",
+      "output": "approval_decision (approved | rejected)",
+      "next": "PaymentAgent (if approved) | NotificationAgent (if rejected)",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5,
+      "audit_log": true
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "approved_request",
+      "output": "payment_status (success | failed)",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 10,
+      "audit_log": true
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "error_context, original_request, agent_failure_log",
+      "output": "escalation_decision (manual_approve | manual_reject | override)",
+      "next": "PaymentAgent (if manual_approve) | NotificationAgent (if manual_reject)",
+      "fallback": "NotificationAgent (with system_error flag)",
+      "timeout": 15,
+      "audit_log": true
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_decision, payment_status, customer_contact, audit_trail",
+      "output": "notification_sent (email/sms/push)",
+      "next": "null",
+      "fallback": "RetryNotificationAgent",
+      "timeout": 4,
+      "audit_log": true
+    }
+  ],
+  "constraints": {
+    "min_agents_count": 6,
+    "required_agents_present": ["ValidationAgent", "FraudCheckAgent", "ApprovalAgent", "PaymentAgent", "NotificationAgent"],
+    "conditional_branching_implemented": "ApprovalAgent and FraudCheckAgent use if/else routing in 'next' field",
+    "fallback_defined_per_agent": true,
+    "first_agent_is_validation": true,
+    "last_agent_is_notification": true,
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "total_expected_processing_time_seconds": 44,
+    "handles_approved_and_rejected": true,
+    "logging_audit_per_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": "HumanEscalationAgent routes all fallbacks and edge cases",
+    "timeout_per_agent": true
+  }
+}
+```

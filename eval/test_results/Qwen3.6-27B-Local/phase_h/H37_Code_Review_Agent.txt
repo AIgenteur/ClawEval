@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 13,
+      "bug": "Discount logic inverted: multiplies subtotal by 0.20 (keeps 20%) instead of 0.80 (applies 20% off)",
+      "severity": "critical"
+    },
+    {
+      "line": 15,
+      "bug": "Discount multiplier wrong: subtracts subtotal * 10 (1000%) instead of subtotal * 0.10 (10%)",
+      "severity": "critical"
+    },
+    {
+      "line": 25,
+      "bug": "Ignores out-of-stock condition: uses 'pass' when stock goes negative instead of raising an error or skipping the order",
+      "severity": "major"
+    },
+    {
+      "line": 36,
+      "bug": "Typo in assignment: '=+' assigns the positive value of total instead of incrementing with '+='",
+      "severity": "critical"
+    },
+    {
+      "line": 39,
+      "bug": "ZeroDivisionError risk: divides by len(orders) without checking if the list is empty",
+      "severity": "major"
+    },
+    {
+      "line": 40,
+      "bug": "ValueError risk: calls max() on results without checking if the list is empty",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Insufficient email validation: returns True for any string containing '@', including invalid formats like '@' or 'a@'",
+      "severity": "major"
+    },
+    {
+      "line": 61,
+      "bug": "Math error: adds per_km (0.01) instead of multiplying distance by per_km",
+      "severity": "critical"
+    },
+    {
+      "line": 66,
+      "bug": "Unreachable code: 'elif weight > 50' is never reached because 'if weight > 30' catches all values greater than 50 first",
+      "severity": "major"
+    },
+    {
+      "line": 69,
+      "bug": "Precision loss: round(cost) rounds to the nearest integer, losing currency decimals; should use round(cost, 2)",
+      "severity": "minor"
+    },
+    {
+      "line": 72,
+      "bug": "Reference mutation: 'merged = profile_a' creates a reference to the original dict instead of a copy, mutating the input",
+      "severity": "major"
+    },
+    {
+      "line": 76,
+      "bug": "Hardcoded timestamp: uses a static date string instead of generating a dynamic/current timestamp",
+      "severity": "minor"
+    },
+    {
+      "line": 80,
+      "bug": "Fragile CSV parsing: split(',') fails on quoted fields containing commas and does not strip surrounding whitespace",
+      "severity": "major"
+    },
+    {
+      "line": 83,
+      "bug": "Performance issue: uses a list for 'seen' instead of a set, resulting in O(n^2) time complexity for membership checks",
+      "severity": "minor"
+    },
+    {
+      "line": 88,
+      "bug": "Duplicate tracking flaw: appends to list-based 'seen' and adds duplicates to the result multiple times instead of tracking unique duplicates",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "self.requests list is not async-safe; concurrent acquire() calls cause race conditions on shared state.",
+      "fix": "Add self._lock = asyncio.Lock() in __init__ and wrap self.requests modifications in async with self._lock:"
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated in Python 3.10+ and may return a non-running loop.",
+      "fix": "Use asyncio.get_running_loop().time()"
+    },
+    {
+      "line": "14",
+      "bug": "wait calculation can be negative if clock drifts or requests overlap, causing asyncio.sleep() to raise ValueError.",
+      "fix": "Use wait = max(0, self.requests[0] + self.period - now)"
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new ClientSession per request exhausts file descriptors, TCP connections, and memory.",
+      "fix": "Create a single ClientSession in fetch_all() and pass it to fetch_one(), or use a session pool."
+    },
+    {
+      "line": "27",
+      "bug": "aiohttp expects a ClientTimeout object, not an integer, for the timeout parameter in modern versions.",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30)"
+    },
+    {
+      "line": "29",
+      "bug": "Shared mutable dictionary modified concurrently from multiple coroutines without synchronization.",
+      "fix": "Protect results updates with an asyncio.Lock or use asyncio.Queue for thread/async-safe collection."
+    },
+    {
+      "line": "31",
+      "bug": "Same concurrency issue as line 29; also discards error context by overwriting with None.",
+      "fix": "Store error details (e.g., traceback or exception string) instead of None, and protect with a lock."
+    },
+    {
+      "line": "32",
+      "bug": "Silently swallows all exceptions without logging, making debugging impossible.",
+      "fix": "Add import logging; logging.exception('Fetch failed for %s', url) and remove the redundant pass."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather() raises on the first exception, immediately cancelling all other pending tasks.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) to handle failures gracefully."
+    },
+    {
+      "line": "42",
+      "bug": "Comment claims missing await, but awaiting here would serialize the batch. Real bug: gather lacks error handling.",
+      "fix": "Do not await here; instead ensure gather uses return_exceptions=True or wrap with asyncio.create_task()."
+    },
+    {
+      "line": "45",
+      "bug": "Async generator yield requires async for iteration; main() does not consume it, causing results to be lost.",
+      "fix": "Return a list instead of yielding, or ensure the caller uses async for r in process_batch(...):"
+    },
+    {
+      "line": "52",
+      "bug": "List does not enforce pool size limits or provide async-safe queue semantics for connection management.",
+      "fix": "Use asyncio.Queue(maxsize=size) for the pool to enforce limits and provide async-safe put/get."
+    },
+    {
+      "line": "60",
+      "bug": "No capacity check; pool grows indefinitely beyond self.size when connections are released.",
+      "fix": "Use await self.pool.put(conn) with a Queue, or check len(self.pool) < self.size before appending."
+    },
+    {
+      "line": "63",
+      "bug": "Returns a generic object() instead of a valid connection, causing AttributeError when methods are called.",
+      "fix": "Return a proper connection object or mock implementing the required connection interface."
+    },
+    {
+      "line": "68",
+      "bug": "len(results) counts failed requests (stored as None) as successful results, giving misleading metrics.",
+      "fix": "Count only successful results: sum(1 for v in results.values() if v is not None)"
+    }
+  ],
+  "count": 15
+}
+```
