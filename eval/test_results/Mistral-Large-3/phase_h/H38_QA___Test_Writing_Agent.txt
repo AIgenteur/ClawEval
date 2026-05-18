@@ -1,0 +1,62 @@
+Here's the Python function `is_valid_password` along with the `run_tests` function containing 15 test cases:
+
+```python
+def is_valid_password(password):
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if password[0].isdigit():
+        return False
+    if ' ' in password:
+        return False
+    if 'password' in password.lower():
+        return False
+
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+    special_chars = set('!@#$%^&*()-_+=')
+
+    for i, char in enumerate(password):
+        if char.isupper():
+            has_upper = True
+        elif char.islower():
+            has_lower = True
+        elif char.isdigit():
+            has_digit = True
+        elif char in special_chars:
+            has_special = True
+
+        # Check for more than 3 consecutive identical characters
+        if i >= 3 and password[i] == password[i-1] == password[i-2] == password[i-3]:
+            return False
+
+    return has_upper and has_lower and has_digit and has_special
+
+def run_tests():
+    test_cases = [
+        # (input, expected, actual)
+        ("Short1!", False, None),  # Too short
+        ("a" * 65, False, None),  # Too long
+        ("1StartsWithDigit", False, None),  # Starts with digit
+        ("Has Space1!", False, None),  # Contains space
+        ("password1A!", False, None),  # Contains "password"
+        ("PASSWORD1a!", False, None),  # Contains "PASSWORD"
+        ("ValidPass1!", True, None),  # Valid
+        ("NoSpecialChar1", False, None),  # Missing special char
+        ("nouppercase1!", False, None),  # Missing uppercase
+        ("NOLOWERCASE1!", False, None),  # Missing lowercase
+        ("NoDigitsHere!", False, None),  # Missing digit
+        ("aaaaB1!", False, None),  # 4 consecutive identical chars
+        ("A1!aaaa", False, None),  # 4 consecutive identical chars
+        ("Valid1!Pass", True, None),  # Valid
+        ("Another@Valid1", True, None)  # Valid
+    ]
+
+    results = []
+    for i, (input_pw, expected, _) in enumerate(test_cases):
+        actual = is_valid_password(input_pw)
+        results.append((input_pw, expected, actual))
+
+    return results
+```

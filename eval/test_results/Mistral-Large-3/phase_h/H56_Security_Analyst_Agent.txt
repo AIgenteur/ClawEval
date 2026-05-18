@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login function, line 14 (query construction)",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "profile function, line 19 (username in template)",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search function, line 23 (q parameter in response)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command function, line 27 (subprocess.run with shell=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Arbitrary File Upload",
+      "location": "upload function, line 32 (unrestricted file upload)",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "download function, line 37 (unvalidated filepath parameter)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "location": "load_config function, line 41 (yaml.load without safe_load)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "location": "restore_session function, line 45 (pickle.loads)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "line 7 (SECRET = 'admin123')",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Direct Object Reference (IDOR)",
+      "location": "admin function, line 50 (token comparison)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data function, line 56 (os.system with user input)",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Cryptographic Hash (MD5)",
+      "location": "login function, line 15 (hashlib.md5)",
+      "severity": "medium"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "line 60 (app.run with debug=True)",
+      "severity": "medium"
+    },
+    {
+      "type": "Insecure File Permissions",
+      "location": "upload function, line 33 (saving to /tmp/uploads without checks)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing CSRF Protection",
+      "location": "All POST endpoints (no CSRF tokens)",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

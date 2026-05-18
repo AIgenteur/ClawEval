@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "5",
+      "issue": "Single replica (replicas: 1) provides no high availability. If the pod fails, the service will be unavailable until a new pod is scheduled.",
+      "severity": "major"
+    },
+    {
+      "line": "15",
+      "issue": "Using 'latest' tag for container image (myapp:latest) is not recommended. It can lead to unpredictable deployments as the image may change without version control.",
+      "severity": "critical"
+    },
+    {
+      "line": "18",
+      "issue": "Empty resources block (resources: {}) means no resource requests or limits are set. This can lead to resource starvation or overconsumption in the cluster.",
+      "severity": "major"
+    },
+    {
+      "line": "19-21",
+      "issue": "Security context allows running as root (runAsRoot: true) and privileged mode (privileged: true). This is a significant security risk as it grants the container elevated permissions.",
+      "severity": "critical"
+    },
+    {
+      "line": "23-24",
+      "issue": "Hardcoded sensitive data (DB_PASSWORD) in plaintext. This is a security risk as it exposes credentials in the configuration.",
+      "severity": "critical"
+    },
+    {
+      "line": "25-26",
+      "issue": "Hardcoded sensitive data (API_KEY) in plaintext. This is a security risk as it exposes API keys in the configuration.",
+      "severity": "critical"
+    },
+    {
+      "line": "28-30",
+      "issue": "Volume mount uses a hostPath volume (/tmp/data). This can lead to data leakage or corruption if multiple pods write to the same host path.",
+      "severity": "major"
+    },
+    {
+      "line": "32-36",
+      "issue": "Sidecar container requests excessive resources (10Gi memory and 8 CPUs). This can lead to resource starvation for other pods in the cluster.",
+      "severity": "major"
+    },
+    {
+      "line": "32-36",
+      "issue": "No resource limits set for the sidecar container. Without limits, the container can consume all available resources on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "38-40",
+      "issue": "Using hostPath volume without specifying a type or read-only mode. This can lead to security risks if the container can write to the host filesystem.",
+      "severity": "major"
+    },
+    {
+      "line": "44-49",
+      "issue": "Service type LoadBalancer is used without any restrictions or annotations. This can lead to unnecessary cloud costs and exposure to the internet.",
+      "severity": "major"
+    },
+    {
+      "line": "44-49",
+      "issue": "No port or protocol specifications (e.g., port 80 without specifying protocol) can lead to misconfigurations or security issues.",
+      "severity": "minor"
+    },
+    {
+      "line": "44-49",
+      "issue": "No network policies or ingress controls are defined for the LoadBalancer service. This can expose the service to unwanted traffic.",
+      "severity": "major"
+    },
+    {
+      "line": "19-21",
+      "issue": "No readOnlyRootFilesystem setting in securityContext. This allows the container to write to the root filesystem, which is a security risk.",
+      "severity": "major"
+    },
+    {
+      "line": "1-49",
+      "issue": "No pod disruption budget (PDB) is defined. This can lead to unexpected downtime during cluster maintenance or node failures.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

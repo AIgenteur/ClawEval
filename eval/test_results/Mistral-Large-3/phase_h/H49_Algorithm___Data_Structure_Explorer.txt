@@ -1,0 +1,114 @@
+Here are the three Python data structure implementations as requested:
+
+### 1. `LRUCache`
+```python
+class LRUCache:
+    class Node:
+        def __init__(self, key=0, value=0):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self.Node()
+        self.tail = self.Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+
+    def _add_to_front(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add_to_front(node)
+            return node.value
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._add_to_front(node)
+        else:
+            if len(self.cache) == self.capacity:
+                lru_node = self.tail.prev
+                self._remove(lru_node)
+                del self.cache[lru_node.key]
+            new_node = self.Node(key, value)
+            self.cache[key] = new_node
+            self._add_to_front(new_node)
+```
+
+### 2. `MinStack`
+```python
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self) -> None:
+        if self.stack:
+            val = self.stack.pop()
+            if val == self.min_stack[-1]:
+                self.min_stack.pop()
+
+    def top(self) -> int:
+        if self.stack:
+            return self.stack[-1]
+        return -1
+
+    def get_min(self) -> int:
+        if self.min_stack:
+            return self.min_stack[-1]
+        return -1
+```
+
+### 3. `find_median`
+```python
+def find_median(stream):
+    import heapq
+
+    max_heap = []  # stores the smaller half (max-heap using min-heap with inverted values)
+    min_heap = []  # stores the larger half (min-heap)
+    medians = []
+
+    for num in stream:
+        if not max_heap or num <= -max_heap[0]:
+            heapq.heappush(max_heap, -num)
+        else:
+            heapq.heappush(min_heap, num)
+
+        # Balance the heaps
+        if len(max_heap) > len(min_heap) + 1:
+            heapq.heappush(min_heap, -heapq.heappop(max_heap))
+        elif len(min_heap) > len(max_heap):
+            heapq.heappush(max_heap, -heapq.heappop(min_heap))
+
+        # Calculate median
+        if len(max_heap) == len(min_heap):
+            medians.append((-max_heap[0] + min_heap[0]) / 2)
+        else:
+            medians.append(float(-max_heap[0]))
+
+    return medians
+```

@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount application. The code multiplies by 0.20 instead of subtracting 20% (should be subtotal * 0.80 or subtotal - subtotal * 0.20).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount calculation. The code subtracts 10 times the subtotal instead of 10% (should be subtotal * 0.10).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is silently ignored. Should raise an error or handle the case appropriately.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Incorrect operator used for addition. `=+` should be `+=` to accumulate total revenue.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero risk if `orders` is empty. No check for empty list.",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "Potential ValueError if `results` is empty. No check for empty list before using `max()`.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation. Only checks for '@' but doesn't verify domain or format.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect operator in shipping cost calculation. `distance + per_km` should be `distance * per_km`.",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable condition. `weight > 50` is never checked because `weight > 30` catches all cases above 30.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Rounding the shipping cost loses decimal precision, which may be important for financial calculations.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Shallow copy of `profile_a`. Changes to `merged` will affect `profile_a` since it's the same reference.",
+      "severity": "critical"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date '2024-01-01' is not dynamic and will always return the same value.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "No handling for CSV fields containing commas (e.g., quoted strings).",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Inefficient duplicate detection. Checking `item in seen` is O(n) for lists, making the function O(n²). Should use a set for O(1) lookups.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Duplicate detection logic is correct but inefficient. The `seen` list should be a set for better performance.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

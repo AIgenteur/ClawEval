@@ -1,0 +1,147 @@
+Here's a Python class `JSONValidator` that validates JSON-like data against a schema without using any imports:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        valid = True
+
+        for field_name, field_schema in schema.items():
+            field_type = field_schema.get("type")
+            required = field_schema.get("required", False)
+
+            # Check if field is required and missing
+            if required and field_name not in data:
+                errors.append(f"Field '{field_name}' is required but missing")
+                valid = False
+                continue
+
+            # Skip validation if field is not present and not required
+            if field_name not in data:
+                continue
+
+            value = data[field_name]
+
+            # Check type
+            type_error = self._check_type(value, field_type, field_name)
+            if type_error:
+                errors.append(type_error)
+                valid = False
+                continue
+
+            # Check number constraints (min/max)
+            if field_type in ("int", "float"):
+                min_val = field_schema.get("min")
+                max_val = field_schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}' must be >= {min_val}")
+                    valid = False
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}' must be <= {max_val}")
+                    valid = False
+
+            # Check string/list length constraints
+            if field_type in ("str", "list"):
+                min_length = field_schema.get("min_length")
+                max_length = field_schema.get("max_length")
+                length = len(value)
+                if min_length is not None and length < min_length:
+                    errors.append(f"Field '{field_name}' length must be >= {min_length}")
+                    valid = False
+                if max_length is not None and length > max_length:
+                    errors.append(f"Field '{field_name}' length must be <= {max_length}")
+                    valid = False
+
+            # Check dict constraints (no specific validation for dict type in schema)
+            if field_type == "dict":
+                pass  # No additional checks for dict type in this implementation
+
+        return {"valid": valid, "errors": errors}
+
+    def _check_type(self, value, expected_type, field_name):
+        type_mapping = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict
+        }
+
+        if expected_type not in type_mapping:
+            return f"Unknown type '{expected_type}' in schema for field '{field_name}'"
+
+        expected_class = type_mapping[expected_type]
+
+        # Special case for bool since isinstance(True, int) returns True
+        if expected_class is bool:
+            if not isinstance(value, bool):
+                return f"Field '{field_name}' must be a boolean"
+        elif not isinstance(value, expected_class):
+            return f"Field '{field_name}' must be a {expected_type}"
+        return None
+```
+
+### Explanation:
+
+1. **Main Validation Method (`validate`)**:
+   - Iterates through each field in the schema.
+   - Checks if required fields are present in the data.
+   - Validates the type of each field against the schema.
+   - Checks numeric constraints (min/max) for int/float types.
+   - Checks length constraints (min_length/max_length) for str/list types.
+   - Collects all errors and returns them in the result.
+
+2. **Type Checking (`_check_type`)**:
+   - Maps schema type strings to Python types.
+   - Handles special case for `bool` to avoid confusion with `int`.
+   - Returns error messages if the type doesn't match.
+
+3. **Error Handling**:
+   - Collects all validation errors (not just the first one).
+   - Returns a dictionary with `valid` (boolean) and `errors` (list of strings).
+
+### Example Usage:
+
+```python
+validator = JSONValidator()
+
+data = {
+    "name": "Alice",
+    "age": 30,
+    "is_student": False,
+    "grades": [90, 85, 88]
+}
+
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 2, "max_length": 10},
+    "age": {"type": "int", "required": True, "min": 0, "max": 120},
+    "is_student": {"type": "bool", "required": False},
+    "grades": {"type": "list", "required": False, "min_length": 1, "max_length": 5}
+}
+
+result = validator.validate(data, schema)
+print(result)
+# Output: {"valid": True, "errors": []}
+
+data_invalid = {
+    "name": "A",
+    "age": 150,
+    "is_student": "yes",
+    "grades": []
+}
+
+result = validator.validate(data_invalid, schema)
+print(result)
+# Output: {
+#     "valid": False,
+#     "errors": [
+#         "Field 'name' length must be >= 2",
+#         "Field 'age' must be <= 120",
+#         "Field 'is_student' must be a boolean",
+#         "Field 'grades' length must be >= 1"
+#     ]
+# }
+```
+
+This implementation covers all the specified requirements without using any imports.
