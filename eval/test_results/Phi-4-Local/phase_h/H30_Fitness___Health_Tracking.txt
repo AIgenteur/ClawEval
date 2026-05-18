@@ -1,0 +1,94 @@
+To calculate the requested fitness metrics, we'll first compute the necessary totals and averages from the provided weekly activity log.
+
+### Calculations:
+
+1. **Total weekly steps (m1):**
+   \[
+   8420 + 12350 + 6100 + 9800 + 11200 + 15400 + 4200 = 68470
+   \]
+
+2. **Average daily steps (m2):**
+   \[
+   \frac{68470}{7} \approx 9781.4
+   \]
+
+3. **Total calories burned for the week (m3):**
+   \[
+   2100 + 2800 + 1750 + 2350 + 2650 + 3200 + 1500 = 16350
+   \]
+
+4. **Average daily active minutes (m4):**
+   \[
+   \frac{45 + 78 + 30 + 55 + 72 + 95 + 20}{7} \approx 56.4
+   \]
+
+5. **Total sleep hours for the week (m5):**
+   \[
+   7.5 + 6.8 + 8.0 + 7.2 + 6.5 + 8.5 + 9.0 = 53.5
+   \]
+
+6. **Average sleep per night (m6):**
+   \[
+   \frac{53.5}{7} \approx 7.6
+   \]
+
+7. **Average resting heart rate (m7):**
+   \[
+   \frac{72 + 85 + 68 + 76 + 82 + 88 + 65}{7} \approx 76.6
+   \]
+
+8. **Total distance in km (m8):**
+   \[
+   6.3 + 9.2 + 4.5 + 7.4 + 8.4 + 11.6 + 3.1 = 50.5
+   \]
+
+9. **Day with most steps (m9):**  
+   - Saturday has the most steps: 15400 (Day 6)
+
+10. **Day with least active minutes (m10):**  
+    - Sunday has the least active minutes: 20 (Day 7)
+
+11. **Calories per step (m11):**
+    \[
+    \frac{16350}{68470} \approx 0.2
+    \]
+
+12. **Steps per km (m12):**
+    \[
+    \frac{68470}{50.5} \approx 1355.4
+    \]
+
+13. **Days exceeded 10,000 steps (m13):**  
+    - Tuesday, Thursday, Friday, Saturday (4 days)
+
+14. **Weekend (Sat+Sun) total steps (m14):**
+    \[
+    15400 + 4200 = 19600
+    \]
+
+15. **Weekday (Mon-Fri) average steps (m15):**
+    \[
+    \frac{8420 + 12350 + 6100 + 9800 + 11200}{5} \approx 9584.0
+    \]
+
+### JSON Response:
+
+```json
+{
+  "m1": 68470,
+  "m2": 9781.4,
+  "m3": 16350,
+  "m4": 56.4,
+  "m5": 53.5,
+  "m6": 7.6,
+  "m7": 76.6,
+  "m8": 50.5,
+  "m9": 6,
+  "m10": 7,
+  "m11": 0.2,
+  "m12": 1355.4,
+  "m13": 4,
+  "m14": 19600,
+  "m15": 9584.0
+}
+```

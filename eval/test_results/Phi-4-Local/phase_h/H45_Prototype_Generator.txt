@@ -1,0 +1,91 @@
+Here's a Python class `JSONValidator` that implements the specified functionality:
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        self._validate(data, schema, errors)
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _validate(self, data, schema, errors, path=""):
+        if not isinstance(schema, dict):
+            raise ValueError("Schema must be a dictionary")
+
+        for field, rules in schema.items():
+            field_path = f"{path}.{field}" if path else field
+            field_data = data.get(field)
+
+            # Check if field is required and missing
+            if rules.get("required", False) and field_data is None:
+                errors.append(f"Missing required field: {field_path}")
+                continue
+
+            # If field is not present and not required, skip further checks
+            if field_data is None:
+                continue
+
+            # Validate type
+            expected_type = rules.get("type")
+            if not self._check_type(field_data, expected_type):
+                errors.append(f"Type mismatch for field '{field_path}': expected {expected_type}, got {type(field_data).__name__}")
+                continue
+
+            # Validate constraints based on type
+            if expected_type == "int" or expected_type == "float":
+                self._validate_number(field_data, rules, field_path, errors)
+            elif expected_type == "str":
+                self._validate_string(field_data, rules, field_path, errors)
+            elif expected_type == "list":
+                self._validate_list(field_data, rules, field_path, errors)
+            elif expected_type == "dict":
+                self._validate_dict(field_data, rules, field_path, errors)
+
+    def _check_type(self, value, expected_type):
+        type_map = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict
+        }
+        return isinstance(value, type_map.get(expected_type, object))
+
+    def _validate_number(self, value, rules, field_path, errors):
+        if "min" in rules and value < rules["min"]:
+            errors.append(f"Value for '{field_path}' is less than minimum {rules['min']}")
+        if "max" in rules and value > rules["max"]:
+            errors.append(f"Value for '{field_path}' is greater than maximum {rules['max']}")
+
+    def _validate_string(self, value, rules, field_path, errors):
+        if "min_length" in rules and len(value) < rules["min_length"]:
+            errors.append(f"Length of '{field_path}' is less than minimum {rules['min_length']}")
+        if "max_length" in rules and len(value) > rules["max_length"]:
+            errors.append(f"Length of '{field_path}' is greater than maximum {rules['max_length']}")
+
+    def _validate_list(self, value, rules, field_path, errors):
+        if "min_length" in rules and len(value) < rules["min_length"]:
+            errors.append(f"Length of list '{field_path}' is less than minimum {rules['min_length']}")
+        if "max_length" in rules and len(value) > rules["max_length"]:
+            errors.append(f"Length of list '{field_path}' is greater than maximum {rules['max_length']}")
+        # Validate each item in the list if a schema is provided
+        if "items" in rules:
+            for i, item in enumerate(value):
+                self._validate(item, rules["items"], errors, f"{field_path}[{i}]")
+
+    def _validate_dict(self, value, rules, field_path, errors):
+        if "properties" in rules:
+            self._validate(value, rules["properties"], errors, field_path)
+
+# Example usage:
+# validator = JSONValidator()
+# data = {"name": "Alice", "age": 30}
+# schema = {
+#     "name": {"type": "str", "required": True, "min_length": 1, "max_length": 100},
+#     "age": {"type": "int", "required": True, "min": 0, "max": 120}
+# }
+# result = validator.validate(data, schema)
+# print(result)
+```
+
+This class provides a method `validate` that checks a JSON-like data structure against a given schema, returning a dictionary indicating whether the data is valid and listing any errors found. The class handles various data types and constraints as specified.

@@ -1,0 +1,79 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "Customer refund request data",
+      "output": "Validated request data or error message",
+      "next": "FraudCheckAgent",
+      "fallback": "EscalationAgent",
+      "timeout": 5,
+      "description": "Validates the refund request for completeness and correctness."
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request data",
+      "output": "Fraud check result",
+      "next": "ApprovalAgent",
+      "fallback": "EscalationAgent",
+      "timeout": 10,
+      "description": "Performs fraud detection on the refund request."
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Fraud check result",
+      "output": "Approval decision",
+      "next": {
+        "approved": "PaymentAgent",
+        "rejected": "NotificationAgent"
+      },
+      "fallback": "EscalationAgent",
+      "timeout": 10,
+      "description": "Decides whether to approve or reject the refund request."
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approval decision",
+      "output": "Payment confirmation",
+      "next": "NotificationAgent",
+      "fallback": "EscalationAgent",
+      "timeout": 15,
+      "description": "Processes the payment for approved refund requests."
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final outcome (approved/rejected)",
+      "output": "Notification sent",
+      "next": null,
+      "fallback": "EscalationAgent",
+      "timeout": 5,
+      "description": "Notifies the customer of the refund decision."
+    },
+    {
+      "name": "EscalationAgent",
+      "input": "Error message or edge case",
+      "output": "Escalation action taken",
+      "next": null,
+      "fallback": "LogAgent",
+      "timeout": 10,
+      "description": "Handles errors and escalates issues to human agents."
+    },
+    {
+      "name": "LogAgent",
+      "input": "Audit data",
+      "output": "Log entry",
+      "next": null,
+      "fallback": null,
+      "timeout": 2,
+      "description": "Logs audit data for each step in the process."
+    }
+  ],
+  "constraints": {
+    "total_processing_time": "<= 60 seconds",
+    "conditional_branch": "ApprovalAgent has conditional routing based on approval decision",
+    "no_circular_dependencies": true,
+    "human_escalation_path": "EscalationAgent handles edge cases and errors",
+    "logging_audit": "LogAgent logs data at each step"
+  }
+}
+```
