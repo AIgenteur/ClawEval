@@ -1,0 +1,93 @@
+```python
+import json
+
+# Monthly Sales Data (2024)
+data = [
+    {"Month": "Jan", "Revenue": 45200, "Units": 452, "Returns": 23, "Ad Spend": 5000, "New Customers": 89},
+    {"Month": "Feb", "Revenue": 38900, "Units": 389, "Returns": 18, "Ad Spend": 4500, "New Customers": 72},
+    {"Month": "Mar", "Revenue": 52100, "Units": 498, "Returns": 31, "Ad Spend": 6000, "New Customers": 105},
+    {"Month": "Apr", "Revenue": 48700, "Units": 487, "Returns": 25, "Ad Spend": 5500, "New Customers": 98},
+    {"Month": "May", "Revenue": 61300, "Units": 590, "Returns": 42, "Ad Spend": 7000, "New Customers": 134},
+    {"Month": "Jun", "Revenue": 55800, "Units": 530, "Returns": 35, "Ad Spend": 6500, "New Customers": 112},
+    {"Month": "Jul", "Revenue": 42100, "Units": 421, "Returns": 19, "Ad Spend": 4000, "New Customers": 78},
+    {"Month": "Aug", "Revenue": 49500, "Units": 495, "Returns": 28, "Ad Spend": 5200, "New Customers": 95},
+    {"Month": "Sep", "Revenue": 58200, "Units": 564, "Returns": 38, "Ad Spend": 6800, "New Customers": 121},
+    {"Month": "Oct", "Revenue": 63400, "Units": 617, "Returns": 44, "Ad Spend": 7500, "New Customers": 142},
+    {"Month": "Nov", "Revenue": 71200, "Units": 685, "Returns": 52, "Ad Spend": 8000, "New Customers": 158},
+    {"Month": "Dec", "Revenue": 78500, "Units": 742, "Returns": 61, "Ad Spend": 9000, "New Customers": 175}
+]
+
+# q1: Total annual revenue
+total_revenue = sum(item["Revenue"] for item in data)
+
+# q2: Average monthly revenue
+avg_monthly_revenue = total_revenue / len(data)
+
+# q3: Average price per unit (total revenue / total units)
+total_units = sum(item["Units"] for item in data)
+avg_price_per_unit = total_revenue / total_units
+
+# q4: Total units sold
+# Already calculated as total_units
+
+# q5: Total returns
+total_returns = sum(item["Returns"] for item in data)
+
+# q6: Return rate percentage (returns / units * 100)
+return_rate_percentage = (total_returns / total_units) * 100
+
+# q7: Total ad spend
+total_ad_spend = sum(item["Ad Spend"] for item in data)
+
+# q8: Revenue per ad dollar (total revenue / total ad spend)
+revenue_per_ad_dollar = total_revenue / total_ad_spend
+
+# q9: Total new customers
+total_new_customers = sum(item["New Customers"] for item in data)
+
+# q10: Customer acquisition cost (total ad spend / total new customers)
+customer_acquisition_cost = total_ad_spend / total_new_customers
+
+# q11: Best month by revenue (month number 1-12)
+best_month = max(data, key=lambda x: x["Revenue"])["Month"]
+best_month_number = data.index(next(item for item in data if item["Month"] == best_month)) + 1
+
+# q12: Worst month by revenue (month number 1-12)
+worst_month = min(data, key=lambda x: x["Revenue"])["Month"]
+worst_month_number = data.index(next(item for item in data if item["Month"] == worst_month)) + 1
+
+# q13: Q4 (Oct-Dec) revenue
+q4_revenue = sum(item["Revenue"] for item in data if item["Month"] in ["Oct", "Nov", "Dec"])
+
+# q14: H1 (Jan-Jun) vs H2 (Jul-Dec) revenue difference
+h1_revenue = sum(item["Revenue"] for item in data if item["Month"] in ["Jan", "Feb", "Mar", "Apr", "May", "Jun"])
+h2_revenue = sum(item["Revenue"] for item in data if item["Month"] in ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+revenue_difference = h1_revenue - h2_revenue
+
+# q15: Month-over-month growth from Nov to Dec in percentage
+nov_revenue = next(item["Revenue"] for item in data if item["Month"] == "Nov")
+dec_revenue = next(item["Revenue"] for item in data if item["Month"] == "Dec")
+mom_growth = ((dec_revenue - nov_revenue) / nov_revenue) * 100
+
+# Prepare the answers
+answers = {
+    "q1": round(total_revenue, 2),
+    "q2": round(avg_monthly_revenue, 2),
+    "q3": round(avg_price_per_unit, 2),
+    "q4": round(total_units, 2),
+    "q5": round(total_returns, 2),
+    "q6": round(return_rate_percentage, 2),
+    "q7": round(total_ad_spend, 2),
+    "q8": round(revenue_per_ad_dollar, 2),
+    "q9": round(total_new_customers, 2),
+    "q10": round(customer_acquisition_cost, 2),
+    "q11": best_month_number,
+    "q12": worst_month_number,
+    "q13": round(q4_revenue, 2),
+    "q14": round(revenue_difference, 2),
+    "q15": round(mom_growth, 2)
+}
+
+# Print the answers as JSON
+print(json.dumps(answers, indent=4))
+```

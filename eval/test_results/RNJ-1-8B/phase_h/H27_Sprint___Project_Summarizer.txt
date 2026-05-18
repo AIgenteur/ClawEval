@@ -1,0 +1,30 @@
+```python
+import json
+
+# Given data
+data = {
+    "s1": (19 / 24) * 100,  # Completion rate
+    "s2": (72 / 89) * 100,  # Points completion rate
+    "s3": 72,  # Velocity
+    "s4": 72 / 19,  # Average points per completed story
+    "s5": (11 / 8) * 100,  # Bug fix rate
+    "s6": (312 / 360) * 100,  # Capacity utilization
+    "s7": (48 / (312 + 48)) * 100,  # Unplanned work percentage
+    "s8": (42 / 47) * 100,  # PR merge rate
+    "s9": 89 / 6,  # Average points per developer per sprint
+    "s10": 4 / 2,  # Deployment frequency (releases per week)
+    "s11": (1 / 4) * 100,  # Rollback rate
+    "s12": (8 - 11),  # Net bug count change
+    "s13": 8,  # Team size
+    "s14": 312 / 72,  # Dev hours per completed story point
+    "s15": 45  # Downtime in minutes
+}
+
+# Round to 1 decimal place
+for key in data:
+    data[key] = round(data[key], 1)
+
+# Convert to JSON
+json_data = json.dumps(data, indent=4)
+print(json_data)
+```

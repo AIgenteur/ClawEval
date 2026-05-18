@@ -1,0 +1,75 @@
+```python
+import asyncio
+import aiohttp
+
+class RateLimiter:
+    def __init__(self, max_requests, period):
+        self.max_requests = max_requests
+        self.period = period
+        self.requests = []  # Line 8: Bug
+
+    async def acquire(self):
+        now = asyncio.get_event_loop().time()  # Line 11: Bug
+        self.requests = [r for r in self.requests if now - r < self.period]
+        if len(self.requests) >= self.max_requests:
+            wait = self.requests[0] + self.period - now
+            await asyncio.sleep(wait)
+        self.requests.append(now)
+
+async def fetch_all(urls, max_concurrent=10):
+    results = {}
+    semaphore = asyncio.Semaphore(max_concurrent)
+    limiter = RateLimiter(100, 60)
+
+    async def fetch_one(url):
+        async with semaphore:
+            await limiter.acquire()
+            async with aiohttp.ClientSession() as session:  # Line 25: Bug
+                try:
+                    response = await session.get(url, timeout=30)  # Line 27: Bug
+                    data = await response.json()
+                    results[url] = data  # Line 29: Bug
+                except Exception:
+                    results[url] = None  # Line 31: Bug
+                    pass  # Line 32: Bug
+
+    tasks = [fetch_one(url) for url in urls]
+    await asyncio.gather(*tasks)  # Line 35: Bug
+    return results
+
+async def process_batch(items, batch_size=100):
+    for i in range(0, len(items), batch_size):
+        batch = items[i:i+batch_size]
+        tasks = []
+        for item in batch:
+            task = process_item(item)  # Line 42: Bug - missing await
+            tasks.append(task)
+        results = await asyncio.gather(*tasks)
+        for r in results:
+            yield r  # Line 45: Bug
+
+async def process_item(item):
+    await asyncio.sleep(0.1)
+    return item * 2
+
+class ConnectionPool:
+    def __init__(self, size=10):
+        self.pool = []  # Line 52: Bug
+        self.size = size
+
+    async def get_connection(self):
+        if self.pool:
+            return self.pool.pop()
+        return await self.create_connection()
+
+    async def release(self, conn):
+        self.pool.append(conn)  # Line 60: Bug
+
+    async def create_connection(self):
+        return object()  # Line 63: Bug
+
+async def main():
+    urls = ["http://example.com"] * 100
+    results = await fetch_all(urls)
+    print(f"Got {len(results)} results")  # Line 68: Bug
+```

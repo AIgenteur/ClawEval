@@ -1,0 +1,43 @@
+```python
+def is_valid_password(password):
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if ' ' in password:
+        return False
+    if password[0].isdigit():
+        return False
+    if not any(c.isupper() for c in password):
+        return False
+    if not any(c.islower() for c in password):
+        return False
+    if not any(c.isdigit() for c in password):
+        return False
+    if not any(c in '!@#$%^&*()-_+=' for c in password):
+        return False
+    if 'password' in password.lower():
+        return False
+    for i in range(len(password) - 3):
+        if password[i] == password[i+1] == password[i+2] == password[i+3]:
+            return False
+    return True
+
+def run_tests():
+    tests = [
+        ("Password123!", True, is_valid_password("Password123!")),
+        ("pass123!", False, is_valid_password("pass123!")),
+        ("PASSWORD123!", False, is_valid_password("PASSWORD123!")),
+        ("Password!", False, is_valid_password("Password!")),
+        ("Password123", False, is_valid_password("Password123")),
+        ("Password123! ", False, is_valid_password("Password123! ")),
+        ("1Password123!", False, is_valid_password("1Password123!")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("aaaaPassword123!", False, is_valid_password("aaaaPassword123!")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+        ("Password123!@#", True, is_valid_password("Password123!@#")),
+    ]
+    return [(inp, exp, act) for inp, exp, act in tests]
+```

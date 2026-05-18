@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "  replicas: 1",
+      "issue": "Low number of replicas",
+      "severity": "minor"
+    },
+    {
+      "line": "        runAsRoot: true",
+      "issue": "Running container as root",
+      "severity": "major"
+    },
+    {
+      "line": "        privileged: true",
+      "issue": "Container running with privileged mode",
+      "severity": "critical"
+    },
+    {
+      "line": "          value: \"sup3rs3cret!\"",
+      "issue": "Hardcoded secret in environment variable",
+      "severity": "critical"
+    },
+    {
+      "line": "          value: \"ak_live_12345\"",
+      "issue": "Hardcoded API key in environment variable",
+      "severity": "critical"
+    },
+    {
+      "line": "        hostPath:",
+      "issue": "Using hostPath volume type",
+      "severity": "major"
+    },
+    {
+      "line": "            memory: \"10Gi\"",
+      "issue": "Sidecar container requesting excessive memory",
+      "severity": "minor"
+    },
+    {
+      "line": "            cpu: \"8\"",
+      "issue": "Sidecar container requesting excessive CPU",
+      "severity": "minor"
+    },
+    {
+      "line": "  type: LoadBalancer",
+      "issue": "Using LoadBalancer service type",
+      "severity": "minor"
+    },
+    {
+      "line": "  selector:",
+      "issue": "Service selector matches deployment labels",
+      "severity": "minor"
+    },
+    {
+      "line": "        resources: {}",
+      "issue": "Container resources not defined",
+      "severity": "major"
+    },
+    {
+      "line": "        volumeMounts:",
+      "issue": "Volume mount without proper permissions",
+      "severity": "major"
+    },
+    {
+      "line": "          path: /tmp/data",
+      "issue": "HostPath volume mounted to temporary directory",
+      "severity": "critical"
+    },
+    {
+      "line": "  name: web-api",
+      "issue": "Service and deployment have same name",
+      "severity": "minor"
+    },
+    {
+      "line": "  port: 80",
+      "issue": "Service port not matching container port",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

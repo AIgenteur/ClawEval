@@ -1,0 +1,50 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        self._validate(data, schema, "", errors)
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _validate(self, data, schema, path, errors):
+        for field, rules in schema.items():
+            field_path = f"{path}.{field}" if path else field
+            if rules["required"] and field not in data:
+                errors.append(f"Missing required field: {field_path}")
+                continue
+
+            if field in data:
+                self._check_type(data[field], rules, field_path, errors)
+                self._check_constraints(data[field], rules, field_path, errors)
+
+    def _check_type(self, value, rules, path, errors):
+        expected_type = rules["type"]
+        if expected_type == "str" and not isinstance(value, str):
+            errors.append(f"Field {path} must be a string")
+        elif expected_type == "int" and not isinstance(value, int):
+            errors.append(f"Field {path} must be an integer")
+        elif expected_type == "float" and not isinstance(value, (int, float)):
+            errors.append(f"Field {path} must be a float")
+        elif expected_type == "bool" and not isinstance(value, bool):
+            errors.append(f"Field {path} must be a boolean")
+        elif expected_type == "list" and not isinstance(value, list):
+            errors.append(f"Field {path} must be a list")
+        elif expected_type == "dict" and not isinstance(value, dict):
+            errors.append(f"Field {path} must be a dictionary")
+
+    def _check_constraints(self, value, rules, path, errors):
+        if rules["type"] in ["int", "float"]:
+            if "min" in rules and value < rules["min"]:
+                errors.append(f"Field {path} must be >= {rules['min']}")
+            if "max" in rules and value > rules["max"]:
+                errors.append(f"Field {path} must be <= {rules['max']}")
+        elif rules["type"] == "str":
+            if "min_length" in rules and len(value) < rules["min_length"]:
+                errors.append(f"Field {path} must be at least {rules['min_length']} characters long")
+            if "max_length" in rules and len(value) > rules["max_length"]:
+                errors.append(f"Field {path} must be at most {rules['max_length']} characters long")
+        elif rules["type"] == "list":
+            if "min_length" in rules and len(value) < rules["min_length"]:
+                errors.append(f"Field {path} must have at least {rules['min_length']} elements")
+            if "max_length" in rules and len(value) > rules["max_length"]:
+                errors.append(f"Field {path} must have at most {rules['max_length']} elements")
+```

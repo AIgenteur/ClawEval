@@ -1,0 +1,78 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Validation Agent",
+      "input": "customer_refund_request",
+      "output": "refund_request_data",
+      "next": "Fraud Check Agent",
+      "fallback": "Error Handler Agent",
+      "timeout": 5
+    },
+    {
+      "name": "Fraud Check Agent",
+      "input": "refund_request_data",
+      "output": "fraud_check_result",
+      "next": "Approval Agent",
+      "fallback": "Error Handler Agent",
+      "timeout": 10
+    },
+    {
+      "name": "Approval Agent",
+      "input": "fraud_check_result",
+      "output": "approval_decision",
+      "next": "Payment Agent",
+      "fallback": "Error Handler Agent",
+      "timeout": 15
+    },
+    {
+      "name": "Payment Agent",
+      "input": "approval_decision",
+      "output": "payment_status",
+      "next": "Notification Agent",
+      "fallback": "Error Handler Agent",
+      "timeout": 20
+    },
+    {
+      "name": "Notification Agent",
+      "input": "payment_status",
+      "output": "notification_result",
+      "next": "End",
+      "fallback": "Error Handler Agent",
+      "timeout": 5
+    },
+    {
+      "name": "Error Handler Agent",
+      "input": "any_failed_output",
+      "output": "error_report",
+      "next": "Human Escalation Agent",
+      "fallback": "End",
+      "timeout": 30
+    },
+    {
+      "name": "Human Escalation Agent",
+      "input": "error_report",
+      "output": "escalation_resolution",
+      "next": "Notification Agent",
+      "fallback": "End",
+      "timeout": 60
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branch": true,
+    "fallback_handler": true,
+    "first_agent": "Validation Agent",
+    "last_agent": "Notification Agent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time": 60,
+    "handle_approved_rejected": true,
+    "logging_at_each_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_for_each_agent": true
+  }
+}
+```

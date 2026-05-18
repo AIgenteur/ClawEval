@@ -1,0 +1,140 @@
+```python
+import math
+
+# p1: A train leaves station A at 80 km/h. Another leaves station B (300 km away) at 120 km/h toward A at the same time. How many minutes until they meet?
+def p1():
+    distance = 300  # km
+    speed_A = 80    # km/h
+    speed_B = 120   # km/h
+    relative_speed = speed_A + speed_B  # km/h
+    time_hours = distance / relative_speed  # hours
+    time_minutes = time_hours * 60  # minutes
+    return round(time_minutes)
+
+# p2: If 5 machines make 5 widgets in 5 minutes, how many minutes do 100 machines take to make 100 widgets?
+def p2():
+    # 5 machines make 5 widgets in 5 minutes => 1 machine makes 1 widget in 5 minutes
+    # 100 machines make 100 widgets in 5 minutes
+    return 5
+
+# p3: A bat and ball cost $1.10 total. The bat costs $1.00 more than the ball. How much does the ball cost in cents?
+def p3():
+    total_cost = 1.10  # dollars
+    bat_cost = 1.00    # dollars
+    ball_cost = total_cost - bat_cost  # dollars
+    return round(ball_cost * 100)  # cents
+
+# p4: What is the sum of the first 100 positive integers?
+def p4():
+    n = 100
+    return n * (n + 1) // 2
+
+# p5: In a room of 23 people, what's the probability (%) that at least two share a birthday? (Round to 1 decimal)
+def p5():
+    n = 23
+    # Probability that no two people share a birthday
+    p_no_shared = 1
+    for i in range(n):
+        p_no_shared *= (365 - i) / 365
+    p_shared = 1 - p_no_shared
+    return round(p_shared * 100, 1)
+
+# p6: A lily pad doubles in size every day. It takes 48 days to cover a lake. On what day does it cover half the lake?
+def p6():
+    # If it doubles every day and covers the lake on day 48, it must have covered half the lake on day 47
+    return 47
+
+# p7: Three cards: one red on both sides, one blue on both sides, one red/blue. You pick a card and see red. What's the probability the other side is also red? (Express as a fraction: N/M)
+def p7():
+    # There are 6 sides in total: 2 red, 2 blue, 1 red, 1 blue
+    # You see a red side, which could be from the red-red card (2 possibilities) or the red-blue card (1 possibility)
+    # So there are 3 red sides, and 2 of them are from the red-red card
+    return "2/3"
+
+# p8: If you have 12 coins, one is counterfeit (lighter), and a balance scale, what's the minimum weighings needed to find it?
+def p8():
+    # Divide the coins into 3 groups of 4. Weigh two groups against each other.
+    # If they balance, the counterfeit is in the third group. If not, it's in the lighter group.
+    # Then divide the group with the counterfeit into 3 subgroups (if 4, make one subgroup of 2 and two of 1).
+    # Weigh two subgroups against each other. If they balance, the counterfeit is the remaining one.
+    # If not, it's the lighter one. This takes 2 weighings.
+    return 3
+
+# p9: What is 2^10 × 5^10?
+def p9():
+    return 2**10 * 5**10
+
+# p10: A snail climbs 3 feet each day and slides back 2 feet each night. How many days to reach the top of a 30-foot wall?
+def p10():
+    # Each day the snail effectively climbs 1 foot (3 feet up, 2 feet back)
+    # On the 28th day, the snail will climb to 30 feet and not slide back
+    return 28
+
+# p11: In base 8, what is 77 + 1?
+def p11():
+    # 77 in base 8 is 63 in base 10
+    # 63 + 1 = 64 in base 10
+    # 64 in base 10 is 100 in base 8
+    return "100"
+
+# p12: How many trailing zeros does 100! have?
+def p12():
+    # The number of trailing zeros in n! is given by the sum of floor(n/5^i) for i from 1 to infinity
+    count = 0
+    power_of_5 = 5
+    while 100 >= power_of_5:
+        count += 100 // power_of_5
+        power_of_5 *= 5
+    return count
+
+# p13: What is the next number: 1, 1, 2, 3, 5, 8, 13, ?
+def p13():
+    # This is the Fibonacci sequence
+    return 21
+
+# p14: You flip a fair coin 10 times. What's the probability of getting exactly 5 heads? (Express as percentage to 2 decimal places)
+def p14():
+    # The probability of getting exactly k heads in n flips is given by the binomial probability formula
+    n = 10
+    k = 5
+    p = 0.5
+    probability = math.comb(n, k) * (p ** k) * ((1 - p) ** (n - k))
+    return round(probability * 100, 2)
+
+# p15: A clock shows 3:15. What is the angle between the hour and minute hands in degrees?
+def p15():
+    # The minute hand moves 360 degrees in 60 minutes, so it moves 6 degrees per minute
+    # The hour hand moves 360 degrees in 12 hours, so it moves 30 degrees per hour or 0.5 degrees per minute
+    hour = 3
+    minute = 15
+    minute_angle = minute * 6
+    hour_angle = hour * 30 + minute * 0.5
+    angle = abs(hour_angle - minute_angle)
+    # The angle between the hands is the smaller angle, so it can't be more than 180 degrees
+    if angle > 180:
+        angle = 360 - angle
+    return angle
+
+# Calculate all answers
+answers = {
+    "p1": p1(),
+    "p2": p2(),
+    "p3": p3(),
+    "p4": p4(),
+    "p5": p5(),
+    "p6": p6(),
+    "p7": p7(),
+    "p8": p8(),
+    "p9": p9(),
+    "p10": p10(),
+    "p11": p11(),
+    "p12": p12(),
+    "p13": p13(),
+    "p14": p14(),
+    "p15": p15()
+}
+
+# Print the answers as JSON
+import json
+print(json.dumps(answers))
+```

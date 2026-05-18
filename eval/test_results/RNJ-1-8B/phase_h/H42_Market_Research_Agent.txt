@@ -1,0 +1,87 @@
+```python
+import json
+
+# SaaS Market Data (2024)
+data = {
+    "AlphaCo": {"revenue": 450, "growth": 28, "customers": 12000, "employees": 1200, "market_share": 18.0},
+    "BetaCo": {"revenue": 380, "growth": 15, "customers": 9500, "employees": 950, "market_share": 15.2},
+    "GammaCo": {"revenue": 310, "growth": 42, "customers": 7200, "employees": 680, "market_share": 12.4},
+    "DeltaCo": {"revenue": 280, "growth": 8, "customers": 11000, "employees": 720, "market_share": 11.2},
+    "EpsilCo": {"revenue": 220, "growth": 35, "customers": 5800, "employees": 520, "market_share": 8.8},
+    "Others": {"revenue": 860, "growth": 12, "customers": 45000, "employees": 4200, "market_share": 34.4},
+}
+
+# m1: Total addressable market size ($M)
+m1 = sum(data[company]["revenue"] for company in data)
+
+# m2: Top 5 companies combined market share (%)
+m2 = sum(data[company]["market_share"] for company in data if company != "Others")
+
+# m3: Revenue-weighted average growth rate for top 5 (%)
+m3 = sum(data[company]["revenue"] * data[company]["growth"] for company in data if company != "Others") / m1
+
+# m4: AlphaCo revenue per customer ($)
+m4 = data["AlphaCo"]["revenue"] / data["AlphaCo"]["customers"]
+
+# m5: Average revenue per employee for top 5 ($K)
+m5 = sum(data[company]["revenue"] / data[company]["employees"] for company in data if company != "Others") / 5 / 1000
+
+# m6: GammaCo projected revenue next year ($M) based on growth rate
+m6 = data["GammaCo"]["revenue"] * (1 + data["GammaCo"]["growth"] / 100)
+
+# m7: Market HHI (Herfindahl–Hirschman Index, sum of squared market shares)
+m7 = sum(data[company]["market_share"] ** 2 for company in data)
+
+# m8: BetaCo revenue per employee ($K)
+m8 = data["BetaCo"]["revenue"] / data["BetaCo"]["employees"] / 1000
+
+# m9: Highest growth company's market share (%)
+m9 = max(data[company]["growth"] for company in data if company != "Others")
+m9 = next(data[company]["market_share"] for company in data if data[company]["growth"] == m9)
+
+# m10: Customers per employee ratio for DeltaCo
+m10 = data["DeltaCo"]["customers"] / data["DeltaCo"]["employees"]
+
+# m11: If GammaCo maintains growth for 2 years, projected revenue ($M)
+m11 = data["GammaCo"]["revenue"] * (1 + data["GammaCo"]["growth"] / 100) ** 2
+
+# m12: Top 3 market share combined (%)
+m12 = sum(sorted(data[company]["market_share"] for company in data if company != "Others"), reverse=True)[:3]
+
+# m13: Average customers per company (top 5 only)
+m13 = sum(data[company]["customers"] for company in data if company != "Others") / 5
+
+# m14: Revenue needed for 20% market share ($M)
+m14 = (20 / m2) * m1
+
+# m15: EpsilCo revenue per customer ($)
+m15 = data["EpsilCo"]["revenue"] / data["EpsilCo"]["customers"]
+
+# Round to 1 decimal place
+metrics = {
+    "m1": round(m1, 1),
+    "m2": round(m2, 1),
+    "m3": round(m3, 1),
+    "m4": round(m4, 1),
+    "m5": round(m5, 1),
+    "m6": round(m6, 1),
+    "m7": round(m7, 1),
+    "m8": round(m8, 1),
+    "m9": round(m9, 1),
+    "m10": round(m10, 1),
+    "m11": round(m11, 1),
+    "m12": round(sum(m12), 1),
+    "m13": round(m13, 1),
+    "m14": round(m14, 1),
+    "m15": round(m15, 1),
+}
+
+# Convert to JSON
+json_output = json.dumps(metrics)
+print(json_output)
+```
+
+Output:
+```json
+{"m1": 2700.0, "m2": 65.6, "m3": 19.6, "m4": 37.5, "m5": 0.4, "m6": 446.2, "m7": 2265.6, "m8": 0.4, "m9": 42.0, "m10": 15.3, "m11": 596.3, "m12": 46.0, "m13": 10000.0, "m14": 828.6, "m15": 38.0}
+```

@@ -1,0 +1,67 @@
+```python
+import json
+
+# Monthly Budget Data
+income = {
+    "salary_after_tax": 5800,
+    "freelance_work": 1200,
+    "investment_dividends": 150
+}
+
+expenses = {
+    "rent": 1800,
+    "utilities": 180,
+    "groceries": 520,
+    "dining_out": 340,
+    "transportation": 280,
+    "insurance": 450,
+    "phone_internet": 130,
+    "subscriptions": 85,
+    "clothing": 120,
+    "entertainment": 200,
+    "gym": 50,
+    "student_loan_payment": 380,
+    "credit_card_payment": 250,
+    "savings_transfer": 500,
+    "emergency_fund": 200
+}
+
+# Calculations
+total_income = sum(income.values())
+total_expenses = sum(expenses.values())
+net_cash_flow = total_income - total_expenses
+savings_rate = (expenses["savings_transfer"] + expenses["emergency_fund"]) / total_income * 100
+housing_cost_percentage = (expenses["rent"] + expenses["utilities"]) / total_income * 100
+total_food_spending = expenses["groceries"] + expenses["dining_out"]
+discretionary_spending = expenses["dining_out"] + expenses["entertainment"] + expenses["clothing"] + expenses["subscriptions"]
+debt_payments_total = expenses["student_loan_payment"] + expenses["credit_card_payment"]
+fixed_expenses_total = expenses["rent"] + expenses["utilities"] + expenses["insurance"] + expenses["phone_internet"] + expenses["gym"] + expenses["student_loan_payment"]
+variable_expenses_total = expenses["groceries"] + expenses["dining_out"] + expenses["transportation"] + expenses["clothing"] + expenses["entertainment"] + expenses["subscriptions"]
+essential_vs_non_essential_ratio = fixed_expenses_total / variable_expenses_total
+new_net_cash_flow = total_income * 0.8 - total_expenses
+months_of_expenses = 12000 / total_expenses
+annual_projected_savings = expenses["savings_transfer"] * 12
+interest_paid_percentage = (expenses["credit_card_payment"] - 45) / expenses["credit_card_payment"] * 100
+
+# Results as JSON
+results = {
+    "f1": round(total_income, 2),
+    "f2": round(total_expenses, 2),
+    "f3": round(net_cash_flow, 2),
+    "f4": round(savings_rate, 2),
+    "f5": round(housing_cost_percentage, 2),
+    "f6": round(total_food_spending, 2),
+    "f7": round(discretionary_spending, 2),
+    "f8": round(debt_payments_total, 2),
+    "f9": round(fixed_expenses_total, 2),
+    "f10": round(variable_expenses_total, 2),
+    "f11": round(essential_vs_non_essential_ratio, 2),
+    "f12": round(new_net_cash_flow, 2),
+    "f13": round(months_of_expenses, 2),
+    "f14": round(annual_projected_savings, 2),
+    "f15": round(interest_paid_percentage, 2)
+}
+
+# Output JSON
+print(json.dumps(results, indent=4))
+```

@@ -1,0 +1,53 @@
+```python
+import json
+
+# Weekly Activity Log
+data = [
+    {"Day": 1, "Steps": 8420, "Calories Burned": 2100, "Active Min": 45, "Sleep Hrs": 7.5, "Heart Rate Avg": 72, "Distance km": 6.3},
+    {"Day": 2, "Steps": 12350, "Calories Burned": 2800, "Active Min": 78, "Sleep Hrs": 6.8, "Heart Rate Avg": 85, "Distance km": 9.2},
+    {"Day": 3, "Steps": 6100, "Calories Burned": 1750, "Active Min": 30, "Sleep Hrs": 8.0, "Heart Rate Avg": 68, "Distance km": 4.5},
+    {"Day": 4, "Steps": 9800, "Calories Burned": 2350, "Active Min": 55, "Sleep Hrs": 7.2, "Heart Rate Avg": 76, "Distance km": 7.4},
+    {"Day": 5, "Steps": 11200, "Calories Burned": 2650, "Active Min": 72, "Sleep Hrs": 6.5, "Heart Rate Avg": 82, "Distance km": 8.4},
+    {"Day": 6, "Steps": 15400, "Calories Burned": 3200, "Active Min": 95, "Sleep Hrs": 8.5, "Heart Rate Avg": 88, "Distance km": 11.6},
+    {"Day": 7, "Steps": 4200, "Calories Burned": 1500, "Active Min": 20, "Sleep Hrs": 9.0, "Heart Rate Avg": 65, "Distance km": 3.1},
+]
+
+# Calculations
+m1 = sum(d["Steps"] for d in data)  # Total weekly steps
+m2 = m1 / 7  # Average daily steps
+m3 = sum(d["Calories Burned"] for d in data)  # Total calories burned for the week
+m4 = sum(d["Active Min"] for d in data) / 7  # Average daily active minutes
+m5 = sum(d["Sleep Hrs"] for d in data)  # Total sleep hours for the week
+m6 = m5 / 7  # Average sleep per night
+m7 = sum(d["Heart Rate Avg"] for d in data) / 7  # Average resting heart rate
+m8 = sum(d["Distance km"] for d in data)  # Total distance in km
+m9 = max(data, key=lambda x: x["Steps"])["Day"]  # Day with most steps
+m10 = min(data, key=lambda x: x["Active Min"])["Day"]  # Day with least active minutes
+m11 = m3 / m1  # Calories per step
+m12 = m1 / m8  # Steps per km
+m13 = sum(1 for d in data if d["Steps"] > 10000)  # How many days exceeded 10,000 steps
+m14 = sum(d["Steps"] for d in data if d["Day"] in [6, 7])  # Weekend (Sat+Sun) total steps
+m15 = sum(d["Steps"] for d in data if d["Day"] in [1, 2, 3, 4, 5]) / 5  # Weekday (Mon-Fri) average steps
+
+# Round to 1 decimal place
+results = {
+    "m1": round(m1, 1),
+    "m2": round(m2, 1),
+    "m3": round(m3, 1),
+    "m4": round(m4, 1),
+    "m5": round(m5, 1),
+    "m6": round(m6, 1),
+    "m7": round(m7, 1),
+    "m8": round(m8, 1),
+    "m9": m9,
+    "m10": m10,
+    "m11": round(m11, 1),
+    "m12": round(m12, 1),
+    "m13": m13,
+    "m14": round(m14, 1),
+    "m15": round(m15, 1),
+}
+
+# Output as JSON
+print(json.dumps(results))
+```

@@ -1,0 +1,99 @@
+```python
+import json
+
+emails = [
+    {
+        "subject": "URGENT: Production server down",
+        "body": "The main API server crashed at 3am. All customer-facing services are offline. Need someone to restart and investigate root cause immediately."
+    },
+    {
+        "subject": "Q3 Report Draft",
+        "body": "Attached is the draft Q3 report for your review. Please provide feedback by Friday."
+    },
+    {
+        "subject": "Team lunch next Thursday",
+        "body": "Hey team, we're doing lunch at the Italian place next Thursday at noon. Let me know if you can make it!"
+    },
+    {
+        "subject": "Budget approval needed",
+        "body": "I need your sign-off on the $15K marketing spend for the Q4 campaign. Contract deadline is tomorrow."
+    },
+    {
+        "subject": "FYI: New parking policy",
+        "body": "Starting next month, visitor parking will require pre-registration. See attached policy document."
+    },
+    {
+        "subject": "Re: Client proposal",
+        "body": "Quick question — should we include the custom integration pricing in the Acme proposal, or keep it as a separate line item?"
+    },
+    {
+        "subject": "Weekly standup cancelled",
+        "body": "No standup this Monday due to the holiday. Async updates in Slack instead."
+    },
+    {
+        "subject": "SECURITY ALERT: Suspicious login",
+        "body": "We detected 47 failed login attempts on the admin account from IP 185.x.x.x. Account has been temporarily locked. Please verify and reset credentials."
+    },
+    {
+        "subject": "Congratulations on the promotion!",
+        "body": "Just wanted to say congrats on the well-deserved promotion. The team is lucky to have you leading."
+    },
+    {
+        "subject": "Invoice #4892 past due",
+        "body": "This is a reminder that invoice #4892 ($23,450) is 15 days past due. Please process payment at your earliest convenience."
+    },
+    {
+        "subject": "Design review — new dashboard",
+        "body": "The mockups for the new analytics dashboard are ready. Can we schedule a 30-min review this week?"
+    },
+    {
+        "subject": "Re: Re: Re: Meeting time",
+        "body": "Tuesday 2pm works for me too. See you then."
+    },
+    {
+        "subject": "Vendor contract renewal",
+        "body": "Our AWS contract expires in 30 days. Need decision on whether to renew at current terms ($45K/yr) or negotiate. Deadline: next Friday."
+    },
+    {
+        "subject": "Out of office",
+        "body": "I'll be out Dec 23-Jan 2. Contact Sarah for urgent items."
+    },
+    {
+        "subject": "Data migration plan review",
+        "body": "Please review the attached migration plan. We need sign-off from engineering and ops leads before proceeding. Migration window is Jan 15."
+    }
+]
+
+classified_emails = {}
+
+for i, email in enumerate(emails, start=1):
+    action_required = "yes" if any(keyword in email["body"].lower() for keyword in ["need", "please", "action", "sign-off", "review", "provide", "verify", "reset", "decision", "deadline"]) else "no"
+    
+    if "urgent" in email["subject"].lower() or "alert" in email["subject"].lower() or "security" in email["subject"].lower():
+        priority = "high"
+    elif "due" in email["body"].lower() or "deadline" in email["body"].lower() or "past due" in email["body"].lower():
+        priority = "high"
+    elif "review" in email["body"].lower() or "feedback" in email["body"].lower() or "sign-off" in email["body"].lower():
+        priority = "medium"
+    else:
+        priority = "low"
+    
+    if "meeting" in email["subject"].lower() or "meeting" in email["body"].lower():
+        category = "meeting"
+    elif "approval" in email["subject"].lower() or "approval" in email["body"].lower():
+        category = "approval"
+    elif "question" in email["subject"].lower() or "question" in email["body"].lower():
+        category = "question"
+    elif "fyi" in email["subject"].lower() or "fyi" in email["body"].lower():
+        category = "fyi"
+    else:
+        category = "task"
+    
+    classified_emails[str(i)] = {
+        "action": action_required,
+        "priority": priority,
+        "category": category
+    }
+
+print(json.dumps(classified_emails, indent=2))
+```

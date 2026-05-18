@@ -1,0 +1,113 @@
+```python
+import math
+import json
+
+# p1: A car accelerates from 0 to 60 mph in 8 seconds. What is the acceleration in m/s²? (1 mph = 0.44704 m/s)
+mph_to_ms = 0.44704
+v = 60 * mph_to_ms
+t = 8
+a1 = v / t
+
+# p2: How much energy (in joules) is needed to heat 2.5 kg of water from 20°C to 100°C? (specific heat = 4186 J/(kg·°C))
+m = 2.5
+c = 4186
+delta_t = 100 - 20
+q2 = m * c * delta_t
+
+# p3: A circle has a circumference of 31.4159 cm. What is its area in cm²?
+circumference = 31.4159
+radius = circumference / (2 * math.pi)
+area3 = math.pi * radius ** 2
+
+# p4: If a projectile is launched at 45° with initial velocity 20 m/s, what is the maximum height in meters? (g = 9.8 m/s²)
+v0 = 20
+g = 9.8
+theta = 45
+theta_rad = math.radians(theta)
+v0y = v0 * math.sin(theta_rad)
+h4 = (v0y ** 2) / (2 * g)
+
+# p5: Calculate the pH of a 0.001 M HCl solution.
+c = 0.001
+pH5 = -math.log10(c)
+
+# p6: What is the wavelength (in meters) of a photon with energy 3.0 eV? (h = 6.626e-34 J·s, c = 3e8 m/s, 1 eV = 1.602e-19 J)
+eV_to_J = 1.602e-19
+E = 3.0 * eV_to_J
+h = 6.626e-34
+c = 3e8
+lambda6 = (h * c) / E
+
+# p7: A resistor of 100 ohms and a capacitor of 10 µF are in series in an RC circuit. What is the time constant in milliseconds?
+R = 100
+C = 10e-6
+tau7 = R * C
+
+# p8: How many moles are in 50 grams of calcium carbonate (CaCO₃)? (Ca=40, C=12, O=16)
+Ca = 40
+C = 12
+O = 16
+molar_mass_CaCO3 = Ca + 3 * (C + 3 * O)
+mass = 50
+moles8 = mass / molar_mass_CaCO3
+
+# p9: A pendulum has length 2.0 meters. What is its period in seconds on Earth? (g=9.8 m/s², T=2π√(L/g))
+L = 2.0
+g = 9.8
+T9 = 2 * math.pi * math.sqrt(L / g)
+
+# p10: What is the kinetic energy in joules of a 1500 kg car traveling at 100 km/h?
+m = 1500
+v = 100 * 1000 / 3600  # convert km/h to m/s
+KE10 = 0.5 * m * v ** 2
+
+# p11: Calculate the molarity of a solution made by dissolving 5.85 g of NaCl (MW=58.44) in water to make 500 mL of solution.
+mass = 5.85
+MW = 58.44
+volume_L = 500 / 1000
+moles = mass / MW
+M11 = moles / volume_L
+
+# p12: A 5 kg block slides down a frictionless 30° incline. What is its acceleration in m/s²?
+m = 5
+theta = 30
+theta_rad = math.radians(theta)
+g = 9.8
+a12 = g * math.sin(theta_rad)
+
+# p13: What is the de Broglie wavelength (in nanometers) of an electron (m=9.109e-31 kg) moving at 1e6 m/s? (h=6.626e-34)
+m = 9.109e-31
+v = 1e6
+h = 6.626e-34
+lambda13 = h / (m * v)
+
+# p14: How many liters of CO₂ at STP are produced from burning 1 mole of propane (C₃H₈)? (C₃H₈ + 5O₂ → 3CO₂ + 4H₂O, 1 mol gas = 22.4 L at STP)
+moles_CO2 = 3
+volume14 = moles_CO2 * 22.4
+
+# p15: What is the escape velocity (in km/s) from Earth's surface? (M=5.972e24 kg, R=6.371e6 m, G=6.674e-11)
+M = 5.972e24
+R = 6.371e6
+G = 6.674e-11
+v_escape15 = math.sqrt(2 * G * M / R)
+
+results = {
+    "p1": round(a1, 2),
+    "p2": round(q2, 2),
+    "p3": round(area3, 2),
+    "p4": round(h4, 2),
+    "p5": round(pH5, 2),
+    "p6": round(lambda6, 2),
+    "p7": round(tau7 * 1000, 2),  # convert to milliseconds
+    "p8": round(moles8, 2),
+    "p9": round(T9, 2),
+    "p10": round(KE10, 2),
+    "p11": round(M11, 2),
+    "p12": round(a12, 2),
+    "p13": round(lambda13 * 1e9, 2),  # convert to nanometers
+    "p14": round(volume14, 2),
+    "p15": round(v_escape15 / 1000, 2)  # convert to km/s
+}
+
+print(json.dumps(results))
+```

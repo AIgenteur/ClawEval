@@ -1,0 +1,37 @@
+```python
+import json
+
+products = {
+    1: {"Wireless Mouse": [29.99, 24.99, 27.49]},
+    2: {"USB-C Hub": [45.00, 42.50, 39.99]},
+    3: {"Mechanical Keyboard": [89.99, 94.99, 79.99]},
+    4: {"Monitor Stand": [34.99, 34.99, 39.99]},
+    5: {"Webcam 1080p": [59.99, 49.99, 54.99]},
+    6: {"Laptop Sleeve 15\"": [19.99, 22.99, 18.49]},
+    7: {"Desk Lamp LED": [42.00, 38.50, 41.00]},
+    8: {"Mouse Pad XL": [14.99, 16.99, 12.99]},
+    9: {"USB Microphone": [69.99, 64.99, 67.50]},
+    10: {"HDMI Cable 6ft": [8.99, 12.99, 7.49]},
+    11: {"Wireless Charger": [19.99, 17.99, 19.49]},
+    12: {"Bluetooth Speaker": [39.99, 44.99, 37.99]},
+    13: {"Power Strip 6-outlet": [15.99, 14.49, 16.99]},
+    14: {"Screen Protector 2-pack": [9.99, 11.99, 8.99]},
+    15: {"Laptop Stand Aluminum": [54.99, 49.99, 52.99]}
+}
+
+best_deals = {}
+
+for product_id, details in products.items():
+    product_name = list(details.keys())[0]
+    prices = list(details.values())[0]
+    min_price = min(prices)
+    best_store = ["Store A", "Store B", "Store C"][prices.index(min_price)]
+    savings_pct = round((min_price / max(prices) - 1) * 100, 2)
+    best_deals[product_id] = {
+        "best_store": best_store,
+        "best_price": min_price,
+        "savings_pct": savings_pct
+    }
+
+print(json.dumps(best_deals, indent=4))
+```

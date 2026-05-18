@@ -1,0 +1,75 @@
+```python
+import re
+from datetime import datetime
+
+def validate_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(pattern, email) and '..' not in email:
+        return "VALID"
+    return "INVALID"
+
+def validate_phone(phone):
+    pattern = r'^\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$'
+    if re.match(pattern, phone):
+        return "VALID"
+    return "INVALID"
+
+def validate_url(url):
+    pattern = r'^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(:[0-9]+)?(/.*)?$'
+    if re.match(pattern, url):
+        return "VALID"
+    return "INVALID"
+
+def validate_date(date_str):
+    try:
+        datetime.strptime(date_str, '%Y-%m-%d')
+        return "VALID"
+    except ValueError:
+        return "INVALID"
+
+def validate_integer(value):
+    if value.isdigit() or (value.startswith('-') and value[1:].isdigit()):
+        return "VALID"
+    return "INVALID"
+
+def validate_username(username):
+    pattern = r'^[a-zA-Z][a-zA-Z0-9_]{2,19}$'
+    if re.match(pattern, username):
+        return "VALID"
+    return "INVALID"
+
+validations = {
+    "1": validate_email("user@example.com"),
+    "2": validate_email("user@.com"),
+    "3": validate_email("user@exam..ple.com"),
+    "4": validate_email("user @example.com"),
+    "5": validate_email("user+tag@example.com"),
+    "6": validate_phone("(555) 123-4567"),
+    "7": validate_phone("555-123-4567"),
+    "8": validate_phone("5551234567"),
+    "9": validate_phone("555-123-456"),
+    "10": validate_phone("1-555-123-4567"),
+    "11": validate_phone("555-ABC-4567"),
+    "12": validate_url("https://example.com"),
+    "13": validate_url("http://sub.domain.co.uk/path?q=1"),
+    "14": validate_url("ftp://files.example.com"),
+    "15": validate_url("https://"),
+    "16": validate_url("example.com"),
+    "17": validate_date("2024-02-29"),
+    "18": validate_date("2023-02-29"),
+    "19": validate_date("2024-13-01"),
+    "20": validate_date("2024-04-31"),
+    "21": validate_date("2024-06-15"),
+    "22": validate_integer("42"),
+    "23": validate_integer("-7"),
+    "24": validate_integer("3.14"),
+    "25": validate_integer("0"),
+    "26": validate_integer("12e5"),
+    "27": validate_integer("9999999999999"),
+    "28": validate_username("alice_99"),
+    "29": validate_username("_hidden"),
+    "30": validate_username("ab")
+}
+
+print(validations)
+```

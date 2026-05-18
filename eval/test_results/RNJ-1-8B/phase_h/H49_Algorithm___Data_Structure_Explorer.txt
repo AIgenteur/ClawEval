@@ -1,0 +1,68 @@
+```python
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.order = []
+
+    def get(self, key):
+        if key in self.cache:
+            self.order.remove(key)
+            self.order.append(key)
+            return self.cache[key]
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.order.remove(key)
+        elif len(self.cache) >= self.capacity:
+            lru = self.order.pop(0)
+            del self.cache[lru]
+        self.cache[key] = value
+        self.order.append(key)
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self):
+        if self.stack:
+            val = self.stack.pop()
+            if val == self.min_stack[-1]:
+                self.min_stack.pop()
+            return val
+        return None
+
+    def top(self):
+        return self.stack[-1] if self.stack else None
+
+    def get_min(self):
+        return self.min_stack[-1] if self.min_stack else None
+
+
+def find_median(stream):
+    import heapq
+    min_heap = []
+    max_heap = []
+    result = []
+
+    for num in stream:
+        if len(max_heap) == len(min_heap):
+            heapq.heappush(max_heap, -heapq.heappushpop(min_heap, num))
+        else:
+            heapq.heappush(min_heap, -heapq.heappushpop(max_heap, -num))
+
+        if len(max_heap) > len(min_heap):
+            result.append(-max_heap[0])
+        else:
+            result.append((min_heap[0] - max_heap[0]) / 2)
+
+    return result
+```

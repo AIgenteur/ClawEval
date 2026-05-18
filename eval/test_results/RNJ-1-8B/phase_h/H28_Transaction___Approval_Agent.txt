@@ -1,0 +1,76 @@
+```python
+import json
+
+# Define the transactions as a list of dictionaries
+transactions = [
+    {"id": 1, "amount": 3200, "vendor": "Office Supplies Inc", "country": "domestic", "day": "Tuesday", "account_status": "active"},
+    {"id": 2, "amount": 15000, "vendor": "Cloud Services Corp", "country": "domestic", "day": "Monday", "account_status": "active"},
+    {"id": 3, "amount": 4800, "vendor": "London Marketing Ltd", "country": "UK", "day": "Wednesday", "account_status": "active"},
+    {"id": 4, "amount": 7500, "vendor": "Berlin Tech GmbH", "country": "Germany", "day": "Thursday", "account_status": "active"},
+    {"id": 5, "amount": 500, "vendor": "Catering Express", "country": "domestic", "day": "Friday", "account_status": "active"},
+    {"id": 6, "amount": 12000, "vendor": "Cloud Services Corp", "country": "domestic", "day": "Monday", "account_status": "active"},
+    {"id": 7, "amount": 3000, "vendor": "North Korea", "country": "international", "day": "Monday", "account_status": "active"},
+    {"id": 8, "amount": 8000, "vendor": "Consulting Partners", "country": "domestic", "day": "Saturday", "account_status": "active"},
+    {"id": 9, "amount": 10000, "vendor": "Marketing Agency", "country": "domestic", "day": "Tuesday", "account_status": "active"},
+    {"id": 10, "amount": 2100, "vendor": "Office Supplies Inc", "country": "domestic", "day": "Friday", "account_status": "suspended"},
+    {"id": 11, "amount": 450, "vendor": "Coffee Shop", "country": "domestic", "day": "Wednesday", "account_status": "active"},
+    {"id": 12, "amount": 25000, "vendor": "IT Infrastructure vendor", "country": "domestic", "day": "Sunday", "account_status": "active"},
+    {"id": 13, "amount": 6000, "vendor": "Tokyo Design Studio", "country": "Japan", "day": "Monday", "account_status": "active"},
+    {"id": 14, "amount": 5000, "vendor": "Freelancer", "country": "domestic", "day": "Thursday", "account_status": "active"},
+    {"id": 15, "amount": 1200, "vendor": "Cuba", "country": "international", "day": "Tuesday", "account_status": "active"},
+    {"id": 16, "amount": 9500, "vendor": "Legal Services LLC", "country": "domestic", "day": "Wednesday", "account_status": "active"},
+    {"id": 17, "amount": 3500, "vendor": "Paris Agency", "country": "France", "day": "Friday", "account_status": "active"},
+    {"id": 18, "amount": 50000, "vendor": "Enterprise Software vendor", "country": "domestic", "day": "Monday", "account_status": "active"},
+    {"id": 19, "amount": 750, "vendor": "Uber for Business", "country": "domestic", "day": "Thursday", "account_status": "active"},
+    {"id": 20, "amount": 11000, "vendor": "Recruitment Agency", "country": "domestic", "day": "Tuesday", "account_status": "suspended"},
+]
+
+# Define a function to determine the action for each transaction
+def determine_action(transaction):
+    actions = []
+    
+    # Check for transactions over $10,000
+    if transaction["amount"] > 10000:
+        actions.append("flag")
+    
+    # Check for international transactions over $5,000
+    if transaction["country"] != "domestic" and transaction["amount"] > 5000:
+        actions.append("flag")
+    
+    # Check for transactions to sanctioned countries
+    if transaction["vendor"] in ["North Korea", "Cuba"]:
+        actions.append("reject")
+    
+    # Check for duplicate amounts to the same vendor within 24 hours
+    # This is a simplified check and assumes the transactions are in chronological order
+    if transaction["id"] > 1:
+        previous_transaction = next((t for t in transactions if t["id"] == transaction["id"] - 1), None)
+        if previous_transaction and previous_transaction["vendor"] == transaction["vendor"] and previous_transaction["amount"] == transaction["amount"]:
+            actions.append("flag")
+    
+    # Check for round-number transactions over $5,000
+    if transaction["amount"] > 5000 and transaction["amount"] == round(transaction["amount"]):
+        actions.append("flag")
+    
+    # Check for transactions from suspended accounts
+    if transaction["account_status"] == "suspended":
+        actions.append("reject")
+    
+    # Check for weekend transactions over $20,000
+    if transaction["day"] in ["Saturday", "Sunday"] and transaction["amount"] > 20000:
+        actions.append("flag")
+    
+    # Determine the final action
+    if "reject" in actions:
+        return "reject"
+    elif "flag" in actions:
+        return "flag"
+    else:
+        return "approve"
+
+# Apply the function to each transaction
+results = {str(transaction["id"]): determine_action(transaction) for transaction in transactions}
+
+# Print the results as JSON
+print(json.dumps(results, indent=2))
+```

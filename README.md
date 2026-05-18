@@ -181,13 +181,14 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 39 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
 | 40 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
 | 41 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
-| 42 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
-| 43 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 44 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
-| 45 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
-| 46 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
-| 47 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
-| 48 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
+| 42 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
+| 43 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
+| 44 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 45 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
+| 46 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
+| 47 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 48 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
+| 49 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 > All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)** · **[RTX 3090 24GB Guide →](docs/results-rtx3090-24gb.md)**
 >
