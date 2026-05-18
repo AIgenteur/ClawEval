@@ -1,0 +1,83 @@
+
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount applies 20% of original price instead of 80% reduction (should be subtotal * 0.80 or subtotal - subtotal * 0.20)",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 discount subtracts 1000% of subtotal instead of 10% (should be subtotal * 0.10 or subtotal - subtotal * 0.10)",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "No error handling when stock goes negative - silently passes instead of raising error or skipping order",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "=+ is assignment of positive value, not increment operator (should be += for addition)",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero if orders list is empty",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "ValueError if results list is empty when calling max()",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for '@' character, missing validation for format, domain, etc.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "per_km rate not multiplied by distance (should be distance * per_km)",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code - weight > 50 condition never executed because weight > 30 is checked first",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Rounding to integer loses decimal precision needed for currency",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "Reference assignment instead of copy - modifies original profile_a dictionary",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date instead of using current timestamp",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "CSV parsing doesn't handle quoted fields containing commas or escaped characters",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Using list for seen items causes O(n²) time complexity instead of O(1) with set",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Returns all duplicate occurrences instead of unique duplicates only",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,91 @@
+
+```json
+{
+  "agents": [
+    {
+      "name": "validation-triage",
+      "input": "customer_refund_request{request_id, customer_id, amount, reason, timestamp}",
+      "output": "validation_result{status: valid|invalid, customer_data, request_details}",
+      "next": "fraud-check",
+      "fallback": "escalation-agent",
+      "timeout": 5,
+      "logging": "log_validation_step"
+    },
+    {
+      "name": "fraud-check",
+      "input": "validation_result{status, customer_data, request_details}",
+      "output": "fraud_result{fraud_score: 0-100, risk_level: low|medium|high, flags}",
+      "next": "approval-agent",
+      "fallback": "escalation-agent",
+      "timeout": 8,
+      "logging": "log_fraud_check_step"
+    },
+    {
+      "name": "approval-agent",
+      "input": "fraud_result{fraud_score, risk_level, flags}, request_details",
+      "output": "approval_result{decision: approved|rejected, reason}",
+      "next": "conditional-router",
+      "fallback": "escalation-agent",
+      "timeout": 10,
+      "logging": "log_approval_step"
+    },
+    {
+      "name": "conditional-router",
+      "input": "approval_result{decision, reason}",
+      "output": "route_to: payment-processing OR notification-rejected",
+      "next": "payment-processing or notification-rejected",
+      "fallback": "escalation-agent",
+      "timeout": 2,
+      "logging": "log_routing_decision"
+    },
+    {
+      "name": "payment-processing",
+      "input": "approval_result{approved}, request_details{amount, customer_id}",
+      "output": "payment_result{transaction_id, status: success|failed, timestamp}",
+      "next": "notification-agent",
+      "fallback": "escalation-agent",
+      "timeout": 15,
+      "logging": "log_payment_step"
+    },
+    {
+      "name": "notification-agent",
+      "input": "final_result{payment_result or rejection_reason, customer_id, request_id}",
+      "output": "notification_status{sent: true, channel: email|sms, timestamp}",
+      "next": "workflow-complete",
+      "fallback": "escalation-agent",
+      "timeout": 5,
+      "logging": "log_notification_step"
+    },
+    {
+      "name": "escalation-agent",
+      "input": "error_context{agent_name, error_type, request_data}",
+      "output": "escalation_result{ticket_id, assigned_to, priority: high|medium}",
+      "next": "human-intervention",
+      "fallback": "system-alert",
+      "timeout": 30,
+      "logging": "log_escalation_step"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "first_agent": "validation-triage",
+    "last_agent": "notification-agent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time": 60,
+    "conditional_branch": "approval decision routing",
+    "outcomes": ["approved", "rejected"],
+    "logging_required": true,
+    "no_circular_deps": true,
+    "human_escalation": true,
+    "timeout_per_agent": [5, 8, 10, 2, 15, 5, 30],
+    "total_expected_time": "45 seconds"
+  },
+  "workflow_flow": {
+    "happy_path": "validation-triage → fraud-check → approval-agent → conditional-router → payment-processing → notification-agent",
+    "rejection_path": "validation-triage → fraud-check → approval-agent → conditional-router → notification-agent(rejected)",
+    "escalation_path": "any_agent → escalation-agent → human-intervention"
+  }
+}
+```

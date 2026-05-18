@@ -1,0 +1,87 @@
+
+```python
+def is_valid_password(password):
+    # Rule 1: At least 8 characters long
+    if len(password) < 8:
+        return False
+    
+    # Rule 2: At most 64 characters
+    if len(password) > 64:
+        return False
+    
+    # Rule 3: Contains at least 1 uppercase letter
+    has_upper = any(c.isupper() for c in password)
+    if not has_upper:
+        return False
+    
+    # Rule 4: Contains at least 1 lowercase letter
+    has_lower = any(c.islower() for c in password)
+    if not has_lower:
+        return False
+    
+    # Rule 5: Contains at least 1 digit
+    has_digit = any(c.isdigit() for c in password)
+    if not has_digit:
+        return False
+    
+    # Rule 6: Contains at least 1 special character
+    special_chars = "!@#$%^&*()-_+="
+    has_special = any(c in special_chars for c in password)
+    if not has_special:
+        return False
+    
+    # Rule 7: No spaces allowed
+    if ' ' in password:
+        return False
+    
+    # Rule 8: Cannot start with a digit
+    if password[0].isdigit():
+        return False
+    
+    # Rule 9: Cannot contain more than 3 consecutive identical characters
+    for i in range(len(password) - 3):
+        if password[i] == password[i+1] == password[i+2] == password[i+3]:
+            return False
+    
+    # Rule 10: Cannot contain the word "password" (case-insensitive)
+    if "password" in password.lower():
+        return False
+    
+    return True
+
+
+def run_tests():
+    tests = [
+        # Test 1: Valid password
+        ("Abcdefg1!", True, is_valid_password("Abcdefg1!")),
+        # Test 2: Too short (< 8 chars)
+        ("Abc1!", False, is_valid_password("Abc1!")),
+        # Test 3: No uppercase
+        ("abcdefgh1!", False, is_valid_password("abcdefgh1!")),
+        # Test 4: No lowercase
+        ("ABCDEFGH1!", False, is_valid_password("ABCDEFGH1!")),
+        # Test 5: No digit
+        ("Abcdefg!", False, is_valid_password("Abcdefg!")),
+        # Test 6: No special character
+        ("Abcdefg1", False, is_valid_password("Abcdefg1")),
+        # Test 7: Contains space
+        ("Abc def1!", False, is_valid_password("Abc def1!")),
+        # Test 8: Starts with digit
+        ("1Abcdefg!", False, is_valid_password("1Abcdefg!")),
+        # Test 9: More than 3 consecutive identical characters
+        ("Abcd1111efg!", False, is_valid_password("Abcd1111efg!")),
+        # Test 10: Contains "password"
+        ("AbcPassword1!", False, is_valid_password("AbcPassword1!")),
+        # Test 11: Exactly 8 characters, valid
+        ("Abcd123!", True, is_valid_password("Abcd123!")),
+        # Test 12: Exactly 64 characters, valid
+        ("A" + "b" * 62 + "1!" + "c", True, is_valid_password("A" + "b" * 62 + "1!" + "c")),
+        # Test 13: 4 consecutive identical chars at start
+        ("Aaaa1bcd!", False, is_valid_password("Aaaa1bcd!")),
+        # Test 14: Valid password with mixed case and special chars
+        ("MyP@ssw0rd2023", True, is_valid_password("MyP@ssw0rd2023")),
+        # Test 15: Exactly 3 consecutive identical chars (should pass)
+        ("Abcd111efg!", True, is_valid_password("Abcd111efg!")),
+    ]
+    return tests
+```

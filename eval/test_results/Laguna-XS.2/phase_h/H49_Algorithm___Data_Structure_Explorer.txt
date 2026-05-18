@@ -1,0 +1,98 @@
+
+```python
+class LRUCache:
+    class Node:
+        def __init__(self, key=0, value=0):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+    
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self.Node()
+        self.tail = self.Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+    
+    def _remove(self, node):
+        prev_node = node.prev
+        next_node = node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
+    
+    def _add(self, node):
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+    
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add(node)
+            return node.value
+        return -1
+    
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self._remove(self.cache[key])
+        node = self.Node(key, value)
+        self.cache[key] = node
+        self._add(node)
+        if len(self.cache) > self.capacity:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+    
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+    
+    def pop(self) -> None:
+        if self.stack:
+            val = self.stack.pop()
+            if self.min_stack and val == self.min_stack[-1]:
+                self.min_stack.pop()
+    
+    def top(self) -> int:
+        return self.stack[-1] if self.stack else None
+    
+    def get_min(self) -> int:
+        return self.min_stack[-1] if self.min_stack else None
+
+
+def find_median(stream):
+    import heapq
+    lower = []
+    upper = []
+    medians = []
+    
+    for num in stream:
+        if not lower or num <= -lower[0]:
+            heapq.heappush(lower, -num)
+        else:
+            heapq.heappush(upper, num)
+        
+        if len(lower) > len(upper) + 1:
+            heapq.heappush(upper, -heapq.heappop(lower))
+        elif len(upper) > len(lower):
+            heapq.heappush(lower, -heapq.heappop(upper))
+        
+        if len(lower) == len(upper):
+            median = (-lower[0] + upper[0]) / 2.0
+        else:
+            median = -lower[0] if len(lower) > len(upper) else upper[0]
+        medians.append(float(median))
+    
+    return medians
+```

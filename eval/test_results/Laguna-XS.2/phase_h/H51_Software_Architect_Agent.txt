@@ -1,0 +1,20 @@
+
+```json
+{
+  "q1": "Operational Transformation (OT) - proven by Google Docs, handles concurrent edits by transforming operations against each other in real-time. CRDT is an alternative but OT provides better user experience with immediate visual feedback.",
+  "q2": "WebSocket - enables full-duplex real-time communication essential for instant collaboration. SSE is unidirectional and unsuitable for bidirectional editing sync.",
+  "q3": "PostgreSQL with JSONB columns - provides ACID transactions, JSON flexibility for document structure, and reliable persistence. Can be combined with Redis for caching frequently accessed documents.",
+  "q4": "Service workers with IndexedDB local storage - cache documents locally, queue operations during offline, then sync via background sync API when connectivity restored. Implement conflict resolution for offline changes.",
+  "q5": "Apache Kafka or Redis Pub/Sub - Kafka for high-throughput event streaming with persistence, Redis Pub/Sub for lower-latency pub/sub with simpler setup. Both support fan-out to multiple WebSocket server instances.",
+  "q6": "Stateless WebSocket servers behind load balancer with sticky sessions. Use message broker to broadcast operations across server instances. Redis or Memcached for shared session state.",
+  "q7": "Broadcast cursor positions via WebSocket with user metadata (color, name, selection range). Use throttling/debouncing to limit update frequency (e.g., 30fps) to reduce network overhead.",
+  "q8": "JWT tokens with OAuth 2.0/OpenID Connect for SSO integration. Short-lived access tokens with refresh token rotation. API keys for server-to-server communication.",
+  "q9": "Event sourcing with periodic snapshots - store all operations as immutable events, create document snapshots at intervals. Enable time-travel by replaying events to specific timestamps.",
+  "q10": "CDN with edge caching for static assets (JS, CSS, fonts). Use cache tags for invalidation. Origin shield to reduce origin requests. Serve collaborative editor bundles from CDN with version-based cache busting.",
+  "q11": "Virtualized rendering with document chunking - load/render only visible sections. Implement pagination or section-based loading. Compress document operations and use differential sync for large documents.",
+  "q12": "Token bucket algorithm with Redis - track operations per user/document per time window. Rate limit based on document size and user tier. Implement exponential backoff for clients exceeding limits.",
+  "q13": "Automated daily snapshots to cloud storage (S3/GCS) with incremental backups. Cross-region replication for disaster recovery. Point-in-time recovery using operation logs. Test restore procedures regularly.",
+  "q14": "Pre-signed S3 URLs for direct client uploads with server-side validation. Queue uploads with deduplication. Process images asynchronously with thumbnail generation. Implement upload quotas per user.",
+  "q15": "Prometheus for metrics collection, Grafana for dashboards. ELK stack (Elasticsearch, Logstash, Kibana) for log aggregation. OpenTelemetry for distributed tracing. Custom health checks and alerting via PagerDuty/Slack."
+}
+```
