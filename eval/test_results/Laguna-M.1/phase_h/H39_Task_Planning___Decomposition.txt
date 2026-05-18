@@ -1,0 +1,27 @@
+
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Analyze monolith architecture and identify service boundaries", "depends_on": [], "effort_days": 5, "team": "backend"},
+    {"id": 2, "task": "Design microservice architecture and data models", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 3, "task": "Set up development environment and tooling", "depends_on": [], "effort_days": 3, "team": "devops"},
+    {"id": 4, "task": "Create database schema for new microservices", "depends_on": [2], "effort_days": 4, "team": "backend"},
+    {"id": 5, "task": "Implement user authentication service", "depends_on": [2], "effort_days": 5, "team": "backend"},
+    {"id": 6, "task": "Implement product catalog service", "depends_on": [2], "effort_days": 5, "team": "backend"},
+    {"id": 7, "task": "Implement order management service", "depends_on": [2], "effort_days": 5, "team": "backend"},
+    {"id": 8, "task": "Set up API gateway with routing rules", "depends_on": [3], "effort_days": 4, "team": "devops"},
+    {"id": 9, "task": "Configure service discovery and load balancing", "depends_on": [3], "effort_days": 3, "team": "devops"},
+    {"id": 10, "task": "Set up CI/CD pipeline for microservices", "depends_on": [3], "effort_days": 4, "team": "devops"},
+    {"id": 11, "task": "Create frontend service adapters", "depends_on": [5, 6, 7], "effort_days": 4, "team": "frontend"},
+    {"id": 12, "task": "Update frontend to consume microservices", "depends_on": [11], "effort_days": 5, "team": "frontend"},
+    {"id": 13, "task": "Write unit tests for all microservices", "depends_on": [5, 6, 7], "effort_days": 4, "team": "qa"},
+    {"id": 14, "task": "Write integration tests for service communication", "depends_on": [5, 6, 7, 8], "effort_days": 4, "team": "qa"},
+    {"id": 15, "task": "Migrate existing database data to new schema", "depends_on": [4], "effort_days": 5, "team": "backend"},
+    {"id": 16, "task": "Perform load and performance testing", "depends_on": [5, 6, 7, 8], "effort_days": 4, "team": "qa"},
+    {"id": 17, "task": "Set up monitoring, logging, and alerting", "depends_on": [8, 9], "effort_days": 4, "team": "devops"},
+    {"id": 18, "task": "Conduct security testing and vulnerability assessment", "depends_on": [5, 6, 7, 8], "effort_days": 3, "team": "qa"},
+    {"id": 19, "task": "Deploy to staging environment and validate", "depends_on": [10, 12, 14, 17], "effort_days": 3, "team": "devops"},
+    {"id": 20, "task": "Deploy to production and monitor system health", "depends_on": [16, 18, 19], "effort_days": 4, "team": "devops"}
+  ]
+}
+```

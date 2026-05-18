@@ -1,0 +1,83 @@
+
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using ':latest' tag makes deployments non-reproducible and can lead to unexpected version changes",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "Empty resources block means no CPU/memory limits or requests, risking resource starvation and OOM kills",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Invalid field 'runAsRoot' - this field does not exist in Kubernetes securityContext; should use 'runAsNonRoot: false' or 'runAsUser: 0'",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Running container in privileged mode gives full host access, creating severe security vulnerability",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "Hardcoded database password in plain text exposes credentials in version control and logs",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "Hardcoded API key in plain text exposes sensitive credentials in configuration",
+      "severity": "critical"
+    },
+    {
+      "line": "memory: \"10Gi\"",
+      "issue": "Excessive 10Gi memory request for sidecar container is unrealistic and will cause scheduling failures",
+      "severity": "major"
+    },
+    {
+      "line": "cpu: \"8\"",
+      "issue": "Excessive 8 CPU request for sidecar container is unrealistic and will cause scheduling failures",
+      "severity": "major"
+    },
+    {
+      "line": "hostPath:",
+      "issue": "hostPath volume is node-specific, not portable, and breaks in cloud/multi-node environments",
+      "severity": "major"
+    },
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica provides no high availability or fault tolerance for production workloads",
+      "severity": "major"
+    },
+    {
+      "line": "image: myapp:latest",
+      "issue": "Missing imagePullPolicy allows cached images to be used, potentially running outdated code",
+      "severity": "minor"
+    },
+    {
+      "line": "securityContext:",
+      "issue": "Missing liveness and readiness probes prevents proper health monitoring and graceful rollouts",
+      "severity": "major"
+    },
+    {
+      "line": "resources:",
+      "issue": "Sidecar container defines requests but no limits, allowing unlimited resource consumption",
+      "severity": "major"
+    },
+    {
+      "line": "spec:",
+      "issue": "Missing deployment strategy (rollingUpdate) defaults may cause downtime during updates",
+      "severity": "minor"
+    },
+    {
+      "line": "type: LoadBalancer",
+      "issue": "LoadBalancer service type may incur unnecessary costs and expose service publicly by default",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

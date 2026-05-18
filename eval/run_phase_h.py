@@ -370,13 +370,19 @@ H_SCORERS = {
 }
 
 
-def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, api_key=None):
+def run_test(test, base_url, model, max_tokens, timeout, extra_body=None, api_key=None, rotator=None):
     """Run a single Phase H test and score it with raw checkpoint counts."""
     messages = [{"role": "user", "content": test["prompt"]}]
-    content, tokens, tps, elapsed = call_llm(
-        messages, base_url, model, max_tokens, timeout=timeout,
-        extra_body=extra_body, api_key=api_key
-    )
+    if rotator is not None:
+        content, tokens, tps, elapsed = rotator.call_llm(
+            messages, base_url, model, max_tokens=max_tokens,
+            timeout=timeout, extra_body=extra_body
+        )
+    else:
+        content, tokens, tps, elapsed = call_llm(
+            messages, base_url, model, max_tokens, timeout=timeout,
+            extra_body=extra_body, api_key=api_key
+        )
 
     scoring = test["scoring"]
     stype = test.get("scoring_type", scoring.get("type"))
@@ -408,7 +414,21 @@ def main():
     parser.add_argument("--timeout", type=int, default=600, help="Request timeout in seconds")
     parser.add_argument("--reasoning-budget-tokens", type=int, help="Reasoning budget for llama.cpp / Gemma-4")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
+    parser.add_argument("--openrouter-keys", action="store_true", help="Use multi-key rotation for OpenRouter free tier (loads FREE_OPENROUTER_API_KEY_* from .env)")
     args = parser.parse_args()
+
+    rotator = None
+    if args.openrouter_keys:
+        env_path = str(Path(__file__).parent.parent / ".env")
+        if os.path.exists(env_path):
+            with open(env_path) as ef:
+                for line in ef:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        k, v = line.split('=', 1)
+                        os.environ[k.strip()] = v.strip()
+        from openrouter_keys import OpenRouterKeyRotator
+        rotator = OpenRouterKeyRotator()
 
     api_model = args.api_model or args.model
     extra_body = {}
@@ -443,7 +463,8 @@ def main():
 
         result = run_test(
             test, args.base_url, api_model, args.max_tokens,
-            args.timeout, extra_body=extra_body or None, api_key=args.api_key
+            args.timeout, extra_body=extra_body or None, api_key=args.api_key,
+            rotator=rotator
         )
 
         score = result["score"]
@@ -504,6 +525,9 @@ def main():
         json.dump(scores_data, f, indent=2)
 
     print(f"\nResults saved to: {scores_file}")
+
+    if rotator is not None:
+        rotator.print_stats()
 
 
 if __name__ == "__main__":

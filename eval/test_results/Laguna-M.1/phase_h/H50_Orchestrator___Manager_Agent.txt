@@ -1,0 +1,106 @@
+
+```json
+{
+  "agents": [
+    {
+      "name": "validation_agent",
+      "input": "refund_request_data (customer_id, order_id, amount, reason, timestamp)",
+      "output": "validation_result (status: valid/invalid, validated_data, validation_errors)",
+      "next": "fraud_check_agent",
+      "fallback": "escalation_agent",
+      "timeout": 5,
+      "logging": "audit_log_entry_created"
+    },
+    {
+      "name": "fraud_check_agent",
+      "input": "validated_refund_request",
+      "output": "fraud_assessment (risk_level: low/medium/high, fraud_flags, recommendation)",
+      "next": "approval_agent",
+      "fallback": "escalation_agent",
+      "timeout": 10,
+      "logging": "fraud_check_audit_logged"
+    },
+    {
+      "name": "approval_agent",
+      "input": "fraud_assessment_result",
+      "output": "approval_decision (status: approved/rejected/escalated, decision_reason, approver_id)",
+      "next": {
+        "approved": "payment_agent",
+        "rejected": "notification_agent",
+        "escalated": "escalation_agent"
+      },
+      "fallback": "escalation_agent",
+      "timeout": 8,
+      "logging": "approval_audit_logged"
+    },
+    {
+      "name": "payment_agent",
+      "input": "approved_refund_details",
+      "output": "payment_result (status: success/failed, transaction_id, processed_amount, timestamp)",
+      "next": "notification_agent",
+      "fallback": "escalation_agent",
+      "timeout": 15,
+      "logging": "payment_audit_logged"
+    },
+    {
+      "name": "notification_agent",
+      "input": "final_outcome (approval_status, payment_status, customer_details)",
+      "output": "notification_status (sent: true/false, channels: email/sms/push, delivery_receipt)",
+      "next": "end",
+      "fallback": "escalation_agent",
+      "timeout": 7,
+      "logging": "notification_audit_logged"
+    },
+    {
+      "name": "escalation_agent",
+      "input": "error_context (agent_name, error_details, customer_data)",
+      "output": "escalation_result (ticket_id, priority_level, assigned_to, status)",
+      "next": "notification_agent",
+      "fallback": "notification_agent",
+      "timeout": 30,
+      "logging": "escalation_audit_logged"
+    },
+    {
+      "name": "logging_agent",
+      "input": "all_agent_outputs",
+      "output": "consolidated_audit_trail (complete_request_history, timestamps, agent_chain)",
+      "next": "end",
+      "fallback": "notification_agent",
+      "timeout": 5,
+      "logging": "audit_trail_finalized"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branching": {
+      "approval_agent": {
+        "condition": "approval_decision.status",
+        "branches": {
+          "approved": "payment_agent",
+          "rejected": "notification_agent",
+          "escalated": "escalation_agent"
+        }
+      }
+    },
+    "fallback_handlers": "each_agent_has_defined_fallback",
+    "first_agent": "validation_agent",
+    "last_agent": "notification_agent",
+    "processing_order": ["validation", "fraud_check", "approval", "payment", "notification"],
+    "max_processing_time": 60,
+    "outcome_handling": ["approved", "rejected", "escalated"],
+    "audit_requirement": "logging_at_each_step",
+    "dependency_check": "no_circular_dependencies",
+    "human_escalation": "escalation_agent_for_edge_cases",
+    "agent_timeouts": {
+      "validation_agent": 5,
+      "fraud_check_agent": 10,
+      "approval_agent": 8,
+      "payment_agent": 15,
+      "notification_agent": 7,
+      "escalation_agent": 30,
+      "logging_agent": 5
+    }
+  }
+}
+```

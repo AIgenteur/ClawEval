@@ -1,0 +1,20 @@
+
+```json
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) - specifically using a sequence CRDT like Yjs or Automerge for automatic conflict resolution without server coordination, enabling offline editing and better performance than OT",
+  "q2": "WebSocket - provides full-duplex, low-latency bidirectional communication essential for real-time cursor movements, typing indicators, and immediate document updates across all collaborators",
+  "q3": "PostgreSQL with JSONB columns - offers ACID transactions, efficient querying of document metadata, built-in full-text search, and can store both current document state and operational history in a single relational model",
+  "q4": "Service Worker + IndexedDB for offline storage with background sync API - queue operations locally, detect connectivity changes, and automatically sync when online with conflict resolution using CRDT merge semantics",
+  "q5": "Redis Pub/Sub with Redis Streams - provides sub-millisecond message delivery, built-in message persistence for offline users, and horizontal scalability through Redis Cluster for handling millions of concurrent rooms",
+  "q6": "Sticky sessions with consistent hashing load balancer + shared Redis adapter - each WebSocket server handles specific document rooms, with Redis enabling cross-server message broadcasting and seamless horizontal scaling",
+  "q7": "Broadcast cursor position updates (user_id, document_position, selection_range) via lightweight WebSocket messages every 50-100ms, with client-side interpolation for smooth cursor movement and presence awareness",
+  "q8": "OAuth 2.0 with JWT tokens - stateless authentication using short-lived access tokens (15min) and refresh tokens, supporting SSO integration, with token validation at API gateway level for microservices",
+  "q9": "Operational Transform log stored in PostgreSQL - maintain append-only operation history with timestamps, user IDs, and inverse operations, enabling time-travel debugging and selective version restoration",
+  "q10": "Multi-CDN strategy with Cloudflare + AWS CloudFront - edge caching for static assets with intelligent routing based on user location, automatic failover, and aggressive caching headers for JS/CSS bundles",
+  "q11": "Virtual scrolling with document chunking - load only visible pages plus buffer, store document as page-level chunks in database, implement progressive loading with Web Workers for parsing large documents",
+  "q12": "Token bucket algorithm with Redis - distributed rate limiting using atomic Redis operations, separate buckets for read/write operations, adaptive limits based on user tier and real-time system load",
+  "q13": "Point-in-time recovery with WAL-G + S3 - continuous archiving of PostgreSQL WAL logs to S3, daily base backups, cross-region replication, and automated restore testing with 15-minute RPO target",
+  "q14": "Pre-signed S3 URLs with client-side deduplication - generate upload URLs server-side, use content-hash based filenames to prevent duplicates, process images asynchronously with Lambda functions for thumbnails",
+  "q15": "Prometheus + Grafana + ELK stack - Prometheus for metrics collection and alerting, Grafana for dashboards, ELK (Elasticsearch, Logstash, Kibana) for log aggregation, OpenTelemetry for distributed tracing across services"
+}
+```

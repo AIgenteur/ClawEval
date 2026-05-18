@@ -1,0 +1,72 @@
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        # Check required fields
+        for field_name, field_schema in schema.items():
+            if field_schema.get("required", False) and field_name not in data:
+                errors.append(f"Field '{field_name}' is required but missing")
+        
+        # Check field types and constraints
+        for field_name, value in data.items():
+            if field_name not in schema:
+                continue  # Extra fields are allowed
+            
+            field_schema = schema[field_name]
+            expected_type = field_schema.get("type")
+            
+            # Check type
+            if expected_type and not self._check_type(value, expected_type):
+                errors.append(f"Field '{field_name}' has wrong type, expected {expected_type}")
+                continue  # Skip further checks if type is wrong
+            
+            # Check min/max for numbers
+            if expected_type in ("int", "float"):
+                if "min" in field_schema and value < field_schema["min"]:
+                    errors.append(f"Field '{field_name}' value {value} is less than minimum {field_schema['min']}")
+                if "max" in field_schema and value > field_schema["max"]:
+                    errors.append(f"Field '{field_name}' value {value} is greater than maximum {field_schema['max']}")
+            
+            # Check min_length/max_length for strings and lists
+            if expected_type in ("str", "list"):
+                length = len(value)
+                if "min_length" in field_schema and length < field_schema["min_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is less than minimum {field_schema['min_length']}")
+                if "max_length" in field_schema and length > field_schema["max_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is greater than maximum {field_schema['max_length']}")
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+    
+    def _check_type(self, value, expected_type):
+        # Special handling for bool since bool is a subclass of int
+        if expected_type == "bool":
+            return type(value) is bool
+        
+        # Special handling for float to allow int values
+        if expected_type == "float":
+            return isinstance(value, (int, float)) and type(value) is not bool
+        
+        type_map = {
+            "str": str,
+            "int": int,
+            "list": list,
+            "dict": dict
+        }
+        
+        expected = type_map.get(expected_type)
+        if expected is None:
+            return False
+        
+        return isinstance(value, expected)
+```
+
+This `JSONValidator` class validates JSON-like data against a schema with the following features:
+
+- **Type checking**: Validates that each field matches its expected type (str, int, float, bool, list, dict)
+- **Required fields**: Checks that required fields are present in the data
+- **Numeric constraints**: Validates min/max values for int and float types
+- **Length constraints**: Validates min_length/max_length for strings and lists
+- **Extra fields**: Allows fields not defined in the schema without errors
+- **All errors reported**: Returns all validation errors at once, not just the first one
