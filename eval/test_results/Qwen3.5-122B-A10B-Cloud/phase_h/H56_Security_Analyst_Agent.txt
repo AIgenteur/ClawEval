@@ -1,0 +1,80 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login function, query construction",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Verification",
+      "location": "login function, password handling",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Cryptographic Algorithm (MD5)",
+      "location": "login function, token generation",
+      "severity": "medium"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile function, render_template_string",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search function, response construction",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command function, subprocess.run",
+      "severity": "critical"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "upload function, file saving",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal (Write)",
+      "location": "upload function, path construction",
+      "severity": "high"
+    },
+    {
+      "type": "Arbitrary File Read (Path Traversal)",
+      "location": "download function, send_file",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization (YAML)",
+      "location": "load_config function, yaml.load",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle)",
+      "location": "restore_session function, pickle.loads",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "admin function, SECRET variable",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data function, os.system",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "__main__ block, app.run",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Host Binding",
+      "location": "__main__ block, app.run",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}

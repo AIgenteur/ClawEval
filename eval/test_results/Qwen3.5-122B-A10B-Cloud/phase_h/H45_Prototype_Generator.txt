@@ -1,0 +1,94 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        # Iterate through each field defined in the schema
+        for field_name, rules in schema.items():
+            # Check if field is missing
+            if field_name not in data:
+                if rules.get("required", False):
+                    errors.append(f"Field '{field_name}' is required but missing")
+                continue
+            
+            value = data[field_name]
+            expected_type = rules.get("type")
+            
+            # Check Type
+            if expected_type and not self._check_type(value, expected_type):
+                errors.append(f"Field '{field_name}' must be of type {expected_type}")
+                continue
+            
+            # Check Constraints based on type
+            
+            # 1. Numeric Constraints (int, float)
+            if expected_type in ["int", "float"]:
+                if "min" in rules and value < rules["min"]:
+                    errors.append(f"Field '{field_name}' value {value} is less than min {rules['min']}")
+                if "max" in rules and value > rules["max"]:
+                    errors.append(f"Field '{field_name}' value {value} is greater than max {rules['max']}")
+            
+            # 2. Length Constraints (str, list)
+            if expected_type in ["str", "list"]:
+                length = len(value)
+                if "min_length" in rules and length < rules["min_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is less than min_length {rules['min_length']}")
+                if "max_length" in rules and length > rules["max_length"]:
+                    errors.append(f"Field '{field_name}' length {length} is greater than max_length {rules['max_length']}")
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+
+    def _check_type(self, value, type_str):
+        """
+        Helper to check types strictly.
+        Handles the Python quirk where bool is a subclass of int.
+        """
+        if type_str == "str":
+            return isinstance(value, str)
+        elif type_str == "int":
+            # Ensure it is an int but NOT a bool
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif type_str == "float":
+            return isinstance(value, float)
+        elif type_str == "bool":
+            return isinstance(value, bool)
+        elif type_str == "list":
+            return isinstance(value, list)
+        elif type_str == "dict":
+            return isinstance(value, dict)
+        return False
+
+# Example Usage:
+if __name__ == "__main__":
+    validator = JSONValidator()
+    
+    schema = {
+        "age": {"type": "int", "required": True, "min": 0, "max": 120},
+        "username": {"type": "str", "required": True, "min_length": 3, "max_length": 20},
+        "is_active": {"type": "bool", "required": False},
+        "tags": {"type": "list", "required": False, "min_length": 1}
+    }
+    
+    # Valid Data
+    data1 = {
+        "age": 25,
+        "username": "john_doe",
+        "is_active": True,
+        "tags": ["python", "coding"],
+        "extra_field": "ignored" # Extra fields are allowed
+    }
+    
+    # Invalid Data
+    data2 = {
+        "age": 150,          # Error: > max
+        "username": "ab",    # Error: < min_length
+        "is_active": "yes",  # Error: wrong type
+        "tags": []           # Error: < min_length
+    }
+    
+    print("Test 1 (Valid):", validator.validate(data1, schema))
+    print("Test 2 (Invalid):", validator.validate(data2, schema))
+```

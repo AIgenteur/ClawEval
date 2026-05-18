@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Analyze monolith codebase and define service boundaries",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Set up container registry and base Docker images",
+      "depends_on": [1],
+      "effort_days": 3,
+      "team": "devops"
+    },
+    {
+      "id": 3,
+      "task": "Configure Kubernetes cluster or ECS environment",
+      "depends_on": [2],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Implement CI/CD pipeline skeleton",
+      "depends_on": [2],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Extract authentication service from monolith",
+      "depends_on": [1, 3],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 6,
+      "task": "Setup API Gateway (Nginx/Kong)",
+      "depends_on": [3],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 7,
+      "task": "Configure Gateway routing rules",
+      "depends_on": [6],
+      "effort_days": 3,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Migrate user database schema to separate DB",
+      "depends_on": [5],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Implement data synchronization strategy",
+      "depends_on": [8],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Extract core business logic service",
+      "depends_on": [5, 9],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Update frontend to use new Auth API",
+      "depends_on": [5],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 12,
+      "task": "Update frontend to use Core Service API",
+      "depends_on": [10],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 13,
+      "task": "Implement Frontend Feature Flags for Services",
+      "depends_on": [1],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 14,
+      "task": "Write integration tests for Auth service",
+      "depends_on": [5],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 15,
+      "task": "Write integration tests for Core service",
+      "depends_on": [10],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 16,
+      "task": "Perform load testing on API Gateway",
+      "depends_on": [7, 14],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 17,
+      "task": "Refactor monolith database triggers",
+      "depends_on": [8],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 18,
+      "task": "Final data migration script validation",
+      "depends_on": [9, 17],
+      "effort_days": 3,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Canary deployment setup",
+      "depends_on": [4, 3],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 20,
+      "task": "Production cutover and monitoring",
+      "depends_on": [18, 19, 12],
+      "effort_days": 5,
+      "team": "backend"
+    }
+  ]
+}

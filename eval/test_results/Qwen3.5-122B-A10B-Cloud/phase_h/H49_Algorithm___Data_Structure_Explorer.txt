@@ -1,0 +1,104 @@
+```python
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        # Move key to end to mark as recently used (Python 3.7+ dict preserves order)
+        val = self.cache.pop(key)
+        self.cache[key] = val
+        return val
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.cache.pop(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            # Remove the least recently used item (first item in insertion order)
+            self.cache.popitem(last=False)
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, val):
+        # Store tuple (value, current_min)
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            self.stack.append((val, min(val, self.stack[-1][1])))
+
+    def pop(self):
+        return self.stack.pop()[0]
+
+    def top(self):
+        return self.stack[-1][0]
+
+    def get_min(self):
+        return self.stack[-1][1]
+
+def find_median(stream):
+    # Helper to push to min-heap
+    def heappush(h, x):
+        h.append(x)
+        i = len(h) - 1
+        while i > 0:
+            p = (i - 1) // 2
+            if h[p] > h[i]:
+                h[p], h[i] = h[i], h[p]
+                i = p
+            else:
+                break
+
+    # Helper to pop from min-heap
+    def heappop(h):
+        if not h: return None
+        ret = h[0]
+        last = h.pop()
+        if h:
+            h[0] = last
+            i = 0
+            n = len(h)
+            while 2 * i + 1 < n:
+                l, r = 2 * i + 1, 2 * i + 2
+                smallest = i
+                if l < n and h[l] < h[smallest]:
+                    smallest = l
+                if r < n and h[r] < h[smallest]:
+                    smallest = r
+                if smallest != i:
+                    h[i], h[smallest] = h[smallest], h[i]
+                    i = smallest
+                else:
+                    break
+        return ret
+
+    low = []  # Max-heap (stored as negative values)
+    high = [] # Min-heap
+    res = []
+
+    for x in stream:
+        heappush(low, -x)
+
+        # Ensure max(low) <= min(high)
+        # max(low) is -low[0]
+        if high and -low[0] > high[0]:
+            heappush(high, -heappop(low))
+            heappush(low, -heappop(high))
+
+        # Balance sizes: len(low) == len(high) or len(low) == len(high) + 1
+        if len(low) > len(high) + 1:
+            heappush(high, -heappop(low))
+        elif len(high) > len(low):
+            heappush(low, -heappop(high))
+
+        if len(low) == len(high):
+            res.append((-low[0] + high[0]) / 2.0)
+        else:
+            res.append(float(-low[0]))
+            
+    return res
+```

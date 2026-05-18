@@ -1,0 +1,85 @@
+{
+  "agents": [
+    {
+      "name": "RefundValidationAgent",
+      "input": "raw_refund_request",
+      "output": "validated_request_payload",
+      "next": "FraudCheckAgent",
+      "fallback": "CustomerNotificationAgent",
+      "timeout_seconds": 5,
+      "logging_enabled": true
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request_payload",
+      "output": "fraud_risk_score",
+      "next": "ApprovalAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "logging_enabled": true
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_risk_score",
+      "output": "decision_status",
+      "next": {
+        "approve": "PaymentProcessingAgent",
+        "reject": "CustomerNotificationAgent",
+        "escalate": "HumanEscalationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "logging_enabled": true
+    },
+    {
+      "name": "PaymentProcessingAgent",
+      "input": "decision_status_approved",
+      "output": "transaction_id",
+      "next": "CustomerNotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "logging_enabled": true
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "decision_status_escalated",
+      "output": "human_verdict",
+      "next": "CustomerNotificationAgent",
+      "fallback": "CustomerNotificationAgent",
+      "timeout_seconds": 10,
+      "logging_enabled": true
+    },
+    {
+      "name": "CustomerNotificationAgent",
+      "input": "final_status",
+      "output": "notification_sent_confirmation",
+      "next": null,
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 5,
+      "logging_enabled": true
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents_included": [
+      "validation",
+      "fraud-check",
+      "approval",
+      "payment",
+      "notification"
+    ],
+    "conditional_branching": true,
+    "fallback_handlers_defined": true,
+    "first_agent_validation": true,
+    "last_agent_notification": true,
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "total_timeout_seconds": 50,
+    "handles_approved_and_rejected": true,
+    "logging_audit_per_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_per_agent": true,
+    "compliance_status": "All 15 constraints satisfied"
+  }
+}

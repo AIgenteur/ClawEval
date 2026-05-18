@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "RateLimiter uses a shared list 'self.requests' without an asyncio.Lock, causing race conditions during concurrent access.",
+      "fix": "Initialize self.lock = asyncio.Lock() in __init__ and wrap state modifications in 'async with self.lock'."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated in Python 3.10+ and removed in 3.12.",
+      "fix": "Use asyncio.get_running_loop().time() instead."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession for every request causes resource exhaustion and overhead.",
+      "fix": "Create a single ClientSession outside the loop and pass it to fetch_one."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 is invalid for session.get in modern aiohttp; it expects a ClientTimeout object.",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30)."
+    },
+    {
+      "line": "29",
+      "bug": "Shared dictionary 'results' is modified by concurrent coroutines without a lock.",
+      "fix": "Protect 'results' updates with an asyncio.Lock or use a Queue."
+    },
+    {
+      "line": "30",
+      "bug": "Bare 'except Exception:' catches system exits and keyboard interrupts, hiding critical errors.",
+      "fix": "Catch specific exceptions or log the exception before handling."
+    },
+    {
+      "line": "31",
+      "bug": "Assigning None on error loses the exception information and debug context.",
+      "fix": "Store the exception object or log the error instead of silently setting None."
+    },
+    {
+      "line": "32",
+      "bug": "Redundant 'pass' statement after assignment serves no purpose.",
+      "fix": "Remove the 'pass' statement."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather without return_exceptions=True will cancel all tasks if one fails.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True)."
+    },
+    {
+      "line": "42",
+      "bug": "Coroutine object stored in variable without immediate await (pattern confusion/risk).",
+      "fix": "Await immediately if sequential, or ensure gather handles it correctly (comment indicates bug)."
+    },
+    {
+      "line": "45",
+      "bug": "Yielding after asyncio.gather waits for the entire batch, defeating the purpose of streaming/generator.",
+      "fix": "Yield results as they complete using asyncio.as_completed or similar."
+    },
+    {
+      "line": "52",
+      "bug": "ConnectionPool initializes 'self.pool' without an asyncio.Lock for thread-safe access.",
+      "fix": "Initialize self.lock = asyncio.Lock() in __init__."
+    },
+    {
+      "line": "60",
+      "bug": "release method appends to pool without checking 'self.size', allowing unbounded growth.",
+      "fix": "Check len(self.pool) < self.size before appending."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection returns a generic object() which lacks connection methods (e.g., close).",
+      "fix": "Return a proper connection object or mock with required interface."
+    },
+    {
+      "line": "68",
+      "bug": "main() function is defined but never executed (missing entry point).",
+      "fix": "Add if __name__ == '__main__': asyncio.run(main()) at the end of the script."
+    }
+  ],
+  "count": 15
+}

@@ -1,0 +1,93 @@
+```python
+def is_valid_password(password):
+    # Check length (8-64 characters)
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # Check for spaces
+    if ' ' in password:
+        return False
+
+    # Check if starts with digit
+    if password[0].isdigit():
+        return False
+
+    # Check for at least 1 uppercase letter
+    has_upper = any(c.isupper() for c in password)
+    if not has_upper:
+        return False
+
+    # Check for at least 1 lowercase letter
+    has_lower = any(c.islower() for c in password)
+    if not has_lower:
+        return False
+
+    # Check for at least 1 digit
+    has_digit = any(c.isdigit() for c in password)
+    if not has_digit:
+        return False
+
+    # Check for at least 1 special character
+    special_chars = "!@#$%^&*()-_+="
+    has_special = any(c in special_chars for c in password)
+    if not has_special:
+        return False
+
+    # Check for more than 3 consecutive identical characters
+    for i in range(len(password) - 3):
+        if password[i] == password[i+1] == password[i+2] == password[i+3]:
+            return False
+
+    # Check for "password" (case-insensitive)
+    if "password" in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    test_cases = [
+        # Valid passwords
+        ("ValidPass1!", True),
+        ("MySecure@2024", True),
+        ("Abcdefg1!", True),
+        ("Test123!@#", True),
+        ("Aa1!aaaa", True),  # Exactly 3 consecutive chars is allowed
+
+        # Invalid: too short
+        ("Short1!", False),
+
+        # Invalid: too long (65 characters)
+        ("A" * 60 + "1!aaa", False),
+
+        # Invalid: no uppercase
+        ("lowercase1!", False),
+
+        # Invalid: no lowercase
+        ("UPPERCASE1!", False),
+
+        # Invalid: no digit
+        ("NoDigits!!", False),
+
+        # Invalid: no special character
+        ("NoSpecial1", False),
+
+        # Invalid: contains space
+        ("Has Space1!", False),
+
+        # Invalid: starts with digit
+        ("1StartPass!", False),
+
+        # Invalid: 4 consecutive identical characters
+        ("Aaaa1!bb", False),
+
+        # Invalid: contains "password" (case-insensitive)
+        ("MyPassword1!", False),
+    ]
+
+    results = []
+    for pwd, expected in test_cases:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```

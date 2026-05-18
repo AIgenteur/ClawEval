@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 11,
+      "bug": "Discount logic sets subtotal to 20% of original instead of reducing by 20% (should be * 0.80 or - 0.20)",
+      "severity": "major"
+    },
+    {
+      "line": 13,
+      "bug": "Discount logic multiplies by 10 instead of 0.10, resulting in negative subtotal",
+      "severity": "critical"
+    },
+    {
+      "line": 19,
+      "bug": "Mutates input order data structure (side effect) instead of working on a copy",
+      "severity": "major"
+    },
+    {
+      "line": 21,
+      "bug": "Silently ignores negative stock condition instead of raising error or handling logic",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Uses `=+` operator which assigns positive value instead of `+=` to accumulate revenue",
+      "severity": "critical"
+    },
+    {
+      "line": 33,
+      "bug": "Risk of ZeroDivisionError if orders list is empty",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Risk of ValueError if results list is empty (max() on empty sequence)",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation is insufficient (only checks for '@' presence, no domain/format check)",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Shipping calculation uses `+` instead of `*` for distance rate multiplication",
+      "severity": "major"
+    },
+    {
+      "line": 58,
+      "bug": "Unreachable code block because `weight > 30` condition catches all values > 50",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Rounding cost to integer loses decimal precision required for currency",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Assigns reference to `profile_a` instead of copying, causing unintended mutation of input",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date string instead of using dynamic current timestamp",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "CSV parsing fails on fields containing commas within quotes",
+      "severity": "major"
+    },
+    {
+      "line": 79,
+      "bug": "Duplicate finding logic adds multiple entries for the same duplicate item instead of unique list",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
