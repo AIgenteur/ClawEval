@@ -1,0 +1,101 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationTriage",
+      "input": "rawRefundRequest",
+      "output": "validatedRequest, auditLog",
+      "next": "FraudCheck",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "FraudCheck",
+      "input": "validatedRequest",
+      "output": "fraudRisk, auditLog",
+      "next": {
+        "low": "Approval",
+        "high": "FraudRejection"
+      },
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "FraudRejection",
+      "input": "validatedRequest, fraudRisk",
+      "output": "rejectionReason: 'Fraud risk high', auditLog",
+      "next": "Notification",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "Approval",
+      "input": "validatedRequest",
+      "output": "approvalStatus, auditLog",
+      "next": {
+        "approved": "Payment",
+        "rejected": "ApprovalRejection"
+      },
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "ApprovalRejection",
+      "input": "validatedRequest, approvalStatus",
+      "output": "rejectionReason: 'Approval denied', auditLog",
+      "next": "Notification",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "Payment",
+      "input": "validatedRequest, approvalStatus",
+      "output": "paymentStatus, auditLog",
+      "next": "PaymentResult",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "PaymentResult",
+      "input": "paymentStatus",
+      "output": "finalStatus, auditLog",
+      "next": "Notification",
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "Notification",
+      "input": "finalStatus, rejectionReason (optional)",
+      "output": "notificationSent, auditLog",
+      "next": null,
+      "fallback": "HumanEscalation",
+      "timeout": 5
+    },
+    {
+      "name": "HumanEscalation",
+      "input": "errorInfo",
+      "output": "escalatedToHuman, auditLog",
+      "next": null,
+      "fallback": null,
+      "timeout": 5
+    }
+  ],
+  "constraints": {
+    "minAgents": 6,
+    "requiredAgents": ["ValidationTriage", "FraudCheck", "Approval", "Payment", "Notification"],
+    "conditionalBranch": true,
+    "fallbackHandler": true,
+    "humanEscalationPath": true,
+    "loggingAuditAtEachStep": true,
+    "noCircularDependencies": true,
+    "edgeCaseEscalation": true,
+    "timeoutPerAgent": true,
+    "firstAgent": "ValidationTriage",
+    "lastAgent": "Notification",
+    "fraudCheckBeforeApproval": true,
+    "paymentAfterApproval": true,
+    "approvedRejectedHandling": true,
+    "totalProcessingTimeUnderSeconds": 60
+  }
+}
+```

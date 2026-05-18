@@ -1,0 +1,47 @@
+```python
+def merge_overlapping(intervals):
+    """Merge overlapping or touching intervals and return a sorted list of merged intervals."""
+    if not intervals:
+        return []
+    # Sort by start value
+    intervals = sorted(intervals, key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        last_start, last_end = merged[-1]
+        if start <= last_end:          # overlapping or touching
+            merged[-1][1] = max(last_end, end)
+        else:
+            merged.append([start, end])
+    return merged
+
+
+def eval_rpn(tokens):
+    """Evaluate a Reverse Polish Notation expression and return an integer result."""
+    stack = []
+    for token in tokens:
+        if token in ('+', '-', '*', '/') and len(token) == 1:
+            b = stack.pop()
+            a = stack.pop()
+            if token == '+':
+                stack.append(a + b)
+            elif token == '-':
+                stack.append(a - b)
+            elif token == '*':
+                stack.append(a * b)
+            else:  # division, truncate toward zero
+                stack.append(int(a / b))
+        else:
+            stack.append(int(token))
+    return stack[0]
+
+
+def deep_flatten(nested):
+    """Recursively flatten an arbitrarily nested list/tuple of integers into a flat list."""
+    result = []
+    for element in nested:
+        if isinstance(element, (list, tuple)):
+            result.extend(deep_flatten(element))
+        else:
+            result.append(element)
+    return result
+```

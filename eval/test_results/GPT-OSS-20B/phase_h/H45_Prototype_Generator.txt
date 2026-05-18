@@ -1,0 +1,114 @@
+```python
+class JSONValidator:
+    """
+    Validate JSON‑like data against a simple schema.
+
+    Schema format:
+        {
+            "field_name": {
+                "type": "str/int/float/bool/list/dict",
+                "required": True/False,
+                "min": N,            # for numbers
+                "max": N,            # for numbers
+                "min_length": N,    # for strings and lists
+                "max_length": N     # for strings and lists
+            },
+            ...
+        }
+
+    The `validate` method returns a dictionary:
+        {"valid": True/False, "errors": [list of error strings]}
+    """
+
+    def validate(self, data, schema):
+        errors = []
+
+        # Mapping from schema type string to Python type
+        type_map = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict,
+        }
+
+        for field, rules in schema.items():
+            required = rules.get("required", False)
+
+            # 1. Check required field
+            if field not in data:
+                if required:
+                    errors.append(f"Field '{field}' is required but missing.")
+                continue  # nothing else to check for this field
+
+            value = data[field]
+
+            # 2. Check type
+            type_str = rules.get("type")
+            expected_type = type_map.get(type_str)
+
+            if expected_type is None:
+                errors.append(f"Field '{field}' has unknown type '{type_str}'.")
+                continue
+
+            # Special handling for bool (bool is subclass of int in Python)
+            if expected_type is bool:
+                if type(value) is not bool:
+                    errors.append(
+                        f"Field '{field}' expected type 'bool' but got '{type(value).__name__}'."
+                    )
+                    continue
+            else:
+                if type(value) is not expected_type:
+                    errors.append(
+                        f"Field '{field}' expected type '{type_str}' but got '{type(value).__name__}'."
+                    )
+                    continue
+
+            # 3. Apply constraints (only if type matches)
+            # Numbers: min / max
+            if expected_type in (int, float):
+                min_val = rules.get("min")
+                max_val = rules.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(
+                        f"Field '{field}' value {value} less than minimum {min_val}."
+                    )
+                if max_val is not None and value > max_val:
+                    errors.append(
+                        f"Field '{field}' value {value} greater than maximum {max_val}."
+                    )
+
+            # Strings: min_length / max_length
+            if expected_type is str:
+                min_len = rules.get("min_length")
+                max_len = rules.get("max_length")
+                val_len = len(value)
+                if min_len is not None and val_len < min_len:
+                    errors.append(
+                        f"Field '{field}' length {val_len} less than minimum length {min_len}."
+                    )
+                if max_len is not None and val_len > max_len:
+                    errors.append(
+                        f"Field '{field}' length {val_len} greater than maximum length {max_len}."
+                    )
+
+            # Lists: min_length / max_length
+            if expected_type is list:
+                min_len = rules.get("min_length")
+                max_len = rules.get("max_length")
+                val_len = len(value)
+                if min_len is not None and val_len < min_len:
+                    errors.append(
+                        f"Field '{field}' length {val_len} less than minimum length {min_len}."
+                    )
+                if max_len is not None and val_len > max_len:
+                    errors.append(
+                        f"Field '{field}' length {val_len} greater than maximum length {max_len}."
+                    )
+
+            # Dict: no additional constraints in this schema
+
+        return {"valid": len(errors) == 0, "errors": errors}
+```

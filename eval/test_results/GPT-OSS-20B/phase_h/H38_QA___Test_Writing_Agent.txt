@@ -1,0 +1,90 @@
+```python
+def is_valid_password(password):
+    # Rule 1 & 2: length
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # Rule 3-6: character type checks
+    has_upper = has_lower = has_digit = has_special = False
+    specials = set('!@#$%^&*()-_+=')
+
+    # Rule 7: no spaces
+    if ' ' in password:
+        return False
+
+    # Rule 8: cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Rule 9: no more than 3 consecutive identical characters
+    prev_char = None
+    streak = 0
+
+    for ch in password:
+        # Check for consecutive identical characters
+        if ch == prev_char:
+            streak += 1
+            if streak > 3:
+                return False
+        else:
+            streak = 1
+            prev_char = ch
+
+        # Check character types
+        if ch.isupper():
+            has_upper = True
+        elif ch.islower():
+            has_lower = True
+        elif ch.isdigit():
+            has_digit = True
+        elif ch in specials:
+            has_special = True
+
+    # Rule 10: cannot contain the word "password" (case‑insensitive)
+    if 'password' in password.lower():
+        return False
+
+    # Final check for all required character types
+    return has_upper and has_lower and has_digit and has_special
+
+
+def run_tests():
+    tests = [
+        # 1. Valid password
+        ("Abcdef1!", True),
+        # 2. Too short
+        ("Abc1!", False),
+        # 3. Too long (65 characters)
+        ("A" * 65, False),
+        # 4. No uppercase
+        ("abcdef1!", False),
+        # 5. No lowercase
+        ("ABCDEF1!", False),
+        # 6. No digit
+        ("Abcdefg!", False),
+        # 7. No special character
+        ("Abcdef12", False),
+        # 8. Contains space
+        ("Abcdef1! ", False),
+        # 9. Starts with a digit
+        ("1Abcdef!", False),
+        # 10. More than 3 consecutive identical characters
+        ("Abcdddd1!", False),
+        # 11. Contains the word "password" (case‑insensitive)
+        ("AbcPassword1!", False),
+        # 12. Edge case: exactly 8 characters, all requirements met
+        ("A1b!C2d@", True),
+        # 13. Edge case: exactly 64 characters, all requirements met
+        ("A1b!C2d@" * 8, True),
+        # 14. Contains mixed‑case "passWord"
+        ("AbcpassWord1!", False),
+        # 15. Contains a special character not in the allowed set
+        ("Abcdef1?", False),
+    ]
+
+    results = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```
