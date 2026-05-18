@@ -1,0 +1,86 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "customer_refund_request",
+      "output": "validated_request",
+      "next": "FraudCheckAgent",
+      "fallback": "ErrorHandler",
+      "timeout": 10
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request",
+      "output": "fraud_check_result",
+      "next": "ApprovalAgent",
+      "fallback": "ErrorHandler",
+      "timeout": 15
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_check_result",
+      "output": "approval_decision",
+      "next": "ConditionalRouterAgent",
+      "fallback": "ErrorHandler",
+      "timeout": 10
+    },
+    {
+      "name": "ConditionalRouterAgent",
+      "input": "approval_decision",
+      "output": "routing_decision",
+      "next": "PaymentProcessorAgent",
+      "fallback": "ErrorHandler",
+      "timeout": 5
+    },
+    {
+      "name": "PaymentProcessorAgent",
+      "input": "routing_decision",
+      "output": "payment_status",
+      "next": "NotificationAgent",
+      "fallback": "ErrorHandler",
+      "timeout": 20
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "payment_status",
+      "output": "notification_sent",
+      "next": null,
+      "fallback": "ErrorHandler",
+      "timeout": 5
+    },
+    {
+      "name": "ErrorHandler",
+      "input": "error_details",
+      "output": "error_resolution",
+      "next": "EscalationAgent",
+      "fallback": null,
+      "timeout": 5
+    },
+    {
+      "name": "EscalationAgent",
+      "input": "error_resolution",
+      "output": "escalation_outcome",
+      "next": null,
+      "fallback": null,
+      "timeout": 10
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branching": true,
+    "error_handling": "fallback_agent_per_step",
+    "first_agent": "ValidationAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_check_order": "before_approval",
+    "payment_order": "after_approval",
+    "total_processing_time": "<60_seconds",
+    "outcome_handling": ["approved", "rejected"],
+    "logging_audit": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": true,
+    "timeout_per_agent": true
+  }
+}
+```

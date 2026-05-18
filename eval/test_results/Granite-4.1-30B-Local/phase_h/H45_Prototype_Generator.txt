@@ -1,0 +1,46 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        # Check required fields and perform type and constraint validations
+        for field, rules in schema.items():
+            if field not in data:
+                if rules.get("required", False):
+                    errors.append(f"Missing required field: {field}")
+            else:
+                value = data[field]
+                expected_type = rules.get("type")
+                if expected_type == "str" and not isinstance(value, str):
+                    errors.append(f"Field {field} should be of type str")
+                elif expected_type == "int" and not isinstance(value, int):
+                    errors.append(f"Field {field} should be of type int")
+                elif expected_type == "float" and not isinstance(value, float):
+                    errors.append(f"Field {field} should be of type float")
+                elif expected_type == "bool" and not isinstance(value, bool):
+                    errors.append(f"Field {field} should be of type bool")
+                elif expected_type == "list" and not isinstance(value, list):
+                    errors.append(f"Field {field} should be of type list")
+                elif expected_type == "dict" and not isinstance(value, dict):
+                    errors.append(f"Field {field} should be of type dict")
+
+                # Additional constraints based on type
+                if isinstance(value, (int, float)):
+                    if "min" in rules and value < rules["min"]:
+                        errors.append(f"Field {field} is less than minimum allowed value {rules['min']}")
+                    if "max" in rules and value > rules["max"]:
+                        errors.append(f"Field {field} is greater than maximum allowed value {rules['max']}")
+                elif isinstance(value, str):
+                    if "min_length" in rules and len(value) < rules["min_length"]:
+                        errors.append(f"Field {field} is shorter than minimum length {rules['min_length']}")
+                    if "max_length" in rules and len(value) > rules["max_length"]:
+                        errors.append(f"Field {field} is longer than maximum length {rules['max_length']}")
+                elif isinstance(value, list):
+                    if "min_length" in rules and len(value) < rules["min_length"]:
+                        errors.append(f"Field {field} has fewer elements than minimum length {rules['min_length']}")
+                    if "max_length" in rules and len(value) > rules["max_length"]:
+                        errors.append(f"Field {field} has more elements than maximum length {rules['max_length']}")
+
+        # Extra fields in data that are not in schema are allowed, so no action needed for them
+        valid = len(errors) == 0
+        return {"valid": valid, "errors": errors}
+```

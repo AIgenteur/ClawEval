@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using the 'latest' tag for container image can lead to unpredictable deployments and difficulty in rollbacks.",
+      "severity": "minor"
+    },
+    {
+      "line": "securityContext:\n  runAsRoot: true",
+      "issue": "Running containers as root violates the principle of least privilege and increases security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "securityContext:\n  privileged: true",
+      "issue": "Enabling privileged mode gives the container full access to the host kernel, posing a major security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "env:\n  - name: DB_PASSWORD\n    value: \"sup3rs3cret!\"",
+      "issue": "Sensitive data (DB_PASSWORD) is stored in plaintext within the deployment configuration.",
+      "severity": "critical"
+    },
+    {
+      "line": "env:\n  - name: API_KEY\n    value: \"ak_live_12345\"",
+      "issue": "Sensitive data (API_KEY) is stored in plaintext within the deployment configuration.",
+      "severity": "critical"
+    },
+    {
+      "line": "volumeMounts:\n  - mountPath: /data\n    name: data-vol",
+      "issue": "Mounting hostPath at /data can expose host filesystem and lead to data leakage or corruption.",
+      "severity": "major"
+    },
+    {
+      "line": "volumes:\n  - name: data-vol\n    hostPath:\n      path: /tmp/data",
+      "issue": "Using hostPath volumes ties pod to specific node and can cause data inconsistency across replicas.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "Empty resource requests/limits mean the container can consume unlimited resources, risking resource starvation.",
+      "severity": "major"
+    },
+    {
+      "line": "resources:\n    requests:\n      memory: \"10Gi\"\n      cpu: \"8\"",
+      "issue": "CPU request value should be expressed with a unit (e.g., \"8\" should be \"8000m\"), which may cause misinterpretation.",
+      "severity": "minor"
+    },
+    {
+      "line": "containers:\n  - name: api\n    resources: {}",
+      "issue": "Missing resource requests/limits for the main container can lead to unstable behavior under load.",
+      "severity": "major"
+    },
+    {
+      "line": "spec:\n  replicas: 1",
+      "issue": "Having only one replica provides no high availability; a single point of failure exists.",
+      "severity": "minor"
+    },
+    {
+      "line": "ports:\n  - containerPort: 8080",
+      "issue": "Container port 8080 is exposed internally; consider using a named port or exposing only necessary ports.",
+      "severity": "minor"
+    },
+    {
+      "line": "spec:\n  type: LoadBalancer",
+      "issue": "Using LoadBalancer in environments without cloud provider support may result in service creation failure.",
+      "severity": "minor"
+    },
+    {
+      "line": "selector:\n  matchLabels:\n    app: web-api",
+      "issue": "Selector and pod template labels are consistent, but ensure they match any future changes to avoid selector mismatches.",
+      "severity": "minor"
+    },
+    {
+      "line": "env:\n  - name: DB_PASSWORD\n    value: \"sup3rs3cret!\"",
+      "issue": "Hardcoded sensitive values in YAML files violate security best practices; use Secrets instead.",
+      "severity": "critical"
+    }
+  ],
+  "count": 15
+}
+```

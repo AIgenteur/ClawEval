@@ -1,0 +1,79 @@
+```python
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}
+        self.order = []
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        self.order.remove(key)
+        self.order.append(key)
+        return self.cache[key]
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.order.remove(key)
+        elif len(self.cache) >= self.capacity:
+            lru_key = self.order.pop(0)
+            del self.cache[lru_key]
+        self.cache[key] = value
+        self.order.append(key)
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self):
+        if not self.stack:
+            return None
+        val = self.stack.pop()
+        if val == self.min_stack[-1]:
+            self.min_stack.pop()
+        return val
+
+    def top(self):
+        if not self.stack:
+            return None
+        return self.stack[-1]
+
+    def get_min(self):
+        if not self.min_stack:
+            return None
+        return self.min_stack[-1]
+
+
+def find_median(stream):
+    import heapq
+    min_heap = []  # right half
+    max_heap = []  # left half (invert values for max-heap behavior)
+    medians = []
+
+    for num in stream:
+        if not max_heap or num <= -max_heap[0]:
+            heapq.heappush(max_heap, -num)
+        else:
+            heapq.heappush(min_heap, num)
+
+        # Rebalance heaps
+        if len(max_heap) > len(min_heap) + 1:
+            heapq.heappush(min_heap, -heapq.heappop(max_heap))
+        elif len(min_heap) > len(max_heap):
+            heapq.heappush(max_heap, -heapq.heappop(min_heap))
+
+        # Calculate median
+        if len(max_heap) > len(min_heap):
+            medians.append(float(-max_heap[0]))
+        else:
+            medians.append((min_heap[0] - max_heap[0]) / 2.0)
+
+    return medians
+```

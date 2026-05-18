@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 8,
+      "bug": "Using a plain list to track request timestamps can lead to unbounded memory growth.",
+      "fix": "Use a collections.deque with maxlen or periodically clean up old timestamps."
+    },
+    {
+      "line": 11,
+      "bug": "Using asyncio.get_event_loop().time() is not recommended; use loop.time() or time.monotonic().",
+      "fix": "Replace with `loop = asyncio.get_running_loop(); now = loop.time()` or `now = time.monotonic()`."
+    },
+    {
+      "line": 25,
+      "bug": "Creating a new aiohttp.ClientSession for each request is inefficient.",
+      "fix": "Create the session once outside the loop and reuse it for all requests."
+    },
+    {
+      "line": 27,
+      "bug": "No specific exception handling; catching all exceptions can hide bugs.",
+      "fix": "Catch specific exceptions (e.g., aiohttp.ClientError) and log them."
+    },
+    {
+      "line": 29,
+      "bug": "Directly assigning to shared `results` from multiple coroutines can cause race conditions.",
+      "fix": "Use an asyncio.Lock or return data from fetch_one and collect results in the parent."
+    },
+    {
+      "line": 31,
+      "bug": "Storing `None` for errors without logging may hide issues.",
+      "fix": "Log the exception or store error info for later analysis."
+    },
+    {
+      "line": 32,
+      "bug": "The `pass` statement after handling an exception is unnecessary.",
+      "fix": "Remove the `pass` statement."
+    },
+    {
+      "line": 35,
+      "bug": "asyncio.gather will propagate the first exception and cancel other tasks.",
+      "fix": "Use `asyncio.gather(*tasks, return_exceptions=True)` if you want to collect all results."
+    },
+    {
+      "line": 42,
+      "bug": "Missing `await` before calling `process_item` creates a task that is never awaited.",
+      "fix": "Change to `task = asyncio.create_task(process_item(item))` or `await process_item(item)`."
+    },
+    {
+      "line": 45,
+      "bug": "The generator yields results but does not await the processing of each item.",
+      "fix": "Ensure `process_item` is awaited for each item before yielding."
+    },
+    {
+      "line": 52,
+      "bug": "The pool is initialized as an empty list but never populated with real connections.",
+      "fix": "Implement logic to create and store actual connection objects when the pool is empty."
+    },
+    {
+      "line": 60,
+      "bug": "Appending a connection to the pool without checking pool size can lead to unbounded growth.",
+      "fix": "Limit the pool size; discard or recycle connections if the pool exceeds `self.size`."
+    },
+    {
+      "line": 63,
+      "bug": "Returning a plain `object()` as a connection is meaningless.",
+      "fix": "Implement real connection creation logic (e.g., using aiohttp or asyncpg)."
+    },
+    {
+      "line": 68,
+      "bug": "Printing the length of `results` may be misleading if some URLs failed and stored `None`.",
+      "fix": "Count only successful entries, e.g., `print(f"Got {sum(1 for v in results.values() if v is not None)} results")`."
+    },
+    {
+      "line": 42,
+      "bug": "The comment indicates a missing `await`, but the actual issue is that `process_item(item)` is called without awaiting, leading to unawaited coroutine.",
+      "fix": "Ensure each call to `process_item` is awaited or wrapped in `asyncio.create_task`."
+    }
+  ],
+  "count": 15
+}

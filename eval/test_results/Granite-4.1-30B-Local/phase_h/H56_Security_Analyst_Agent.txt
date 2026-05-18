@@ -1,0 +1,20 @@
+{
+  "vulnerabilities": [
+    {"type": "SQL Injection", "location": "login() - query construction", "severity": "critical"},
+    {"type": "Insecure Password Storage", "location": "login() - password comparison", "severity": "high"},
+    {"type": "Weak Token Generation", "location": "login() - token creation", "severity": "high"},
+    {"type": "Cross-Site Scripting (XSS)", "location": "profile() - render_template_string", "severity": "medium"},
+    {"type": "XSS", "location": "search() - direct query echo", "severity": "medium"},
+    {"type": "Command Injection", "location": "run_command() - subprocess.run with shell=True", "severity": "critical"},
+    {"type": "Arbitrary File Write / Path Traversal", "location": "upload() - file save", "severity": "high"},
+    {"type": "Arbitrary File Read / Path Traversal", "location": "download() - send_file", "severity": "high"},
+    {"type": "YAML Deserialization Vulnerability", "location": "load_config() - yaml.load", "severity": "critical"},
+    {"type": "Unsafe Deserialization", "location": "restore_session() - pickle.loads", "severity": "critical"},
+    {"type": "Hardcoded Secret Exposure", "location": "admin() - SECRET constant", "severity": "high"},
+    {"type": "Insecure Direct Object Reference", "location": "download() - file path from query", "severity": "medium"},
+    {"type": "Command Injection", "location": "export_data() - os.system with formatted command", "severity": "critical"},
+    {"type": "Debug Mode Enabled in Production", "location": "__main__ - app.run(debug=True)", "severity": "medium"},
+    {"type": "Open Host Binding", "location": "__main__ - app.run(host=\"0.0.0.0\")", "severity": "medium"}
+  ],
+  "count": 15
+}

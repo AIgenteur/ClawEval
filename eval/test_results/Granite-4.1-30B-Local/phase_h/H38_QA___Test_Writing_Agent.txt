@@ -1,0 +1,46 @@
+```python
+def is_valid_password(password):
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if any(char.isspace() for char in password):
+        return False
+    if password[0].isdigit():
+        return False
+    if "password" in password.lower():
+        return False
+    has_upper = any(char.isupper() for char in password)
+    has_lower = any(char.islower() for char in password)
+    has_digit = any(char.isdigit() for char in password)
+    has_special = any(char in "!@#$%^&*()-_+=" for char in password)
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+    for i in range(len(password) - 2):
+        if password[i] == password[i+1] == password[i+2]:
+            if i + 3 < len(password) and password[i] == password[i+3]:
+                return False
+    return True
+
+def run_tests():
+    test_cases = [
+        ("Valid1!Aa", True),
+        ("toolong" * 10, False),
+        ("toolong" * 11, False),
+        ("nouppercase1!", False),
+        ("NOLOWERCASE1!", False),
+        ("NoDigit!", False),
+        ("NoSpecialAa1", False),
+        (" Valid1!Aa", False),
+        ("1StartsWithDigit!", False),
+        ("Passw0rd!", False),
+        ("RepeatingChar111Aa!", False),
+        ("RepeatingChar11Aa!", True),
+        ("Short1!", False),
+        ("ValidPassword123!", True),
+        ("Valid!Aa123", True),
+    ]
+    results = []
+    for password, expected in test_cases:
+        actual = is_valid_password(password)
+        results.append((password, expected, actual))
+    return results
+```
