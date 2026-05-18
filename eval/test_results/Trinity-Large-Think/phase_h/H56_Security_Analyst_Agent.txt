@@ -1,0 +1,81 @@
+
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login function (route /login)",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "profile function (route /profile/<username>)",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search function (route /search)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command function (route /run)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data function (route /export)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure File Upload (Arbitrary File Type)",
+      "location": "upload function (route /upload)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "upload function (route /upload)",
+      "severity": "critical"
+    },
+    {
+      "type": "Arbitrary File Download",
+      "location": "download function (route /download)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Deserialization (YAML)",
+      "location": "load_config function (route /config)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Deserialization (Pickle)",
+      "location": "restore_session function (route /session)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "admin function (route /admin)",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Hash (MD5)",
+      "location": "login function (route /login)",
+      "severity": "medium"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "app.run() call",
+      "severity": "medium"
+    },
+    {
+      "type": "Cross-Site Request Forgery (CSRF)",
+      "location": "multiple POST endpoints (run_command, upload, load_config, restore_session, export_data)",
+      "severity": "medium"
+    },
+    {
+      "type": "Missing Authentication for Sensitive Endpoints",
+      "location": "multiple functions (run_command, upload, load_config, restore_session, export_data)",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}

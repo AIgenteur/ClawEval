@@ -1,0 +1,81 @@
+
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Deployment has only one replica, leading to a single point of failure and reduced availability.",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "Container image uses the 'latest' tag, which is non-reproducible and can lead to unexpected updates or inconsistencies.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Container resources are not set (no requests or limits), which can cause resource starvation or overuse on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Container runs as root (runAsRoot: true), which is a significant security risk as it can lead to privilege escalation if the container is compromised.",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "Container is privileged (privileged: true), which elevates its capabilities and can allow bypassing of security restrictions, posing a high security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Database password (DB_PASSWORD) is hardcoded in the configuration, which is insecure; secrets should be managed using Kubernetes Secrets or external vaults.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "API key (API_KEY) is hardcoded in the configuration, which is insecure; secrets should be managed using Kubernetes Secrets or external vaults.",
+      "severity": "critical"
+    },
+    {
+      "line": "41",
+      "issue": "Volume uses hostPath (path: /tmp/data), which ties the pod to a specific node, reduces portability, and can introduce security risks; PersistentVolumeClaim should be used instead.",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "Sidecar container has resources.requests set (memory: 10Gi, cpu: 8) but no limits, which can lead to resource hogging and affect other pods on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "19",
+      "issue": "Container port (containerPort: 8080) does not specify a protocol; while TCP is default, explicit specification (e.g., TCP) is recommended for clarity and best practices.",
+      "severity": "minor"
+    },
+    {
+      "line": "50",
+      "issue": "Service port (port: 80) does not specify a protocol; while TCP is default, explicit specification (e.g., TCP) is recommended for clarity and best practices.",
+      "severity": "minor"
+    },
+    {
+      "line": "4",
+      "issue": "Deployment metadata does not specify a namespace; in multi-namespace environments, this can cause confusion or conflicts, and it's best practice to explicitly define it.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Container does not specify an imagePullPolicy; for the 'latest' tag, the default is Always, but explicit specification is recommended to avoid unexpected behavior.",
+      "severity": "minor"
+    },
+    {
+      "line": "16",
+      "issue": "Main container does not have liveness and readiness probes defined, which can lead to undetected failures or slow startup detection, affecting application reliability.",
+      "severity": "major"
+    },
+    {
+      "line": "14",
+      "issue": "Deployment does not specify a serviceAccountName in the pod template spec; this may be required for accessing Kubernetes APIs or other cluster resources.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}

@@ -1,0 +1,81 @@
+
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Discount for 'SAVE20' is applied as multiply by 0.20, reducing subtotal to 20% instead of 80%. Should be multiply by 0.80 or subtract 20%.",
+      "severity": "major"
+    },
+    {
+      "line": 14,
+      "bug": "Discount for 'SAVE10' is applied as subtract subtotal * 10, which is incorrect. Should subtract subtotal * 0.10 for 10% off.",
+      "severity": "major"
+    },
+    {
+      "line": 22,
+      "bug": "Assumes order has 'items' key, may raise KeyError if not present.",
+      "severity": "major"
+    },
+    {
+      "line": 25,
+      "bug": "When inventory stock becomes negative, it passes instead of raising an error or handling appropriately, allowing negative inventory.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Uses `=+` instead of `+=` for accumulating total_revenue, causing it to be set to total each time instead of summing.",
+      "severity": "major"
+    },
+    {
+      "line": 34,
+      "bug": "Divides by len(orders) which may be zero, causing ZeroDivisionError if orders list is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "Uses max() on empty results list, causing ValueError if results list is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for '@' symbol, which is insufficient for a valid email address (e.g., no domain check).",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Shipping cost calculation adds distance and per_km separately instead of multiplying distance by per_km, leading to incorrect cost.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "`elif weight > 50` is unreachable because if weight > 50, the preceding if `weight > 30` is true, making this condition dead code.",
+      "severity": "minor"
+    },
+    {
+      "line": 60,
+      "bug": "Returns rounded integer cost, losing decimal precision for shipping cost calculations.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "`merged = profile_a` assigns by reference, so modifying merged affects the original profile_a, causing unintended side effects.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcodes the date as '2024-01-01' instead of using a dynamic date (e.g., current date), making it inflexible and outdated.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Uses simple string split for CSV parsing, which does not handle quoted fields or commas within fields, leading to incorrect parsing for complex CSVs.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "In find_duplicates, appends to `seen` after checking, which can lead to duplicate items being added multiple times to the duplicates list if they appear more than twice, and is inefficient due to using a list for membership checks.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}

@@ -1,0 +1,151 @@
+
+```python
+class LRUCache:
+    class Node:
+        __slots__ = ('key', 'value', 'prev', 'next')
+        def __init__(self, key=None, value=None):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self.Node()
+        self.tail = self.Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _add_node(self, node):
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def _remove_node(self, node):
+        prev = node.prev
+        nxt = node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def _move_to_head(self, node):
+        self._remove_node(node)
+        self._add_node(node)
+
+    def _pop_tail(self):
+        node = self.tail.prev
+        self._remove_node(node)
+        return node
+
+    def get(self, key):
+        node = self.cache.get(key)
+        if not node:
+            return -1
+        self._move_to_head(node)
+        return node.value
+
+    def put(self, key, value):
+        node = self.cache.get(key)
+        if node:
+            node.value = value
+            self._move_to_head(node)
+        else:
+            new_node = self.Node(key, value)
+            self.cache[key] = new_node
+            self._add_node(new_node)
+            if len(self.cache) > self.capacity:
+                tail = self._pop_tail()
+                del self.cache[tail.key]
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self):
+        if not self.stack:
+            return None
+        val = self.stack.pop()
+        if val == self.min_stack[-1]:
+            self.min_stack.pop()
+        return val
+
+    def top(self):
+        if not self.stack:
+            return None
+        return self.stack[-1]
+
+    def get_min(self):
+        if not self.min_stack:
+            return None
+        return self.min_stack[-1]
+
+def find_median(stream):
+    def bubble_up(heap, idx):
+        while idx > 0:
+            parent = (idx - 1) // 2
+            if heap[parent] <= heap[idx]:
+                break
+            heap[parent], heap[idx] = heap[idx], heap[parent]
+            idx = parent
+
+    def bubble_down(heap, idx):
+        n = len(heap)
+        while True:
+            left = 2 * idx + 1
+            right = 2 * idx + 2
+            smallest = idx
+            if left < n and heap[left] < heap[smallest]:
+                smallest = left
+            if right < n and heap[right] < heap[smallest]:
+                smallest = right
+            if smallest != idx:
+                heap[idx], heap[smallest] = heap[smallest], heap[idx]
+                idx = smallest
+            else:
+                break
+
+    def swap(heap, i, j):
+        heap[i], heap[j] = heap[j], heap[i]
+
+    small = []  # max-heap (store negative values)
+    large = []  # min-heap
+    result = []
+    for num in stream:
+        if not small or num <= -small[0]:
+            small.append(-num)
+            bubble_up(small, len(small) - 1)
+        else:
+            large.append(num)
+            bubble_up(large, len(large) - 1)
+
+        if len(small) > len(large) + 1:
+            val = -small[0]
+            swap(small, 0, len(small) - 1)
+            small.pop()
+            bubble_down(small, 0)
+            large.append(val)
+            bubble_up(large, len(large) - 1)
+        elif len(large) > len(small):
+            val = large[0]
+            swap(large, 0, len(large) - 1)
+            large.pop()
+            bubble_down(large, 0)
+            small.append(-val)
+            bubble_up(small, len(small) - 1)
+
+        if len(small) > len(large):
+            median = float(-small[0])
+        elif len(small) < len(large):
+            median = float(large[0])
+        else:
+            median = (-small[0] + large[0]) / 2.0
+        result.append(median)
+    return result
+```
