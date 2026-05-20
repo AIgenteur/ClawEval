@@ -70,39 +70,49 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 
 ## 🎯 Best Model Per Agent Role
 
-Which local model to pick for each of the 59 agent roles. Qwen3.6-35B-A3B dominates with **36/59 wins**.
+Which local model to pick for each of the 59 agent roles. Qwen3.6-35B-A3B leads with **28/59 wins**. Ties broken by overall leaderboard score.
 
-| Wins | Model | Best For |
-|------|-------|----------|
-| **36** | Qwen3.6-35B-A3B | Most roles — general champion |
-| **6** | Gemma-4-31B | Research, scheduling, notifications, social media, finance |
-| **6** | Nemotron-Nano-Omni (IQ4) | Content writing, editing, debugging, security, RAG |
-| **4** | Nemotron-Nano-Omni (Q4) | Router/triage, DevOps, legal, SRE |
-| **3** | Gemma-4-E2B | Customer support, transactions, compliance |
-| **2** | Gemma-4-A4B | Email drafting, social media monitoring |
-| **2** | Gemma-4-E4B | Task planning, SEO |
+| Wins | Model |
+|------|-------|
+| **28** | Qwen3.6-35B-A3B |
+| **6** | Qwen3.6-27B (TQ4) |
+| **5** | Gemma-4-31B (TQ3) |
+| **2** | Qwen3.6-35B-A3B (TQ3) |
+| **2** | Gemma-4-31B |
+| **2** | Granite-4.1 8B |
+| **2** | Nemotron-Nano-Omni (IQ4) |
+| **2** | Ministral-3 14B |
+| **2** | Ministral-3 8B |
+| **1** | Gemma-4-A4B |
+| **1** | Gemma-4-E2B |
+| **1** | Ministral-3 14B Think |
+| **1** | Granite-4.1 30B (TQ4) |
+| **1** | Gemma-4-E4B |
+| **1** | Phi-4 |
+| **1** | Ministral-3 8B Think |
+| **1** | Nemotron-Nano-Omni (Q4) |
 
 ### Full Role Breakdown
 
 | Test | Agent Role | Best Local Model | Score | % |
 |------|-----------|-----------------|-------|---|
-| H-01 | Router / Triage Agent | Nemotron-Nano-Omni (Q4) | 29/30 | 97% |
+| H-01 | Router / Triage Agent | Gemma-4-31B (TQ3) | 30/30 | 100% |
 | H-02 | Input Validator / Sanitizer | Qwen3.6-35B-A3B | 29/30 | 97% |
-| H-03 | Heartbeat / Health Monitor | Gemma-4-31B | 15/15 | 100% |
-| H-04 | Notification / Alert Agent | Gemma-4-31B | 25/30 | 83% |
-| H-05 | Sentiment Analysis Agent | Qwen3.6-35B-A3B | 27/30 | 90% |
+| H-03 | Heartbeat / Health Monitor | Gemma-4-31B (TQ3) | 15/15 | 100% |
+| H-04 | Notification / Alert Agent | Qwen3.6-35B-A3B (TQ3) | 25/30 | 83% |
+| H-05 | Sentiment Analysis Agent | Qwen3.6-27B (TQ4) | 28/30 | 93% |
 | H-06 | FAQ Generation Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-07 | Translation Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-08 | Calendar / Scheduling Agent | Gemma-4-31B | 12/20 | 60% |
-| H-09 | Research / Web Search Agent | Gemma-4-31B | 30/30 | 100% |
-| H-10 | Content Writer / Blog Writer | Nemotron-Nano-Omni (IQ4) | 20/20 | 100% |
-| H-11 | Editor Agent | Nemotron-Nano-Omni (IQ4) | 29/30 | 97% |
+| H-09 | Research / Web Search Agent | Gemma-4-31B (TQ3) | 30/30 | 100% |
+| H-10 | Content Writer / Blog Writer | Qwen3.6-35B-A3B (TQ3) | 20/20 | 100% |
+| H-11 | Editor Agent | Gemma-4-31B (TQ3) | 29/30 | 97% |
 | H-12 | Content Planner / Strategist | Qwen3.6-35B-A3B | 26/30 | 87% |
-| H-13 | Email Drafting / Summarization | Gemma-4-A4B | 44/45 | 98% |
+| H-13 | Email Drafting / Summarization | Qwen3.6-27B (TQ4) | 45/45 | 100% |
 | H-14 | Document Summarization Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-15 | Meeting Notes / Transcription | Qwen3.6-35B-A3B | 34/35 | 97% |
-| H-16 | Social Media Scouting | Gemma-4-A4B | 57/60 | 95% |
-| H-17 | Social Media Content Agent | Gemma-4-31B | 20/20 | 100% |
+| H-15 | Meeting Notes / Transcription Agent | Granite-4.1 8B | 35/35 | 100% |
+| H-16 | Social Media Scouting / Monitoring | Gemma-4-A4B | 57/60 | 95% |
+| H-17 | Social Media Content Agent | Qwen3.6-27B (TQ4) | 20/20 | 100% |
 | H-18 | News Aggregation Agent | Qwen3.6-35B-A3B | 7/7 | 100% |
 | H-19 | Shopping / Price Comparison | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-20 | Memory / Knowledge Management | Qwen3.6-35B-A3B | 20/20 | 100% |
@@ -111,40 +121,40 @@ Which local model to pick for each of the 59 agent roles. Qwen3.6-35B-A3B domina
 | H-23 | Website Scraping / Understanding | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-24 | Image Description / Understanding | Qwen3.6-35B-A3B | 20/20 | 100% |
 | H-25 | Customer Support Agent | Gemma-4-E2B | 53/60 | 88% |
-| H-26 | Lead Scoring / Prospecting | Qwen3.6-35B-A3B | 13/15 | 87% |
+| H-26 | Lead Scoring / Prospecting | Ministral-3 14B Think | 15/15 | 100% |
 | H-27 | Sprint / Project Summarizer | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-28 | Transaction / Approval Agent | Gemma-4-E2B | 19/20 | 95% |
-| H-29 | Home Automation Agent | Qwen3.6-35B-A3B | 7/20 | 35% |
+| H-28 | Transaction / Approval Agent | Granite-4.1 8B | 20/20 | 100% |
+| H-29 | Home Automation Agent | Granite-4.1 30B (TQ4) | 8/20 | 40% |
 | H-30 | Fitness / Health Tracking | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-31 | Recipe / Cooking Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-32 | Personal Finance Tracking | Qwen3.6-35B-A3B | 15/15 | 100% |
 | H-33 | SEO Optimization Agent | Gemma-4-E4B | 9/15 | 60% |
 | H-34 | Landing Page Generator | Qwen3.6-35B-A3B | 20/20 | 100% |
-| H-35 | Travel Planning Agent | Nemotron-Nano-Omni (IQ4) | 7/15 | 47% |
+| H-35 | Travel Planning Agent | Ministral-3 14B | 12/15 | 80% |
 | H-36 | Code Generation Agent | Qwen3.6-35B-A3B | 30/30 | 100% |
 | H-37 | Code Review Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-38 | QA / Test Writing Agent | Qwen3.6-35B-A3B | 13/15 | 87% |
-| H-39 | Task Planning / Decomposition | Gemma-4-E4B | 8/18 | 44% |
-| H-40 | Fact-Checking Agent | Qwen3.6-35B-A3B | 29/30 | 97% |
+| H-38 | QA / Test Writing Agent | Phi-4 | 14/15 | 93% |
+| H-39 | Task Planning / Decomposition | Ministral-3 8B | 13/18 | 72% |
+| H-40 | Fact-Checking Agent | Ministral-3 8B Think | 30/30 | 100% |
 | H-41 | Critic / Review Agent | Qwen3.6-35B-A3B | 20/20 | 100% |
 | H-42 | Market Research Agent | Qwen3.6-35B-A3B | 14/15 | 93% |
-| H-43 | Synthesizer / Aggregator | Qwen3.6-35B-A3B | 13/15 | 87% |
-| H-44 | Curriculum / Course Designer | Qwen3.6-35B-A3B | 7/15 | 47% |
+| H-43 | Synthesizer / Aggregator | Qwen3.6-27B (TQ4) | 15/15 | 100% |
+| H-44 | Curriculum / Course Designer | Ministral-3 8B | 9/15 | 60% |
 | H-45 | Prototype Generator | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-46 | DevOps Agent | Nemotron-Nano-Omni (Q4) | 8/15 | 53% |
+| H-46 | DevOps Agent | Qwen3.6-27B (TQ4) | 11/15 | 73% |
 | H-47 | Math / Logic Reasoning | Qwen3.6-35B-A3B | 14/15 | 93% |
 | H-48 | STEM Research Analyst | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-49 | Algorithm / Data Structure | Qwen3.6-35B-A3B | 30/30 | 100% |
+| H-49 | Algorithm / Data Structure Explorer | Qwen3.6-35B-A3B | 30/30 | 100% |
 | H-50 | Orchestrator / Manager Agent | Qwen3.6-35B-A3B | 13/15 | 87% |
 | H-51 | Software Architect Agent | Qwen3.6-35B-A3B | 6/15 | 40% |
 | H-52 | Complex Debugger Agent | Nemotron-Nano-Omni (IQ4) | 15/15 | 100% |
 | H-53 | Legal Document Review | Nemotron-Nano-Omni (Q4) | 8/15 | 53% |
 | H-54 | Medical / Health Analysis | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-55 | Financial Analysis / Stock Research | Gemma-4-31B | 15/15 | 100% |
-| H-56 | Security Analyst Agent | Nemotron-Nano-Omni (IQ4) | 15/15 | 100% |
-| H-57 | SRE / Incident Response | Nemotron-Nano-Omni (Q4) | 13/15 | 87% |
+| H-55 | Financial Analysis / Stock Research | Gemma-4-31B (TQ3) | 15/15 | 100% |
+| H-56 | Security Analyst Agent | Qwen3.6-27B (TQ4) | 15/15 | 100% |
+| H-57 | SRE / Incident Response | Gemma-4-31B | 13/15 | 87% |
 | H-58 | Book / Long-Form Writing | Qwen3.6-35B-A3B | 20/20 | 100% |
-| H-59 | Compliance / Regulatory Agent | Gemma-4-E2B | 6/15 | 40% |
+| H-59 | Compliance / Regulatory Agent | Ministral-3 14B | 7/15 | 47% |
 
 ---
 

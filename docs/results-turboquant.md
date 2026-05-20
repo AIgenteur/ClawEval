@@ -46,6 +46,17 @@ The variable being studied is **KV-cache precision**, not model capability. Turb
 
 > MoE architecture shows a larger quality delta (−4.3%) than dense Gemma-4-31B (+7.1%), but gains a notable **+22% speed boost** — the smaller KV cache reduces memory bandwidth pressure. Zero infra errors, 4 tests scored 0% (all model failures: JSON parse + code naming).
 
+### turbo4 (4-bit KV) Production Runs
+
+These two models were run directly on the `turbo4` (4-bit KV) backend with **no paired q8_0 baseline** — they were tested for the main leaderboard, not as controlled KV-precision experiments. Listed here because they use the TurboQuant fork; they do not contribute a baseline-vs-turbo delta.
+
+| Model | KV Mode | Context | Score | % | Avg t/s |
+|-------|---------|---------|-------|---|---------|
+| Qwen3.6-27B (dense) | turbo4 (4-bit) | 262,144 | 1012/1220 | 83.0% | 33.2 |
+| Granite-4.1-30B | turbo4 (4-bit) | 65,536 | 929/1220 | 76.1% | 33.8 |
+
+> turbo4 trades less precision than turbo3 for a smaller VRAM footprint. Qwen3.6-27B at 83.0% lands within 1.3% of the Qwen3.6-35B-A3B q8₀ baseline — a 27B dense model holding 262K context on 24GB. A proper baseline comparison would need a q8_0 run of each at native context.
+
 ## Methodology
 
 - Same 59 Phase H v2 tests, same scoring, same `run_phase_h.py` harness
