@@ -136,7 +136,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | Manual-only tests | 6 | **0 — fully automated** |
 | Discriminating power | Low (everyone scores 8+) | **High (real spread)** |
 
-### 🏅 ClawEval v2 Leaderboard
+### 🏅 ClawEval v2 Leaderboard — Open-Weight Models
 
 | Rank | Model | Provider | Score | % | Perfect |
 |------|-------|----------|-------|---|---------|
@@ -500,6 +500,16 @@ These runs are kept **separate from the main leaderboard** because the variable 
 | 59 | Compliance | Kimi K2.5 | 🟢 9 |
 
 > † Phase G discriminator score · [☁️ Full cloud model comparison →](docs/results-cloud.md)
+
+---
+
+## 🔒 ClawEval v2 Leaderboard — Proprietary Models
+
+> Closed-weight models accessed via API. Ranked separately from the open-weight leaderboard — same 59 tests, same scoring, same 1,220 checkpoints.
+
+| Rank | Model | Provider | Score | % | Perfect |
+|------|-------|----------|-------|---|---------|
+| 🥇 | **Gemini-3.5-Flash** | ☁️ Google (OpenRouter) | 978/1220 | **80.2%** | 22 |
 
 ---
 

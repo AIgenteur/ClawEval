@@ -1,0 +1,91 @@
+{
+  "agents": [
+    {
+      "name": "triage-validation-agent",
+      "input": "Raw customer refund request payload (customer_id, transaction_id, amount, reason)",
+      "output": "Validated request object with boolean 'is_valid' flag, validation errors list, and audit metadata",
+      "timeout": "5s",
+      "audit_action": "Log validation attempt, input payload schema check, and validation decision to central audit ledger",
+      "next": {
+        "valid": "fraud-check-agent",
+        "invalid": "notification-agent"
+      },
+      "fallback": "human-escalation-agent"
+    },
+    {
+      "name": "fraud-check-agent",
+      "input": "Validated request object",
+      "output": "Fraud assessment payload containing risk score (0-100) and risk category ('low', 'medium', 'high')",
+      "timeout": "8s",
+      "audit_action": "Log fraud risk score, rule matches, and external API latency to central audit ledger",
+      "next": {
+        "low_or_medium_risk": "approval-decision-agent",
+        "high_risk": "human-escalation-agent"
+      },
+      "fallback": "human-escalation-agent"
+    },
+    {
+      "name": "approval-decision-agent",
+      "input": "Validated request object combined with fraud assessment payload",
+      "output": "Approval decision object containing status ('approved', 'rejected', 'escalate') and decision justification",
+      "timeout": "5s",
+      "audit_action": "Log automated approval decision, policy rules evaluated, and justification to central audit ledger",
+      "next": {
+        "approved": "payment-processor-agent",
+        "rejected": "notification-agent",
+        "escalate": "human-escalation-agent"
+      },
+      "fallback": "human-escalation-agent"
+    },
+    {
+      "name": "human-escalation-agent",
+      "input": "Escalation context containing original request, fraud assessment, and failure/escalation reason",
+      "output": "Manual override decision object containing status ('approved', 'rejected') and analyst notes",
+      "timeout": "20s",
+      "audit_action": "Log human analyst assignment, override decision, and notes to central audit ledger",
+      "next": {
+        "approved": "payment-processor-agent",
+        "rejected": "notification-agent"
+      },
+      "fallback": "notification-agent"
+    },
+    {
+      "name": "payment-processor-agent",
+      "input": "Approved refund request details (transaction_id, amount, destination account)",
+      "output": "Payment execution receipt containing transaction status ('success', 'failed') and gateway reference ID",
+      "timeout": "10s",
+      "audit_action": "Log payment gateway request, response status, and transaction reference to central audit ledger",
+      "next": {
+        "success": "notification-agent",
+        "failed": "human-escalation-agent"
+      },
+      "fallback": "human-escalation-agent"
+    },
+    {
+      "name": "notification-agent",
+      "input": "Final refund status payload (status, customer email, amount, reference ID, reason)",
+      "output": "Notification delivery receipt containing delivery status (true/false) and channel used",
+      "timeout": "5s",
+      "audit_action": "Log notification dispatch, channel, recipient, and delivery confirmation to central audit ledger",
+      "next": "null",
+      "fallback": "system-dead-letter-queue"
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents_present": [
+      "validation",
+      "fraud-check",
+      "approval",
+      "payment",
+      "notification"
+    ],
+    "conditional_routing_enabled": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path_configured": true,
+    "max_total_expected_processing_time_seconds": 60,
+    "actual_sum_of_timeouts_seconds": 53,
+    "audit_logging_at_each_step": true,
+    "handles_approved_and_rejected_outcomes": true
+  }
+}

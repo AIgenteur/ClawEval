@@ -1,0 +1,578 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QuillAI is an advanced AI writing assistant designed to supercharge your content creation, copywriting, and editing workflow with artificial intelligence.">
+    <title>QuillAI - The Ultimate AI Writing Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main Navigation">
+            <div class="flex items-center gap-2">
+                <a href="#" class="flex items-center gap-2" aria-label="QuillAI Home">
+                    <svg class="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    <span class="text-xl font-bold tracking-tight text-slate-900">QuillAI</span>
+                </a>
+            </div>
+            
+            <!-- Desktop Nav Links -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Features</a>
+                <a href="#how-it-works" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">How It Works</a>
+                <a href="#pricing" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Pricing</a>
+                <a href="#testimonials" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Testimonials</a>
+                <a href="#contact" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Contact</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-4">
+                <a href="#pricing" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-all shadow-sm shadow-brand-500/10">
+                    Get Started
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none" aria-label="Toggle Menu" aria-expanded="false">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-100 bg-white px-4 pt-2 pb-4 space-y-1">
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600">Features</a>
+            <a href="#how-it-works" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600">How It Works</a>
+            <a href="#pricing" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600">Pricing</a>
+            <a href="#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600">Testimonials</a>
+            <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600">Contact</a>
+            <div class="pt-4 border-t border-slate-100">
+                <a href="#pricing" class="block w-full text-center px-4 py-2.5 text-base font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-brand-50/50 via-white to-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-3xl mx-auto">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-700 mb-6">
+                        <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-pulse"></span>
+                        Next-Gen AI Writing
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-none mb-6">
+                        Transform Your Writing with the Power of <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Artificial Intelligence</span>
+                    </h1>
+                    <p class="text-lg sm:text-xl text-slate-600 mb-10 leading-relaxed">
+                        QuillAI helps you draft blogs, emails, and social media posts 10x faster. Say goodbye to writer's block and hello to high-converting copy generated instantly.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="#pricing" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30">
+                            Start Free Trial
+                        </a>
+                        <a href="#how-it-works" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-all">
+                            See How It Works
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Social Proof / Trust Section -->
+                <div class="mt-20 border-t border-slate-100 pt-12">
+                    <p class="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-8">Trusted by over 10,000+ content creators, marketers, and writers worldwide</p>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center opacity-60 grayscale hover:grayscale-0 transition-all">
+                        <span class="text-xl font-bold text-slate-700">TechFlow</span>
+                        <span class="text-xl font-bold text-slate-700">SaaSify</span>
+                        <span class="text-xl font-bold text-slate-700">ApexMedia</span>
+                        <span class="text-xl font-bold text-slate-700">GrowthCo</span>
+                        <span class="text-xl font-bold text-slate-700">WriteSphere</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before / After Comparison Section -->
+        <section class="py-20 bg-slate-100/50 border-y border-slate-200/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">The QuillAI Difference</h2>
+                    <p class="text-lg text-slate-600 mt-4">See how your content workflow transforms when you switch to AI-powered writing.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <!-- Before Card -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="p-2 bg-red-50 text-red-600 rounded-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="text-xl font-bold text-slate-900">Without QuillAI</h3>
+                        </div>
+                        <ul class="space-y-4 text-slate-600">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span>Hours spent staring at a blank page struggling with writer's block.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span>Inconsistent tone and style across different marketing channels.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span>Manual SEO optimization that takes hours of keyword research.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- After Card -->
+                    <div class="bg-brand-900 text-white p-8 rounded-2xl border border-brand-800 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-brand-600/20 rounded-full blur-2xl"></div>
+                        <div class="flex items-center gap-3 mb-6 relative z-10">
+                            <span class="p-2 bg-brand-500/20 text-brand-300 rounded-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="text-xl font-bold">With QuillAI</h3>
+                        </div>
+                        <ul class="space-y-4 text-brand-100 relative z-10">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Instant high-quality drafts generated in seconds from simple prompts.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Perfect brand voice consistency with customizable tone profiles.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Built-in SEO optimization and real-time readability scoring.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Supercharge Your Writing Workflow</h2>
+                    <p class="text-lg text-slate-600 mt-4">Everything you need to create high-quality content at scale, powered by advanced machine learning.</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-transparent transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-6 group-hover:bg-brand-600 group-hover:text-white transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">AI Blog Writer</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Generate full-length, SEO-optimized blog posts in minutes. Just enter your topic and keywords.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-transparent transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-6 group-hover:bg-brand-600 group-hover:text-white transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Tone Adjuster</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Instantly rewrite your copy to sound professional, casual, persuasive, witty, or empathetic.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-transparent transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-6 group-hover:bg-brand-600 group-hover:text-white transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">SEO Optimizer</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Analyze and optimize your content for search engines with real-time keyword suggestions.</p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-transparent transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-6 group-hover:bg-brand-600 group-hover:text-white transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 11.37 7.31 16.5 3 19"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Multi-Language</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Write, translate, and optimize content in over 30 languages with native-level fluency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="py-20 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">How It Works</h2>
+                    <p class="text-lg text-slate-600 mt-4">Get high-quality written content in three simple steps.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 relative">
+                    <!-- Step 1 -->
+                    <div class="text-center p-6 relative">
+                        <div class="w-16 h-16 rounded-full bg-brand-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/20">
+                            1
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Choose a Template</h3>
+                        <p class="text-slate-600">Select from over 50+ specialized templates, including blog posts, emails, ads, or social media updates.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="text-center p-6 relative">
+                        <div class="w-16 h-16 rounded-full bg-brand-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/20">
+                            2
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Provide Context</h3>
+                        <p class="text-slate-600">Enter a few keywords, a brief description, and select your desired tone of voice to guide the AI.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="text-center p-6 relative">
+                        <div class="w-16 h-16 rounded-full bg-brand-600 text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-brand-500/20">
+                            3
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Generate & Refine</h3>
+                        <p class="text-slate-600">Watch QuillAI generate high-quality copy in seconds. Edit, polish, and export directly to your platform.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Simple, Transparent Pricing</h2>
+                    <p class="text-lg text-slate-600 mt-4">Choose the perfect plan for your writing needs. No hidden fees.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+                    <!-- Free Plan -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Free</h3>
+                            <p class="text-slate-500 text-sm mb-6">Perfect for trying out QuillAI's core features.</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-4xl font-extrabold text-slate-900">$0</span>
+                                <span class="text-slate-500 text-sm">/month</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-slate-600 text-sm">
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>5,000 words per month</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>10+ basic templates</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Standard support</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#contact" class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition-all">
+                            Get Started
+                        </a>
+                    </div>
+
+                    <!-- Pro Plan -->
+                    <div class="bg-white rounded-2xl border-2 border-brand-600 p-8 flex flex-col justify-between shadow-xl relative transform lg:-translate-y-2">
+                        <span class="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-brand-600 text-white text-xs font-bold uppercase tracking-widest rounded-full">Most Popular</span>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Pro</h3>
+                            <p class="text-slate-500 text-sm mb-6">For professional writers and growing teams.</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-4xl font-extrabold text-slate-900">$29</span>
+                                <span class="text-slate-500 text-sm">/month</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-slate-600 text-sm">
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span class="font-semibold text-slate-900">Unlimited words</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>50+ advanced templates</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>SEO optimization suite</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Priority email support</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#contact" class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-lg shadow-brand-500/20">
+                            Get Started Now
+                        </a>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Enterprise</h3>
+                            <p class="text-slate-500 text-sm mb-6">For large organizations requiring custom solutions.</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-4xl font-extrabold text-slate-900">Custom</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-slate-600 text-sm">
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Custom AI model training</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Dedicated account manager</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>API access & integrations</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>SSO & advanced security</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#contact" class="w-full inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all">
+                            Contact Sales
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-20 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What Our Users Say</h2>
+                    <p class="text-lg text-slate-600 mt-4">Discover how QuillAI is helping writers and teams achieve their content goals.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <p class="text-slate-600 italic mb-6">"QuillAI has completely transformed our content marketing workflow. We went from publishing 2 articles a week to over 15, without sacrificing quality."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-700">SJ</div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">Sarah Jenkins</h4>
+                                <p class="text-xs text-slate-500">Content Director, TechFlow</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <p class="text-slate-600 italic mb-6">"The tone adjustment feature is pure magic. I can easily adapt a single product description for LinkedIn, Twitter, and email in just a few clicks."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-700">DC</div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">David Chen</h4>
+                                <p class="text-xs text-slate-500">Freelance Copywriter</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <p class="text-slate-600 italic mb-6">"As a startup founder, I wear many hats. QuillAI acts as my dedicated copywriter, helping me draft high-converting landing page copy and investor updates."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-700">ER</div>
+                            <div>
+                                <h4 class="font-bold text-slate-900">Elena Rostova</h4>
+                                <p class="text-xs text-slate-500">Founder, SaaSify</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+                    <p class="text-lg text-slate-600 mt-4">Have questions? We've got answers.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <details class="group border border-slate-200 rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden" open>
+                        <summary class="flex items-center justify-between cursor-pointer focus:outline-none">
+                            <h3 class="text-lg font-semibold text-slate-900">How does QuillAI generate content?</h3>
+                            <span class="ml-1.5 shrink-0 rounded-full bg-slate-100 p-1.5 text-slate-900 group-open:rotate-180 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="mt-4 text-slate-600 leading-relaxed">
+                            QuillAI utilizes advanced artificial intelligence models trained on high-quality marketing copy, articles, and creative writing. It understands context, grammar, and tone to generate human-like text based on your inputs.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 2 -->
+                    <details class="group border border-slate-200 rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex items-center justify-between cursor-pointer focus:outline-none">
+                            <h3 class="text-lg font-semibold text-slate-900">Is the generated content unique and plagiarism-free?</h3>
+                            <span class="ml-1.5 shrink-0 rounded-full bg-slate-100 p-1.5 text-slate-900 group-open:rotate-180 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="mt-4 text-slate-600 leading-relaxed">
+                            Yes, QuillAI generates completely original content for every prompt. We also have a built-in plagiarism checker to ensure your content is 100% unique before you publish.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 3 -->
+                    <details class="group border border-slate-200 rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex items-center justify-between cursor-pointer focus:outline-none">
+                            <h3 class="text-lg font-semibold text-slate-900">Can I cancel my subscription at any time?</h3>
+                            <span class="ml-1.5 shrink-0 rounded-full bg-slate-100 p-1.5 text-slate-900 group-open:rotate-180 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="mt-4 text-slate-600 leading-relaxed">
+                            Absolutely. You can upgrade, downgrade, or cancel your subscription at any time directly from your account settings. There are no long-term contracts or cancellation fees.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 4 -->
+                    <details class="group border border-slate-200 rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex items-center justify-between cursor-pointer focus:outline-none">
+                            <h3 class="text-lg font-semibold text-slate-900">Does QuillAI support multiple languages?</h3>
+                            <span class="ml-1.5 shrink-0 rounded-full bg-slate-100 p-1.5 text-slate-900 group-open:rotate-180 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="mt-4 text-slate-600 leading-relaxed">
+                            Yes, QuillAI supports content generation, translation, and optimization in over 30 languages, including Spanish, French, German, Japanese, and Chinese.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 5 -->
+                    <details class="group border border-slate-200 rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex items-center justify-between cursor-pointer focus:outline-none">
+                            <h3 class="text-lg font-semibold text-slate-900">What is the difference between the Free and Pro plans?</h3>
+                            <span class="ml-1.5 shrink-0 rounded-full bg-slate-100 p-1.5 text-slate-900 group-open:rotate-180 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="mt-4 text-slate-600 leading-relaxed">
+                            The Free plan gives you access to basic templates and a limit of 5,000 words per month. The Pro plan offers unlimited word generation, access to all 50+ advanced templates, SEO tools, and priority support.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter / Email Signup Section -->
+        <section class="py-16 bg-brand-900 text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.3),transparent_50%)]"></div>
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                <h2 class="text-3xl font-bold tracking-tight mb-4">Get Writing Tips & Product Updates</h2>
+                <p class="text-brand-100 max-w-xl mx-auto mb-8">Join over 20,000 marketers and writers who receive our weekly newsletter on AI writing strategies.</p>
+                
+                <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" aria-label="Newsletter Subscription Form">
+                    <div class="grow">
+                        <label for="email-address" class="sr-only">Email address</label>
+                        <input id="email-address" name="email" type="email" autocomplete="email" required class="w-full px-5 py-3 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Enter your email address">
+                    </div>
+                    <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition-all shadow-md">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-white">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-4">Have Questions? Get in Touch</h2>
+                <p class="text-lg text-slate-600 mb-8">Our support team is here to help you make the most of QuillAI.</p>
+                <div class="inline-flex flex-col sm:flex-row items-center gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <span class="p-3 bg-brand-100 text-brand-600 rounded-xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </span>
+                        <div class="text-left">
+                            <p class="text-xs text-slate-500 font-medium">Email Us Directly</p>
+                            <a href="mailto:support@quillai.com" class="text-base font-bold text-brand-600 hover:underline">support@quillai.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center gap-2 text-white mb-4">
+                        <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        <span class="text-lg font-bold tracking-tight">QuillAI</span>
+                    </div>
+                    <p class="text-sm text-slate-400">Supercharging content creation with advanced artificial intelligence.</p>
+                </div>
+                <div>
+                    <h4

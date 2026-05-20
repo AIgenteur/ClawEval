@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Audit monolith architecture and define microservice boundaries",
+      "depends_on": [],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 2,
+      "task": "Design target database schema and migration strategy for split services",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Set up containerization (Docker) and local development environment",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Extract User/Auth Service codebase from Django monolith",
+      "depends_on": [2, 3],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 5,
+      "task": "Set up API Gateway and define initial routing rules",
+      "depends_on": [3],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Implement token-based authentication (JWT) across Gateway and Auth Service",
+      "depends_on": [4, 5],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 7,
+      "task": "Refactor frontend authentication flow to use the new Auth Service",
+      "depends_on": [6],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 8,
+      "task": "Create integration test suite for Auth Service and API Gateway",
+      "depends_on": [6],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 9,
+      "task": "Extract Catalog Service and its dedicated database from monolith",
+      "depends_on": [2, 6],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Establish CI/CD pipelines for extracted microservices",
+      "depends_on": [4, 9],
+      "effort_days": 6,
+      "team": "devops"
+    },
+    {
+      "id": 11,
+      "task": "Implement asynchronous event-driven communication between services",
+      "depends_on": [9],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 12,
+      "task": "Update frontend catalog views to fetch data from Catalog Service",
+      "depends_on": [9],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 13,
+      "task": "Perform contract and end-to-end testing on Auth and Catalog services",
+      "depends_on": [11, 12],
+      "effort_days": 6,
+      "team": "qa"
+    },
+    {
+      "id": 14,
+      "task": "Execute production database migration, data sync, and cutover",
+      "depends_on": [11],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 15,
+      "task": "Set up centralized logging, monitoring, and distributed tracing",
+      "depends_on": [10],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 16,
+      "task": "Implement feature flags in frontend to support canary releases",
+      "depends_on": [12],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 17,
+      "task": "Conduct load and performance testing on the microservices infrastructure",
+      "depends_on": [13, 15],
+      "effort_days": 6,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "Perform security and vulnerability scanning on APIs and containers",
+      "depends_on": [10, 15],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Finalize frontend verification and clean up legacy Django template references",
+      "depends_on": [16],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 20,
+      "task": "Execute final regression testing and sign-off on production migration",
+      "depends_on": [14, 17, 18, 19],
+      "effort_days": 5,
+      "team": "qa"
+    }
+  ]
+}

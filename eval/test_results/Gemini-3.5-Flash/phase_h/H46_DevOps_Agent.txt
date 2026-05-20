@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Single replica configured ('replicas: 1'), which does not provide High Availability (HA) and represents a single point of failure.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Using the 'latest' tag for the container image ('myapp:latest') prevents deterministic deployments and can lead to unexpected runtime changes.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Empty resources block ('resources: {}') for the 'api' container; missing CPU and memory requests/limits can lead to resource starvation or OOM kills.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "'runAsRoot: true' is not a valid Kubernetes securityContext field (should be 'runAsNonRoot: false' or similar), and running as root is a security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "Container is running in privileged mode ('privileged: true'), allowing it almost all capabilities of the host machine, posing a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "25-26",
+      "issue": "Sensitive database password ('DB_PASSWORD') is hardcoded in plaintext instead of using a Kubernetes Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "27-28",
+      "issue": "Sensitive API key ('API_KEY') is hardcoded in plaintext instead of using a Kubernetes Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "32",
+      "issue": "The 'sidecar' container lacks a 'securityContext' configuration, inheriting default insecure host permissions.",
+      "severity": "major"
+    },
+    {
+      "line": "34-37",
+      "issue": "The 'sidecar' container has resource requests defined but lacks resource limits, which could allow it to consume unbounded node resources.",
+      "severity": "major"
+    },
+    {
+      "line": "36-37",
+      "issue": "The 'sidecar' logger container has excessively high resource requests (10Gi memory, 8 CPU), leading to severe resource waste and scheduling issues.",
+      "severity": "major"
+    },
+    {
+      "line": "40-41",
+      "issue": "Using 'hostPath' volumes poses a security risk (container can access host files) and couples the pod to a specific node, breaking portability.",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "Missing 'livenessProbe' for the 'api' container, preventing Kubernetes from detecting and restarting unhealthy containers.",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "Missing 'readinessProbe' for the 'api' container, which may cause traffic to be routed to the container before it is ready.",
+      "severity": "major"
+    },
+    {
+      "line": "21",
+      "issue": "Missing 'allowPrivilegeEscalation: false' in the 'api' container's securityContext, allowing potential privilege escalation.",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Exposing the service directly via a public LoadBalancer without an Ingress controller or NetworkPolicies increases attack surface and costs.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,63 @@
+Here is the complete `JSONValidator` class implemented in Python without any imports.
+
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        for field, rules in schema.items():
+            # 1. Check if required field is missing
+            if field not in data:
+                if rules.get("required", False):
+                    errors.append(f"Field '{field}' is required")
+                continue
+            
+            val = data[field]
+            expected_type = rules.get("type")
+            
+            # 2. Type validation (ensuring strict matching, e.g., bool is not treated as int)
+            type_valid = False
+            if expected_type == "str":
+                type_valid = isinstance(val, str)
+            elif expected_type == "int":
+                type_valid = isinstance(val, int) and not isinstance(val, bool)
+            elif expected_type == "float":
+                type_valid = isinstance(val, float)
+            elif expected_type == "bool":
+                type_valid = isinstance(val, bool)
+            elif expected_type == "list":
+                type_valid = isinstance(val, list)
+            elif expected_type == "dict":
+                type_valid = isinstance(val, dict)
+            
+            if not type_valid:
+                errors.append(f"Field '{field}' must be of type '{expected_type}'")
+                continue  # Skip further constraint checks if type is invalid to avoid TypeErrors
+            
+            # 3. Value constraints for numbers (int, float)
+            if expected_type in ("int", "float"):
+                if "min" in rules and val < rules["min"]:
+                    errors.append(f"Field '{field}' must be at least {rules['min']}")
+                if "max" in rules and val > rules["max"]:
+                    errors.append(f"Field '{field}' must be at most {rules['max']}")
+            
+            # 4. Length constraints for strings and lists
+            elif expected_type in ("str", "list"):
+                val_len = len(val)
+                if "min_length" in rules and val_len < rules["min_length"]:
+                    errors.append(f"Field '{field}' must have a minimum length of {rules['min_length']}")
+                if "max_length" in rules and val_len > rules["max_length"]:
+                    errors.append(f"Field '{field}' must have a maximum length of {rules['max_length']}")
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+```
+
+### How it works:
+1. **Required Fields**: It first checks if a field is missing. If it is missing and marked as `required: True`, it logs an error and skips further checks for that field.
+2. **Strict Type Checking**: Python treats `bool` as a subclass of `int` (e.g., `isinstance(True, int)` is `True`). The validator explicitly handles this to ensure a boolean value is not accepted as an integer.
+3. **Safe Constraint Checking**: It only checks constraints (`min`, `max`, `min_length`, `max_length`) if the type is correct. This prevents runtime errors (like trying to get the `len()` of an integer).
+4. **Extra Fields**: Any fields present in `data` but not defined in the `schema` are ignored.
+5. **Error Accumulation**: It evaluates all fields and returns all errors found, rather than stopping at the first failure.

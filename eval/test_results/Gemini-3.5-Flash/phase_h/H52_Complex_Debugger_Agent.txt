@@ -1,0 +1,47 @@
+
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "self.requests is initialized as a plain list, which is not thread/async-safe for concurrent modifications and has O(N) complexity for removing elements from the beginning.",
+      "fix": "Use collections.deque for O(1) pops and protect state modifications with an asyncio.Lock."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated in Python 3.10+ and can raise a RuntimeError if there is no running loop.",
+      "fix": "Use asyncio.get_running_loop() instead."
+    },
+    {
+      "line": "14",
+      "bug": "In RateLimiter.acquire, after sleeping, the task appends the old 'now' timestamp (calculated before the sleep) instead of the current time, and it does not re-evaluate the rate limit, leading to rate limit violations when multiple tasks wake up concurrently.",
+      "fix": "Recalculate 'now' after sleeping and re-check the rate limit, or use an asyncio.Lock to serialize access."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession inside fetch_one for every single request is highly inefficient and defeats connection pooling.",
+      "fix": "Create a single ClientSession in fetch_all and pass it to fetch_one."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 is passed as an integer, which is deprecated/invalid in aiohttp (it expects a ClientTimeout object). Also, the response is not closed, leaking connections.",
+      "fix": "Use async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:."
+    },
+    {
+      "line": "29",
+      "bug": "Writing to results[url] will overwrite previous results if there are duplicate URLs in the input list.",
+      "fix": "Use a list of results or map by a unique identifier (like index) instead of the URL string."
+    },
+    {
+      "line": "31",
+      "bug": "Catching all exceptions (except Exception) and silently setting the result to None hides critical network or programming errors.",
+      "fix": "Log the exception using logging.exception or catch specific exceptions."
+    },
+    {
+      "line": "32",
+      "bug": "The pass statement is redundant and unnecessary after assigning results[url] = None.",
+      "fix": "Remove the redundant pass statement."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather(*tasks) without return_exceptions=True

@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 13,
+      "bug": "Calculates 20% of the subtotal (giving an 80% discount) instead of applying a 20% discount (which would be subtotal * 0.80).",
+      "severity": "major"
+    },
+    {
+      "line": 15,
+      "bug": "Subtracts 10 times the subtotal (a 1000% discount) instead of applying a 10% discount (which would be subtotal * 0.10).",
+      "severity": "major"
+    },
+    {
+      "line": 25,
+      "bug": "Silently passes when stock is negative instead of raising an error, logging a warning, or preventing the order.",
+      "severity": "major"
+    },
+    {
+      "line": 36,
+      "bug": "Uses `=+` instead of `+=`, which overwrites `total_revenue` with the last order's total instead of accumulating it.",
+      "severity": "critical"
+    },
+    {
+      "line": 39,
+      "bug": "Potential ZeroDivisionError if the `orders` list is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 40,
+      "bug": "Potential ValueError (empty sequence) in `max()` if the `results` list is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "Extremely weak email validation that only checks for the presence of '@', allowing invalid emails like '@' or 'abc@'.",
+      "severity": "minor"
+    },
+    {
+      "line": 61,
+      "bug": "Adds `distance` directly to the cost instead of multiplying it by `per_km` (should be `distance * per_km`).",
+      "severity": "major"
+    },
+    {
+      "line": 66,
+      "bug": "Unreachable code block. Since `weight > 30` is checked first, any weight greater than 50 will trigger the first `if` block and never reach this `elif` block.",
+      "severity": "major"
+    },
+    {
+      "line": 69,
+      "bug": "Rounds the shipping cost to the nearest integer, losing decimal precision (cents) for currency.",
+      "severity": "minor"
+    },
+    {
+      "line": 72,
+      "bug": "Assigns `profile_a` by reference to `merged`. Modifying `merged` will mutate the original `profile_a` dictionary, causing unintended side effects.",
+      "severity": "major"
+    },
+    {
+      "line": 76,
+      "bug": "Uses a hardcoded date string ('2024-01-01') instead of dynamically generating the current date/time.",
+      "severity": "minor"
+    },
+    {
+      "line": 80,
+      "bug": "Naive CSV parsing using `split(',')` which fails to handle standard CSV features like quoted fields containing commas.",
+      "severity": "minor"
+    },
+    {
+      "line": 87,
+      "bug": "Appends duplicate items to the `duplicates` list multiple times if they appear three or more times in the input list.",
+      "severity": "minor"
+    },
+    {
+      "line": 88,
+      "bug": "Uses a list for `seen` instead of a set, resulting in O(N) lookup times and O(N^2) overall complexity.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

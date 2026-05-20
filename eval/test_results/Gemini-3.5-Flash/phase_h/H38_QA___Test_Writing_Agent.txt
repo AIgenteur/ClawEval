@@ -1,0 +1,68 @@
+```python
+def is_valid_password(password):
+    # Rule 1 & 2: Length constraints
+    if not (8 <= len(password) <= 64):
+        return False
+
+    # Rule 7: No spaces allowed
+    if " " in password:
+        return False
+
+    # Rule 8: Cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Rule 3: Contains at least 1 uppercase letter
+    if not any(c.isupper() for c in password):
+        return False
+
+    # Rule 4: Contains at least 1 lowercase letter
+    if not any(c.islower() for c in password):
+        return False
+
+    # Rule 5: Contains at least 1 digit
+    if not any(c.isdigit() for c in password):
+        return False
+
+    # Rule 6: Contains at least 1 special character from: !@#$%^&*()-_+=
+    special_chars = "!@#$%^&*()-_+="
+    if not any(c in special_chars for c in password):
+        return False
+
+    # Rule 9: Cannot contain more than 3 consecutive identical characters
+    for i in range(len(password) - 3):
+        if password[i] == password[i + 1] == password[i + 2] == password[i + 3]:
+            return False
+
+    # Rule 10: Cannot contain the word "password" (case-insensitive)
+    if "password" in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Valid123!", True),  # 1. Valid password
+        ("Val1!", False),  # 2. Too short (< 8 chars)
+        ("V" + "a" * 60 + "1!", False),  # 3. Too long (> 64 chars)
+        ("valid123!", False),  # 4. Missing uppercase
+        ("VALID123!", False),  # 5. Missing lowercase
+        ("Validabc!", False),  # 6. Missing digit
+        ("Valid1234", False),  # 7. Missing special character
+        ("Val id123!", False),  # 8. Contains space
+        ("1Valid23!", False),  # 9. Starts with a digit
+        ("Valiiiid123!", False),  # 10. More than 3 consecutive identical chars (4 'i's)
+        ("Valiiid123!", True),  # 11. Exactly 3 consecutive identical chars (allowed)
+        ("Valid123!password", False),  # 12. Contains "password" (lowercase)
+        ("PaSsWoRd123!", False),  # 13. Contains "password" (mixed-case)
+        ("Ab1!cdef", True),  # 14. Valid boundary length (8 chars)
+        ("A1!b" + "cdef" * 15, True),  # 15. Valid boundary length (64 chars)
+    ]
+
+    results = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```
