@@ -511,6 +511,72 @@ These runs are kept **separate from the main leaderboard** because the variable 
 |------|-------|----------|-------|---|---------|
 | 🥇 | **Gemini-3.5-Flash** | ☁️ Google (OpenRouter) | 978/1220 | **80.2%** | 22 |
 
+#### 📋 Gemini-3.5-Flash — Full 59-Agent Breakdown
+
+> Per-role performance across all 59 ClawEval v2 agents. **978/1,220 checkpoints (80.2%)** — 22 roles at 100%, 12 roles below 50%.
+
+| Test | Agent Role | Score | % |
+|------|-----------|-------|---|
+| H-01 | Router / Triage Agent | 29/30 | 97% |
+| H-02 | Input Validator / Sanitizer | 29/30 | 97% |
+| H-03 | Heartbeat / Health Monitor | 14/15 | 93% |
+| H-04 | Notification / Alert Agent | 21/30 | 70% |
+| H-05 | Sentiment Analysis Agent | 29/30 | 97% |
+| H-06 | FAQ Generation Agent | 15/15 | 100% |
+| H-07 | Translation Agent | 15/15 | 100% |
+| H-08 | Calendar / Scheduling Agent | 12/20 | 60% |
+| H-09 | Research / Web Search Agent | 30/30 | 100% |
+| H-10 | Content Writer / Blog Writer | 18/20 | 90% |
+| H-11 | Editor Agent | 29/30 | 97% |
+| H-12 | Content Planner / Strategist | 0/30 | 0% |
+| H-13 | Email Drafting / Summarization | 43/45 | 96% |
+| H-14 | Document Summarization Agent | 15/15 | 100% |
+| H-15 | Meeting Notes / Transcription Agent | 35/35 | 100% |
+| H-16 | Social Media Scouting / Monitoring | 57/60 | 95% |
+| H-17 | Social Media Content Agent | 19/20 | 95% |
+| H-18 | News Aggregation Agent | 7/7 | 100% |
+| H-19 | Shopping / Price Comparison | 15/15 | 100% |
+| H-20 | Memory / Knowledge Management | 20/20 | 100% |
+| H-21 | RAG / Retrieval Agent | 4/15 | 27% |
+| H-22 | Data Analysis Agent | 14/15 | 93% |
+| H-23 | Website Scraping / Understanding | 15/15 | 100% |
+| H-24 | Image Description / Understanding | 20/20 | 100% |
+| H-25 | Customer Support Agent | 33/60 | 55% |
+| H-26 | Lead Scoring / Prospecting | 12/15 | 80% |
+| H-27 | Sprint / Project Summarizer | 15/15 | 100% |
+| H-28 | Transaction / Approval Agent | 19/20 | 95% |
+| H-29 | Home Automation Agent | 9/20 | 45% |
+| H-30 | Fitness / Health Tracking | 15/15 | 100% |
+| H-31 | Recipe / Cooking Agent | 15/15 | 100% |
+| H-32 | Personal Finance Tracking | 15/15 | 100% |
+| H-33 | SEO Optimization Agent | 4/15 | 27% |
+| H-34 | Landing Page Generator | 20/20 | 100% |
+| H-35 | Travel Planning Agent | 6/15 | 40% |
+| H-36 | Code Generation Agent | 30/30 | 100% |
+| H-37 | Code Review Agent | 15/15 | 100% |
+| H-38 | QA / Test Writing Agent | 13/15 | 87% |
+| H-39 | Task Planning / Decomposition | 1/18 | 6% |
+| H-40 | Fact-Checking Agent | 28/30 | 93% |
+| H-41 | Critic / Review Agent | 20/20 | 100% |
+| H-42 | Market Research Agent | 14/15 | 93% |
+| H-43 | Synthesizer / Aggregator | 13/15 | 87% |
+| H-44 | Curriculum / Course Designer | 7/15 | 47% |
+| H-45 | Prototype Generator | 15/15 | 100% |
+| H-46 | DevOps Agent | 8/15 | 53% |
+| H-47 | Math / Logic Reasoning | 14/15 | 93% |
+| H-48 | STEM Research Analyst | 15/15 | 100% |
+| H-49 | Algorithm / Data Structure Explorer | 30/30 | 100% |
+| H-50 | Orchestrator / Manager Agent | 1/15 | 7% |
+| H-51 | Software Architect Agent | 4/15 | 27% |
+| H-52 | Complex Debugger Agent | 13/15 | 87% |
+| H-53 | Legal Document Review | 6/15 | 40% |
+| H-54 | Medical / Health Analysis | 15/15 | 100% |
+| H-55 | Financial Analysis / Stock Research | 14/15 | 93% |
+| H-56 | Security Analyst Agent | 0/15 | 0% |
+| H-57 | SRE / Incident Response | 13/15 | 87% |
+| H-58 | Book / Long-Form Writing | 19/20 | 95% |
+| H-59 | Compliance / Regulatory Agent | 2/15 | 13% |
+
 ---
 
 
