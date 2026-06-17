@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "Single replica provides no high availability and will cause downtime during rolling updates.",
+      "severity": "minor"
+    },
+    {
+      "line": "17",
+      "issue": "Using mutable ':latest' tag makes version tracking and rollbacks difficult.",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "Missing livenessProbe and readinessProbe prevents Kubernetes from monitoring health and routing traffic correctly.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "Empty resources object means no requests/limits are set, risking node resource starvation.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "Invalid field 'runAsRoot'. Kubernetes uses 'runAsNonRoot'; this field is ignored, leaving the container running as root unintentionally.",
+      "severity": "major"
+    },
+    {
+      "line": "23",
+      "issue": "Privileged mode grants excessive host access, creating a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "Hardcoded plaintext secret (DB_PASSWORD) instead of using Kubernetes Secrets.",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "Hardcoded plaintext secret (API_KEY) instead of using Kubernetes Secrets.",
+      "severity": "critical"
+    },
+    {
+      "line": "35",
+      "issue": "Only resource requests are defined for the sidecar; missing limits allows unbounded resource consumption.",
+      "severity": "minor"
+    },
+    {
+      "line": "36",
+      "issue": "Excessive memory request (10Gi) for a logger sidecar wastes cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "Excessive CPU request (8 cores) for a logger sidecar wastes cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "40",
+      "issue": "Using hostPath volumes ties pods to specific nodes and poses security risks.",
+      "severity": "major"
+    },
+    {
+      "line": "41",
+      "issue": "Mounting a hostPath to /tmp is unreliable as it can be cleared on reboot, causing data loss.",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Exposing API directly via LoadBalancer bypasses centralized Ingress TLS termination and routing policies.",
+      "severity": "minor"
+    },
+    {
+      "line": "50",
+      "issue": "Exposing HTTP port 80 without TLS means traffic is unencrypted.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

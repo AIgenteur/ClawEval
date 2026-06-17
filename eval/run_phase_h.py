@@ -415,6 +415,8 @@ def main():
     parser.add_argument("--reasoning-budget-tokens", type=int, help="Reasoning budget for llama.cpp / Gemma-4")
     parser.add_argument("--test-ids", type=int, nargs="*", help="Run only these test IDs")
     parser.add_argument("--openrouter-keys", action="store_true", help="Use multi-key rotation for OpenRouter free tier (loads FREE_OPENROUTER_API_KEY_* from .env)")
+    parser.add_argument("--nothink-root", action="store_true", help="Disable thinking via enable_thinking=false at root of request body (GLM-5 / GLM-5.2 style)")
+    parser.add_argument("--nothink", action="store_true", help="Disable thinking via chat_template_kwargs.thinking=false (Kimi style)")
     args = parser.parse_args()
 
     rotator = None
@@ -434,6 +436,10 @@ def main():
     extra_body = {}
     if args.reasoning_budget_tokens:
         extra_body["reasoning_budget_tokens"] = args.reasoning_budget_tokens
+    if args.nothink_root:
+        extra_body["enable_thinking"] = False
+    elif args.nothink:
+        extra_body["chat_template_kwargs"] = {"thinking": False}
 
     out_dir = Path(f"test_results/{args.model}/phase_h")
     out_dir.mkdir(parents=True, exist_ok=True)

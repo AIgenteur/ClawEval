@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "self.requests = [] has no async lock — multiple concurrent coroutines calling acquire() will race on the shared list, causing incorrect rate limiting",
+      "fix": "Add an asyncio.Lock and use it in acquire(): self._lock = asyncio.Lock(); async with self._lock: ..."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated since Python 3.10 and may raise DeprecationWarning or fail outside a running loop",
+      "fix": "Use asyncio.get_running_loop().time() or time.monotonic()"
+    },
+    {
+      "line": "16",
+      "bug": "self.requests.append(now) uses a stale timestamp — 'now' was captured before the await sleep(wait), so the recorded time is wrong after sleeping",
+      "fix": "Recalculate now after the sleep: now = asyncio.get_running_loop().time(); self.requests.append(now)"
+    },
+    {
+      "line": "25",
+      "bug": "A new aiohttp.ClientSession is created for every single request — this is extremely inefficient and defeats connection pooling",
+      "fix": "Create one ClientSession outside fetch_one and pass it in, or use a shared session via closure"
+    },
+    {
+      "line": "27",
+      "bug": "session.get(url, timeout=30) uses an integer for timeout (deprecated in aiohttp) and the response is not used as a context manager, causing connection leaks",
+      "fix": "Use async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response: to properly close the response"
+    },
+    {
+      "line": "29",
+      "bug": "results[url] = data overwrites previous results because all 100 URLs are identical ('http://example.com'), so the dict ends up with only 1 entry",
+      "fix": "Use a list to collect results (results.setdefault(url, []).append(data)) or use unique URLs"
+    },
+    {
+      "line": "31",
+      "bug": "results[url] = None has the same overwrite problem — errors for the same URL clobber previous successes and each other",
+      "fix": "Use a list-based structure or track errors separately per request index"
+    },
+    {
+      "line": "32",
+      "bug": "pass is unnecessary and dead code — results[url] = None on the previous line is a complete statement, making pass redundant",
+      "fix": "Remove the pass statement entirely"
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather(*tasks) without return_exceptions=True means if any task raises an unhandled exception, gather will cancel all other pending tasks",
+      "fix": "Use asyncio.gather(*tasks, return_exceptions=True) or ensure all exceptions are caught inside fetch_one"
+    },
+    {
+      "line": "42",
+      "bug": "task = process_item(item) creates a bare coroutine object that is never scheduled until gather runs — it should be wrapped in asyncio.create_task() to start concurrently immediately",
+      "fix": "Use task = asyncio.create_task(process_item(item)) to schedule tasks as they are created"
+    },
+    {
+      "line": "45",
+      "bug": "yield r inside an async def makes process_batch an async generator, but it yields results only after each entire batch completes — it should either return a list or be consumed with async for; the current design is misleading",
+      "fix": "Collect all results into a list and return it, or restructure to yield results as they complete using asyncio.as_completed()"
+    },
+    {
+      "line": "52",
+      "bug": "self.pool = [] uses a plain list for connection pooling — this provides no async-safe operations for waiting when the pool is empty",
+      "fix": "Use asyncio.Queue(maxsize=size) so consumers can await get() when no connections are available"
+    },
+    {
+      "line": "60",
+      "bug": "self.pool.append(conn) has no size limit check — the pool can grow beyond self.size, wasting resources and defeating the purpose of a bounded pool",
+      "fix": "Check len(self.pool) < self.size before appending, or use a bounded asyncio.Queue that enforces the limit"
+    },
+    {
+      "line": "63",
+      "bug": "return object() creates a meaningless dummy object instead of an actual connection — it has no connection semantics, cannot be used for I/O, and makes the pool useless",
+      "fix": "Create and return a real connection object appropriate for the use case (e.g., an aiohttp connection, database connection, etc.)"
+    },
+    {
+      "line": "68",
+      "bug": "print(f'Got {len(results)} results') will print 'Got 1 results' instead of 100 because all URLs are identical and the dict only retains the last entry per unique key",
+      "fix": "Use unique URLs or change results to a list so all 100 results are counted"
+    }
+  ],
+  "count": 15
+}
+```

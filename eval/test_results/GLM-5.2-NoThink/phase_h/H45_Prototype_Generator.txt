@@ -1,0 +1,154 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        """
+        Validate data against a schema.
+        
+        Args:
+            data: dict-like data to validate
+            schema: dict mapping field names to rule dicts
+        
+        Returns:
+            {"valid": bool, "errors": [str, ...]}
+        """
+        errors = []
+
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dictionary"]}
+
+        for field_name, rules in schema.items():
+            field_type = rules.get("type")
+            required = rules.get("required", False)
+
+            # Check required
+            if field_name not in data:
+                if required:
+                    errors.append(
+                        f"Field '{field_name}' is required but missing"
+                    )
+                continue
+
+            value = data[field_name]
+
+            # Type checking
+            if field_type is not None:
+                if not self._check_type(value, field_type):
+                    errors.append(
+                        f"Field '{field_name}' has wrong type, "
+                        f"expected {field_type}, got {type(value).__name__}"
+                    )
+                    continue  # Skip further checks if type is wrong
+
+            # Number checks: min / max
+            if field_type in ("int", "float"):
+                if "min" in rules and value < rules["min"]:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is below "
+                        f"minimum {rules['min']}"
+                    )
+                if "max" in rules and value > rules["max"]:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is above "
+                        f"maximum {rules['max']}"
+                    )
+
+            # String length checks
+            if field_type == "str":
+                length = len(value)
+                if "min_length" in rules and length < rules["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is below "
+                        f"min_length {rules['min_length']}"
+                    )
+                if "max_length" in rules and length > rules["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is above "
+                        f"max_length {rules['max_length']}"
+                    )
+
+            # List length checks
+            if field_type == "list":
+                length = len(value)
+                if "min_length" in rules and length < rules["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is below "
+                        f"min_length {rules['min_length']}"
+                    )
+                if "max_length" in rules and length > rules["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is above "
+                        f"max_length {rules['max_length']}"
+                    )
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _check_type(self, value, field_type):
+        """Check if value matches the expected type string."""
+        if field_type == "str":
+            return isinstance(value, str)
+        elif field_type == "int":
+            # bool is a subclass of int in Python, so exclude it
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif field_type == "float":
+            # Exclude bool; keep int and float separate
+            return isinstance(value, float) and not isinstance(value, bool)
+        elif field_type == "bool":
+            return isinstance(value, bool)
+        elif field_type == "list":
+            return isinstance(value, list)
+        elif field_type == "dict":
+            return isinstance(value, dict)
+        return False
+```
+
+**Example usage:**
+
+```python
+validator = JSONValidator()
+
+schema = {
+    "name":  {"type": "str",  "required": True,  "min_length": 1, "max_length": 50},
+    "age":   {"type": "int",  "required": True,  "min": 0, "max": 150},
+    "email": {"type": "str",  "required": False},
+    "tags":  {"type": "list", "required": False, "min_length": 1, "max_length": 10},
+    "score": {"type": "float", "required": False, "min": 0.0, "max": 100.0},
+}
+
+# Valid data
+print(validator.validate(
+    {"name": "Alice", "age": 30, "tags": ["dev"], "score": 95.5},
+    schema
+))
+# {'valid': True, 'errors': []}
+
+# Multiple errors
+print(validator.validate(
+    {"name": "", "age": 200, "score": "high", "extra": "ok"},
+    schema
+))
+# {'valid': False, 'errors': [
+#   "Field 'name' length 0 is below min_length 1",
+#   "Field 'age' value 200 is above maximum 150",
+#   "Field 'score' has wrong type, expected float, got str"
+# ]}
+
+# Missing required field
+print(validator.validate({"age": 30}, schema))
+# {'valid': False, 'errors': ["Field 'name' is required but missing"]}
+
+# bool is not int
+print(validator.validate({"name": "Bob", "age": True}, schema))
+# {'valid': False, 'errors': ["Field 'age' has wrong type, expected int, got bool"]}
+```
+
+**Key design decisions:**
+
+1. **`bool` vs `int` distinction** — In Python `bool` is a subclass of `int`, so `isinstance(True, int)` returns `True`. The `_check_type` method explicitly excludes `bool` when checking for `int` or `float`, ensuring `True`/`False` only pass the `"bool"` type check.
+
+2. **`int` vs `float` are strict** — An `int` value will not pass a `"float"` type check and vice versa, matching the literal schema specification.
+
+3. **Skip further checks on type mismatch** — If the type is wrong, min/max/length checks are skipped for that field (they'd be meaningless or could crash), but validation continues for all other fields.
+
+4. **Extra fields allowed** — Fields in `data` that aren't in `schema` produce no error, per the rules.
+
+5. **All errors collected** — Every violation across all fields is accumulated and returned together.

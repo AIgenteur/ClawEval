@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - query = f\"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'\"",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage / Comparison",
+      "location": "login() - WHERE password='{pwd}' (passwords stored and compared in plaintext)",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Hashing (MD5) for Token Generation",
+      "location": "login() - hashlib.md5(user.encode()).hexdigest()",
+      "severity": "medium"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - template = f\"<h1>Welcome {username}</h1>...\"; render_template_string(template)",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() - return f\"<html><body>Results for: {q}</body></html>\"",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() - subprocess.run(cmd, shell=True, capture_output=True, text=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Write)",
+      "location": "upload() - path = os.path.join(UPLOAD_DIR, f.filename); f.save(path)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Read)",
+      "location": "download() - return send_file(filepath)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure YAML Deserialization (Remote Code Execution)",
+      "location": "load_config() - config = yaml.load(data) (missing SafeLoader)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Pickle Deserialization (Remote Code Execution)",
+      "location": "restore_session() - session = pickle.loads(data)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "Module level - SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Timing Attack on Secret Comparison",
+      "location": "admin() - if token == SECRET: (non-constant-time comparison)",
+      "severity": "medium"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data() - cmd = f\"python3 export.py --format {fmt}\"; os.system(cmd)",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled (Werkzeug Debugger RCE)",
+      "location": "__main__ block - app.run(debug=True, ...)",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Network Binding (Exposes App to All Interfaces)",
+      "location": "__main__ block - app.run(..., host=\"0.0.0.0\")",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

@@ -1,0 +1,147 @@
+```python
+class Node:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_to_front(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add_to_front(node)
+            return node.value
+        return -1
+
+    def put(self, key, value):
+        if self.capacity <= 0:
+            return
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._add_to_front(node)
+        else:
+            if len(self.cache) >= self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+            node = Node(key, value)
+            self.cache[key] = node
+            self._add_to_front(node)
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+        else:
+            self.min_stack.append(self.min_stack[-1])
+
+    def pop(self):
+        val = self.stack.pop()
+        self.min_stack.pop()
+        return val
+
+    def top(self):
+        return self.stack[-1]
+
+    def get_min(self):
+        return self.min_stack[-1]
+
+class MinHeap:
+    def __init__(self):
+        self.heap = []
+
+    def push(self, val):
+        self.heap.append(val)
+        self._sift_up(len(self.heap) - 1)
+
+    def pop(self):
+        if not self.heap:
+            return None
+        if len(self.heap) == 1:
+            return self.heap.pop()
+        root = self.heap[0]
+        self.heap[0] = self.heap.pop()
+        self._sift_down(0)
+        return root
+
+    def peek(self):
+        return self.heap[0] if self.heap else None
+
+    def size(self):
+        return len(self.heap)
+
+    def _sift_up(self, idx):
+        while idx > 0:
+            parent = (idx - 1) // 2
+            if self.heap[idx] < self.heap[parent]:
+                self.heap[idx], self.heap[parent] = self.heap[parent], self.heap[idx]
+                idx = parent
+            else:
+                break
+
+    def _sift_down(self, idx):
+        n = len(self.heap)
+        while True:
+            left = 2 * idx + 1
+            right = 2 * idx + 2
+            smallest = idx
+            if left < n and self.heap[left] < self.heap[smallest]:
+                smallest = left
+            if right < n and self.heap[right] < self.heap[smallest]:
+                smallest = right
+            if smallest != idx:
+                self.heap[idx], self.heap[smallest] = self.heap[smallest], self.heap[idx]
+                idx = smallest
+            else:
+                break
+
+def find_median(stream):
+    left = MinHeap()  # max-heap (stores negatives)
+    right = MinHeap() # min-heap
+    medians = []
+    for num in stream:
+        if left.size() == 0 or num <= -left.peek():
+            left.push(-num)
+        else:
+            right.push(num)
+        # balance
+        if left.size() > right.size() + 1:
+            val = -left.pop()
+            right.push(val)
+        elif right.size() > left.size():
+            val = right.pop()
+            left.push(-val)
+        # median
+        if left.size() > right.size():
+            medians.append(float(-left.peek()))
+        else:
+            medians.append((-left.peek() + right.peek()) / 2.0)
+    return medians
+```

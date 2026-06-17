@@ -1,0 +1,71 @@
+```json
+{
+  "agents": [
+    {
+      "name": "Validation_Triage_Agent",
+      "input": "Raw customer refund request payload",
+      "output": "Validated request data (order ID, amount, customer ID)",
+      "next": "Fraud_Check_Agent",
+      "fallback": "Notification_Agent (status: validation_failed)",
+      "timeout": "5s",
+      "logging": "Log request receipt, payload validation status, and extracted details"
+    },
+    {
+      "name": "Fraud_Check_Agent",
+      "input": "Validated request data",
+      "output": "Fraud risk score and flags",
+      "next": "Approval_Agent",
+      "fallback": "Human_Escalation_Agent (reason: fraud_check_timeout)",
+      "timeout": "10s",
+      "logging": "Log fraud risk score, IP checks, and historical behavior flags"
+    },
+    {
+      "name": "Approval_Agent",
+      "input": "Fraud risk score and validated request data",
+      "output": "Approval decision (approved, rejected, or escalated)",
+      "next": "IF decision == 'approved' THEN Payment_Processing_Agent ELSE IF decision == 'rejected' THEN Notification_Agent ELSE Human_Escalation_Agent",
+      "fallback": "Human_Escalation_Agent (reason: approval_engine_error)",
+      "timeout": "10s",
+      "logging": "Log approval decision, rule engine path, and final status"
+    },
+    {
+      "name": "Payment_Processing_Agent",
+      "input": "Approved refund details",
+      "output": "Payment transaction confirmation",
+      "next": "Notification_Agent",
+      "fallback": "Human_Escalation_Agent (reason: payment_gateway_error)",
+      "timeout": "15s",
+      "logging": "Log payment gateway request, transaction ID, and success/failure status"
+    },
+    {
+      "name": "Human_Escalation_Agent",
+      "input": "Escalation context from previous agent",
+      "output": "Human review ticket created in support system",
+      "next": "Notification_Agent",
+      "fallback": "Notification_Agent (status: system_error)",
+      "timeout": "10s",
+      "logging": "Log escalation reason, ticket ID, and assigned queue"
+    },
+    {
+      "name": "Notification_Agent",
+      "input": "Final outcome (approved, rejected, escalated, or error)",
+      "output": "Customer notification sent (email/SMS)",
+      "next": "END",
+      "fallback": "System_Admin_Alert (dead_letter_queue)",
+      "timeout": "5s",
+      "logging": "Log notification template used, recipient, and delivery status"
+    }
+  ],
+  "constraints": {
+    "total_expected_processing_time_seconds": 55,
+    "max_processing_time_seconds": 60,
+    "handles_approved_and_rejected": true,
+    "includes_logging_audit_per_step": true,
+    "no_circular_dependencies": true,
+    "includes_human_escalation": true,
+    "agent_timeout_required": true,
+    "conditional_branching": true,
+    "fallback_handlers": true
+  }
+}
+```

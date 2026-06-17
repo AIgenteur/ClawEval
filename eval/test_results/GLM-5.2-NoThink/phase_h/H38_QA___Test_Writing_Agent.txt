@@ -1,0 +1,51 @@
+```python
+def is_valid_password(password):
+    if not isinstance(password, str):
+        return False
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if ' ' in password:
+        return False
+    if password[0].isdigit():
+        return False
+    if "password" in password.lower():
+        return False
+        
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    has_special = any(c in "!@#$%^&*()-_+=" for c in password)
+    
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+        
+    for i in range(len(password) - 3):
+        if password[i] == password[i+1] == password[i+2] == password[i+3]:
+            return False
+            
+    return True
+
+def run_tests():
+    tests = [
+        ("ValidP@ss1", True),
+        ("V@l1dP", False),
+        ("Aa1!" * 16 + "x", False),
+        ("validp@ss1", False),
+        ("VALIDP@SS1", False),
+        ("ValidP@ss", False),
+        ("ValidPass1", False),
+        ("Valid P@ss1", False),
+        ("1ValidP@ss", False),
+        ("AAAAValidP@ss1", False),
+        ("MyPassword@1", False),
+        ("MYPASSWORD@1", False),
+        ("Aa1!" * 16, True),
+        ("aaaaValidP@ss1", False),
+        ("aaaValidP@ss1", True),
+    ]
+    results = []
+    for pwd, expected in tests:
+        actual = is_valid_password(pwd)
+        results.append((pwd, expected, actual))
+    return results
+```
