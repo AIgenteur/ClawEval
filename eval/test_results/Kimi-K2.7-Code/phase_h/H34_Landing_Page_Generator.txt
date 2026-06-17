@@ -1,0 +1,555 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="QuillAI is an AI writing assistant that helps you draft, edit, and optimize content faster with artificial intelligence.">
+  <title>QuillAI - AI Writing Assistant</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background: #ffffff;
+    }
+    a { color: #4f46e5; }
+    img { max-width: 100%; display: block; }
+
+    /* Header & Nav */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: #111827;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #374151;
+      font-weight: 500;
+    }
+    .nav-links a:hover { color: #4f46e5; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .nav-cta, .cta-button {
+      display: inline-block;
+      background: #4f46e5;
+      color: #ffffff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      border: 2px solid #4f46e5;
+      cursor: pointer;
+    }
+    .cta-button.secondary {
+      background: #ffffff;
+      color: #4f46e5;
+    }
+
+    /* Layout */
+    main { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 4rem 0; }
+    h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero h1 span { color: #4f46e5; }
+    .subheadline {
+      font-size: 1.25rem;
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+    .social-proof {
+      margin-top: 1rem;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+    .hero-visual img {
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* How it Works */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .step {
+      background: #f9fafb;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      text-align: center;
+    }
+    .step-number {
+      width: 3rem;
+      height: 3rem;
+      line-height: 3rem;
+      border-radius: 50%;
+      background: #4f46e5;
+      color: #ffffff;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+    }
+
+    /* Features */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .feature-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    .feature-card svg { margin-bottom: 1rem; }
+
+    /* Before/After Comparison */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      background: #f9fafb;
+      padding: 2rem;
+      border-radius: 0.75rem;
+    }
+    .before, .after {
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid #ef4444;
+    }
+    .after { border-left-color: #10b981; }
+    .arrow {
+      font-size: 2rem;
+      color: #4f46e5;
+      font-weight: 700;
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .pricing-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    .pricing-card.featured {
+      border-color: #4f46e5;
+      transform: scale(1.02);
+      box-shadow: 0 10px 25px rgba(79,70,229,0.15);
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 1rem 0;
+    }
+    .price span {
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    .pricing-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+    .pricing-card li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    /* Testimonials */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .testimonial {
+      background: #f9fafb;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      margin: 0;
+    }
+    .testimonial footer {
+      margin-top: 1rem;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    /* FAQ */
+    .faq-list { max-width: 800px; margin: 0 auto; }
+    .faq-item { margin-bottom: 1.5rem; }
+    .faq-item dt { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .faq-item dd { margin: 0; color: #4b5563; }
+
+    /* Newsletter */
+    .newsletter {
+      background: #f3f4f6;
+      border-radius: 0.75rem;
+      padding: 3rem;
+      text-align: center;
+    }
+    .newsletter form {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .newsletter label {
+      position: absolute;
+      left: -9999px;
+    }
+    .newsletter input {
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      min-width: 280px;
+      font-size: 1rem;
+    }
+
+    /* Contact */
+    .contact { text-align: center; }
+
+    /* Footer */
+    footer {
+      background: #111827;
+      color: #d1d5db;
+      padding: 2rem 1.5rem;
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    footer a { color: #d1d5db; text-decoration: none; }
+    footer a:hover { color: #ffffff; }
+    footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .nav-links.open { display: flex; }
+      .nav-cta { display: none; }
+      .hero, .steps, .pricing-grid, .testimonial-grid, .before-after {
+        grid-template-columns: 1fr;
+      }
+      .arrow { transform: rotate(90deg); text-align: center; }
+      .hero h1 { font-size: 2.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav aria-label="Main navigation">
+      <a href="#" class="logo">QuillAI</a>
+      <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#pricing" class="nav-cta">Start Free Trial</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <h1 id="hero-heading">Write Smarter with <span>QuillAI</span></h1>
+        <p class="subheadline">
+          The artificial intelligence writing assistant that turns your ideas into polished, engaging content in seconds.
+        </p>
+        <a href="#pricing" class="cta-button">Start Free Trial</a>
+        <p class="social-proof">Trusted by 10,000+ writers, marketers, and teams worldwide.</p>
+      </div>
+      <div class="hero-visual">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect width='600' height='400' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%236b7280'%3EQuillAI Dashboard%3C/text%3E%3C/svg%3E" alt="QuillAI dashboard preview showing AI writing suggestions">
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works" aria-labelledby="hiw-heading">
+      <h2 id="hiw-heading">How It Works</h2>
+      <div class="steps">
+        <article class="step">
+          <div class="step-number" aria-hidden="true">1</div>
+          <h3>Describe Your Goal</h3>
+          <p>Tell QuillAI what you want to write—blog posts, emails, ads, or social captions.</p>
+        </article>
+        <article class="step">
+          <div class="step-number" aria-hidden="true">2</div>
+          <h3>AI Generates a Draft</h3>
+          <p>Our artificial intelligence engine creates tailored content in your brand voice.</p>
+        </article>
+        <article class="step">
+          <div class="step-number" aria-hidden="true">3</div>
+          <h3>Edit & Publish</h3>
+          <p>Refine with smart suggestions and export to your favorite platform.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features" aria-labelledby="features-heading">
+      <h2 id="features-heading">Powerful Features</h2>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Smart compose icon">
+            <circle cx="32" cy="32" r="30" fill="#eef2ff"/>
+            <path d="M20 34h24M20 40h16" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="44" cy="24" r="4" fill="#4f46e5"/>
+          </svg>
+          <h3>Smart Compose</h3>
+          <p>AI-powered autocomplete predicts your next sentence and keeps your flow going.</p>
+        </article>
+        <article class="feature-card">
+          <svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Tone adjustment icon">
+            <circle cx="32" cy="32" r="30" fill="#eef2ff"/>
+            <path d="M18 28c4-8 24-8 28 0M18 36c4-8 24-8 28 0" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <h3>Tone Adjustment</h3>
+          <p>Switch between professional, friendly, persuasive, or casual tones instantly.</p>
+        </article>
+        <article class="feature-card">
+          <svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Grammar check icon">
+            <circle cx="32" cy="32" r="30" fill="#eef2ff"/>
+            <path d="M20 34l8 8 16-16" stroke="#10b981" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Grammar & Clarity</h3>
+          <p>Catch errors and simplify complex sentences with real-time suggestions.</p>
+        </article>
+        <article class="feature-card">
+          <svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="SEO optimization icon">
+            <circle cx="32" cy="32" r="30" fill="#eef2ff"/>
+            <path d="M28 20v24M20 28h24M22 22l20 20M42 22L22 42" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <h3>SEO Optimization</h3>
+          <p>Get keyword recommendations and readability scores as you write.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Before/After Comparison -->
+    <section id="comparison" class="comparison" aria-labelledby="comparison-heading">
+      <h2 id="comparison-heading">See the QuillAI Difference</h2>
+      <div class="before-after">
+        <div class="before">
+          <h3>Before</h3>
+          <p>"We are writing to inform you that our product is very good and you should buy it because it has many features."</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="after">
+          <h3>After QuillAI</h3>
+          <p>"Discover a tool built to simplify your workflow, save hours every week, and help your team create content that converts."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="pricing" aria-labelledby="pricing-heading">
+      <h2 id="pricing-heading">Simple Pricing</h2>
+      <div class="pricing-grid">
+        <article class="pricing-card">
+          <h3>Free</h3>
+          <p class="price">$0<span>/mo</span></p>
+          <ul>
+            <li>5 AI generations per day</li>
+            <li>Basic grammar checks</li>
+            <li>Email support</li>
+          </ul>
+          <a href="#signup" class="cta-button secondary">Get Started</a>
+        </article>
+        <article class="pricing-card featured">
+          <h3>Pro</h3>
+          <p class="price">$19<span>/mo</span></p>
+          <ul>
+            <li>Unlimited AI generations</li>
+            <li>Advanced tone & style controls</li>
+            <li>Priority support</li>
+            <li>SEO tools</li>
+          </ul>
+          <a href="#signup" class="cta-button">Start Free Trial</a>
+        </article>
+        <article class="pricing-card">
+          <h3>Enterprise</h3>
+          <p class="price">$49<span>/mo</span></p>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>Team collaboration</li>
+            <li>Custom AI training</li>
+            <li>Dedicated account manager</li>
+          </ul>
+          <a href="#contact" class="cta-button secondary">Contact Sales</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials" aria-labelledby="testimonials-heading">
+      <h2 id="testimonials-heading">What Our Users Say</h2>
+      <div class="testimonial-grid">
+        <blockquote class="testimonial">
+          <p>"QuillAI cut our content production time in half. The AI suggestions feel surprisingly human."</p>
+          <footer>— <strong>Sarah Lin</strong>, Content Director at BrightCo</footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>"I finally stopped staring at blank pages. QuillAI gives me a solid first draft every time."</p>
+          <footer>— <strong>Marcus Reid</strong>, Freelance Copywriter</footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p>"Our marketing team scaled output 3x without hiring new writers. Game changer."</p>
+          <footer>— <strong>Elena Voss</strong>, VP of Marketing at ScaleUp</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently Asked Questions</h2>
+      <dl class="faq-list">
+        <div class="faq-item">
+          <dt>What is QuillAI?</dt>
+          <dd>QuillAI is an artificial intelligence writing assistant that helps you draft, edit, and optimize content faster.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>Is there a free plan?</dt>
+          <dd>Yes. The Free tier includes 5 AI generations per day and basic grammar checks.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>Can I cancel my subscription?</dt>
+          <dd>Absolutely. You can cancel anytime from your account settings with no hidden fees.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>Does QuillAI support team collaboration?</dt>
+          <dd>Yes, the Enterprise plan includes shared workspaces, brand voice settings, and admin controls.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>Is my data secure?</dt>
+          <dd>We use bank-level encryption and never train our AI on your private content.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section id="signup" class="newsletter" aria-labelledby="newsletter-heading">
+      <h2 id="newsletter-heading">Join the QuillAI Newsletter</h2>
+      <p>Get weekly AI writing tips, product updates, and exclusive offers.</p>
+      <form action="#" method="post" aria-label="Newsletter signup">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required aria-required="true">
+        <button type="submit" class="cta-button">Subscribe</button>
+      </form>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Contact Us</h2>
+      <p>Questions? Reach out at <a href="mailto:hello@quillai.com">hello@quillai.com</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 QuillAI, Inc. All rights reserved.</p>
+      <nav aria-label="Legal links">
+        <ul class="legal-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Social media">
+        <ul class="social-links">
+          <li><a href="https://twitter.com/quillai" aria-label="QuillAI on Twitter">Twitter</a></li>
+          <li><a href="https://linkedin.com/company/quillai" aria-label="QuillAI on LinkedIn">LinkedIn</a></li>
+          <li><a href="https://github.com/quillai" aria-label="QuillAI on GitHub">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', !expanded);
+      navLinks.classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>
+```

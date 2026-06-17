@@ -1,0 +1,22 @@
+```json
+{
+  "bugs": [
+    {"line": 13, "bug": "SAVE20 discount multiplies subtotal by 0.20 instead of 0.80, applying an 80% discount rather than 20%.", "severity": "major"},
+    {"line": 15, "bug": "SAVE10 discount subtracts subtotal * 10 (1000%) instead of 10%, producing a large negative subtotal.", "severity": "critical"},
+    {"line": 23, "bug": "Inventory is mutated in place without first verifying sufficient stock, causing side effects and possible KeyError if 'stock' is missing.", "severity": "major"},
+    {"line": 25, "bug": "Negative stock is silently ignored with pass; should raise an error or skip the order.", "severity": "major"},
+    {"line": 36, "bug": "Uses =+ (unary-plus assignment) instead of +=, so total_revenue is overwritten each iteration rather than accumulated.", "severity": "critical"},
+    {"line": 39, "bug": "Divides total_revenue by len(orders) without checking for empty orders, causing ZeroDivisionError.", "severity": "major"},
+    {"line": 40, "bug": "max() on results will raise ValueError when orders is empty.", "severity": "major"},
+    {"line": 53, "bug": "Email validation only checks for '@', accepting invalid addresses like '@' or 'a@'.", "severity": "minor"},
+    {"line": 61, "bug": "Shipping cost adds per_km to distance instead of multiplying distance by per_km.", "severity": "major"},
+    {"line": 66, "bug": "elif weight > 50 is unreachable because the preceding if weight > 30 already covers weights over 50.", "severity": "major"},
+    {"line": 69, "bug": "round(cost) with no digits returns an integer, losing cent precision; should round to 2 decimals.", "severity": "major"},
+    {"line": 72, "bug": "merged = profile_a creates a reference, so profile_a is mutated when merging.", "severity": "major"},
+    {"line": 76, "bug": "updated_at is hardcoded to '2024-01-01' instead of using the current date/time.", "severity": "minor"},
+    {"line": 80, "bug": "CSV parsing uses naive split on comma, breaking fields that contain quoted commas or whitespace.", "severity": "major"},
+    {"line": 88, "bug": "Using a list for seen makes membership tests O(n^2); should use a set.", "severity": "minor"}
+  ],
+  "count": 15
+}
+```

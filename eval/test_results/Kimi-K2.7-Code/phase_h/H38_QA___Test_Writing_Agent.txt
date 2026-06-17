@@ -1,0 +1,66 @@
+```python
+def is_valid_password(password):
+    special_chars = set("!@#$%^&*()-_+=")
+
+    if not (8 <= len(password) <= 64):
+        return False
+
+    if password[0].isdigit():
+        return False
+
+    if " " in password:
+        return False
+
+    has_upper = False
+    has_lower = False
+    has_digit = False
+    has_special = False
+
+    consecutive = 1
+    for i, ch in enumerate(password):
+        if ch.isupper():
+            has_upper = True
+        elif ch.islower():
+            has_lower = True
+        elif ch.isdigit():
+            has_digit = True
+        elif ch in special_chars:
+            has_special = True
+
+        if i > 0:
+            if ch == password[i - 1]:
+                consecutive += 1
+                if consecutive > 3:
+                    return False
+            else:
+                consecutive = 1
+
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    if "password" in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Hello1!world", True),
+        ("He1!o", False),
+        ("Aa!1" + "xy" * 30 + "x", False),
+        ("hello1!world", False),
+        ("HELLO1!WORLD", False),
+        ("Hello!world", False),
+        ("Hello1world", False),
+        ("Hello 1!world", False),
+        ("1Hello!world", False),
+        ("Hellll1!world", False),
+        ("MyPassword1!", False),
+        ("mypassword1!", False),
+        ("Hello1!a", True),
+        ("A1!ab" * 12 + "A1!a", True),
+        ("Hello1.world", False),
+    ]
+    return [(inp, exp, is_valid_password(inp)) for inp, exp in tests]
+```

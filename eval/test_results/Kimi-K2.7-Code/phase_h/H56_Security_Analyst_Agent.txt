@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - line 17: query = f\"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'\"",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "profile() - line 25: template = f\"<h1>Welcome {username}</h1><p>Your profile page</p>\"",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search() - line 31: return f\"<html><body>Results for: {q}</body></html>\"",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection",
+      "location": "run_command() - line 36: subprocess.run(cmd, shell=True, capture_output=True, text=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data() - lines 73-74: cmd = f\"python3 export.py --format {fmt}\" followed by os.system(cmd)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Upload",
+      "location": "upload() - lines 42-43: path = os.path.join(UPLOAD_DIR, f.filename) and f.save(path)",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read",
+      "location": "download() - line 49: return send_file(filepath)",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization (YAML)",
+      "location": "load_config() - line 54: config = yaml.load(data)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle)",
+      "location": "restore_session() - line 60: session = pickle.loads(data)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Weak Secret / Credentials",
+      "location": "line 6: SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Weak / Predictable Token Generation",
+      "location": "login() - line 20: hashlib.md5(user.encode()).hexdigest()",
+      "severity": "high"
+    },
+    {
+      "type": "Plaintext Password Comparison / Storage",
+      "location": "login() - line 17: password from form used directly in SQL query",
+      "severity": "high"
+    },
+    {
+      "type": "Debug Mode Enabled / Excessive Exposure",
+      "location": "line 78: app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "critical"
+    },
+    {
+      "type": "Missing Authentication / Authorization",
+      "location": "Sensitive endpoints: run_command(), upload(), download(), load_config(), restore_session(), export_data(), admin()",
+      "severity": "high"
+    },
+    {
+      "type": "Cross-Site Request Forgery (CSRF)",
+      "location": "State-changing POST endpoints: login(), run_command(), upload(), load_config(), restore_session()",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

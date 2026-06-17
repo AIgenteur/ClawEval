@@ -1,0 +1,90 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+
+        for field_name, rules in schema.items():
+            required = rules.get("required", False)
+
+            # Missing field
+            if field_name not in data:
+                if required:
+                    errors.append(f"Field '{field_name}' is required but missing.")
+                continue
+
+            value = data[field_name]
+            expected_type = rules.get("type")
+
+            # Type check
+            if expected_type and not self._type_matches(value, expected_type):
+                errors.append(
+                    f"Field '{field_name}' must be of type {expected_type}, "
+                    f"got {type(value).__name__}."
+                )
+                continue
+
+            # Numeric constraints
+            if expected_type in ("int", "float"):
+                min_val = rules.get("min")
+                max_val = rules.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is less than minimum {min_val}."
+                    )
+                if max_val is not None and value > max_val:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is greater than maximum {max_val}."
+                    )
+
+            # String / list length constraints
+            if expected_type in ("str", "list"):
+                min_len = rules.get("min_length")
+                max_len = rules.get("max_length")
+                length = len(value)
+
+                if min_len is not None and length < min_len:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is less than minimum length {min_len}."
+                    )
+                if max_len is not None and length > max_len:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is greater than maximum length {max_len}."
+                    )
+
+        return {"valid": not errors, "errors": errors}
+
+    def _type_matches(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        if expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+        if expected_type == "float":
+            return isinstance(value, float)
+        if expected_type == "bool":
+            return isinstance(value, bool)
+        if expected_type == "list":
+            return isinstance(value, list)
+        if expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+```
+
+**Example usage:**
+
+```python
+schema = {
+    "name": {"type": "str", "required": True, "min_length": 1, "max_length": 50},
+    "age": {"type": "int", "required": False, "min": 0, "max": 120},
+    "tags": {"type": "list", "required": False, "max_length": 5},
+}
+
+data = {
+    "name": "Alice",
+    "age": 30,
+    "tags": ["user", "admin"],
+}
+
+validator = JSONValidator()
+print(validator.validate(data, schema))
+# {'valid': True, 'errors': []}
+```

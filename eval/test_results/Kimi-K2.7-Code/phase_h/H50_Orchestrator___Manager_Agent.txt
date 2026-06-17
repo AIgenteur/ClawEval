@@ -1,0 +1,125 @@
+```json
+{
+  "agents": [
+    {
+      "name": "TriageValidationAgent",
+      "input": "Raw refund request: {request_id, order_id, customer_id, amount, reason, timestamp}",
+      "output": "Validated request or rejection: {status: 'valid'|'invalid', request_id, validation_notes}",
+      "next": {
+        "valid": "FraudCheckAgent",
+        "invalid": "NotificationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated refund request + customer/order risk signals",
+      "output": "Risk assessment: {risk_level: 'low'|'medium'|'high', score, flags}",
+      "next": {
+        "low": "ApprovalAgent",
+        "medium": "ApprovalAgent",
+        "high": "HumanEscalationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Fraud-cleared request with risk level and policy rules",
+      "output": "Decision: {decision: 'approved'|'rejected'|'escalate', amount, reason}",
+      "next": {
+        "approved": "PaymentAgent",
+        "rejected": "NotificationAgent",
+        "escalate": "HumanEscalationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved refund request with payment method details",
+      "output": "Payment result: {payment_status: 'success'|'failed', transaction_id, error}",
+      "next": {
+        "success": "NotificationAgent",
+        "failed": "HumanEscalationAgent"
+      },
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 15
+    },
+    {
+      "name": "AuditLoggerAgent",
+      "input": "Step event from any agent: {agent_name, request_id, input, output, timestamp}",
+      "output": "Persisted audit record: {audit_id, stored, retention_period}",
+      "next": null,
+      "fallback": "DeadLetterAuditStore",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final outcome: {request_id, status, amount, customer_id, message}",
+      "output": "Notification confirmation: {channel, sent_at, notification_id}",
+      "next": "END",
+      "fallback": "DeadLetterNotificationStore",
+      "timeout_seconds": 10
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "Escalation context: {request_id, reason, last_agent, payload}",
+      "output": "Support ticket: {ticket_id, priority, assigned_team}",
+      "next": "NotificationAgent",
+      "fallback": "ManualOpsQueue",
+      "timeout_seconds": 10
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "actual_agent_count": 7,
+    "required_agents": [
+      "TriageValidationAgent",
+      "FraudCheckAgent",
+      "ApprovalAgent",
+      "PaymentAgent",
+      "NotificationAgent"
+    ],
+    "max_total_processing_time_seconds": 60,
+    "expected_total_processing_time_seconds": 55,
+    "ordering_rules": {
+      "fraud_check_before_approval": true,
+      "payment_after_approval": true,
+      "first_agent": "TriageValidationAgent",
+      "last_agent": "NotificationAgent"
+    },
+    "conditional_branching": [
+      "TriageValidationAgent routes valid/invalid",
+      "FraudCheckAgent routes low/medium/high risk",
+      "ApprovalAgent routes approved/rejected/escalate",
+      "PaymentAgent routes success/failed"
+    ],
+    "fallback_policy": {
+      "default_fallback": "HumanEscalationAgent",
+      "notification_fallback": "DeadLetterNotificationStore",
+      "audit_fallback": "DeadLetterAuditStore",
+      "human_escalation_fallback": "ManualOpsQueue"
+    },
+    "human_escalation_triggers": [
+      "Validation edge cases",
+      "High fraud risk",
+      "Approval decision = escalate",
+      "Payment failure",
+      "Any agent timeout or unhandled error"
+    ],
+    "audit_policy": {
+      "log_every_step": true,
+      "audit_agent": "AuditLoggerAgent",
+      "retention_days": 2555
+    },
+    "retry_policy": {
+      "max_retries_per_agent": 2,
+      "retry_within_timeout": true
+    },
+    "idempotency": "request_id based deduplication",
+    "no_circular_dependencies": true
+  }
+}
+```

@@ -1,0 +1,19 @@
+```json
+{
+  "q1": "CRDT (e.g., Yjs or Automerge) for conflict-free merging; the server acts as an authoritative peer for ordering, persistence, and offline reconciliation, avoiding locks.",
+  "q2": "WebSockets for bidirectional, low-latency sync, with Server-Sent Events or long-polling as a fallback for restrictive networks.",
+  "q3": "S3-compatible object store (e.g., AWS S3) for immutable document snapshots and delta logs, backed by PostgreSQL for metadata, permissions, and indexing.",
+  "q4": "Queue edits in IndexedDB while offline, then sync on reconnect; CRDT merge resolves conflicts locally without server coordination, and the server reconciles and broadcasts the canonical state.",
+  "q5": "Redis Streams or Redis Pub/Sub for fast fan-out between WebSocket nodes; Kafka as a durable event log for history, audit, and replay.",
+  "q6": "Use sticky routing by document or user ID to stateful WebSocket pods, broadcast across pods via Redis Pub/Sub, and scale horizontally with Kubernetes HPA based on connection count and CPU.",
+  "q7": "Broadcast cursor and selection as ephemeral presence messages mapped to CRDT-relative positions, throttle to ~30 Hz, and render them as transient UI overlays.",
+  "q8": "OAuth2/OIDC with short-lived JWT access tokens; pass the token in the WebSocket handshake and revalidate on sensitive operations; refresh tokens over HTTPS.",
+  "q9": "Event sourcing: append every operation to an immutable log, take periodic snapshots, and reconstruct any version from a snapshot plus replayed operations; named versions are snapshot references.",
+  "q10": "Global CDN such as CloudFront or Cloudflare for static JS, CSS, fonts, and icons; use immutable hashed filenames, long cache headers, Brotli/Gzip compression, and edge DDoS protection.",
+  "q11": "Split large documents into block or section-level CRDTs, virtualize rendering and lazy-load chunks, compress deltas, and enforce server-side limits on operation size and document depth.",
+  "q12": "Token-bucket rate limiting per user and IP using Redis; cap edits, WebSocket messages, API calls, and uploads; return 429 and apply tiered quotas.",
+  "q13": "Immutable snapshots in object storage with cross-region replication, PostgreSQL point-in-time recovery, Kafka log retention, scheduled backups, and regular restore drills.",
+  "q14": "Clients upload images directly to object storage via presigned URLs; deduplicate by content hash, serialize concurrent uploads per user, show optimistic placeholders, and store image metadata in the database.",
+  "q15": "Prometheus and Grafana for metrics, Loki or ELK for logs, Jaeger or Tempo for distributed tracing, PagerDuty for alerting, plus health probes, real user monitoring, and synthetic tests."
+}
+```
