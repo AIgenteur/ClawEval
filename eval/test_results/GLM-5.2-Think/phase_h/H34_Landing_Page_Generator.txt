@@ -1,0 +1,897 @@
+Here's a complete, editorial-style landing page for QuillAI — I went with a "warm parchment + ink + vermilion" palette rather than the typical SaaS blue/purple, paired with Fraunces (a variable serif with optical sizing) for display and Inter for UI. The page treats writing as a craft, not a feature checklist.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="QuillAI is an AI writing assistant that refines your prose with the care of a human editor — clarity, cadence, and voice preserved. Trusted by 10,000+ writers, editors, and teams." />
+<title>QuillAI — Writing, refined by artificial intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f3ebdc;
+    --paper-2:#ece1cc;
+    --ink:#1a1410;
+    --ink-soft:#4a3f33;
+    --ink-mute:#7a6b58;
+    --accent:#c8431f;
+    --accent-deep:#9a3217;
+    --sage:#5f6f4e;
+    --rule:#d4c5a8;
+    --rule-soft:#e2d6bd;
+    --maxw:1240px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* grain overlay */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.35;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- Header / Nav ---------- */
+  header.site{
+    position:sticky;top:0;z-index:100;
+    background:rgba(243,235,220,.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule-soft);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:22px;letter-spacing:-.01em}
+  .brand-mark{width:28px;height:28px;flex-shrink:0}
+  nav.primary ul{display:flex;gap:36px;list-style:none}
+  nav.primary a{font-size:14px;color:var(--ink-soft);position:relative;padding:6px 0;transition:color .25s}
+  nav.primary a:hover{color:var(--accent)}
+  nav.primary a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+  nav.primary a:hover::after{width:100%}
+  .nav-cta{display:flex;align-items:center;gap:18px}
+  .signin{font-size:14px;color:var(--ink-soft)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;letter-spacing:.01em;padding:11px 20px;border-radius:2px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;transition:transform .2s,background .25s,border-color .25s}
+  .btn:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .btn.lg{padding:15px 28px;font-size:15px}
+  .menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:90px 0 110px;position:relative;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:28px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(200,67,31,.15)}
+  h1.hero-title{
+    font-family:'Fraunces',serif;font-weight:340;font-size:clamp(48px,7vw,92px);line-height:.98;letter-spacing:-.025em;color:var(--ink);
+    font-variation-settings:"opsz" 144;
+  }
+  h1.hero-title em{font-style:italic;font-weight:300;color:var(--accent);font-variation-settings:"opsz" 144}
+  .hero-sub{margin-top:32px;font-size:19px;line-height:1.6;color:var(--ink-soft);max-width:520px}
+  .hero-ctas{margin-top:42px;display:flex;gap:14px;flex-wrap:wrap}
+  .hero-meta{margin-top:36px;display:flex;align-items:center;gap:18px;font-size:13px;color:var(--ink-mute)}
+  .hero-meta .stars{color:var(--accent);letter-spacing:2px}
+
+  /* hero manuscript card */
+  .manuscript{
+    background:var(--paper);border:1px solid var(--rule);border-radius:4px;
+    padding:34px 36px 30px;position:relative;
+    box-shadow:0 1px 0 var(--rule-soft), 24px 28px 0 -18px rgba(26,20,16,.08), 48px 56px 60px -30px rgba(26,20,16,.18);
+    transform:rotate(-1.2deg);
+  }
+  .manuscript::before{
+    content:"";position:absolute;inset:0;border:1px solid var(--rule-soft);border-radius:4px;transform:translate(8px,8px);z-index:-1;background:var(--paper-2);
+  }
+  .ms-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--rule-soft);margin-bottom:18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute)}
+  .ms-title{font-family:'Fraunces',serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-bottom:10px}
+  .ms-body{font-family:'Fraunces',serif;font-size:15.5px;line-height:1.75;color:var(--ink-soft);min-height:160px}
+  .ms-body .typed{color:var(--ink)}
+  .cursor{display:inline-block;width:2px;height:18px;background:var(--accent);vertical-align:text-bottom;margin-left:2px;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .ms-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule-soft);display:flex;justify-content:space-between;font-size:11px;color:var(--ink-mute);letter-spacing:.05em}
+  .ms-tag{background:var(--accent);color:var(--paper);padding:3px 8px;border-radius:2px;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+
+  /* ---------- Social proof strip ---------- */
+  .proof{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:28px 0;background:var(--paper-2)}
+  .proof-inner{display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .proof-text{font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:var(--ink-soft)}
+  .proof-text b{font-style:normal;font-weight:600;color:var(--ink)}
+  .logos{display:flex;align-items:center;gap:38px;flex-wrap:wrap}
+  .logo{font-family:'Fraunces',serif;font-weight:500;font-size:18px;color:var(--ink-mute);letter-spacing:-.01em;opacity:.7;transition:opacity .3s}
+  .logo:hover{opacity:1;color:var(--ink)}
+
+  /* ---------- Section frame ---------- */
+  section.block{padding:120px 0}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:64px;border-bottom:1px solid var(--rule);padding-bottom:24px}
+  .section-num{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--accent);letter-spacing:.05em}
+  .section-title{font-family:'Fraunces',serif;font-weight:340;font-size:clamp(36px,5vw,56px);line-height:1.02;letter-spacing:-.02em;font-variation-settings:"opsz" 96}
+  .section-title em{font-style:italic;color:var(--accent);font-weight:300}
+  .section-lede{max-width:380px;font-size:15px;color:var(--ink-soft);line-height:1.6}
+
+  /* ---------- Features ---------- */
+  .features{display:grid;grid-template-columns:repeat(12,1fr);gap:24px}
+  .feat{border:1px solid var(--rule);background:var(--paper);padding:32px 30px 30px;border-radius:3px;position:relative;transition:transform .35s,border-color .35s,box-shadow .35s}
+  .feat:hover{transform:translateY(-4px);border-color:var(--ink);box-shadow:0 18px 40px -24px rgba(26,20,16,.25)}
+  .feat .icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ink);border-radius:50%;margin-bottom:24px;color:var(--ink);transition:background .3s,color .3s}
+  .feat:hover .icon{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+  .feat h3{font-family:'Fraunces',serif;font-weight:500;font-size:22px;letter-spacing:-.01em;margin-bottom:10px}
+  .feat p{font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+  .feat .tag{position:absolute;top:24px;right:24px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute)}
+  .f1{grid-column:span 5}
+  .f2{grid-column:span 4}
+  .f3{grid-column:span 3}
+  .f4{grid-column:span 7}
+  .f5{grid-column:span 5}
+  /* we'll show 4 features prominently; f5 is the wide one */
+
+  /* ---------- How it works ---------- */
+  .how{background:var(--paper-2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+  .step{padding:48px 36px 56px;border-right:1px solid var(--rule);position:relative}
+  .step:last-child{border-right:none}
+  .step-num{font-family:'Fraunces',serif;font-style:italic;font-size:64px;font-weight:300;color:var(--accent);line-height:1;margin-bottom:24px;font-variation-settings:"opsz" 144}
+  .step h3{font-family:'Fraunces',serif;font-weight:500;font-size:24px;letter-spacing:-.01em;margin-bottom:14px}
+  .step p{font-size:15px;color:var(--ink-soft);line-height:1.65;max-width:300px}
+  .step .step-line{position:absolute;top:0;left:0;height:2px;background:var(--accent);width:0;transition:width .8s ease}
+  .step.in .step-line{width:100%}
+
+  /* ---------- Before / After ---------- */
+  .compare{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;align-items:stretch;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--paper)}
+  .col{padding:36px 38px}
+  .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--rule-soft)}
+  .col-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute)}
+  .col-label.bad{color:var(--ink-mute)}
+  .col-label.good{color:var(--accent)}
+  .col-stat{font-family:'Fraunces',serif;font-size:13px;color:var(--ink-soft);font-style:italic}
+  .draft{font-family:'Fraunces',serif;font-size:16px;line-height:1.8;color:var(--ink-mute)}
+  .draft .strike{text-decoration:line-through;text-decoration-color:rgba(200,67,31,.5);color:var(--ink-mute)}
+  .draft .insert{color:var(--ink);background:rgba(200,67,31,.08);padding:0 3px;border-radius:2px}
+  .polished{font-family:'Fraunces',serif;font-size:16px;line-height:1.8;color:var(--ink)}
+  .divider{background:var(--paper-2);border-left:1px solid var(--rule);border-right:1px solid var(--rule);display:flex;align-items:center;justify-content:center;position:relative}
+  .divider span{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--accent);writing-mode:vertical-rl;letter-spacing:.1em}
+
+  /* ---------- Pricing ---------- */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .tier{border:1px solid var(--rule);background:var(--paper);padding:38px 34px;border-radius:4px;position:relative;display:flex;flex-direction:column}
+  .tier.featured{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+  .tier.featured .price-amt,.tier.featured h3,.tier.featured .feat-list li{color:var(--paper)}
+  .tier.featured .price-unit,.tier.featured .tier-desc{color:rgba(243,235,220,.6)}
+  .tier.featured .feat-list li::before{background:var(--accent)}
+  .tier-flag{position:absolute;top:-12px;right:24px;background:var(--accent);color:var(--paper);font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:2px}
+  .tier h3{font-family:'Fraunces',serif;font-weight:500;font-size:24px;letter-spacing:-.01em;margin-bottom:6px}
+  .tier-desc{font-size:13.5px;color:var(--ink-soft);margin-bottom:28px;min-height:42px}
+  .price{display:flex;align-items:baseline;gap:6px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--rule-soft)}
+  .tier.featured .price{border-bottom-color:rgba(243,235,220,.18)}
+  .price-amt{font-family:'Fraunces',serif;font-size:48px;font-weight:340;letter-spacing:-.02em}
+  .price-unit{font-size:13px;color:var(--ink-mute)}
+  .feat-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px;flex:1}
+  .feat-list li{font-size:14px;color:var(--ink-soft);padding-left:22px;position:relative;line-height:1.5}
+  .feat-list li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:1px;background:var(--accent)}
+  .tier .btn{width:100%;justify-content:center}
+
+  /* ---------- Testimonials ---------- */
+  .quotes{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:24px}
+  .quote{border:1px solid var(--rule);background:var(--paper);padding:36px 34px;border-radius:4px;display:flex;flex-direction:column;position:relative}
+  .quote.big{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .quote.big .q-mark,.quote.big .q-author,.quote.big .q-role{color:var(--paper)}
+  .quote.big .q-role{color:rgba(243,235,220,.6)}
+  .q-mark{font-family:'Fraunces',serif;font-size:80px;line-height:.6;color:var(--accent);margin-bottom:8px;font-style:italic}
+  .q-body{font-family:'Fraunces',serif;font-size:18px;line-height:1.55;letter-spacing:-.005em;flex:1}
+  .quote.big .q-body{font-size:22px;line-height:1.45}
+  .q-author{margin-top:28px;padding-top:18px;border-top:1px solid var(--rule-soft);font-size:14px;font-weight:500}
+  .quote.big .q-author{border-top-color:rgba(243,235,220,.18)}
+  .q-role{font-size:13px;color:var(--ink-mute);font-weight:400;margin-top:2px}
+
+  /* ---------- FAQ ---------- */
+  .faq{max-width:880px;margin:0 auto}
+  .faq-item{border-bottom:1px solid var(--rule)}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:28px 0;cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:'Fraunces',serif;font-size:21px;font-weight:500;letter-spacing:-.01em;color:var(--ink);transition:color .25s}
+  .faq-q:hover{color:var(--accent)}
+  .faq-q .plus{flex-shrink:0;width:18px;height:18px;position:relative;transition:transform .35s}
+  .faq-q .plus::before,.faq-q .plus::after{content:"";position:absolute;background:var(--accent);transition:transform .35s,opacity .25s}
+  .faq-q .plus::before{top:8px;left:0;width:18px;height:2px}
+  .faq-q .plus::after{top:0;left:8px;width:2px;height:18px}
+  .faq-item.open .faq-q .plus::after{transform:rotate(90deg);opacity:0}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+  .faq-a-inner{padding:0 0 30px;font-size:15.5px;color:var(--ink-soft);line-height:1.7;max-width:680px}
+
+  /* ---------- Newsletter ---------- */
+  .news{background:var(--ink);color:var(--paper);border-radius:6px;padding:64px 56px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;overflow:hidden}
+  .news::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border:1px solid rgba(243,235,220,.12);border-radius:50%}
+  .news h2{font-family:'Fraunces',serif;font-weight:340;font-size:38px;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px}
+  .news h2 em{font-style:italic;color:var(--accent-soft,#e8a87c)}
+  .news p{font-size:15px;color:rgba(243,235,220,.7);line-height:1.6}
+  .news-form{display:flex;gap:10px}
+  .news-form input{flex:1;background:transparent;border:1px solid rgba(243,235,220,.25);color:var(--paper);padding:14px 16px;font-family:'Inter',sans-serif;font-size:14px;border-radius:2px;outline:none;transition:border-color .25s}
+  .news-form input::placeholder{color:rgba(243,235,220,.4)}
+  .news-form input:focus{border-color:var(--accent)}
+  .news-form .btn{background:var(--accent);border-color:var(--accent)}
+  .news-form .btn:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .news-note{margin-top:14px;font-size:12px;color:rgba(243,235,220,.5)}
+
+  /* ---------- Contact ---------- */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+  .contact-info h3{font-family:'Fraunces',serif;font-size:28px;font-weight:500;margin-bottom:18px;letter-spacing:-.01em}
+  .contact-info p{color:var(--ink-soft);font-size:15px;line-height:1.7;margin-bottom:24px;max-width:420px}
+  .contact-email{font-family:'Fraunces',serif;font-size:22px;color:var(--accent);font-style:italic;border-bottom:1px solid var(--accent);padding-bottom:2px}
+  .contact-meta{display:flex;gap:48px;margin-top:36px;flex-wrap:wrap}
+  .contact-meta div{font-size:13px}
+  .contact-meta dt{color:var(--ink-mute);text-transform:uppercase;letter-spacing:.12em;font-size:11px;margin-bottom:6px}
+  .contact-meta dd{font-family:'Fraunces',serif;font-size:16px;color:var(--ink)}
+  .contact-form{border:1px solid var(--rule);background:var(--paper);padding:32px;border-radius:4px}
+  .contact-form label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;margin-top:18px}
+  .contact-form label:first-of-type{margin-top:0}
+  .contact-form input,.contact-form textarea{width:100%;background:transparent;border:1px solid var(--rule);padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);border-radius:2px;outline:none;transition:border-color .25s}
+  .contact-form input:focus,.contact-form textarea:focus{border-color:var(--ink)}
+  .contact-form textarea{resize:vertical;min-height:90px;font-family:'Inter',sans-serif}
+  .contact-form .btn{margin-top:20px}
+
+  /* ---------- Footer ---------- */
+  footer.site{background:var(--ink);color:var(--paper);padding:80px 0 36px;margin-top:0}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid rgba(243,235,220,.12)}
+  .foot-brand{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .foot-tag{font-size:14px;color:rgba(243,235,220,.6);line-height:1.6;max-width:280px;margin-bottom:24px}
+  .foot-col h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,235,220,.5);margin-bottom:18px;font-weight:500}
+  .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{font-size:14px;color:rgba(243,235,220,.85);transition:color .25s}
+  .foot-col a:hover{color:var(--accent)}
+  .foot-bottom{padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;font-size:13px;color:rgba(243,235,220,.5)}
+  .socials{display:flex;gap:14px}
+  .socials a{width:34px;height:34px;border:1px solid rgba(243,235,220,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .25s}
+  .socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+  .socials svg{width:15px;height:15px;fill:currentColor}
+  .legal-links{display:flex;gap:24px}
+  .legal-links a{color:rgba(243,235,220,.7);transition:color .25s}
+  .legal-links a:hover{color:var(--paper)}
+
+  /* ---------- Reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:60px}
+    .manuscript{transform:rotate(-.6deg)}
+    .features{grid-template-columns:repeat(6,1fr)}
+    .f1,.f4{grid-column:span 6}
+    .f2,.f3,.f5{grid-column:span 3}
+    .steps{grid-template-columns:1fr}
+    .step{border-right:none;border-bottom:1px solid var(--rule)}
+    .compare{grid-template-columns:1fr;gap:0}
+    .divider{border:none;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 0}
+    .divider span{writing-mode:horizontal-tb}
+    .pricing{grid-template-columns:1fr}
+    .quotes{grid-template-columns:1fr}
+    .news{grid-template-columns:1fr;padding:44px 36px}
+    .contact-grid{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr 1fr;gap:36px}
+    nav.primary{display:none}
+    .menu-btn{display:block}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 22px}
+    .hero{padding:60px 0 80px}
+    section.block{padding:80px 0}
+    .features{grid-template-columns:1fr}
+    .f1,.f2,.f3,.f4,.f5{grid-column:span 1}
+    .foot-grid{grid-template-columns:1fr}
+    .section-head{flex-direction:column;align-items:flex-start;gap:18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER / NAV ============ -->
+<header class="site">
+  <div class="wrap nav">
+    <a href="#top" class="brand" aria-label="QuillAI home">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M6 26 L20 6 Q24 4 26 6 Q28 8 26 12 L10 28 Z" fill="#c8431f"/>
+        <path d="M6 26 L10 28 L8 22 Z" fill="#1a1410"/>
+      </svg>
+      QuillAI
+    </a>
+    <nav class="primary" aria-label="Primary">
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a href="#contact" class="signin">Sign in</a>
+      <a href="#pricing" class="btn">Start Free Trial</a>
+      <button class="menu-btn" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text reveal">
+      <span class="eyebrow"><span class="dot"></span> AI writing, edited with restraint</span>
+      <h1 class="hero-title">Writing, <em>refined</em><br/>by artificial<br/>intelligence.</h1>
+      <p class="hero-sub">QuillAI is an AI writing assistant that edits with the patience of a human editor — sharpening clarity, cadence, and voice without flattening your prose into something generic. It suggests. You decide.</p>
+      <div class="hero-ctas">
+        <a href="#pricing" class="btn lg">Start Free Trial</a>
+        <a href="#how" class="btn ghost lg">See how it works</a>
+      </div>
+      <div class="hero-meta">
+        <span class="stars" aria-hidden="true">★★★★★</span>
+        <span>4.9 / 5 from 2,140 reviews</span>
+        <span aria-hidden="true">·</span>
+        <span>No credit card required</span>
+      </div>
+    </div>
+
+    <div class="manuscript reveal" aria-label="Demo of QuillAI editing a draft">
+      <div class="ms-head">
+        <span>Draft · essay.md</span>
+        <span class="ms-tag">QuillAI · live</span>
+      </div>
+      <div class="ms-title">On the texture of mornings</div>
+      <div class="ms-body" id="typed" aria-live="polite"></div>
+      <div class="ms-foot">
+        <span>48 words · 11s</span>
+        <span>Clarity +38%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOCIAL PROOF ============ -->
+<section class="proof" aria-label="Social proof">
+  <div class="wrap proof-inner">
+    <p class="proof-text">Trusted by <b>10,000+ writers</b> and editorial teams at</p>
+    <div class="logos" role="list" aria-label="Companies using QuillAI">
+      <span class="logo" role="listitem">The Atlantic</span>
+      <span class="logo" role="listitem">Penguin</span>
+      <span class="logo" role="listitem">Substack</span>
+      <span class="logo" role="listitem">Notion</span>
+      <span class="logo" role="listitem">Stripe Press</span>
+      <span class="logo" role="listitem">Ghost</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">01 — Features</div>
+        <h2 class="section-title">An editor that reads<br/>before it <em>rewrites</em>.</h2>
+      </div>
+      <p class="section-lede">Four tools that work the way a thoughtful copy editor does — quietly, in the margin, only speaking when it has something worth saying.</p>
+    </div>
+
+    <div class="features">
+      <article class="feat f1 reveal">
+        <span class="tag">Core</span>
+        <div class="icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 19h16M6 15l3-9 3 9 3-7 3 7"/></svg>
+        </div>
+        <h3>Cadence & rhythm</h3>
+        <p>QuillAI reads your sentences aloud, silently. It flags where the rhythm stumbles — too many spondees, a clause that runs out of breath — and suggests the smallest possible fix.</p>
+      </article>
+
+      <article class="feat f2 reveal">
+        <span class="tag">Voice</span>
+        <div class="icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="3.2"/><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0"/></svg>
+        </div>
+        <h3>Voice preservation</h3>
+        <p>Trained on your last 20 documents, QuillAI learns the way you comma, the words you reach for, the ones you'd never use. Edits stay inside your register.</p>
+      </article>
+
+      <article class="feat f3 reveal">
+        <span class="tag">Draft</span>
+        <div class="icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 21l4-1 11-11-3-3L6 17l-1 4z"/><path d="M15 6l3 3"/></svg>
+        </div>
+        <h3>Inline suggestions</h3>
+        <p>Margin notes, not rewrites. Every suggestion shows the why — the rule, the reference, the alternative — so you keep the pen.</p>
+      </article>
+
+      <article class="feat f4 reveal">
+        <span class="tag">Research</span>
+        <div class="icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg>
+        </div>
+        <h3>Citation & fact-check</h3>
+        <p>Every claim that should have a source gets a small mark in the margin. QuillAI checks 14 reference corpora and flags anything it can't verify — without inventing citations, ever.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="block how" id="how" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">02 — How it works</div>
+        <h2 class="section-title" id="how-title">Three steps, then<br/>you forget it's <em>there</em>.</h2>
+      </div>
+      <p class="section-lede">QuillAI is designed to disappear into your existing editor. No new tab, no context switch, no learning curve worth mentioning.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step-num">i.</div>
+        <h3>Connect your draft</h3>
+        <p>Paste in, or install the extension for Google Docs, Notion, Obsidian, and a plain-markdown desktop app. QuillAI reads the whole document for context before suggesting a single comma.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step-num">ii.</div>
+        <h3>Review the margin</h3>
+        <p>Suggestions appear as quiet marginalia — accept, refine, or dismiss with a keystroke. Each one cites the principle behind it, so you learn the craft as you go, not just the fix.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-line" aria-hidden="true"></div>
+        <div class="step-num">iii.</div>
+        <h3>Ship the cleaner draft</h3>
+        <p>Export back to your editor with revisions accepted, or keep a clean diff for your collaborator. QuillAI never publishes, never trains on private work, never holds your text longer than the session.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEFORE / AFTER ============ -->
+<section class="block" aria-labelledby="compare-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">03 — Before & after</div>
+        <h2 class="section-title" id="compare-title">A real edit, on a<br/>real <em>paragraph</em>.</h2>
+      </div>
+      <p class="section-lede">Below is an unretouched QuillAI pass on a draft paragraph. Strikethroughs are removals; highlights are insertions. The right column is the accepted result.</p>
+    </div>
+
+    <div class="compare reveal" role="region" aria-label="Before and after comparison">
+      <div class="col">
+        <div class="col-head">
+          <span class="col-label bad">Before — raw draft</span>
+          <span class="col-stat">62 words · 4 issues</span>
+        </div>
+        <p class="draft">
+          <span class="strike">In order to be able to</span> <span class="insert">To</span> understand the market, we <span class="strike">need to</span> <span class="insert">must</span> look at the data <span class="strike">that is</span> available to us <span class="strike">at this point in time</span> <span class="insert">today</span>. <span class="strike">It is important to note that</span> <span class="insert">Note that</span> the trends <span class="strike">are showing</span> <span class="insert">show</span> a decline <span class="strike">in terms of</span> <span class="insert">in</span> engagement.
+        </p>
+      </div>
+      <div class="divider" aria-hidden="true"><span>QuillAI</span></div>
+      <div class="col">
+        <div class="col-head">
+          <span class="col-label good">After — QuillAI pass</span>
+          <span class="col-stat">38 words · −39%</span>
+        </div>
+        <p class="polished">
+          To understand the market, we must look at the data available to us today. Note that the trends show a decline in engagement.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="block" id="pricing" aria-labelledby="pricing-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">04 — Pricing</div>
+        <h2 class="section-title" id="pricing-title">Priced like a<br/>magazine <em>subscription</em>.</h2>
+      </div>
+      <p class="section-lede">No usage credits, no per-word metering, no surprise overage. One price, all the editing you can write. Cancel any month.</p>
+    </div>
+
+    <div class="pricing">
+      <article class="tier reveal">
+        <h3>Free</h3>
+        <p class="tier-desc">For trying the voice, on a single document at a time.</p>
+        <div class="price"><span class="price-amt">$0</span><span class="price-unit">/ forever</span></div>
+        <ul class="feat-list">
+          <li>1 active document</li>
+          <li>Cadence & clarity suggestions</li>
+          <li>500 words per pass</li>
+          <li>Community support</li>
+        </ul>
+        <a href="#contact" class="btn ghost">Get Started</a>
+      </article>
+
+      <article class="tier featured reveal">
+        <span class="tier-flag">Most chosen</span>
+        <h3>Pro</h3>
+        <p class="tier-desc">For writers who ship daily and want their voice preserved.</p>
+        <div class="price"><span class="price-amt">$18</span><span class="price-unit">/ month</span></div>
+        <ul class="feat-list">
+          <li>Unlimited documents</li>
+          <li>Voice training on your corpus</li>
+          <li>Citation & fact-check</li>
+          <li>Google Docs, Notion, Obsidian</li>
+          <li>Priority email support</li>
+        </ul>
+        <a href="#contact" class="btn">Start Free Trial</a>
+      </article>
+
+      <article class="tier reveal">
+        <h3>Enterprise</h3>
+        <p class="tier-desc">For newsrooms, agencies, and teams with a house style.</p>
+        <div class="price"><span class="price-amt">$49</span><span class="price-unit">/ seat / month</span></div>
+        <ul class="feat-list">
+          <li>Everything in Pro</li>
+          <li>Custom house style guide</li>
+          <li>SSO, audit logs, SOC 2</li>
+          <li>Private model fine-tune</li>
+          <li>Dedicated editor-on-call</li>
+        </ul>
+        <a href="#contact" class="btn ghost">Talk to us</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="block" id="testimonials" aria-labelledby="testi-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">05 — Testimonials</div>
+        <h2 class="section-title" id="testi-title">From people who<br/>write for a <em>living</em>.</h2>
+      </div>
+      <p class="section-lede">We didn't pay for these. We asked writers we admire to try QuillAI for a month, then say whatever they actually thought.</p>
+    </div>
+
+    <div class="quotes">
+      <figure class="quote big reveal">
+        <div class="q-mark" aria-hidden="true">"</div>
+        <blockquote class="q-body">"I've stopped using the word 'just' in drafts — not because QuillAI deletes it, but because it shows me how often I reach for it. That's the difference. It teaches the habit, not the patch."</blockquote>
+        <figcaption class="q-author">Mira Halvorsen</figcaption>
+        <div class="q-role">Senior Editor, The Atlantic</div>
+      </figure>
+
+      <figure class="quote reveal">
+        <div class="q-mark" aria-hidden="true">"</div>
+        <blockquote class="q-body">"The voice preservation is the part that sold me. Three months in and it still sounds like me on a good day, not a chatbot on a polite one."</blockquote>
+        <figcaption class="q-author">Devon Aoki</figcaption>
+        <div class="q-role">Independent novelist</div>
+      </figure>
+
+      <figure class="quote reveal">
+        <div class="q-mark" aria-hidden="true">"</div>
+        <blockquote class="q-body">"We rolled it out to a 40-person newsroom. The house style guide lives inside the editor now. Our copy desk went from three rounds to one."</blockquote>
+        <figcaption class="q-author">Priya Ramanathan</figcaption>
+        <div class="q-role">Managing Editor, Stripe Press</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="block" aria-labelledby="faq-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">06 — FAQ</div>
+        <h2 class="section-title" id="faq-title">Questions that<br/>actually <em>came up</em>.</h2>
+      </div>
+      <p class="section-lede">Pulled from our support inbox, lightly edited for redundancy. If yours isn't here, write to us — we read everything.</p>
+    </div>
+
+    <div class="faq reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a1">
+          <span>Does QuillAI train on my writing?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a1" role="region"><div class="faq-a-inner">No. Your documents are processed in-session to produce suggestions and discarded when you close the tab. We never use customer text to train our models. Enterprise customers can additionally opt for a fully isolated, single-tenant deployment.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a2">
+          <span>Which editors does it work inside?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a2" role="region"><div class="faq-a-inner">Google Docs, Notion, Obsidian, and a standalone desktop app for macOS, Windows, and Linux. A plain-markdown web editor is also available at app.quillai.ai. We're working on Word and Pages for Q2.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a3">
+          <span>How is this different from Grammarly or ChatGPT?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a3" role="region"><div class="faq-a-inner">Grammarly is a grammar checker; it corrects errors. ChatGPT is a generator; it rewrites wholesale. QuillAI sits between — an editor that respects your voice and explains its reasoning. It suggests, cites, and steps back. It does not generate paragraphs on your behalf.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a4">
+          <span>Can I use it for academic writing?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a4" role="region"><div class="faq-a-inner">Yes. QuillAI never invents citations — if it can't verify a claim against one of its 14 reference corpora, it flags the claim rather than fabricating a source. Many of our users are PhD students and journal editors. We're compliant with the COPE guidelines on authorship and AI assistance.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a5">
+          <span>What happens to my data when I cancel?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a5" role="region"><div class="faq-a-inner">Your voice profile and document history are deleted within 30 days of cancellation, sooner if you request it. You can export everything as markdown at any time from Settings → Data. We're GDPR and CCPA compliant.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a6">
+          <span>Is there a student or nonprofit discount?</span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="faq-a" id="faq-a6" role="region"><div class="faq-a-inner">Yes — 50% off Pro for verified students, and free Enterprise for registered nonprofits working in journalism, education, and civic tech. Write to hello@quillai.ai with documentation.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="block" aria-labelledby="news-title">
+  <div class="wrap">
+    <div class="news reveal">
+      <div>
+        <h2 id="news-title">A weekly note on <em>the craft</em>.</h2>
+        <p>One short essay each Friday on editing, voice, and the small decisions that make prose feel like a person wrote it. No promotions, no tracking pixels. 18,000 readers.</p>
+      </div>
+      <div>
+        <form class="news-form" action="#" method="post" aria-label="Newsletter signup">
+          <label for="news-email" class="visually-hidden" style="position:absolute;left:-9999px">Email address</label>
+          <input id="news-email" type="email" name="email" placeholder="you@studio.com" required aria-required="true" />
+          <button type="submit" class="btn">Subscribe</button>
+        </form>
+        <p class="news-note">Unsubscribe in one click. We never share your address.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="block" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">07 — Contact</div>
+        <h2 class="section-title" id="contact-title">Write to us.<br/>A human <em>answers</em>.</h2>
+      </div>
+      <p class="section-lede">Support, sales, press, or just to argue about the Oxford comma — same inbox, same two people on the other end.</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>By email</h3>
+        <p>For anything specific — a feature request, a billing question, an Enterprise quote — drop us a line and we'll respond within one business day.</p>
+        <a href="mailto:hello@quillai.ai" class="contact-email">hello@quillai.ai</a>
+
+        <dl class="contact-meta">
+          <div>
+            <dt>Support</dt>
+            <dd>support@quillai.ai</dd>
+          </div>
+          <div>
+            <dt>Press</dt>
+            <dd>press@quillai.ai</dd>
+          </div>
+          <div>
+            <dt>Studio</dt>
+            <dd>Brooklyn, NY</dd>
+          </div>
+        </dl>
+      </div>
+
+      <form class="contact-form reveal" action="#" method="post" aria-label="Contact form">
+        <label for="c-name">Your name</label>
+        <input id="c-name" name="name" type="text" required aria-required="true" />
+
+        <label for="c-email">Email</label>
+        <input id="c-email" name="email" type="email" required aria-required="true" />
+
+        <label for="c-msg">Message</label>
+        <textarea id="c-msg" name="message" required aria-required="true"></textarea>
+
+        <button type="submit" class="btn">Send message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M6 26 L20 6 Q24 4 26 6 Q28 8 26 12 L10 28 Z" fill="#c8431f"/>
+            <path d="M6 26 L10 28 L8 22 Z" fill="#f3ebdc"/>
+          </svg>
+          QuillAI
+        </div>
+        <p class="foot-tag">An AI writing assistant that edits with the patience of a human editor. Made in Brooklyn, used everywhere.</p>
+      </div>
+
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press kit</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Help center</a></li>
+          <li><a href="#">API docs</a></li>
+          <li><a href="#">Style guide</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2025 QuillAI, Inc. All rights reserved.</span>
+      <div class="socials" aria-label="Social media">
+        <a href="#" aria-label="QuillAI on Twitter">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="#" aria-label="QuillAI on LinkedIn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4zM8 8h3.8v2.2h.05c.53-1 1.83-2.2 3.77-2.2 4.03 0 4.78 2.65 4.78 6.1V24h-4v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.53 1.72-2.53 3.49V24H8z"/></svg>
+        </a>
+        <a href="#" aria-label="QuillAI on GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.69 5.41-5.25 5.69.42.36.79 1.08.79 2.18v3.23c0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+        </a>
+        <a href="#" aria-label="QuillAI RSS feed">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9h-2a7 7 0 0 0-7-7zm0-8a17 17 0 0 1 17 17h-2A15 15 0 0 0 4 5zm2 13a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        </a>
+      </div>
+      <div class="legal-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+        <a href="#">DPA</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- Typing effect in hero manuscript ---------- */
+  (function(){
+    const target = document.getElementById('typed');
+    if(!target) return;
+    const text = "The morning had the texture of old paper — soft, slightly yellow, faintly creased by the night before. Light came in at an angle that made everything look considered.";
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){ target.innerHTML = text + '<span class="cursor"></span>'; return; }
+    let i = 0;
+    function tick(){
+      if(i <= text.length){
+        target.innerHTML = text.slice(0,i) + '<span class="cursor" aria-hidden="true"></span>';
+        i++;
+        const delay = text[i-1] === ' ' ? 28 : (Math.random()*22 + 22);
+        setTimeout(tick, delay);
+      } else {
+        // pause then restart
+        setTimeout(()=>{ i=0; tick(); }, 4200);
+      }
+    }
+    setTimeout(tick, 600);
+  })();
+
+  /* ---------- Reveal on scroll ---------- */
+  (function(){
+    const els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(e=>e.classList.add('in')); return;
+    }
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting){
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    },{threshold:.12, rootMargin:'0px 0px -60px 0px'});
+    els.forEach(e=>io.observe(e));
+  })();
+
+  /* ---------- FAQ accordion ---------- */
+  (function(){
+    const items = document.querySelectorAll('.faq-item');
+    items.forEach(item=>{
+      const btn = item.querySelector('.faq-q');
+      const ans = item.querySelector('.faq-a');
+      btn.addEventListener('click', ()=>{
+        const open = item.classList.contains('open');
+        // close others
+        items.forEach(other=>{
+          if(other!==item){
+            other.classList.remove('open');
+            other.querySelector('.faq-q').setAttribute('aria-expanded','false');
+            other.querySelector('.faq-a').style.maxHeight = null;
+          }
+        });
+        if(open){
+          item.classList.remove('open');
+          btn.setAttribute('aria-expanded','false');
+          ans.style.maxHeight = null;
+        } else {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded','true');
+          ans.style.maxHeight = ans.scrollHeight + 'px';
+        }
+      });
+    });
+  })();
+
+  /* ---------- Mobile menu toggle (basic) ---------- */
+  (function(){
+    const btn = document.querySelector('.menu-btn');
+    const nav = document.querySelector('nav.primary');
+    if(!btn || !nav) return;
+    btn.addEventListener('click', ()=>{
+      const visible = nav.style.display === 'block';
+      nav.style.display = visible ? '' : 'block';
+      nav.style.position = 'absolute';
+      nav.style.top = '72px';
+      nav.style.left = '0';
+      nav.style.right = '0';
+      nav.style.background = 'var(--paper)';
+      nav.style.borderBottom = '1px solid var(--rule)';
+      nav.style.padding = '20px 32px';
+    });
+  })();
+</script>
+</body>
+</html>
+```
+
+A few notes on the design choices, since they're load-bearing:
+
+- **Palette**: warm parchment (`#f3ebdc`) + deep ink (`#1a1410`) + a single vermilion accent (`#c8431f`). No blue, no purple, no gradient — the page is supposed to feel like a well-printed magazine, not a SaaS dashboard. A subtle SVG grain overlay (multiply blend) gives the whole thing a paper texture.
+- **Typography**: Fraunces (variable serif, optical-size 144 for display) carries every headline and the manuscript body; Inter handles UI. The italic accent in headlines is the only "decoration" — no `bg-clip-text` gradients, no glow.
+- **Hero**: asymmetric 1.15/0.85 split. The right column is a "manuscript card" rotated -1.2° with a stacked shadow, showing a live typing effect on a real paragraph — so the hero demonstrates the product instead of describing it.
+- **Before/after**: a real strikethrough/insertion diff on an actual bad paragraph, with a vertical "QuillAI" divider between the columns. This is constraint #20 done as content, not as a slider gimmick.
+- **Pricing**: 3 tiers, the middle one inverted (ink background) with a small "Most chosen" flag — restrained, not a glowing badge.
+- **Motion**: typing effect, IntersectionObserver scroll reveals, FAQ accordion, hover lifts on cards. All gated behind `prefers-reduced-motion`.
+- **Accessibility**: semantic landmarks (`header/nav/main/section/footer`), `aria-label`/`aria-expanded`/`aria-controls` on the FAQ, `aria-live` on the typed region, alt-equivalent `aria-hidden` on decorative SVGs, labeled form fields, focus-visible inherited from defaults.
+
+All 20 constraints are met — you can verify by searching the source for each anchor (`#features`, `#pricing`, `#testimonials`, `#contact`, the `meta name="description"`, the `<title>`, the newsletter form, the two distinct CTA labels "Start Free Trial" / "Get Started" / "See how it works", the "Trusted by 10,000+ writers" line, the 3-step How It Works, the before/after diff, and the email address `hello@quillai.ai`).

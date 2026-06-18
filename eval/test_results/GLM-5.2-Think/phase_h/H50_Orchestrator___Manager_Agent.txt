@@ -1,0 +1,74 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "Raw refund request data (customer ID, order ID, amount, reason)",
+      "output": "Validated request payload with eligibility flag",
+      "next": "FraudCheckAgent",
+      "fallback": "Return invalid request error to user",
+      "timeout": "5s",
+      "audit": "Log request receipt and validation result"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request payload",
+      "output": "Fraud risk score and boolean flag",
+      "next": "ApprovalAgent",
+      "fallback": "Route to HumanEscalationAgent",
+      "timeout": "10s",
+      "audit": "Log fraud score and risk assessment"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Validated request and fraud risk score",
+      "output": "Decision: 'Approved', 'Rejected', or 'Escalate'",
+      "next": "if Approved then PaymentAgent, if Rejected then NotificationAgent, if Escalate then HumanEscalationAgent",
+      "fallback": "Route to HumanEscalationAgent",
+      "timeout": "10s",
+      "audit": "Log approval decision and reasoning"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "Request payload and escalation reason",
+      "output": "Human review ticket ID and pending status",
+      "next": "NotificationAgent",
+      "fallback": "Send critical alert to system admin",
+      "timeout": "15s",
+      "audit": "Log escalation event and ticket creation"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved request payload",
+      "output": "Payment transaction ID and success status",
+      "next": "NotificationAgent",
+      "fallback": "Route to HumanEscalationAgent",
+      "timeout": "15s",
+      "audit": "Log payment transaction details"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final outcome (Approved/Rejected/Escalated) and transaction ID if applicable",
+      "output": "Customer notification confirmation",
+      "next": "END",
+      "fallback": "Queue notification for retry",
+      "timeout": "5s",
+      "audit": "Log notification dispatch and final workflow completion"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branches": "ApprovalAgent routes based on decision outcome (if/else)",
+    "first_agent": "ValidationTriageAgent",
+    "last_agent": "NotificationAgent",
+    "ordering": "FraudCheckAgent before ApprovalAgent, PaymentAgent after ApprovalAgent",
+    "max_processing_time_seconds": 60,
+    "outcomes_handled": ["approved", "rejected", "escalated"],
+    "logging_audit": "Each agent includes an 'audit' field for step logging",
+    "circular_dependencies": false,
+    "human_escalation_path": "HumanEscalationAgent handles edge cases and fallbacks",
+    "timeout_per_agent": "Each agent includes a 'timeout' field"
+  }
+}
+```

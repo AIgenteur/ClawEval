@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "RateLimiter state is not protected by a lock, leading to race conditions in concurrent async contexts.",
+      "fix": "Add an asyncio.Lock and use `async with self.lock:` in the acquire method."
+    },
+    {
+      "line": "11",
+      "bug": "`asyncio.get_event_loop()` is deprecated and can create a new loop if none is running.",
+      "fix": "Use `asyncio.get_running_loop().time()` instead."
+    },
+    {
+      "line": "14",
+      "bug": "`now` is calculated before the sleep, so the timestamp appended is inaccurate after sleeping.",
+      "fix": "Recalculate `now = asyncio.get_running_loop().time()` after the sleep and before appending."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new `aiohttp.ClientSession` for every request is inefficient and defeats connection pooling.",
+      "fix": "Create the session once in `fetch_all` and pass it to `fetch_one`, or use a shared session."
+    },
+    {
+      "line": "27",
+      "bug": "The `timeout` parameter in aiohttp expects an `aiohttp.ClientTimeout` object, not an integer.",
+      "fix": "Use `timeout=aiohttp.ClientTimeout(total=30)`."
+    },
+    {
+      "line": "27",
+      "bug": "The response object is not closed, which can lead to resource leaks.",
+      "fix": "Use `async with session.get(...) as response:` to ensure the response is closed."
+    },
+    {
+      "line": "29",
+      "bug": "Modifying a shared dictionary from multiple concurrent tasks is not strictly safe and can lead to data loss if URLs are duplicated.",
+      "fix": "Return the data from `fetch_one` and construct the results dictionary/list from the output of `asyncio.gather`."
+    },
+    {
+      "line": "31",
+      "bug": "Exceptions are swallowed silently without logging, making debugging impossible.",
+      "fix": "Log the exception using `logging.exception()` or `print()`."
+    },
+    {
+      "line": "32",
+      "bug": "The `pass` statement is redundant after an assignment.",
+      "fix": "Remove the `pass` statement."
+    },
+    {
+      "line": "35",
+      "bug": "The results of `asyncio.gather` are ignored, even though `fetch_one` could return the fetched data.",
+      "fix": "Capture the results of `gather` and return them, e.g., `return await asyncio.gather(*tasks)`."
+    },
+    {
+      "line": "42",
+      "bug": "The comment indicates a missing await, but actually `process_item` is a coroutine and should be awaited if not being passed to `gather`. However, since it is passed to `gather`, the real issue is that `process_batch` is an async generator.",
+      "fix": "If `process_batch` is meant to be a normal coroutine, remove the `yield` and return a list."
+    },
+    {
+      "line": "45",
+      "bug": "`yield r` makes `process_batch` an async generator, which is likely unintended and not being consumed as one.",
+      "fix": "Remove `yield r` and instead collect results into a list and return it."
+    },
+    {
+      "line": "52",
+      "bug": "ConnectionPool state is not protected by a lock, leading to race conditions.",
+      "fix": "Add an `asyncio.Lock` and use `async with self.lock:` in `get_connection` and `release`."
+    },
+    {
+      "line": "60",
+      "bug": "No limit on pool size when releasing connections, which can cause the pool to grow indefinitely.",
+      "fix": "Check `if len(self.pool) < self.size:` before appending the connection."
+    },
+    {
+      "line": "63",
+      "bug": "`create_connection` is an async function but doesn't perform any async I/O, and returning a plain `object()` is useless.",
+      "fix": "Actually create a connection (e.g., using `asyncio.open_connection`) or remove `async` if it's a mock."
+    }
+  ],
+  "count": 15
+}
+```

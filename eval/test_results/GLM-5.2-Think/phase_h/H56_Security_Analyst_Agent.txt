@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - query string formatted with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Hashing (MD5)",
+      "location": "login() - hashlib.md5(user.encode()).hexdigest()",
+      "severity": "medium"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - render_template_string(template) with user-controlled username",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() - f-string returns unescaped user input 'q'",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "run_command() - subprocess.run(cmd, shell=True) with user-supplied command",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Write)",
+      "location": "upload() - os.path.join(UPLOAD_DIR, f.filename) without sanitization",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Read)",
+      "location": "download() - send_file(filepath) with user-supplied path",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure YAML Deserialization",
+      "location": "load_config() - yaml.load(data) without Loader=SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle)",
+      "location": "restore_session() - pickle.loads(data) on user-supplied data",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "SECRET = \"admin123\" at module level",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "export_data() - os.system(cmd) with user-supplied format parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage",
+      "location": "login() - password compared directly in SQL (password='{pwd}')",
+      "severity": "high"
+    },
+    {
+      "type": "Debug Mode Enabled in Production",
+      "location": "app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Network Binding (0.0.0.0)",
+      "location": "app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "medium"
+    },
+    {
+      "type": "Sensitive Token in URL Query Parameter",
+      "location": "admin() - token = request.args.get('token')",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

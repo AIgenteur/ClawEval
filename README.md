@@ -157,361 +157,43 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 15 | **MiniMax-M2.7 Medium** | ☁️ Ollama | 1014/1220 | **83.1%** | 20 |
 | 16 | **Qwen3.6-27B** | 🖥️ Local TQ4 | 1012/1220 | **83.0%** | 26 |
 | 17 | **Nemotron-3-Super NoThink** | ☁️ Ollama | 996/1220 | **81.6%** | 21 |
-| 18 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
-| 19 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
-| 20 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
-| 21 | **MiniMax-M2.7 Think** | ☁️ Ollama | 993/1220 | **81.4%** | 19 |
-| 22 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
-| 23 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
-| 24 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
-| 25 | **GLM-5.2 NoThink** | ☁️ Ollama | 946/1220 | **77.5%** | 24 |
-| 26 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
-| 27 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
-| 28 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
-| 29 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
-| 30 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
-| 31 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
-| 32 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
-| 33 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 34 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
-| 35 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 36 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 37 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
-| 38 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
-| 39 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
-| 40 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 41 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
-| 42 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
-| 43 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 44 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
-| 45 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
-| 46 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
-| 47 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
-| 48 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 49 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
-| 50 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
-| 51 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
-| 52 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
-| 53 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
-
-> All models scored on **59/59 tests** with **zero infrastructure failures**. Full results: **[ClawEval v2 →](docs/results-phase-h.md)** · **[RTX 3090 24GB Guide →](docs/results-rtx3090-24gb.md)**
->
-> ⚠️ **Why are Qwen3.5 small models so low?** Qwen3.5 (0.8B–4B) are *thinking* models that spend most of their token budget on chain-of-thought reasoning. At small sizes, the CoT consumes all available tokens, leaving the model unable to produce structured output — 20+ tests returned unparseable JSON or empty responses. Compare Qwen3.5-4B (30.7%) vs Gemma-4-E4B (71.1%, same 4B, non-thinking). Thinking architectures need ≥30B MoE to be effective for agent tasks.
-
----
-
-### 🧪 TurboQuant KV-Cache Experiment (Local · RTX 3090)
-
-> **What is this?** [TurboQuant](https://arxiv.org/abs/2504.19874) compresses the attention KV cache from 8-bit (`q8_0`) down to 2/3/4-bit using Walsh–Hadamard + Lloyd–Max quantization. **Model weights are untouched** — only the KV cache changes. This trades a small amount of precision for massive context expansion (e.g. 53K → 262K on the same 24GB GPU).
-
-These runs are kept **separate from the main leaderboard** because the variable being studied is KV-cache precision, not model capability. Compare each row against its baseline in the main table above.
-
-| Model | KV Mode | Context | Score | % | Baseline | Δ |
-|-------|---------|---------|-------|---|----------|---|
-| Gemma-4-31B | turbo3 (3-bit) | 262K | 1014/1220 | **83.1%** | 76.0% (q8₀, 53K) | **+7.1%** |
-| Qwen3.6-35B-A3B | turbo3 (3-bit) | 262K | 976/1220 | **80.0%** | 84.3% (q8₀, 32K) | **−4.3%** |
-
-> Full methodology: **[TurboQuant Experiment →](docs/results-turboquant.md)**
-
----
-
-## 🔬 Phase H — Dense Constraint Leaderboard (v1 · 53 tests)
-
-53 tests · 1,100 checkpoints · 30–50 checkpoints per test. **Baseline: Qwen3.6-35B-A3B — 871/1100 (79.2%)**
-
-| Test | Role | Score | % |
-|------|------|-------|---|
-| H-06 | FAQ Generation Agent | 15/15 | ✅ 100% |
-| H-07 | Translation Agent | 15/15 | ✅ 100% |
-| H-14 | Document Summarization | 15/15 | ✅ 100% |
-| H-18 | News Aggregation | 7/7 | ✅ 100% |
-| H-19 | Shopping / Price Comparison | 15/15 | ✅ 100% |
-| H-20 | Memory Management | 20/20 | ✅ 100% |
-| H-23 | Website Scraping | 15/15 | ✅ 100% |
-| H-27 | Sprint Summarizer | 15/15 | ✅ 100% |
-| H-30 | Fitness Tracking | 15/15 | ✅ 100% |
-| H-31 | Recipe / Cooking Agent | 15/15 | ✅ 100% |
-| H-32 | Personal Finance | 15/15 | ✅ 100% |
-| H-36 | Code Generation Agent | 30/30 | ✅ 100% |
-| H-45 | Prototype Generator | 15/15 | ✅ 100% |
-| H-48 | STEM Research Analyst | 15/15 | ✅ 100% |
-| H-49 | Algorithm Explorer | 30/30 | ✅ 100% |
-| H-54 | Medical / Health Analysis | 15/15 | ✅ 100% |
-| H-02 | Input Validator / Sanitizer | 29/30 | ✅ 97% |
-| H-15 | Meeting Notes / Transcription | 34/35 | ✅ 97% |
-| H-40 | Fact-Checking Agent | 29/30 | ✅ 97% |
-| H-01 | Router / Triage Agent | 28/30 | ✅ 93% |
-| H-09 | Research / Web Search Agent | 28/30 | ✅ 93% |
-| H-47 | Math / Logic Reasoning | 14/15 | ✅ 93% |
-| H-50 | Orchestrator / Manager Agent | 13/15 | ✅ 87% |
-| H-11 | Editor Agent | 25/30 | ✅ 83% |
-| H-08 | Calendar / Scheduling | 10/20 | ⚠️ 50% |
-| H-21 | RAG / Retrieval Agent | 9/15 | ⚠️ 60% |
-| H-44 | Curriculum / Course Designer | 7/15 | ⚠️ 47% |
-| H-29 | Home Automation Agent | 7/20 | ❌ 35% |
-| H-33 | SEO Optimization Agent | 5/15 | ❌ 33% |
-| H-37 | Code Review Agent | 5/15 | ❌ 33% |
-| H-51 | Software Architect | 6/15 | ❌ 40% |
-| H-53 | Legal Document Review | 6/15 | ❌ 40% |
-| H-35 | Travel Planning Agent | 1/15 | ❌ 7% |
-| H-39 | Task Planning / Decomposition | 1/18 | ❌ 6% |
-| H-59 | Compliance Agent | 1/15 | ❌ 7% |
-| H-03 | Heartbeat / Health Monitor | 0/15 | ❌ 0% |
-| H-46 | DevOps Agent | 0/15 | ❌ 0% |
-| H-52 | Complex Debugger Agent | 0/15 | ❌ 0% |
-
-> 📊 **[Full Phase H results with per-checkpoint detail →](docs/results-phase-h.md)** · More models coming soon
-
----
-
-## 🏆 Best Model Per Role — Which One Should You Run?
-
-🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
-
-**The only table you need.** Best-scoring model for each role at each VRAM tier. Combines Phase F (role tests) + Phase G (discriminator tests). All scores out of 10.
-
-| # | Agent Role | 🟢 Best 24GB | | 🔵 Best 64–96GB | |
-|---|---|---|---|---|---|
-| | | **Model** | **Score** | **Model** | **Score** |
-| | **Tier 1 — Utility** | | | | |
-| 1 | Router / Triage | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 2 | Input Validator | Qwen3.5-27B NT | 🟢 10 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 3 | Health Monitor | Gemma-4-31B | 🟡 5 | GPT-OSS-120B | 🟢 8 |
-| 4 | Notification | Qwen3.5-27B Think | 🟢 9 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NT | 🟢 9 |
-| 5 | Sentiment | Qwen3.5-27B NT / 35B-A3B NT | 🟢 8† | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 8† |
-| 6 | FAQ Generation | Qwen3.5-27B Think | 🟢 8 | Nemotron-3-Super-120B-A12B Think | 🟢 8 |
-| 7 | Translation | Qwen3.5-27B NT / Qwen3.6-35B-A3B | 🟢 10 | Qwen3.5-122B-A10B Think | 🟢 10 |
-| 8 | Calendar | — | 🔴 0 | — | 🔴 0 |
-| | **Tier 2 — Moderate** | | | | |
-| 9 | Research Agent | Qwen3.6-35B-A3B | 🟢 9† | Nemotron-3-Super-120B-A12B NT | 🟢 10† |
-| 10 | Content Writer | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 11 | Editor | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NT | 🟢 9 |
-| 12 | Content Planner | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B Think | 🟢 9† |
-| 13 | Email Drafting | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B Think | 🟢 9 |
-| 14 | Doc Summary | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 15 | Meeting Notes | Qwen3.5-27B NT / 35B-A3B NT | 🟢 9 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B Think | 🟢 9 |
-| 16 | Social Scouting | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 17 | Social Content | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 18 | News Aggregation | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 19 | Shopping | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 20 | Memory Mgmt | Qwen3.5-27B NT / 35B-A3B NT | 🟢 9 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 9 |
-| 21 | RAG / Retrieval | Qwen3.5-27B NT | 🟡 6 | Qwen3.5-122B-A10B / Nemotron-3-Super-120B-A12B NT | 🟡 6 |
-| 22 | Data Analysis | Qwen3.5-27B NT / 35B-A3B NT | 🔴 3 | Qwen3.5-122B-A10B / Nemotron-3-Super-120B-A12B NT | 🔴 2 |
-| 23 | Web Scraping | Qwen3.5-A3B / Gemma-4-31B | 🟢 10† | Qwen3.5-122B-A10B NT / Nemotron | 🟢 10† |
-| 24 | Image Description | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 25 | Customer Support | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 26 | Lead Scoring | Qwen3.5-27B NT | 🟢 10 | Nemotron-3-Super-120B-A12B Think | 🟢 10 |
-| 27 | Sprint Summary | Qwen3.6-35B-A3B | 🟢 9 | Qwen3.5-122B-A10B Think | 🟢 10 |
-| 28 | Transaction | Qwen3.5-27B Think | 🟢 10 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
-| 29 | Home Automation | Qwen3.5-27B Think / 35B-A3B Think | 🟢 10 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 30 | Fitness Tracking | Qwen3.5-27B NT / Think | 🟢 9 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 9 |
-| 31 | Recipe / Cooking | Qwen3.5-35B-A3B Think | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NoThink | 🟢 9 |
-| 32 | Personal Finance | Qwen3.5-27B Think | 🟡 7 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟡 7 |
-| 33 | SEO Optimization | Qwen3.5-27B NT / 35B-A3B NT | 🟢 9 | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 9 |
-| 34 | Landing Page | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 35 | Travel Planning | Qwen3.5-27B NT / 35B-A3B NT | 🟡 7 | Nemotron-3-Super-120B-A12B Think | 🟢 10 |
-| | **Tier 3 — Advanced** | | | | |
-| 36 | Code Generation | Qwen3.6-35B-A3B | 🟢 8† | Nemotron-3-Super-120B-A12B Think | 🟢 10† |
-| 37 | Code Review | Qwen3.5-35B-A3B NT / 27B Think | 🟢 10 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 38 | QA / Test Writing | Qwen3.5-35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B / Nemotron-3-Super-120B-A12B NT | 🟢 8 |
-| 39 | Task Planning | Qwen3.5-35B-A3B NT | 🟢 10 | Nemotron-3-Super-120B-A12B Think | 🟢 10 |
-| 40 | Fact-Checking | Qwen3.5-27B NT / Gemma-4-31B | 🟢 10† | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B NT | 🟢 10† |
-| 41 | Critic / Review | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 42 | Market Research | Qwen3.6-35B-A3B | 🟢 9 | Nemotron-3-Super-120B-A12B NoThink | 🟢 9 |
-| 43 | Synthesizer | Qwen3.5-27B Think / 35B-A3B Think | 🟢 9 | GPT-OSS-120B | 🟢 10 |
-| 44 | Curriculum Design | Qwen3.5-27B NT / 35B-A3B NT | 🟡 6 | GPT-OSS-120B | 🟡 7 |
-| 45 | Prototype Gen | Qwen3.5-27B / 35B-A3B | 🟡 6 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟡 6 |
-| 46 | DevOps | Qwen3.5-27B NT / 35B-A3B Think | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| | **Tier 4 — Expert** | | | | |
-| 47 | Math / Logic | Qwen3.5-27B Think / 35B-A3B Think | 🟡 6 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B Think | 🟢 8 |
-| 48 | STEM Analysis | Gemma-4-31B | 🟡 6† | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B Think | 🟡 5† |
-| 49 | Algorithm | Gemma-4-31B | 🟢 10† | Qwen3.5-122B-A10B NT / Nemotron-3-Super-120B-A12B Think | 🟢 10† |
-| | **Tier 5 — Senior** | | | | |
-| 50 | Orchestrator | Qwen3.6-35B-A3B | 🟢 8† | Nemotron-3-Super-120B-A12B NoThink | 🟢 9† |
-| 51 | Architect | Qwen3.6-35B-A3B | 🟢 10† | Qwen3.5-122B-A10B NT | 🟢 10† |
-| 52 | Debugger | Qwen3.5-35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT / GPT-OSS | 🟢 10 |
-| 53 | Legal Review | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B Think / Nemotron-3-Super-120B-A12B NT | 🟢 10 |
-| 54 | Medical | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Nemotron-3-Super-120B-A12B NoThink | 🟢 10 |
-| 55 | Financial | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | Qwen3.5-122B-A10B NT | 🟢 10 |
-| 56 | Security | Qwen3.5-27B NT / 35B-A3B NT | 🟢 10 | GPT-OSS-120B / Nemotron-3-Super-120B-A12B Think | 🟢 10 |
-| 57 | SRE / Incident | Qwen3.5-35B-A3B Think | 🟡 7 | Qwen3.5-122B-A10B / GPT-OSS | 🟡 6 |
-| 58 | Book Writing | 📝 Manual | 📝 5 | 📝 Manual | 📝 5 |
-| 59 | Compliance | Qwen3.5-27B NT | 🟢 9 | Mistral-Small-4-119B Med | 🟢 9 |
-
-> † Phase G discriminator score (harder test that differentiates models — [details](docs/results-phase-g.md))
->
-> 📊 **Detailed local comparisons:**
-> - [🟢 24GB VRAM — Think vs NoThink (4 models)](docs/results-24gb-vram.md)
-> - [🟢 24GB VRAM — Gemma-4 Local Benchmarks (4 models)](docs/results-gemma-4-local.md)
-> - [🔵 64–96GB VRAM — GPT-OSS-120B vs Qwen3.5-122B](docs/results-64-96gb-vram.md)
-> - [🆕 Phase G — Discriminator Tests (harder tests)](docs/results-phase-g.md)
-> - [⚡ Token Efficiency — Which models waste the fewest tokens?](docs/results-token-efficiency.md)
-> - [Phase E — 12 Killer Tests (all models)](docs/results-phase-e.md)
-> - [Full detailed results with all configs →](RESULTS.md)
-
-
-## 🔴 Small Models (8–16GB VRAM) — Best Per Role
-
-🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
-
-> ✅ **All small models tested.** Qwen3.5 (0.8B, 2B, 4B, 9B) + Ministral-3 (3B, 8B, 14B) complete. [Full small model results →](docs/results-small-vram.md)
-
-| # | Agent Role | 🔴 Best 8GB | | 🟠 Best 12GB | | 🟡 Best 16GB | |
-|---|---|---|---|---|---|---|---|
-| | | **Model** | **Score** | **Model** | **Score** | **Model** | **Score** |
-| | **Tier 1 — Utility** | | | | | | |
-| 1 | Router / Triage | Qwen3.5-4B | 🟢 10 | — | — | — | — |
-| 2 | Input Validator | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 3 | Health Monitor | Qwen3.5-0.8B NT | 🔴 3 | — | — | Mini3-8B | 🟡 5 |
-| 4 | Notification | Qwen3.5-2B | 🟢 9 | — | — | Mini3-8B | 🟢 10 |
-| 5 | Sentiment | Qwen3.5-4B | 🟢 9 | — | — | — | — |
-| 6 | FAQ Generation | Qwen3.5-4B Think | 🟡 6 | — | — | Mini3-8B | 🟡 7 |
-| 7 | Translation | Qwen3.5-4B NT | 🟢 10 | — | — | — | — |
-| 8 | Calendar | — | 🔴 0 | — | — | — | — |
-| | **Tier 2 — Moderate** | | | | | | |
-| 9 | Research Agent | Qwen3.5-2B Think | 🟢 9 | Qwen3.5-9B | 🟢 10 | — | — |
-| 10 | Content Writer | 📝 Manual | 📝 5 | — | — | — | — |
-| 11 | Editor | Qwen3.5-4B Think | 🟢 10 | — | — | — | — |
-| 12 | Content Planner | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 13 | Email Drafting | Qwen3.5-4B | 🟢 9 | — | — | — | — |
-| 14 | Doc Summary | Qwen3.5-2B Think | 🟢 9 | — | — | Mini3-8B | 🟢 10 |
-| 15 | Meeting Notes | Qwen3.5-4B NT | 🟢 10 | — | — | — | — |
-| 16 | Social Scouting | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 17 | Social Content | 📝 Manual | 📝 5 | — | — | — | — |
-| 18 | News Aggregation | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 19 | Shopping | Qwen3.5-0.8B Think | 🔴 4 | Qwen3.5-9B NT | 🟢 8 | — | — |
-| 20 | Memory Mgmt | Qwen3.5-0.8B | 🟢 9 | — | — | — | — |
-| 21 | RAG / Retrieval | Mini3-3B | 🔴 4 | — | — | — | — |
-| 22 | Data Analysis | Qwen3.5-2B Think | 🔴 3 | Qwen3.5-9B NT | 🔴 4 | — | — |
-| 23 | Web Scraping | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 24 | Image Description | 📝 Manual | 📝 5 | — | — | — | — |
-| 25 | Customer Support | Qwen3.5-4B | 🟢 9 | — | — | Mini3-8B | 🟢 10 |
-| 26 | Lead Scoring | Qwen3.5-4B | 🟡 6 | Qwen3.5-9B | 🟢 8 | — | — |
-| 27 | Sprint Summary | Qwen3.5-4B | 🟡 6 | Qwen3.5-9B | 🟡 7 | — | — |
-| 28 | Transaction | Qwen3.5-2B | 🟢 9 | — | — | Mini3-14B | 🟢 10† |
-| 29 | Home Automation | Qwen3.5-0.8B NT | 🟢 10 | — | — | — | — |
-| 30 | Fitness Tracking | Qwen3.5-4B NT | 🟡 5 | Qwen3.5-9B | 🟡 6 | — | — |
-| 31 | Recipe / Cooking | Qwen3.5-4B | 🔴 2 | — | — | Mini3-8B | 🔴 3 |
-| 32 | Personal Finance | Qwen3.5-4B NT | 🟡 5 | — | — | — | — |
-| 33 | SEO Optimization | Qwen3.5-0.8B | 🟢 9 | — | — | — | — |
-| 34 | Landing Page | 📝 Manual | 📝 5 | — | — | — | — |
-| 35 | Travel Planning | Mini3-3B | 🟢 10 | — | — | Mini3-14B | 🟢 10 |
-| | **Tier 3 — Advanced** | | | | | | |
-| 36 | Code Generation | Qwen3.5-2B | 🟢 10 | — | — | — | — |
-| 37 | Code Review | Qwen3.5-0.8B NT | 🟢 10 | — | — | — | — |
-| 38 | QA / Test Writing | Mini3-3B | 🟢 10 | — | — | — | — |
-| 39 | Task Planning | Qwen3.5-2B Think | 🟢 10 | — | — | — | — |
-| 40 | Fact-Checking | Qwen3.5-4B | 🟢 9 | — | — | — | — |
-| 41 | Critic / Review | 📝 Manual | 📝 5 | — | — | — | — |
-| 42 | Market Research | Qwen3.5-4B | 🟡 6 | — | — | — | — |
-| 43 | Synthesizer | Qwen3.5-4B | 🟢 10 | — | — | — | — |
-| 44 | Curriculum Design | Qwen3.5-2B | 🟡 7 | — | — | Mini3-14B | 🟢 9 |
-| 45 | Prototype Gen | Qwen3.5-0.8B Think | 🟡 7 | — | — | — | — |
-| 46 | DevOps | Qwen3.5-0.8B Think | 🟢 10 | — | — | — | — |
-| | **Tier 4 — Expert** | | | | | | |
-| 47 | Math / Logic | Qwen3.5-2B | 🔴 4 | — | — | — | — |
-| 48 | STEM Analysis | Qwen3.5-4B | 🟢 8 | — | — | — | — |
-| 49 | Algorithm | Qwen3.5-4B | 🟢 10 | — | — | — | — |
-| | **Tier 5 — Senior** | | | | | | |
-| 50 | Orchestrator | Qwen3.5-0.8B | 🟢 8 | — | — | Mini3-8B | 🟢 9 |
-| 51 | Architect | Qwen3.5-2B | 🟢 10 | — | — | — | — |
-| 52 | Debugger | Qwen3.5-0.8B NT | 🟢 10 | — | — | — | — |
-| 53 | Legal Review | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 54 | Medical | Qwen3.5-0.8B | 🟢 10 | — | — | — | — |
-| 55 | Financial | Qwen3.5-4B | 🟢 9 | — | — | Mini3-14B | 🟢 10 |
-| 56 | Security | Qwen3.5-2B Think | 🟢 10 | — | — | — | — |
-| 57 | SRE / Incident | Qwen3.5-4B | 🔴 4 | — | — | — | — |
-| 58 | Book Writing | 📝 Manual | 📝 5 | — | — | — | — |
-| 59 | Compliance | Mini3-3B | 🟢 9 | — | — | Mini3-14B | 🟢 10† |
-
-> 📊 **[Full small model Think/NoThink comparison →](docs/results-small-vram.md)** · Phase F: 444/590 (75%) · Phase G: 81/110 (74%)
-
-
-## ☁️ Best Cloud Model Per Role
-
-🟢 = 8-10 &nbsp; 🟡 = 5-7 &nbsp; 🔴 = 0-4 &nbsp; 📝 = Manual review (5)
-
-> Currently tested: Qwen3.5-Plus, Kimi K2.5, GLM-5, MiniMax-M2.5. All via Alibaba Coding Plan.
-
-| # | Agent Role | ☁️ Best Cloud | |
-|---|---|---|---|
-| | | **Model** | **Score** |
-| | **Tier 1 — Utility** | | |
-| 1 | Router / Triage | GLM-5 NoThink | 🟢 10 |
-| 2 | Input Validator | K2.5 / GLM-5 | 🟢 10† |
-| 3 | Health Monitor | K2.5 / GLM-5 | 🟡 5 |
-| 4 | Notification | Kimi K2.5 | 🟢 9 |
-| 5 | Sentiment | K2.5 / GLM-5 | 🟢 10† |
-| 6 | FAQ Generation | Qwen3.5+ NT | 🟢 8 |
-| 7 | Translation | K2.5 / GLM-5 | 🟢 9 |
-| 8 | Calendar | — | 🔴 0 |
-| | **Tier 2 — Moderate** | | |
-| 9 | Research Agent | K2.5 / GLM-5 | 🟢 10† |
-| 10 | Content Writer | 📝 Manual | 📝 5 |
-| 11 | Editor | Kimi K2.5 | 🟢 10 |
-| 12 | Content Planner | K2.5 / GLM-5 | 🟢 10† |
-| 13 | Email Drafting | Kimi K2.5 | 🟢 10 |
-| 14 | Doc Summary | MiniMax-M2.5 | 🟢 10 |
-| 15 | Meeting Notes | Kimi K2.5 | 🟢 10 |
-| 16 | Social Scouting | K2.5 / GLM-5 | 🟢 10 |
-| 17 | Social Content | 📝 Manual | 📝 5 |
-| 18 | News Aggregation | K2.5 / GLM-5 | 🟢 10 |
-| 19 | Shopping | K2.5 / GLM-5 | 🟢 10 |
-| 20 | Memory Mgmt | K2.5 / GLM-5 | 🟢 9 |
-| 21 | RAG / Retrieval | K2.5 / GLM-5 | 🟡 6 |
-| 22 | Data Analysis | Qwen3.5+ NT | 🟡 5 |
-| 23 | Web Scraping | K2.5 / GLM-5 | 🟢 10† |
-| 24 | Image Description | 📝 Manual | 📝 5 |
-| 25 | Customer Support | K2.5 / GLM-5 | 🟢 10 |
-| 26 | Lead Scoring | GLM-5 NoThink | 🟢 10 |
-| 27 | Sprint Summary | GLM-5 | 🟢 9 |
-| 28 | Transaction | GLM-5 | 🟢 10 |
-| 29 | Home Automation | K2.5 / GLM-5 | 🟢 10 |
-| 30 | Fitness Tracking | GLM-5 | 🟢 9 |
-| 31 | Recipe / Cooking | Qwen3.5+ NT | 🟢 9 |
-| 32 | Personal Finance | GLM-5 | 🟡 7 |
-| 33 | SEO Optimization | K2.5 / GLM-5 | 🟢 9 |
-| 34 | Landing Page | 📝 Manual | 📝 5 |
-| 35 | Travel Planning | Kimi K2.5 | 🟢 10 |
-| | **Tier 3 — Advanced** | | |
-| 36 | Code Generation | K2.5 / GLM-5 | 🟢 10† |
-| 37 | Code Review | K2.5 / GLM-5 | 🟢 10 |
-| 38 | QA / Test Writing | K2.5 / GLM-5 | 🟢 8 |
-| 39 | Task Planning | Kimi K2.5 | 🟢 10 |
-| 40 | Fact-Checking | K2.5 / GLM-5 | 🟢 10† |
-| 41 | Critic / Review | 📝 Manual | 📝 5 |
-| 42 | Market Research | MiniMax-M2.5 | 🟢 9 |
-| 43 | Synthesizer | Kimi K2.5 | 🟢 10 |
-| 44 | Curriculum Design | Kimi K2.5 | 🟡 7 |
-| 45 | Prototype Gen | GLM-5 NoThink | 🟡 7 |
-| 46 | DevOps | Kimi K2.5 | 🟢 10 |
-| | **Tier 4 — Expert** | | |
-| 47 | Math / Logic | Kimi K2.5 | 🟢 8 |
-| 48 | STEM Analysis | K2.5 / GLM-5 | 🟢 10† |
-| 49 | Algorithm | GLM-5 Think | 🟢 10† |
-| | **Tier 5 — Senior** | | |
-| 50 | Orchestrator | GLM-5 Think | 🟢 8† |
-| 51 | Architect | K2.5 / GLM-5 | 🟢 10† |
-| 52 | Debugger | Kimi K2.5 | 🟢 10 |
-| 53 | Legal Review | K2.5 / GLM-5 | 🟢 10 |
-| 54 | Medical | GLM-5 | 🟢 10 |
-| 55 | Financial | Kimi K2.5 | 🟢 10 |
-| 56 | Security | K2.5 / GLM-5 | 🟢 10 |
-| 57 | SRE / Incident | GLM-5 NoThink | 🟡 6 |
-| 58 | Book Writing | 📝 Manual | 📝 5 |
-| 59 | Compliance | Kimi K2.5 | 🟢 9 |
-
-> † Phase G discriminator score · [☁️ Full cloud model comparison →](docs/results-cloud.md)
-
----
-
-## 🔒 ClawEval v2 Leaderboard — Proprietary Models
-
-> Closed-weight models accessed via API. Ranked separately from the open-weight leaderboard — same 59 tests, same scoring, same 1,220 checkpoints.
-
-| Rank | Model | Provider | Score | % | Perfect |
-|------|-------|----------|-------|---|---------|
-| 🥇 | **Gemini-3.5-Flash** | ☁️ Google (OpenRouter) | 978/1220 | **80.2%** | 22 |
+| 18 | **MiniMax-M2.7 Think** | ☁️ Ollama | 993/1220 | **81.4%** | 19 |
+| 19 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
+| 20 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
+| 21 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
+| 22 | **Gemini-3.5-Flash** | ☁️ Google (OpenRouter) | 978/1220 | **80.2%** | 22 |
+| 23 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
+| 24 | **GLM-5.2** | ☁️ Ollama | 957/1220 | **78.4%** | 23 |
+| 25 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
+| 26 | **GLM-5 NoThink** | ☁️ Ollama | 948/1220 | **77.7%** | 25 |
+| 27 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
+| 28 | **Kimi K2.5 NoThink** | ☁️ Ollama | 935/1220 | **76.6%** | 21 |
+| 29 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
+| 30 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
+| 31 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
+| 32 | **GLM-5 Think** | ☁️ Ollama | 927/1220 | **76.0%** | 23 |
+| 33 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
+| 34 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 35 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
+| 36 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
+| 37 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 38 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
+| 39 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
+| 40 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
+| 41 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 42 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
+| 43 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
+| 44 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 45 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
+| 46 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
+| 47 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
+| 48 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
+| 49 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 50 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
+| 51 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
+| 52 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 53 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
+| 54 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 #### 📋 Gemini-3.5-Flash — Full 59-Agent Breakdown
 

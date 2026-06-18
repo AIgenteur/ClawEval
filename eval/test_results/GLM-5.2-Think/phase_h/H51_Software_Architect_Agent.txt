@@ -1,0 +1,17 @@
+{
+  "q1": "CRDT (Conflict-free Replicated Data Types) using a library like Yjs or Automerge, as it handles decentralized merging and offline support natively without requiring a central transformation server.",
+  "q2": "WebSocket, because real-time collaborative editing requires bidirectional, low-latency communication for both sending local edits and receiving remote updates.",
+  "q3": "PostgreSQL, as it provides robust relational data handling for users and permissions, alongside JSONB and Bytea data types to efficiently store document metadata and serialized CRDT states.",
+  "q4": "Store the local CRDT document state in the browser using IndexedDB. When the connection is restored, the client syncs its local state with the server, and the CRDT algorithm automatically merges the changes without conflicts.",
+  "q5": "Redis Pub/Sub, used to broadcast WebSocket messages across multiple horizontally scaled WebSocket server instances, ensuring all connected clients receive updates regardless of which server they are connected to.",
+  "q6": "Deploy stateless WebSocket servers behind a Layer 7 load balancer (like AWS ALB). Use Redis Pub/Sub to route messages between instances so that any server can broadcast to any client, avoiding the need for sticky sessions.",
+  "q7": "Use the CRDT 'awareness' feature to broadcast lightweight, ephemeral cursor position and user selection data over the WebSocket connection. These messages are high-frequency and not persisted to the database.",
+  "q8": "OAuth 2.0 / OpenID Connect using JWTs (JSON Web Tokens). The client passes the JWT in the WebSocket handshake headers or query parameters, which the server validates before upgrading the connection.",
+  "q9": "Store periodic snapshots of the serialized CRDT state in an object store (like S3) alongside an append-only event log of operations in the database. Reconstruct historical versions by loading a snapshot and replaying subsequent events.",
+  "q10": "Use a global CDN (e.g., Cloudflare or AWS CloudFront) to serve static frontend assets (JS, CSS, images) with aggressive caching headers and content-hash-based filenames for cache-busting.",
+  "q11": "Implement document chunking/sharding. Divide the document into logical blocks or sections, and only load/sync the CRDT state for the chunks currently visible to the user via virtual scrolling, fetching more as the user scrolls.",
+  "q12": "Token bucket algorithm implemented at the API Gateway or Load Balancer level using Redis to track request counts per user ID or IP address, preventing abuse and protecting the WebSocket servers from message flooding.",
+  "q13": "Continuous WAL (Write-Ahead Logging) archiving for Point-in-Time Recovery (PITR) in PostgreSQL, combined with automated daily full database backups and cross-region asynchronous replication to a standby database.",
+  "q14": "Use pre-signed S3 URLs. The client requests a unique upload URL from the server, uploads the image directly to S3 concurrently, and then inserts the resulting S3 URL into the document's CRDT state.",
+  "q15": "Prometheus for metrics collection, Grafana for visualization and alerting, Loki for centralized log aggregation, and Jaeger for distributed tracing across the microservices and WebSocket servers."
+}

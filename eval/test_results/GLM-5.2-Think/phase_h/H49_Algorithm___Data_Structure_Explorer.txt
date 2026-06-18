@@ -1,0 +1,134 @@
+```python
+class Node:
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        prev = node.prev
+        nxt = node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def _add(self, node):
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add(node)
+            return node.val
+        return -1
+
+    def put(self, key, value):
+        if key in self.cache:
+            self._remove(self.cache[key])
+        node = Node(key, value)
+        self.cache[key] = node
+        self._add(node)
+        if len(self.cache) > self.capacity:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+
+
+class MinStack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, val):
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            current_min = self.stack[-1][1]
+            self.stack.append((val, min(val, current_min)))
+
+    def pop(self):
+        if self.stack:
+            self.stack.pop()
+
+    def top(self):
+        if self.stack:
+            return self.stack[-1][0]
+        return None
+
+    def get_min(self):
+        if self.stack:
+            return self.stack[-1][1]
+        return None
+
+
+def find_median(stream):
+    low = []  # Max-heap (simulated using negative values)
+    high = [] # Min-heap
+    medians = []
+
+    def heappush(heap, val, is_max=False):
+        if is_max:
+            val = -val
+        heap.append(val)
+        i = len(heap) - 1
+        while i > 0:
+            p = (i - 1) // 2
+            if heap[p] > heap[i]:
+                heap[p], heap[i] = heap[i], heap[p]
+                i = p
+            else:
+                break
+
+    def heappop(heap, is_max=False):
+        if len(heap) == 1:
+            val = heap.pop()
+            return -val if is_max else val
+        top = heap[0]
+        heap[0] = heap.pop()
+        i = 0
+        n = len(heap)
+        while True:
+            l = 2 * i + 1
+            r = 2 * i + 2
+            s = i
+            if l < n and heap[l] < heap[s]:
+                s = l
+            if r < n and heap[r] < heap[s]:
+                s = r
+            if s != i:
+                heap[i], heap[s] = heap[s], heap[i]
+                i = s
+            else:
+                break
+        return -top if is_max else top
+
+    for num in stream:
+        if not low or num <= -low[0]:
+            heappush(low, num, True)
+        else:
+            heappush(high, num, False)
+
+        if len(low) > len(high) + 1:
+            heappush(high, heappop(low, True), False)
+        elif len(high) > len(low):
+            heappush(low, heappop(high, False), True)
+
+        if len(low) == len(high):
+            medians.append((-low[0] + high[0]) / 2.0)
+        else:
+            medians.append(float(-low[0]))
+
+    return medians
+```

@@ -1,0 +1,67 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["data must be a dict"]}
+
+        for field_name, rules in schema.items():
+            required = rules.get("required", False)
+            if field_name not in data:
+                if required:
+                    errors.append(f"Missing required field: {field_name}")
+                continue
+
+            value = data[field_name]
+            expected_type = rules.get("type")
+
+            # Type checking
+            if not self._check_type(value, expected_type):
+                errors.append(
+                    f"Field '{field_name}' must be of type {expected_type}, "
+                    f"got {type(value).__name__}"
+                )
+                continue  # skip further checks if type is wrong
+
+            # Numeric min/max
+            if expected_type in ("int", "float"):
+                if "min" in rules and value < rules["min"]:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is less than min {rules['min']}"
+                    )
+                if "max" in rules and value > rules["max"]:
+                    errors.append(
+                        f"Field '{field_name}' value {value} is greater than max {rules['max']}"
+                    )
+
+            # Length checks for str and list
+            if expected_type in ("str", "list"):
+                length = len(value)
+                if "min_length" in rules and length < rules["min_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is less than min_length {rules['min_length']}"
+                    )
+                if "max_length" in rules and length > rules["max_length"]:
+                    errors.append(
+                        f"Field '{field_name}' length {length} is greater than max_length {rules['max_length']}"
+                    )
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _check_type(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        if expected_type == "bool":
+            return isinstance(value, bool)
+        if expected_type == "int":
+            # bool is subclass of int, exclude it
+            return isinstance(value, int) and not isinstance(value, bool)
+        if expected_type == "float":
+            # accept int or float but not bool
+            return isinstance(value, (int, float)) and not isinstance(value, bool)
+        if expected_type == "list":
+            return isinstance(value, list)
+        if expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+```

@@ -1,0 +1,22 @@
+```json
+{
+  "issues": [
+    {"line": "6", "issue": "replicas set to 1 — no high availability; single replica is a single point of failure", "severity": "minor"},
+    {"line": "17", "issue": "image uses mutable 'latest' tag instead of a pinned/digest tag, breaking reproducible deployments", "severity": "major"},
+    {"line": "20", "issue": "resources: {} on the api container — no CPU/memory requests or limits, risking resource starvation and noisy-neighbor issues", "severity": "major"},
+    {"line": "22", "issue": "securityContext.runAsRoot: true — container runs as root, violating least-privilege principle", "severity": "major"},
+    {"line": "23", "issue": "securityContext.privileged: true — privileged container bypasses isolation and is a serious security risk", "severity": "critical"},
+    {"line": "25-26", "issue": "DB_PASSWORD stored as a plaintext env var instead of using a Secret", "severity": "critical"},
+    {"line": "27-28", "issue": "API_KEY stored as a plaintext env var instead of using a Secret", "severity": "critical"},
+    {"line": "30-31", "issue": "No livenessProbe or readinessProbe defined for the api container — Kubernetes cannot detect hangs or readiness", "severity": "major"},
+    {"line": "32-33", "issue": "sidecar container has no livenessProbe or readinessProbe defined", "severity": "minor"},
+    {"line": "34-37", "issue": "sidecar requests are excessive (10Gi memory, 8 CPU) and likely won't schedule; also no resource limits set", "severity": "major"},
+    {"line": "38-41", "issue": "uses hostPath volume (/tmp/data) — ties pod to a specific node, is non-portable, and /tmp is not durable", "severity": "major"},
+    {"line": "16-31", "issue": "no imagePullPolicy specified for the api container (defaults to Always for :latest, which is implicit and unclear)", "severity": "minor"},
+    {"line": "32-37", "issue": "no securityContext defined for the sidecar container", "severity": "minor"},
+    {"line": "48-50", "issue": "Service type LoadBalancer exposes port 80 directly with no TLS termination configured", "severity": "major"},
+    {"line": "3-4", "issue": "no namespace specified for the Deployment (and Service) — resources land in 'default' namespace, reducing isolation", "severity": "minor"}
+  ],
+  "count": 15
+}
+```
