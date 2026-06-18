@@ -1,0 +1,77 @@
+```python
+def is_valid_password(password):
+    if not isinstance(password, str):
+        return False
+
+    # Rule 1 & 2: length between 8 and 64 inclusive
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # Rule 7: no spaces allowed
+    if ' ' in password:
+        return False
+
+    # Rule 6: at least one special character
+    special_chars = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '='}
+    if not any(c in special_chars for c in password):
+        return False
+
+    # Rule 3: at least one uppercase letter
+    if not any(c.isupper() for c in password):
+        return False
+
+    # Rule 4: at least one lowercase letter
+    if not any(c.islower() for c in password):
+        return False
+
+    # Rule 5: at least one digit
+    if not any(c.isdigit() for c in password):
+        return False
+
+    # Rule 8: cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Rule 9: no more than 3 consecutive identical characters
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i - 1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+
+    # Rule 10: cannot contain the word "password" (case-insensitive)
+    if 'password' in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    test_cases = [
+        ("Abc123!@", True),                       # 1.  valid basic password
+        ("Abc1!@", False),                        # 2.  too short (< 8)
+        ("A" * 65 + "bc1!@d", False),             # 3.  too long (> 64)
+        ("abc123!@", False),                      # 4.  missing uppercase
+        ("ABC123!@", False),                      # 5.  missing lowercase
+        ("Abcdef!@", False),                      # 6.  missing digit
+        ("Abc12345", False),                      # 7.  missing special character
+        ("Abc 123!", False),                      # 8.  contains a space
+        ("1Abc123!@", False),                     # 9.  starts with a digit
+        ("Aaaaa123!@", False),                    # 10. 4 consecutive 'a's
+        ("Abc123password!@", False),              # 11. contains "password"
+        ("Abc123PASSWORD!@", False),              # 12. contains "PASSWORD" (case-insensitive)
+        ("Aaaa123!@b", True),                     # 13. 3 consecutive 'a's is allowed
+        ("", False),                              # 14. empty string
+        (None, False),                            # 15. non-string input
+    ]
+
+    results = []
+    for input_val, expected in test_cases:
+        actual = is_valid_password(input_val)
+        results.append((input_val, expected, actual))
+
+    return results
+```

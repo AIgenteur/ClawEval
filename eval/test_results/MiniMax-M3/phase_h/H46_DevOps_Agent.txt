@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using ':latest' tag prevents reproducible deployments, bypasses version control, and can pull vulnerable or unexpected images.",
+      "severity": "major"
+    },
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica provides no high availability; pod failure causes downtime.",
+      "severity": "minor"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "No CPU/memory requests or limits defined for the main container, leading to unbounded resource consumption and scheduling issues.",
+      "severity": "major"
+    },
+    {
+      "line": "securityContext.runAsRoot: true",
+      "issue": "Container explicitly runs as root (UID 0), increasing blast radius if compromised.",
+      "severity": "major"
+    },
+    {
+      "line": "securityContext.privileged: true",
+      "issue": "Privileged mode disables most container isolation, granting nearly all host capabilities—complete container escape risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "env: - name: DB_PASSWORD value: \"sup3rs3cret!\"",
+      "issue": "Database password hardcoded in plaintext in a manifest; should use Secret objects or external secret managers.",
+      "severity": "critical"
+    },
+    {
+      "line": "env: - name: API_KEY value: \"ak_live_12345\"",
+      "issue": "Live API key hardcoded in plaintext and checked into source control; high risk of credential exposure.",
+      "severity": "critical"
+    },
+    {
+      "line": "volumes: - hostPath: path: /tmp/data",
+      "issue": "hostPath volume mount couples pod to a specific node, breaks portability, and can expose host filesystem (path traversal/escape risk).",
+      "severity": "major"
+    },
+    {
+      "line": "sidecar resources.requests.memory: \"10Gi\"",
+      "issue": "Sidecar requests 10Gi of memory—disproportionate and likely to cause scheduling failures or evict other workloads.",
+      "severity": "major"
+    },
+    {
+      "line": "sidecar resources.requests.cpu: \"8\"",
+      "issue": "Sidecar requests 8 full CPU cores—excessive for a logger and will starve other workloads on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "containers: - name: api (no livenessProbe)",
+      "issue": "Missing liveness probe means Kubernetes cannot detect and restart a deadlocked/unhealthy container.",
+      "severity": "major"
+    },
+    {
+      "line": "containers: - name: api (no readinessProbe)",
+      "issue": "Missing readiness probe means traffic can be routed to a pod that isn't ready to serve requests.",
+      "severity": "major"
+    },
+    {
+      "line": "metadata: (Deployment & Service)",
+      "issue": "No namespace specified; resources will be deployed to the 'default' namespace, which is discouraged for production workloads.",
+      "severity": "minor"
+    },
+    {
+      "line": "image: myapp:latest / logger:v1",
+      "issue": "No imagePullPolicy defined; behavior with ':latest' vs pinned tags is inconsistent and can cause unpredictable upgrades.",
+      "severity": "minor"
+    },
+    {
+      "line": "Service spec.ports: - port: 80 targetPort: 8080",
+      "issue": "Service port lacks explicit 'protocol' field and no HTTP/HTTPS considerations; LoadBalancer exposes service on port 80 over plain HTTP with no TLS termination.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

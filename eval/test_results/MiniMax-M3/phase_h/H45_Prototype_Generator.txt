@@ -1,0 +1,171 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        if not isinstance(data, dict):
+            errors.append(f"Data must be a dict, got {type(data).__name__}")
+            return {"valid": False, "errors": errors}
+        
+        for field_name, field_schema in schema.items():
+            expected_type = field_schema.get("type")
+            is_required = field_schema.get("required", False)
+            
+            # Check if field is missing
+            if field_name not in data:
+                if is_required:
+                    errors.append(f"Field '{field_name}' is required")
+                continue
+            
+            value = data[field_name]
+            
+            # Type checking
+            if not self._check_type(value, expected_type):
+                actual_type = self._get_type_name(value)
+                errors.append(
+                    f"Field '{field_name}' expected type {expected_type}, got {actual_type}"
+                )
+                continue
+            
+            # Constraint checking
+            self._check_constraints(field_name, value, expected_type, field_schema, errors)
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors
+        }
+    
+    def _check_type(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        elif expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif expected_type == "float":
+            return isinstance(value, (int, float)) and not isinstance(value, bool)
+        elif expected_type == "bool":
+            return isinstance(value, bool)
+        elif expected_type == "list":
+            return isinstance(value, list)
+        elif expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+    
+    def _get_type_name(self, value):
+        if isinstance(value, bool):
+            return "bool"
+        elif isinstance(value, float):
+            return "float"
+        elif isinstance(value, int):
+            return "int"
+        elif isinstance(value, str):
+            return "str"
+        elif isinstance(value, list):
+            return "list"
+        elif isinstance(value, dict):
+            return "dict"
+        return type(value).__name__
+    
+    def _check_constraints(self, field_name, value, value_type, schema, errors):
+        if value_type in ("int", "float"):
+            if "min" in schema and value < schema["min"]:
+                errors.append(
+                    f"Field '{field_name}' value {value} is less than min {schema['min']}"
+                )
+            if "max" in schema and value > schema["max"]:
+                errors.append(
+                    f"Field '{field_name}' value {value} is greater than max {schema['max']}"
+                )
+        elif value_type == "str":
+            if "min_length" in schema and len(value) < schema["min_length"]:
+                errors.append(
+                    f"Field '{field_name}' length {len(value)} is less than min_length {schema['min_length']}"
+                )
+            if "max_length" in schema and len(value) > schema["max_length"]:
+                errors.append(
+                    f"Field '{field_name}' length {len(value)} is greater than max_length {schema['max_length']}"
+                )
+        elif value_type == "list":
+            if "min_length" in schema and len(value) < schema["min_length"]:
+                errors.append(
+                    f"Field '{field_name}' length {len(value)} is less than min_length {schema['min_length']}"
+                )
+            if "max_length" in schema and len(value) > schema["max_length"]:
+                errors.append(
+                    f"Field '{field_name}' length {len(value)} is greater than max_length {schema['max_length']}"
+                )
+
+
+# ----------------- Test Cases -----------------
+if __name__ == "__main__":
+    validator = JSONValidator()
+    
+    # Test 1: Valid data
+    schema = {
+        "name": {"type": "str", "required": True, "min_length": 1, "max_length": 50},
+        "age": {"type": "int", "required": True, "min": 0, "max": 150},
+        "score": {"type": "float", "required": False, "min": 0.0, "max": 100.0},
+        "active": {"type": "bool", "required": True},
+        "tags": {"type": "list", "required": False, "min_length": 1, "max_length": 5}
+    }
+    
+    # Valid case
+    result = validator.validate(
+        {"name": "Alice", "age": 30, "score": 95.5, "active": True, "tags": ["a", "b"]},
+        schema
+    )
+    print("Test 1 (Valid):", result)
+    
+    # Missing required field
+    result = validator.validate({"name": "Bob", "active": True}, schema)
+    print("Test 2 (Missing age):", result)
+    
+    # Wrong type
+    result = validator.validate(
+        {"name": 123, "age": "thirty", "active": "yes"}, schema
+    )
+    print("Test 3 (Wrong types):", result)
+    
+    # Out of range
+    result = validator.validate(
+        {"name": "Charlie", "age": 200, "active": False}, schema
+    )
+    print("Test 4 (Age out of range):", result)
+    
+    # String length violations
+    result = validator.validate(
+        {"name": "", "age": 25, "active": True}, schema
+    )
+    print("Test 5 (Name too short):", result)
+    
+    # Extra fields allowed
+    result = validator.validate(
+        {"name": "Dave", "age": 40, "active": True, "extra_field": "ok"},
+        schema
+    )
+    print("Test 6 (Extra field allowed):", result)
+    
+    # Bool is not int
+    result = validator.validate(
+        {"name": "Eve", "age": True, "active": True}, schema
+    )
+    print("Test 7 (Bool for int field):", result)
+    
+    # List length violations
+    result = validator.validate(
+        {"name": "Frank", "age": 50, "active": True, "tags": []},
+        schema
+    )
+    print("Test 8 (Empty list):", result)
+```
+
+**Key design decisions:**
+
+1. **Type checking is strict for `bool` vs `int`**: Since `bool` is a subclass of `int` in Python, I explicitly exclude `bool` when checking for `int` type. A `True` value won't pass an `int` type check.
+
+2. **`float` accepts `int`**: Following common convention, integer values are accepted for `float` fields (since `5` is a valid float conceptually), but not `bool`.
+
+3. **Skip constraints on type mismatch**: If a value has the wrong type, we don't try to apply constraints (min/max/length) — we skip to the next field with a `continue`.
+
+4. **Extra fields are ignored**: We only iterate over schema fields, so any extra keys in `data` are simply never checked.
+
+5. **All errors collected**: We never `return` early on error — every field is fully validated, and the `valid` flag is determined by whether the error list is empty.

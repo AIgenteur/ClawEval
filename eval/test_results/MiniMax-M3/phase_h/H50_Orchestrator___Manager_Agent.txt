@@ -1,0 +1,195 @@
+```json
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "customer_refund_request (raw payload: order_id, customer_id, amount, currency, reason, timestamp, channel)",
+      "output": "validated_request { request_id, customer_id, order_id, amount, currency, reason_code, priority, validation_status, enriched_metadata }",
+      "next": "FraudCheckAgent",
+      "fallback": "NotificationAgent (with status=validation_failed) + AuditLogAgent",
+      "timeout_seconds": 5,
+      "role": "First-line triage: schema validation, customer authentication, data normalization, priority assignment, SLA tagging"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request from ValidationTriageAgent",
+      "output": "fraud_assessment { request_id, risk_score (0-100), fraud_flags[], recommendation (allow|review|block), checks_performed[] }",
+      "next": "ApprovalAgent",
+      "fallback": "HumanEscalationAgent (on timeout, model error, or signal-degraded mode)",
+      "timeout_seconds": 10,
+      "role": "ML risk scoring, velocity checks, device fingerprinting, chargeback history, behavioral pattern analysis"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "fraud_assessment + validated_request",
+      "output": "approval_decision { request_id, decision (approved|rejected|escalate), approved_amount, justification, applied_policy_version, conditions[] }",
+      "next": "CONDITIONAL: PaymentProcessingAgent (if approved) | NotificationAgent (if rejected) | HumanEscalationAgent (if escalate)",
+      "fallback": "HumanEscalationAgent (on rule-engine error, missing policy, or processing exception)",
+      "timeout_seconds": 8,
+      "role": "Applies refund policy: amount caps, customer tier, return-window, fraud-decision override, conditional routing"
+    },
+    {
+      "name": "PaymentProcessingAgent",
+      "input": "approval_decision (approved path only, with idempotency_key=request_id)",
+      "output": "payment_result { request_id, transaction_id, payment_method, amount_settled, currency, status (success|failed|pending), settled_at }",
+      "next": "AuditLogAgent",
+      "fallback": "HumanEscalationAgent (on gateway timeout, declined transaction, or partial settlement)",
+      "timeout_seconds": 15,
+      "role": "Calls payment provider API with idempotency, retries transient errors (2x), surfaces hard failures for human handling"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "escalation_context { request_id, originating_agent, reason, snapshot_of_artifacts, customer_visible_message }",
+      "output": "escalation_ticket { ticket_id, request_id, assigned_queue, sla_minutes, severity, status (created|partial_failure) }",
+      "next": "AuditLogAgent",
+      "fallback": "NotificationAgent (always — even partial ticket failure still emits interim customer message) + ops alert",
+      "timeout_seconds": 20,
+      "role": "Creates ops ticket, attaches full context bundle, sends interim customer message, schedules SLA timer"
+    },
+    {
+      "name": "AuditLogAgent",
+      "input": "audit_event { request_id, agent_name, action, payload_hash, decision, latency_ms, agent_status, timestamp }",
+      "output": "audit_record { log_id, request_id, event_hash, stored_at, storage_class, retention_until }",
+      "next": "NotificationAgent",
+      "fallback": "Local append-only file write → async replay to central store; raises degraded-mode flag",
+      "timeout_seconds": 3,
+      "role": "Tamper-evident audit log for SOX/PCI-DSS; invoked after every state-changing step in the pipeline"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_state { request_id, outcome (approved|rejected|escalated|failed), customer_message, channels[], locale, payload }",
+      "output": "notification_result { request_id, channels_sent[], delivery_status, message_ids, sent_at, retry_count }",
+      "next": null,
+      "fallback": "Retry queue with exponential backoff (max 3); dead-letter to ops alert channel + on-call page if all channels fail",
+      "timeout_seconds": 5,
+      "role": "Terminal agent: renders localized message, dispatches via email/SMS/push, confirms delivery, closes the workflow"
+    }
+  ],
+  "constraints": {
+    "agent_count": {
+      "minimum_required": 6,
+      "actual": 7,
+      "satisfied": true
+    },
+    "required_agent_types": {
+      "validation": "ValidationTriageAgent",
+      "fraud-check": "FraudCheckAgent",
+      "approval": "ApprovalAgent",
+      "payment": "PaymentProcessingAgent",
+      "notification": "NotificationAgent",
+      "all_present": true
+    },
+    "structural_invariants": {
+      "first_agent_is_validation": true,
+      "first_agent_name": "ValidationTriageAgent",
+      "last_agent_is_notification": true,
+      "last_agent_name": "NotificationAgent",
+      "fraud_check_before_approval": "FraudCheckAgent -> ApprovalAgent",
+      "payment_after_approval": "ApprovalAgent (approved branch) -> PaymentProcessingAgent",
+      "no_circular_dependencies": true,
+      "graph_is_dag": true,
+      "terminal_agent_has_no_next": true
+    },
+    "per_agent_contracts": {
+      "every_agent_has_input": true,
+      "every_agent_has_output": true,
+      "every_agent_has_next": true,
+      "every_agent_has_fallback": true,
+      "every_agent_has_timeout": true
+    },
+    "conditional_branches": [
+      {
+        "agent": "ApprovalAgent",
+        "type": "if/else routing",
+        "branches": [
+          {"condition": "decision == approved", "route_to": "PaymentProcessingAgent"},
+          {"condition": "decision == rejected", "route_to": "NotificationAgent"},
+          {"condition": "decision == escalate", "route_to": "HumanEscalationAgent"}
+        ]
+      },
+      {
+        "agent": "PaymentProcessingAgent",
+        "type": "terminal success/failure split",
+        "branches": [
+          {"condition": "status == success", "route_to": "AuditLogAgent -> NotificationAgent (approved)"},
+          {"condition": "status == failed or timeout", "route_to": "HumanEscalationAgent"}
+        ]
+      }
+    ],
+    "outcome_coverage": {
+      "approved": true,
+      "rejected": true,
+      "escalated_to_human": true,
+      "payment_failed_post_approval": true,
+      "fraud_blocked": true,
+      "validation_failed": true,
+      "all_outcomes_emit_notification": true
+    },
+    "logging_and_audit": {
+      "centralized_agent": "AuditLogAgent",
+      "audit_at_each_step": true,
+      "invocation_points": ["after ValidationTriage", "after FraudCheck", "after Approval", "after Payment", "after HumanEscalation", "after Notification"],
+      "storage": "append-only, tamper-evident, hash-chained",
+      "compliance_frameworks": ["SOX", "PCI-DSS", "GDPR"],
+      "retention_days": 2555
+    },
+    "human_escalation_path": {
+      "enabled": true,
+      "primary_agent": "HumanEscalationAgent",
+      "entry_points": ["ValidationTriageAgent", "FraudCheckAgent", "ApprovalAgent", "PaymentProcessingAgent"],
+      "trigger_conditions": [
+        "fraud model degraded or timed out",
+        "amount exceeds auto-approval ceiling",
+        "policy engine exception",
+        "payment gateway failure after retries",
+        "customer flagged as VIP with override pending"
+      ],
+      "sla_minutes": 30,
+      "customer_interim_message": true
+    },
+    "timeouts": {
+      "unit": "seconds",
+      "per_agent": {
+        "ValidationTriageAgent": 5,
+        "FraudCheckAgent": 10,
+        "ApprovalAgent": 8,
+        "PaymentProcessingAgent": 15,
+        "HumanEscalationAgent": 20,
+        "AuditLogAgent": 3,
+        "NotificationAgent": 5
+      },
+      "global_budget_seconds": 60
+    },
+    "performance_budget": {
+      "max_processing_time_seconds": 60,
+      "approved_path_worst_case_seconds": 46,
+      "approved_path_typical_seconds": 36,
+      "rejected_path_worst_case_seconds": 31,
+      "rejected_path_typical_seconds": 21,
+      "escalated_path_worst_case_seconds": 51,
+      "escalated_path_typical_seconds": 41,
+      "budget_compliant": true
+    },
+    "idempotency": {
+      "key_field": "request_id",
+      "safe_to_retry": true,
+      "payment_idempotency_key": "request_id",
+      "notification_idempotency_key": "request_id + outcome"
+    },
+    "observability": {
+      "tracing": "W3C trace context propagated across all agents, parent_span=request_id",
+      "metrics": ["agent_latency_ms_p50_p95_p99", "decision_distribution", "fraud_block_rate", "payment_success_rate", "escalation_rate", "notification_delivery_rate"],
+      "alerting": {
+        "p99_latency_threshold_ms": 5000,
+        "error_rate_threshold": 0.05,
+        "page_on": ["audit_write_failure", "payment_idempotency_conflict", "all_channels_notification_failure"]
+      }
+    },
+    "security": {
+      "pii_handling": "tokenized customer_id in logs; full payload only in secured workflow memory",
+      "secrets_management": "payment credentials retrieved per-call from vault, never logged",
+      "data_residency": "enforced at ValidationTriageAgent based on customer locale"
+    }
+  }
+}
+```

@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection (CWE-89)",
+      "location": "/login function - f-string query construction with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Credentials (CWE-798)",
+      "location": "SECRET = 'admin123' global variable",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Cryptographic Algorithm - MD5 (CWE-327)",
+      "location": "/login function - hashlib.md5() used for token generation",
+      "severity": "medium"
+    },
+    {
+      "type": "Server-Side Template Injection (CWE-1336)",
+      "location": "/profile/<username> - render_template_string with user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (CWE-79)",
+      "location": "/search function - q parameter reflected in HTML without escaping",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection (CWE-78)",
+      "location": "/run endpoint - subprocess.run(shell=True) with user-controlled input",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal in File Upload (CWE-22)",
+      "location": "/upload function - os.path.join with user-controlled filename",
+      "severity": "high"
+    },
+    {
+      "type": "Unrestricted File Upload (CWE-434)",
+      "location": "/upload function - no file type/content validation",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read (CWE-22)",
+      "location": "/download function - send_file() with user-controlled path",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Deserialization (CWE-502)",
+      "location": "/session endpoint - pickle.loads() on untrusted data",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization (CWE-502)",
+      "location": "/config endpoint - yaml.load() without SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "OS Command Injection (CWE-78)",
+      "location": "/export function - os.system() with user-controlled format parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled (CWE-489)",
+      "location": "app.run(debug=True) - exposes Werkzeug debugger/RCE",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Network Binding (CWE-668)",
+      "location": "app.run(host='0.0.0.0') - exposed to all network interfaces",
+      "severity": "medium"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison (CWE-256)",
+      "location": "/login function - direct password comparison in SQL query",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}
+```

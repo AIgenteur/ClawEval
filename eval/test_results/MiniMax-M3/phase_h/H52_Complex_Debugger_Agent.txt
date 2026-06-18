@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "self.requests = []  # Line 8: Bug",
+      "bug": "Race condition: list is mutated by multiple coroutines without a lock; modifications between awaits are not atomic",
+      "fix": "Add an asyncio.Lock: self.lock = asyncio.Lock() and acquire it around all list modifications"
+    },
+    {
+      "line": "now = asyncio.get_event_loop().time()  # Line 11: Bug",
+      "bug": "asyncio.get_event_loop() is deprecated in Python 3.10+; also, 'now' is never refreshed after the sleep below, so stale timestamps get appended",
+      "fix": "Use 'asyncio.get_running_loop().time()' (or time.monotonic()) and reassign 'now' after 'await asyncio.sleep(wait)'"
+    },
+    {
+      "line": "async with aiohttp.ClientSession() as session:  # Line 25: Bug",
+      "bug": "Creates a new ClientSession for every request, causing resource exhaustion and defeating connection pooling",
+      "fix": "Create one ClientSession in fetch_all() and pass it into fetch_one(), or use it as a context manager around all fetches"
+    },
+    {
+      "line": "response = await session.get(url, timeout=30)  # Line 27: Bug",
+      "bug": "Response object is never explicitly released/closed, leaking connections back to the pool",
+      "fix": "Use 'async with session.get(url, timeout=30) as response:' or call 'await response.release()' in a finally block"
+    },
+    {
+      "line": "results[url] = data  # Line 29: Bug",
+      "bug": "Race condition: multiple coroutines mutate the shared dict concurrently, risking lost updates or RuntimeError",
+      "fix": "Protect dict writes with an asyncio.Lock, or use an asyncio-safe structure, or aggregate results per task and merge after gather"
+    },
+    {
+      "line": "except Exception:  # Line 31: Bug",
+      "bug": "Bare 'except Exception:' is too broad, swallows all errors silently, and also has a race condition on results dict",
+      "fix": "Catch specific exceptions (aiohttp.ClientError, asyncio.TimeoutError, json.JSONDecodeError) and log them; protect dict access with a lock"
+    },
+    {
+      "line": "pass  # Line 32: Bug",
+      "bug": "Useless 'pass' statement; exceptions are silently swallowed with no logging, metrics, or re-raise",
+      "fix": "Remove 'pass' and either log the exception, store error details in results, or re-raise with context"
+    },
+    {
+      "line": "await asyncio.gather(*tasks)  # Line 35: Bug",
+      "bug": "Missing 'return_exceptions=True': if any task fails, gather raises immediately and cancels all other in-flight tasks",
+      "fix": "Use 'await asyncio.gather(*tasks, return_exceptions=True)' and handle/inspect exceptions explicitly"
+    },
+    {
+      "line": "task = process_item(item)  # Line 42: Bug - missing await",
+      "bug": "Coroutine is created but not awaited or scheduled; 'await asyncio.sleep' inside never executes and you get a 'never awaited' warning",
+      "fix": "Use 'await process_item(item)' for sequential, or 'asyncio.create_task(process_item(item))' for concurrent execution"
+    },
+    {
+      "line": "yield r  # Line 45: Bug",
+      "bug": "process_batch is an async generator, but if gather raises (no return_exceptions), the generator never yields; also exceptions are not handled per item",
+      "fix": "Add return_exceptions=True to gather and filter/handle exceptions, or restructure to not be an async generator"
+    },
+    {
+      "line": "self.pool = []  # Line 52: Bug",
+      "bug": "Using a plain list for a connection pool is not async-safe (no locking) and doesn't provide FIFO semantics",
+      "fix": "Use 'asyncio.Queue()' (with maxsize=self.size) or protect access with an asyncio.Lock"
+    },
+    {
+      "line": "self.pool.append(conn)  # Line 60: Bug",
+      "bug": "No size check: pool can grow unbounded; also no lock protection against concurrent appends/pops",
+      "fix": "Check 'if len(self.pool) < self.size' before appending, and protect with an asyncio.Lock or use Queue.put_nowait()"
+    },
+    {
+      "line": "return object()  # Line 63: Bug",
+      "bug": "Returns a dummy object() instead of an actual connection (e.g., a database or HTTP connection)",
+      "fix": "Create and return a real connection object, e.g., 'return aiohttp.ClientSession()' or a DB connection"
+    },
+    {
+      "line": "print(f\"Got {len(results)} results\")  # Line 68: Bug",
+      "bug": "Misleading count: 'urls' has duplicates so len(results) < len(urls); also doesn't distinguish successful vs failed (None) results",
+      "fix": "Count by status: 'successful = sum(1 for v in results.values() if v is not None)' and report failures separately"
+    },
+    {
+      "line": "async def acquire(self):  # (after the sleep, appending old 'now')",
+      "bug": "Stale timestamp: after 'await asyncio.sleep(wait)', the code appends the pre-sleep 'now' value, so timestamps don't reflect actual request time, making rate limit calculations inaccurate",
+      "fix": "Re-read the time after the sleep: 'now = asyncio.get_running_loop().time()' before self.requests.append(now)"
+    }
+  ],
+  "count": 15
+}
+```

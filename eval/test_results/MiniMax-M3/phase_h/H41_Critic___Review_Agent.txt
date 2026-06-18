@@ -1,0 +1,333 @@
+```json
+{
+  "overall_score": 2,
+  "score_justification": "The repository demonstrates critical security vulnerabilities (SQL injection, hardcoded credentials, exposed AWS keys, world-writable permissions, root execution), poor architectural decisions (monolithic 500-line app.py, mixed-concern utility module), missing documentation, outdated dependencies, and near-zero test coverage. While the project is functional at a surface level, it would not pass any reasonable security audit, code review, or production-readiness assessment. The score of 2 (out of 10) reflects that the core intent of a Python web application is present, but virtually every supporting practice—security, structure, testing, documentation, deployment—is either broken or absent. A score of 1 would be reserved for non-functional code; 2 acknowledges structure exists while underscoring that almost nothing is done correctly.",
+  "categories": [
+    {
+      "name": "Security",
+      "score": 1,
+      "findings": [
+        "SQL injection vulnerability in database.py via f-string interpolation of user_id into raw SQL",
+        "Hardcoded DB_PASSWORD and API_KEY in config.py committed to source control",
+        "AWS credentials stored inline in deploy.sh, likely committed to repository",
+        "chmod 777 on all files grants world-read/write/execute, exposing secrets and code to tampering",
+        "Running container as root removes kernel-level isolation guarantees",
+        "No secrets management strategy (Vault, AWS Secrets Manager, or even .env files) is evident"
+      ]
+    },
+    {
+      "name": "Architecture & Code Organization",
+      "score": 2,
+      "findings": [
+        "app.py at 500 lines combines routing, business logic, and DB access—classic monolith",
+        "utils.py mixes string helpers, date parsing, HTTP calls, and file I/O with no coherent domain",
+        "No blueprint/module separation; should use Flask blueprints, Django apps, or FastAPI routers",
+        "No service layer or repository pattern to decouple business logic from persistence",
+        "No clear domain modeling (models, schemas, DTOs)"
+      ]
+    },
+    {
+      "name": "Testing & Quality Assurance",
+      "score": 1,
+      "findings": [
+        "Only 3 test functions in test_app.py for an application of this scope",
+        "No mocking of external dependencies (DB, API calls, file system)",
+        "No coverage measurement or threshold enforcement",
+        "No integration, end-to-end, or security tests",
+        "No fixtures, factories, or shared test utilities"
+      ]
+    },
+    {
+      "name": "Documentation",
+      "score": 1,
+      "findings": [
+        "README.md is effectively empty (only a TODO)",
+        "No .env.example documenting required environment variables",
+        "No API documentation (OpenAPI/Swagger, docstrings, or manual)",
+        "No architecture diagram or contributor guide",
+        "No CHANGELOG, LICENSE, or CODE_OF_CONDUCT"
+      ]
+    },
+    {
+      "name": "Dependency Management",
+      "score": 2,
+      "findings": [
+        "requirements.txt has no version pinning, leading to non-reproducible builds",
+        "Python 3.8 base image is end-of-life (EOL October 2024)",
+        "No use of pip-tools, Poetry, or Pipenv for transitive dependency resolution",
+        "No lockfile (requirements.lock, poetry.lock, or Pipfile.lock)",
+        "No vulnerability scanning (Dependabot, Snyk, Trivy) configured"
+      ]
+    },
+    {
+      "name": "Containerization & Deployment",
+      "score": 1,
+      "findings": [
+        "Dockerfile uses python:3.8 (outdated, full of CVEs) instead of slim or distroless variants",
+        "No multi-stage build, inflating image size and attack surface",
+        "Container runs as root (no USER directive)",
+        "No .dockerignore file, allowing secrets and .git into build context",
+        "deploy.sh contains inline credentials and uses chmod 777"
+      ]
+    },
+    {
+      "name": "CI/CD & Automation",
+      "score": 0,
+      "findings": [
+        "No CI/CD pipeline evident (.github/workflows, .gitlab-ci.yml, Jenkinsfile, etc.)",
+        "No automated linting (flake8, ruff, black, isort)",
+        "No automated security scanning (Bandit, Safety, Trivy)",
+        "No automated test runs on push/PR",
+        "Manual deploy.sh execution invites human error and credential leakage"
+      ]
+    }
+  ],
+  "critical_issues": [
+    {
+      "id": 1,
+      "title": "SQL injection in database.py",
+      "severity": "critical",
+      "file": "database.py",
+      "evidence": "f\"SELECT * FROM users WHERE id={user_id}\"",
+      "impact": "Attacker can read, modify, or delete arbitrary data; bypass authentication; potentially achieve remote code execution via database-specific features (e.g., PostgreSQL COPY ... PROGRAM, MySQL INTO OUTFILE). This is the highest-severity web vulnerability (OWASP #1).",
+      "fix": "Use parameterized queries exclusively: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,)). Better: migrate to SQLAlchemy ORM or use query builders that escape by default."
+    },
+    {
+      "id": 2,
+      "title": "Hardcoded credentials in config.py",
+      "severity": "critical",
+      "file": "config.py",
+      "evidence": "DB_PASSWORD = \"admin123\", API_KEY = \"sk-xxx\"",
+      "impact": "Even after deletion from the repo, credentials persist in git history. The weak password \"admin123\" and exposed API key enable direct database compromise and financial/API abuse. Any developer, CI runner, or attacker with repo access has production-level power.",
+      "fix": "Remove secrets from source control immediately, rotate all exposed credentials, scrub git history (git filter-repo or BFG), and load from environment variables or a secrets manager."
+    },
+    {
+      "id": 3,
+      "title": "Inline AWS credentials in deploy.sh",
+      "severity": "critical",
+      "file": "deploy.sh",
+      "evidence": "Contains AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY inline",
+      "impact": "If this file is committed (very likely given chmod 777), the AWS account is fully compromisable. Attacker can spin up crypto miners, exfiltrate S3 data, or rack up enormous bills within minutes. AWS bills for compromised accounts have reached hundreds of thousands of dollars.",
+      "fix": "Revoke these credentials in IAM immediately. Configure AWS CLI with IAM roles (instance profiles, OIDC federation for CI/CD, or aws-vault for local). Never store long-lived keys in scripts."
+    },
+    {
+      "id": 4,
+      "title": "chmod 777 on all files",
+      "severity": "critical",
+      "file": "deploy.sh",
+      "evidence": "chmod 777 applied across the project",
+      "impact": "Any user on the host system can read (stealing secrets), modify (injecting malicious code), or replace (supply-chain attack) any file. On a multi-tenant CI runner or shared server, this is a privilege escalation primitive.",
+      "fix": "Remove the chmod 777. Use 755 for executables and 644 for files. Apply least-privilege ownership (chown to a non-root deploy user)."
+    },
+    {
+      "id": 5,
+      "title": "Container runs as root",
+      "severity": "high",
+      "file": "Dockerfile",
+      "evidence": "No USER directive; defaults to root",
+      "impact": "A container escape vulnerability (e.g., runC CVE-2019-5736, Dirty Pipe CVE-2022-0185) gives the attacker root on the host. Running as root also means a single webapp RCE is a full-host compromise.",
+      "fix": "Add 'RUN adduser --system --no-log-init --uid 10001 appuser' and 'USER appuser'. Ensure the app listens on a non-privileged port (>= 1024)."
+    },
+    {
+      "id": 6,
+      "title": "Outdated Python 3.8 base image",
+      "severity": "high",
+      "file": "Dockerfile",
+      "evidence": "FROM python:3.8",
+      "impact": "Python 3.8 reached end-of-life in October 2024—no security patches. The full python:3.8 image (not -slim) carries hundreds of OS-level CVEs in glibc, openssl, and other base packages.",
+      "fix": "Use python:3.12-slim-bookworm (or python:3.13-slim) and pin with a digest (FROM python:3.12-slim@sha256:...). For production, consider distroless or Chainguard images."
+    },
+    {
+      "id": 7,
+      "title": "Monolithic 500-line app.py",
+      "severity": "high",
+      "file": "app.py",
+      "evidence": "All routes, business logic, and DB queries in one file",
+      "impact": "Untestable in isolation, impossible to navigate, merge-conflict prone, and blocks parallel development. Every change risks breaking unrelated features.",
+      "fix": "Restructure into blueprints (Flask) or routers (FastAPI): /auth, /users, /api/v1/<resource>. Extract business logic into a service layer; DB access into a repository or DAO layer."
+    },
+    {
+      "id": 8,
+      "title": "utils.py is a god-module",
+      "severity": "medium",
+      "file": "utils.py",
+      "evidence": "Mixes string helpers, date parsing, API calls, and file I/O",
+      "impact": "The classic 'utils' anti-pattern: it becomes a junk drawer with circular dependencies, makes testing harder, and obscures domain boundaries. Any change risks breaking unrelated code.",
+      "fix": "Split by domain: text/formatting.py, datetime/parsers.py, http/clients.py, io/files.py. Better yet, place utilities near the feature that uses them (cohesion over convenience)."
+    },
+    {
+      "id": 9,
+      "title": "No version pinning in requirements.txt",
+      "severity": "high",
+      "file": "requirements.txt",
+      "evidence": "flask, requests, sqlalchemy — no version specifiers",
+      "impact": "Builds are non-reproducible. A breaking change in any dependency (or a malicious version upload—see the 'ctx' and 'colors' fakeroute attacks) can silently break production or introduce backdoors.",
+      "fix": "Pin exact versions: flask==3.0.3. Use pip-compile (pip-tools) to generate requirements.txt from requirements.in and commit both. Consider Poetry with a lockfile."
+    },
+    {
+      "id": 10,
+      "title": "Insufficient test coverage (3 tests, no mocking)",
+      "severity": "high",
+      "file": "test_app.py",
+      "evidence": "50 lines, 3 test functions, no mocking",
+      "impact": "Estimated coverage is well below 10%. Refactoring is dangerous; regressions will reach production. No confidence in deployments.",
+      "fix": "Adopt pytest, pytest-cov, pytest-mock, and factory_boy. Enforce a minimum of 80% line coverage with branch coverage enabled (--cov-branch). Cover critical paths: auth, payment, data mutations."
+    },
+    {
+      "id": 11,
+      "title": "Empty README.md",
+      "severity": "medium",
+      "file": "README.md",
+      "evidence": "Contains only 'TODO: add docs'",
+      "impact": "New developers cannot onboard. Open-source contributors cannot evaluate the project. Stakeholders cannot understand what the application does.",
+      "fix": "Write a README with: project description, prerequisites, install steps, running tests, running locally, deployment, configuration, license, and contact/security policy."
+    },
+    {
+      "id": 12,
+      "title": "Missing .env.example",
+      "severity": "medium",
+      "file": ".env.example (absent)",
+      "evidence": "No template for required environment variables",
+      "impact": "Developers must guess configuration keys. Onboarding is slow. Required variables may be silently missing, causing runtime failures.",
+      "fix": "Create .env.example listing every required variable with placeholder values and comments (e.g., DATABASE_URL=postgresql://user:pass@localhost/dbname). Add .env to .gitignore and document loading via python-dotenv or pydantic-settings."
+    },
+    {
+      "id": 13,
+      "title": "No multi-stage Dockerfile build",
+      "severity": "medium",
+      "file": "Dockerfile",
+      "evidence": "Single-stage build with full toolchain retained in final image",
+      "impact": "Larger attack surface (compilers, headers, pip cache). Larger image size means slower pulls and higher storage costs. Build dependencies remain in production images.",
+      "fix": "Use multi-stage builds: a 'builder' stage compiles/installs wheels; a slim 'runtime' stage copies only the installed packages. Example: 'FROM python:3.12-slim AS builder ... FROM python:3.12-slim AS runtime COPY --from=builder /install /usr/local'."
+    },
+    {
+      "id": 14,
+      "title": "No CI/CD pipeline",
+      "severity": "high",
+      "file": "Repository root",
+      "evidence": "No .github/workflows, .gitlab-ci.yml, or equivalent",
+      "impact": "Linting, tests, security scans, and deployments are all manual. Bugs reach production; secrets are pushed accidentally; deployments are inconsistent across environments.",
+      "fix": "Add GitHub Actions (or equivalent) with stages: lint (ruff, black --check), security (Bandit, pip-audit, Trivy), test (pytest with coverage gate), build, and deploy. Require green CI before merge."
+    },
+    {
+      "id": 15,
+      "title": "Raw SQL with string formatting",
+      "severity": "critical",
+      "file": "database.py",
+      "evidence": "f\"SELECT * FROM users WHERE id={user_id}\"",
+      "impact": "Trivially exploitable SQL injection. Any user-controlled input flowing into these queries is game over.",
+      "fix": "Use parameterized queries (DB-API): cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,)). Strongly prefer an ORM (SQLAlchemy Core/ORM, SQLModel) which parameterizes by default."
+    },
+    {
+      "id": 16,
+      "title": "No secrets management strategy",
+      "severity": "critical",
+      "file": "config.py, deploy.sh",
+      "evidence": "Secrets in source code and shell scripts",
+      "impact": "No rotation, no audit trail, no scoping. Once leaked, secrets remain valid until manually rotated.",
+      "fix": "Use environment variables for local development (loaded via .env, never committed). For staging/production, use AWS Secrets Manager, HashiCorp Vault, or SOPS-encrypted files. Rotate secrets regularly and on suspected exposure."
+    },
+    {
+      "id": 17,
+      "title": "No test coverage threshold",
+      "severity": "medium",
+      "file": "test_app.py (and CI config, which is missing)",
+      "evidence": "No coverage configuration",
+      "impact": "Coverage can only decrease; there's no quantitative guardrail for quality.",
+      "fix": "Configure pytest-cov with --cov-fail-under=80 (or higher for critical modules). Fail CI builds that drop below threshold."
+    },
+    {
+      "id": 18,
+      "title": "Improper file permissions in deploy.sh",
+      "severity": "critical",
+      "file": "deploy.sh",
+      "evidence": "chmod 777 on all files",
+      "impact": "See issue #4. World-writable files on a deployment host allow any local user to inject code that runs as the deployer.",
+      "fix": "Remove chmod 777. Use umask 022 and explicit, minimal permissions (chmod 750 for scripts, 640 for config). Set ownership to a dedicated, non-root deploy user."
+    },
+    {
+      "id": 19,
+      "title": "No separation of concerns in app.py",
+      "severity": "high",
+      "file": "app.py",
+      "evidence": "Routes, business logic, and DB queries interleaved in 500 lines",
+      "impact": "Cannot unit-test business logic without spinning up Flask. Cannot swap the database without touching route handlers. Cannot reuse logic across endpoints.",
+      "fix": "Three-layer architecture: (1) routes/ (Flask blueprints) — HTTP transport only; (2) services/ — business logic, no Flask imports; (3) repositories/ or models/ — data access. Inject dependencies to enable testing."
+    },
+    {
+      "id": 20,
+      "title": "Outdated and vulnerable base image",
+      "severity": "high",
+      "file": "Dockerfile",
+      "evidence": "FROM python:3.8 (full, not slim, not pinned)",
+      "impact": "Hundreds of unpatched CVEs in glibc, openssl, libsqlite3, etc. Attackers can scan the registry and exploit well-known flaws within hours of a CVE dropping.",
+      "fix": "Pin to a specific minor version (python:3.12.7-slim-bookworm) and ideally to a digest. Add Trivy or Grype to CI to fail on HIGH/CRITICAL CVEs. Rebuild images weekly to pull patches."
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "P0 (this week)",
+      "actions": [
+        "Rotate the hardcoded DB password and API key in config.py; treat them as compromised",
+        "Revoke and replace the AWS credentials in deploy.sh; enable MFA and IAM Access Analyzer",
+        "Patch the SQL injection in database.py with parameterized queries or an ORM",
+        "Remove chmod 777 from deploy.sh; replace with 750/640 and a non-root deploy user",
+        "Scan git history with git filter-repo or BFG to remove all secrets, then force-push and notify all clone holders",
+        "Add .env to .gitignore immediately; create a .env.example with required variables"
+      ]
+    },
+    {
+      "priority": "P1 (this sprint)",
+      "actions": [
+        "Restructure the project: introduce a src/ (or app/) package with blueprints/ (or routers/), services/, repositories/, models/, and schemas/ layers",
+        "Add an ORM (SQLAlchemy 2.0 or SQLModel); migrate raw SQL to parameterized queries through the data layer",
+        "Adopt a settings library (pydantic-settings, dynaconf) that loads from env vars with type validation",
+        "Write a real README: overview, quickstart, configuration, architecture diagram, contributing guide, security policy, license",
+        "Adopt dependency pinning: pip-compile to generate requirements.txt from requirements.in; commit both. Add Dependabot or Renovate",
+        "Add a non-root user and multi-stage build to the Dockerfile; pin to python:3.12-slim; add HEALTHCHECK"
+      ]
+    },
+    {
+      "priority": "P2 (this quarter)",
+      "actions": [
+        "Set up GitHub Actions CI: ruff (lint), black (format check), mypy (types), Bandit (security), pip-audit (deps), Trivy (image), pytest with coverage gate (--cov-fail-under=80)",
+        "Expand test suite to 80%+ coverage with unit tests (services, utils), integration tests (DB, APIs), and end-to-end tests (Playwright)",
+        "Split utils.py into domain-specific modules (text, datetime, http, io)",
+        "Add OpenAPI/Swagger documentation (Flask-RESTX, FastAPI's built-in, or apispec)",
+        "Introduce structured logging (structlog or loguru) and observability hooks (OpenTelemetry, Sentry)",
+        "Set up pre-commit hooks (pre-commit framework) for black, ruff, mypy, and detect-secrets",
+        "Add CODEOWNERS, PR templates, and branch protection requiring CI green + 1+ review",
+        "Implement secrets management: AWS Secrets Manager for prod, .env + direnv for local, OIDC for CI"
+      ]
+    }
+  ],
+  "severity_summary": {
+    "critical": [
+      "SQL injection in database.py",
+      "Hardcoded DB password and API key in config.py",
+      "Inline AWS credentials in deploy.sh",
+      "chmod 777 on all files",
+      "Raw SQL with string formatting (same as SQL injection — listed separately as #15 per requirement)",
+      "No secrets management strategy"
+    ],
+    "high": [
+      "Container runs as root",
+      "Outdated Python 3.8 base image",
+      "Monolithic 500-line app.py",
+      "No version pinning in requirements.txt",
+      "Insufficient test coverage (3 tests, no mocking)",
+      "No CI/CD pipeline",
+      "No separation of concerns in app.py",
+      "Outdated and vulnerable base image (related to Python 3.8 — listed separately as #20 per requirement)"
+    ],
+    "medium": [
+      "utils.py is a god-module",
+      "Empty README.md",
+      "Missing .env.example",
+      "No multi-stage Dockerfile build",
+      "No test coverage threshold"
+    ],
+    "low": []
+  }
+}
+```

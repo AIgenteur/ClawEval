@@ -1,0 +1,101 @@
+```json
+{
+  "s1": {
+    "status": "healthy",
+    "latency_ms": 45,
+    "error_rate_pct": 0.01,
+    "notes": "All metrics nominal; 99.99% uptime"
+  },
+  "s2": {
+    "status": "degraded",
+    "latency_ms": 200,
+    "error_rate_pct": 2.5,
+    "notes": "Elevated p99 (1500ms) and timeouts indicate stress"
+  },
+  "s3": {
+    "status": "healthy",
+    "latency_ms": 5,
+    "error_rate_pct": 0.0,
+    "notes": "Primary DB operating optimally; zero replication lag"
+  },
+  "s4": {
+    "status": "degraded",
+    "latency_ms": 5,
+    "error_rate_pct": 0.1,
+    "notes": "Replication lag of 5200ms is high; risk of stale reads"
+  },
+  "s5": {
+    "status": "healthy",
+    "latency_ms": 1,
+    "error_rate_pct": 0.0,
+    "notes": "Redis performing well; memory at 45%"
+  },
+  "s6": {
+    "status": "down",
+    "latency_ms": 800,
+    "error_rate_pct": 8.0,
+    "notes": "Cluster yellow + 8% errors + 5s p99 indicates severe issues"
+  },
+  "s7": {
+    "status": "healthy",
+    "latency_ms": 150,
+    "error_rate_pct": 0.5,
+    "notes": "Email queue depth low (12); within tolerance"
+  },
+  "s8": {
+    "status": "down",
+    "latency_ms": null,
+    "error_rate_pct": 100.0,
+    "notes": "Connection refused for 30 minutes; complete outage"
+  },
+  "s9": {
+    "status": "healthy",
+    "latency_ms": 15,
+    "error_rate_pct": 0.0,
+    "notes": "CDN performing well; 94% cache hit rate"
+  },
+  "s10": {
+    "status": "degraded",
+    "latency_ms": 10,
+    "error_rate_pct": 0.2,
+    "notes": "Consumer lag of 50k messages suggests downstream slowness"
+  },
+  "s11": {
+    "status": "down",
+    "latency_ms": 2000,
+    "error_rate_pct": 12.0,
+    "notes": "GPU saturated at 99%; 8s p99 and 12% errors indicate overload"
+  },
+  "s12": {
+    "status": "healthy",
+    "latency_ms": 100,
+    "error_rate_pct": 0.02,
+    "notes": "S3 within SLA; 99.99% availability"
+  },
+  "s13": {
+    "status": "healthy",
+    "latency_ms": 2,
+    "error_rate_pct": 0.0,
+    "notes": "DNS resolution nominal across all zones"
+  },
+  "s14": {
+    "status": "healthy",
+    "latency_ms": 1,
+    "error_rate_pct": 0.0,
+    "notes": "LB healthy; 25% connection capacity utilized"
+  },
+  "s15": {
+    "status": "degraded",
+    "latency_ms": 50,
+    "error_rate_pct": 0.0,
+    "notes": "Service responds but data collection is stale (45min); core monitoring function impaired"
+  }
+}
+```
+
+**Summary:**
+- 🟢 **Healthy (8):** s1, s3, s5, s7, s9, s12, s13, s14
+- 🟡 **Degraded (4):** s2, s4, s10, s15
+- 🔴 **Down (3):** s6 (Elasticsearch), s8 (Payment Processor), s11 (ML Inference)
+
+**Critical attention required:** s8 is a complete payment processing outage — this is the highest business-impact incident. s6 and s11 should be triaged next, as both show signs of resource exhaustion or cluster-level failures.

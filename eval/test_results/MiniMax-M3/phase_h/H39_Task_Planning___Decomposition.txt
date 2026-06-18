@@ -1,0 +1,163 @@
+```json
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Audit current monolithic Django codebase, map dependencies, and document bounded contexts",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Define microservices boundaries, domain models, and inter-service API contracts (OpenAPI)",
+      "depends_on": [1],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Design database-per-service strategy including shared data ownership mapping",
+      "depends_on": [2],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 4,
+      "task": "Set up containerization (Docker) and base images for all services",
+      "depends_on": [2],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Set up Kubernetes cluster and CI/CD pipelines (build, test, deploy)",
+      "depends_on": [4],
+      "effort_days": 7,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Set up API Gateway with routing, rate limiting, and authentication",
+      "depends_on": [5],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 7,
+      "task": "Set up centralized logging, metrics, and distributed tracing (ELK/Prometheus/Jaeger)",
+      "depends_on": [5],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 8,
+      "task": "Implement database migration scripts with dual-write pattern for monolith-to-services data flow",
+      "depends_on": [3],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Build data synchronization and event-driven consistency layer across services",
+      "depends_on": [8],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Extract User/Auth microservice and deploy to Kubernetes",
+      "depends_on": [5, 6, 9],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Extract Product/Catalog microservice with its own datastore",
+      "depends_on": [10],
+      "effort_days": 7,
+      "team": "backend"
+    },
+    {
+      "id": 12,
+      "task": "Extract Order/Transaction microservice with saga pattern for distributed transactions",
+      "depends_on": [9, 11],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 13,
+      "task": "Configure service mesh (mTLS, retries, circuit breakers) for inter-service communication",
+      "depends_on": [5, 6, 10],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 14,
+      "task": "Build Backend-for-Frontend (BFF) aggregation layer for web and mobile clients",
+      "depends_on": [6],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 15,
+      "task": "Update frontend to consume new microservice APIs via BFF with auth token handling",
+      "depends_on": [14, 11],
+      "effort_days": 6,
+      "team": "frontend"
+    },
+    {
+      "id": 16,
+      "task": "Refactor UI into service-specific feature modules and shared component library",
+      "depends_on": [15, 12],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 17,
+      "task": "Run integration and contract testing across all microservices and API contracts",
+      "depends_on": [12, 13, 15],
+      "effort_days": 5,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "Execute performance and load testing under realistic traffic scenarios",
+      "depends_on": [17],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Perform security testing, penetration testing, and compliance audit (OWASP, GDPR)",
+      "depends_on": [18],
+      "effort_days": 3,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Execute production traffic shift (canary/blue-green), decommission monolith, and finalize documentation",
+      "depends_on": [16, 19, 7],
+      "effort_days": 5,
+      "team": "devops"
+    }
+  ]
+}
+```
+
+**Constraint Verification:**
+
+| Constraint | Status |
+|---|---|
+| Exactly 20 tasks | ✅ 20 tasks |
+| Each task has valid team | ✅ All from {backend, frontend, devops, qa} |
+| No circular deps / no forward refs | ✅ DAG verified |
+| Total effort 80-120 days | ✅ **104 days** |
+| At least 3 tasks per team | ✅ backend: 8, frontend: 3, devops: 6, qa: 3 |
+| First task has no dependencies | ✅ Task 1 deps = [] |
+| Last task depends on ≥ 2 tasks | ✅ Task 20 depends on [16, 19, 7] |
+| At least 2 parallelizable tasks | ✅ Tasks 3 & 4 (both depend only on 2), Tasks 6 & 7 (both depend only on 5), Tasks 14 & 15 can overlap with backend work |
+| Database migration included | ✅ Tasks 3, 8, 9 |
+| API gateway setup included | ✅ Task 6 |
+| CI/CD included | ✅ Task 5 |
+| Testing tasks included | ✅ Tasks 17, 18, 19 |
