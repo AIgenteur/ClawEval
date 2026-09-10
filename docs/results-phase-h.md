@@ -3,7 +3,7 @@
 Phase H is designed to evaluate LLMs on complex, multi-constraint agentic workflows with granular checkpoint scoring. Rather than standard pass/fail metrics, Phase H forces models to navigate dense instructions and partial scores.
 
 ## How It Is Run
-Phase H uses a combination of rigorous JSON constraint parsing, deep code execution, and keyword-based substring evaluation (`h_keywords`). The suite consists of **53 fully automated tests**, totaling **1,100 scoring checkpoints**. 
+Phase H uses a combination of rigorous JSON constraint parsing, deep code execution, and keyword-based substring evaluation (`h_keywords`). The current suite (ClawEval v2) consists of **59 fully automated tests**, totaling **1,220 scoring checkpoints**. The live leaderboard is in the [README](../README.md#-claweval-v2-leaderboard--open-weight-models); the per-role winners are in [results-phase-h-v2-best-per-role.md](results-phase-h-v2-best-per-role.md).
 
 To run the automated Phase H suite against a locally hosted backend (like llama.cpp or vLLM), use:
 ```bash
@@ -13,11 +13,11 @@ python3 eval/run_phase_h.py \
     --max-tokens 32000 \
     --timeout 1200
 ```
-> Note: 6 tests (H-10, H-17, H-24, H-34, H-41, H-58) require manual review (e.g. dynamic UI testing) and are excluded from the automated suite.
+> Note: the original Phase H run below predates v2. At that time 6 tests (H-10, H-17, H-24, H-34, H-41, H-58) required manual review and were excluded, giving 53 tests / 1,100 checkpoints. All 59 are automated in v2.
 
 ---
 
-## Baseline: Qwen3.6-35B-A3B
+## Original 53-test baseline: Qwen3.6-35B-A3B (pre-v2, historical)
 
 **Overall Score:** 871 / 1100 (79.18%)
 

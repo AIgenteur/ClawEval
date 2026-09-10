@@ -30,7 +30,7 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 > 🏆 **[The definitive dense evaluation →](docs/results-phase-h.md)**
 >
-> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **First results (Kimi K2.6, GLM-5.1) dropping now.**
+> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **54 open-weight models ranked so far.**
 
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 

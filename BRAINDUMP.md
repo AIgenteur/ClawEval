@@ -1,7 +1,9 @@
 # ClawEval (OpenClaw) — AI Braindump
 
 > This file exists so a new AI assistant can pick up this project with full context.
-> Last updated: 2026-05-04
+> Last updated: 2026-09-09. **Read `CLAUDE.md` first** — it is the session charter and overrides
+> anything here on infrastructure, GPU access, and publishing rules. Sections 5, 6 and 10 below are
+> kept for history; the live leaderboard is the README.
 
 ---
 
@@ -19,7 +21,7 @@
 
 ```
 OpenClaw/
-├── README.md                    # Main README with 36-model leaderboard
+├── README.md                    # Main README with the live leaderboard (54 open-weight models as of 2026-06-18)
 ├── .env                         # API keys (Ollama cloud, OpenRouter free tier, Alibaba)
 ├── eval/
 │   ├── run_phase_h.py           # MAIN test runner — 59-test agentic suite
@@ -100,7 +102,7 @@ python3 run_phase_h.py \
 
 ---
 
-## 5. Current Leaderboard (36 models, as of 2026-05-04)
+## 5. Leaderboard snapshot (36 models, as of 2026-05-04 — HISTORICAL; see README for the live 54-model table)
 
 | # | Model | Score | % |
 |---|-------|-------|---|
@@ -118,7 +120,10 @@ Full leaderboard is in `README.md` lines 137-174.
 
 ## 6. Infrastructure
 
-### Local GPU (RTX 3090 24GB)
+### Local GPU
+> **2026-09-09:** local runs now use the LAN GPU fleet and must be requested from the gpu-mesh session
+> first — see `CLAUDE.md` section 3.2. The single-3090 setup below is the pre-fleet arrangement.
+
 - **IP**: `192.168.0.187:8080` (LAN)
 - **Backend**: llama.cpp (upstream or TurboQuant fork)
 - **API**: OpenAI-compatible (`/v1/chat/completions`)
@@ -181,6 +186,14 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
 ---
 
 ## 10. Pending / Incomplete Work
+
+### Known issues as of 2026-09-09
+- `run_phase_h.py` overwrites `phase_h_scores.json` on every run, including `--test-ids` retests.
+  Six published models (DeepSeek V4 Pro, DeepSeek V4 Flash, Qwen3.5-Plus, Kimi K2.6, GLM-5.1,
+  MiniMax-M2.7 Think) have partial score files as a result; their raw `H*.txt` are complete.
+- Laguna-M.1 H-12 is scored 0/30 on a malformed API response (`ERROR: Expecting value`), not a
+  model failure. Needs a clean retest.
+- Token-efficiency and per-role tables were last regenerated at 32 and 48 models respectively.
 
 ### Infra retest queue (COMPLETED as of 2026-05-04)
 All infrastructure errors have been resolved. Every remaining zero in the leaderboard is a confirmed model failure.
