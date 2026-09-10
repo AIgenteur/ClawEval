@@ -188,8 +188,9 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
 ## 10. Pending / Incomplete Work
 
 ### Known issues as of 2026-09-09
-- `run_phase_h.py` overwrites `phase_h_scores.json` on every run, including `--test-ids` retests.
-  Six published models (DeepSeek V4 Pro, DeepSeek V4 Flash, Qwen3.5-Plus, Kimi K2.6, GLM-5.1,
+- FIXED 2026-09-10: `run_phase_h.py` used to overwrite `phase_h_scores.json` on every run, including
+  `--test-ids` retests. Both runners now merge via `eval/phase_h_scores.py` (tests in
+  `eval/test_phase_h_scores.py`). Damage from before the fix remains: six published models (DeepSeek V4 Pro, DeepSeek V4 Flash, Qwen3.5-Plus, Kimi K2.6, GLM-5.1,
   MiniMax-M2.7 Think) have partial score files as a result; their raw `H*.txt` are complete.
 - Laguna-M.1 H-12 is scored 0/30 on a malformed API response (`ERROR: Expecting value`), not a
   model failure. Needs a clean retest.

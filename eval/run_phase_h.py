@@ -20,6 +20,7 @@ from run_phase_f import (
     score_code_exec, score_keyword_detection
 )
 from phase_h import PHASE_H_TESTS
+from phase_h_scores import save_scores
 
 
 # ============================================================
@@ -510,29 +511,24 @@ def main():
         emoji = "✅" if rpct >= 80 else "⚠️" if rpct >= 50 else "❌"
         print(f"  {emoji} H-{r['test_id']:>2d} {r['role']:<40s} {r['score']}/{r['max_score']} ({rpct:.0f}%)")
 
-    # Save scores
-    scores_data = {
-        "model": args.model,
-        "phase": "H",
-        "timestamp": datetime.now().isoformat(),
-        "total_score": total_score,
-        "total_max": total_max,
-        "percentage": round(pct, 1),
-        "results": [
-            {
-                "id": r["test_id"], "role": r["role"], "tier": r["tier"],
-                "scoring_type": r["scoring_type"],
-                "score": r["score"], "max": r["max_score"],
-                "detail": r["detail"], "tokens": r["tokens"],
-            }
-            for r in results
-        ]
-    }
-
+    # Save scores — merged into any existing file so a --test-ids retest never
+    # replaces the full 59-test record with only the retested IDs.
+    new_results = [
+        {
+            "id": r["test_id"], "role": r["role"], "tier": r["tier"],
+            "scoring_type": r["scoring_type"],
+            "score": r["score"], "max": r["max_score"],
+            "detail": r["detail"], "tokens": r["tokens"],
+        }
+        for r in results
+    ]
     scores_file = out_dir / "phase_h_scores.json"
-    with open(scores_file, "w") as f:
-        json.dump(scores_data, f, indent=2)
+    merged = save_scores(scores_file, args.model, new_results)
 
+    if merged["tests_recorded"] != len(results):
+        mpct = merged["percentage"]
+        print(f"\nMerged file: {merged['total_score']}/{merged['total_max']} ({mpct:.1f}%) "
+              f"across {merged['tests_recorded']} recorded tests")
     print(f"\nResults saved to: {scores_file}")
 
     if rotator is not None:
