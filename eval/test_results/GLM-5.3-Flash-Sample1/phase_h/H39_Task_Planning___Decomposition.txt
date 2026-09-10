@@ -1,0 +1,40 @@
+**Constraint verification:**
+- ✅ Exactly 20 tasks
+- ✅ Team counts: backend 8, devops 6, frontend 3, qa 3 (all ≥ 3)
+- ✅ Total effort: 90 days (within 80–120)
+- ✅ Task 1 has no dependencies; task 20 depends on 2 tasks (18, 19)
+- ✅ All dependencies reference earlier task IDs (no cycles)
+- ✅ Parallelizable pairs exist: tasks 3 & 4, tasks 7 & 8, tasks 9/10/11
+- ✅ Includes database migration (7), API gateway (6), CI/CD (3), testing (17–19)
+
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Audit monolith codebase and map domain boundaries/bounded contexts", "depends_on": [], "effort_days": 4, "team": "backend"},
+    {"id": 2, "task": "Containerize existing Django app with Docker and standardize runtime config", "depends_on": [1], "effort_days": 3, "team": "devops"},
+    {"id": 3, "task": "Set up CI/CD pipeline with automated build, test, and image publishing", "depends_on": [2], "effort_days": 4, "team": "devops"},
+    {"id": 4, "task": "Design target microservice architecture, service boundaries, and API contracts", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 5, "task": "Provision shared infrastructure: message broker, service discovery, config store", "depends_on": [2], "effort_days": 4, "team": "devops"},
+    {"id": 6, "task": "Set up API gateway with routing, auth passthrough, and rate limiting", "depends_on": [5], "effort_days": 4, "team": "devops"},
+    {"id": 7, "task": "Database migration: split monolith DB into per-service schemas with dual-write/sync cutover", "depends_on": [4], "effort_days": 7, "team": "backend"},
+    {"id": 8, "task": "Implement inter-service communication layer (REST/gRPC + async events)", "depends_on": [4], "effort_days": 5, "team": "backend"},
+    {"id": 9, "task": "Extract Identity/Auth service with token issuance and session migration", "depends_on": [7, 8], "effort_days": 6, "team": "backend"},
+    {"id": 10, "task": "Extract Catalog/Product service", "depends_on": [7, 8], "effort_days": 5, "team": "backend"},
+    {"id": 11, "task": "Extract Orders service with saga-based workflow", "depends_on": [7, 8], "effort_days": 6, "team": "backend"},
+    {"id": 12, "task": "Extract Payments service and integrate with Orders via events", "depends_on": [9, 11], "effort_days": 5, "team": "backend"},
+    {"id": 13, "task": "Refactor frontend to consume services via API gateway (replace monolith endpoints)", "depends_on": [6], "effort_days": 6, "team": "frontend"},
+    {"id": 14, "task": "Update frontend auth/session flows for the new Identity service", "depends_on": [9, 13], "effort_days": 4, "team": "frontend"},
+    {"id": 15, "task": "Build frontend feature-flag and fallback UI for phased rollout", "depends_on": [13], "effort_days": 3, "team": "frontend"},
+    {"id": 16, "task": "Implement observability stack: centralized logging, tracing, metrics, alerting", "depends_on": [5, 6], "effort_days": 4, "team": "devops"},
+    {"id": 17, "task": "Write and run contract and integration tests for extracted services", "depends_on": [10, 11, 12], "effort_days": 4, "team": "qa"},
+    {"id": 18, "task": "Execute end-to-end regression testing across gateway and services", "depends_on": [14, 17], "effort_days": 4, "team": "qa"},
+    {"id": 19, "task": "Perform load/performance and security testing using observability data", "depends_on": [16, 17, 18], "effort_days": 4, "team": "qa"},
+    {"id": 20, "task": "Phased production cutover, monolith decommission, and post-migration review", "depends_on": [18, 19], "effort_days": 4, "team": "devops"}
+  ]
+}
+```
+
+**Notes on the plan structure:**
+- **Parallel tracks:** After task 2, CI/CD (3) and architecture design (4) proceed in parallel; after task 4, DB migration (7) and communication layer (8) run concurrently; the three service extractions (9–11) are independent of each other.
+- **Critical path:** 1 → 2 → 5 → 6 → 13 → 14 → 18 → 19 → 20 (~37 days serial), well under the 90-day total thanks to parallelism.
+- **Risk mitigation:** Dual-write/sync strategy in the DB migration (7) and feature flags with fallback UI (15) support a safe phased cutover rather than big-bang switchover.

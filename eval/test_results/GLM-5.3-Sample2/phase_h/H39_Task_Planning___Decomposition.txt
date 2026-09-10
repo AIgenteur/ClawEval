@@ -1,0 +1,37 @@
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Audit monolithic Django app: map modules, domain boundaries, and coupling hotspots", "depends_on": [], "effort_days": 5, "team": "backend"},
+    {"id": 2, "task": "Define target microservice architecture: service boundaries, communication patterns (REST/gRPC/events), and data ownership", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 3, "task": "Containerize monolith with Docker; set up container registry and dev/staging environments", "depends_on": [1], "effort_days": 4, "team": "devops"},
+    {"id": 4, "task": "Design API gateway specification: routing, authentication, rate limiting, and versioning", "depends_on": [2], "effort_days": 3, "team": "backend"},
+    {"id": 5, "task": "Set up CI/CD pipeline skeleton: automated build, unit test, and image publish stages", "depends_on": [3], "effort_days": 5, "team": "devops"},
+    {"id": 6, "task": "Extract authentication service (Django auth into standalone service with JWT issuance)", "depends_on": [2, 3], "effort_days": 8, "team": "backend"},
+    {"id": 7, "task": "Refactor frontend to route all requests through the API gateway contract", "depends_on": [4], "effort_days": 6, "team": "frontend"},
+    {"id": 8, "task": "Database migration: decompose shared PostgreSQL database into per-service schemas with dual-write transition", "depends_on": [2, 6], "effort_days": 10, "team": "backend"},
+    {"id": 9, "task": "Deploy and configure API gateway in staging (routing, auth offload, rate limiting)", "depends_on": [4, 5], "effort_days": 5, "team": "devops"},
+    {"id": 10, "task": "Extract user/profile service with its own datastore and API contract", "depends_on": [6, 8], "effort_days": 7, "team": "backend"},
+    {"id": 11, "task": "Implement frontend state management and client-side integration for split services", "depends_on": [7], "effort_days": 5, "team": "frontend"},
+    {"id": 12, "task": "Implement observability stack: centralized logging, metrics, and distributed tracing", "depends_on": [5, 9], "effort_days": 6, "team": "devops"},
+    {"id": 13, "task": "Write integration and contract tests for auth and user services", "depends_on": [6, 10], "effort_days": 6, "team": "qa"},
+    {"id": 14, "task": "Extract core business domain service (orders/billing) with event-based integration", "depends_on": [8, 10], "effort_days": 8, "team": "backend"},
+    {"id": 15, "task": "Update frontend UI components and API clients for newly extracted services", "depends_on": [11, 14], "effort_days": 5, "team": "frontend"},
+    {"id": 16, "task": "Execute database migration dry-run, validate data integrity, and prepare rollback plan", "depends_on": [8, 12], "effort_days": 5, "team": "devops"},
+    {"id": 17, "task": "Run end-to-end regression testing across gateway and all extracted services", "depends_on": [13, 15], "effort_days": 7, "team": "qa"},
+    {"id": 18, "task": "Perform load, stress, and failover testing on the microservices architecture", "depends_on": [17], "effort_days": 5, "team": "qa"},
+    {"id": 19, "task": "Execute production cutover: traffic switch via gateway, monitor, and decommission monolith", "depends_on": [16, 18], "effort_days": 6, "team": "devops"},
+    {"id": 20, "task": "Post-migration validation: production smoke tests, SLA verification, and final documentation", "depends_on": [17, 18, 19], "effort_days": 4, "team": "qa"}
+  ]
+}
+```
+
+**Constraint verification:**
+
+- ✅ **Exactly 20 tasks** (ids 1–20)
+- ✅ **Team coverage**: backend = 7 (tasks 1,2,4,6,8,10,14), frontend = 3 (7,11,15), devops = 6 (3,5,9,12,16,19), qa = 4 (13,17,18,20) — all ≥ 3
+- ✅ **Total effort = 114 days** (within 80–120)
+- ✅ **Task 1 has no dependencies**
+- ✅ **Task 20 depends on 3 tasks** (17, 18, 19)
+- ✅ **No circular/later dependencies**: every `depends_on` references a strictly lower id
+- ✅ **Parallelizable pairs**: tasks 2 & 3 (both only depend on 1); tasks 7 & 8 (independent of each other); tasks 13 & 14 (independent of each other)
+- ✅ **Required content included**: database migration (8), API gateway design + deployment (4, 9), CI/CD (5), testing (13, 17, 18, 20)

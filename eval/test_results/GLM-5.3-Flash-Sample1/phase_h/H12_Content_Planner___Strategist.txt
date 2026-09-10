@@ -1,0 +1,78 @@
+Before the calendar, one flag: **constraint 11 is mathematically impossible.** With weekends banned (C2) and exactly one blog per week (constraints 3+5+23 = 6 blogs), those 6 blogs must fit into Mon–Fri — only 5 weekdays. By pigeonhole, two blogs *must* share a weekday. It's even tighter than that: a Monday blog is impossible because constraint 10 requires a social post within the prior 2 days (weekend posts are banned). So I've satisfied #11 to the mathematical maximum: blogs use **4 distinct weekdays (Tue/Wed/Thu/Fri) with only 2 repeated days — the provable minimum**. All other 29 constraints are fully met.
+
+```json
+{
+  "weeks": [
+    {
+      "week": 1,
+      "theme": "Awareness",
+      "posts": [
+        {"day": "Mon", "type": "social", "topic": "Awareness hook: 68% of breaches involve a human element — most teams find out weeks too late. Teaser for Tuesday's threat-landscape blog", "channel": "linkedin"},
+        {"day": "Tue", "type": "blog", "topic": "The 2025 Threat Landscape: 5 Security Blind Spots Putting Mid-Market Teams at Risk", "channel": "blog"},
+        {"day": "Thu", "type": "social", "topic": "Thread: 7 cyberattack warning signs most IT teams miss — and how to spot them before a breach", "channel": "twitter"},
+        {"day": "Fri", "type": "email", "topic": "The Security Briefing #1: The Threats You're Not Seeing (Yet)", "channel": "email"}
+      ]
+    },
+    {
+      "week": 2,
+      "theme": "Education",
+      "posts": [
+        {"day": "Mon", "type": "social", "topic": "Phishing vs. BEC vs. pretexting — and why the differences matter for your compliance posture (full primer Wednesday)", "channel": "linkedin"},
+        {"day": "Wed", "type": "blog", "topic": "Compliance, Explained: Mapping SOC 2, ISO 27001, and GDPR into One Practical Security Roadmap", "channel": "blog"},
+        {"day": "Wed", "type": "video", "topic": "SOC 2 vs. ISO 27001 vs. GDPR: Compliance Frameworks in 10 Minutes", "channel": "youtube"},
+        {"day": "Thu", "type": "video", "topic": "Anatomy of a Phishing Attack: Live Demo + the Controls That Stop It", "channel": "youtube"}
+      ]
+    },
+    {
+      "week": 3,
+      "theme": "Social Proof",
+      "posts": [
+        {"day": "Mon", "type": "social", "topic": "'We went from dreading audits to passing with zero exceptions' — Northwind's compliance turnaround, case study drops Tuesday", "channel": "linkedin"},
+        {"day": "Tue", "type": "blog", "topic": "Case Study: How Northwind Logistics Neutralized Ransomware Threats and Automated Compliance", "channel": "blog"},
+        {"day": "Thu", "type": "email", "topic": "3 Customers, 3 Threats, 3 Wins: Real-World Security Outcomes (+ preview of Friday's podcast)", "channel": "email"},
+        {"day": "Fri", "type": "podcast", "topic": "The SOC Diaries Ep. 1: A CISO's Ransomware War Story — What Worked, What Didn't", "channel": "spotify"}
+      ]
+    },
+    {
+      "week": 4,
+      "theme": "Technical Deep Dive",
+      "posts": [
+        {"day": "Wed", "type": "social", "topic": "How does signatureless detection actually catch a zero-day? We open the engine this week — deep dive on the blog Thursday", "channel": "linkedin"},
+        {"day": "Wed", "type": "video", "topic": "Zero-Day Detection, Demystified: Behavioral Analytics Under the Hood", "channel": "youtube"},
+        {"day": "Thu", "type": "video", "topic": "Detection-as-Code: A Guided Tour of Our Detection Engineering Pipeline", "channel": "youtube"},
+        {"day": "Thu", "type": "blog", "topic": "Inside the Engine: How Behavioral Analytics Stops Zero-Day Threats Without Signatures", "channel": "blog"}
+      ]
+    },
+    {
+      "week": 5,
+      "theme": "Engagement",
+      "posts": [
+        {"day": "Mon", "type": "email", "topic": "Security Pulse: Take the 2025 Mid-Market Security Benchmark Survey (5 minutes)", "channel": "email"},
+        {"day": "Tue", "type": "social", "topic": "Poll: What's your team's biggest compliance bottleneck — evidence collection, access reviews, or vendor risk?", "channel": "linkedin"},
+        {"day": "Thu", "type": "social", "topic": "Poll results thread + AMA callout: what should we ask our detection engineering lead?", "channel": "twitter"},
+        {"day": "Fri", "type": "blog", "topic": "What 500 Security Leaders Told Us About Their Biggest Threats (Poll Results + Analysis)", "channel": "blog"}
+      ]
+    },
+    {
+      "week": 6,
+      "theme": "Conversion",
+      "posts": [
+        {"day": "Mon", "type": "social", "topic": "The 3 evaluation workflows that closed 90% of our enterprise deals — buyer's guide drops Wednesday", "channel": "linkedin"},
+        {"day": "Wed", "type": "blog", "topic": "The Buyer's Guide: Evaluating Security Platforms on Proof, Not Promises", "channel": "blog"},
+        {"day": "Fri", "type": "podcast", "topic": "The SOC Diaries Ep. 2: CISOs Reveal What They Wish They'd Asked Before Buying", "channel": "spotify"},
+        {"day": "Fri", "type": "email", "topic": "Final call: Fall onboarding cohort closes tonight — book your demo and lock in white-glove migration", "channel": "email"}
+      ]
+    }
+  ]
+}
+```
+
+**Constraint notes:**
+
+- **Counts:** 6 blogs, 8 social (6 LinkedIn + 2 Twitter), 4 emails, 4 videos, 2 podcasts = 24; exactly 4 per week ✓ (#1, 5–9, 19, 23, 30)
+- **#10:** Every blog has a related social teaser 1–2 days before it (Mon→Tue, Mon→Wed, Wed→Thu, Thu→Fri pairings) ✓
+- **#11 (impossible):** Best achievable — blogs span Tue/Wed/Thu/Fri with only 2 repeated weekdays (W1/W3 = Tue, W2/W6 = Wed); 6 blogs cannot fit on 5 weekdays
+- **#26 + #22 interaction:** Week 6's podcast and email both land on Friday because podcasts *must* be Fridays (#22) and W6 must close with a Friday email (#26); the email is listed last so the week ends with it
+- **#27:** Videos confined to weeks 2 and 4 only — never in consecutive weeks under any interpretation
+- **#18:** No email shares a day with its week's blog (W1: Fri/Tue, W3: Thu/Tue, W5: Mon/Fri, W6: Fri/Wed) ✓
+- **#13:** Every week's posting days cap at 2 consecutive (e.g., Mon–Tue + Thu–Fri patterns; W6 uses Mon/Wed/Fri) ✓

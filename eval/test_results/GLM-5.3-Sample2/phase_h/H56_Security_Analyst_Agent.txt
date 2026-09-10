@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - query = f\"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'\"",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "login() - password compared directly in SQL query, no hashing",
+      "severity": "high"
+    },
+    {
+      "type": "Weak/Predictable Token Generation (MD5 of username)",
+      "location": "login() - hashlib.md5(user.encode()).hexdigest()",
+      "severity": "high"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "Module level - SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - render_template_string(template) with user-controlled username",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() - return f\"<html><body>Results for: {q}</body></html>\"",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection (shell=True)",
+      "location": "run_command() - subprocess.run(cmd, shell=True, ...)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Unrestricted File Upload",
+      "location": "upload() - os.path.join(UPLOAD_DIR, f.filename) with unvalidated filename",
+      "severity": "critical"
+    },
+    {
+      "type": "Arbitrary File Read (Path Traversal)",
+      "location": "download() - send_file(filepath) with user-controlled path",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization (RCE)",
+      "location": "load_config() - yaml.load(data) without SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (pickle)",
+      "location": "restore_session() - pickle.loads(data)",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Authentication (token in query string, non-constant-time comparison)",
+      "location": "admin() - if token == SECRET",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection (os.system)",
+      "location": "export_data() - os.system(f\"python3 export.py --format {fmt}\")",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled (Werkzeug debugger RCE)",
+      "location": "__main__ block - app.run(debug=True, ...)",
+      "severity": "critical"
+    },
+    {
+      "type": "Network Binding to All Interfaces",
+      "location": "__main__ block - host=\"0.0.0.0\"",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

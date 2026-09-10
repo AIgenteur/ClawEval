@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() — query = f\"SELECT * FROM users WHERE username='{user}' AND password='{pwd}'\"",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "login() — raw password compared directly in SQL query (no hashing/salting)",
+      "severity": "high"
+    },
+    {
+      "type": "Weak/Predictable Authentication Token (MD5 of username, forgeable by anyone)",
+      "location": "login() — hashlib.md5(user.encode()).hexdigest()",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() — render_template_string(f\"<h1>Welcome {username}</h1>...\")",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() — return f\"<html><body>Results for: {q}</body></html>\" (unescaped output)",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection (arbitrary command execution)",
+      "location": "run_command() — subprocess.run(cmd, shell=True) with user-supplied JSON input",
+      "severity": "critical"
+    },
+    {
+      "type": "Unrestricted File Upload (no type/size/content validation)",
+      "location": "upload() — f.save(path) with no validation of request.files[\"file\"]",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal (arbitrary file write via ../ in filename)",
+      "location": "upload() — os.path.join(UPLOAD_DIR, f.filename)",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read",
+      "location": "download() — send_file(request.args.get(\"path\")) with unsanitized user input",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization (arbitrary Python object instantiation → RCE)",
+      "location": "load_config() — yaml.load(data) without SafeLoader",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Pickle Deserialization (arbitrary code execution)",
+      "location": "restore_session() — pickle.loads(data) on user-supplied bytes",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "module level — SECRET = \"admin123\"",
+      "severity": "high"
+    },
+    {
+      "type": "Timing-Unsafe Secret Comparison (token also leaked via URL query parameter)",
+      "location": "admin() — if token == SECRET (non-constant-time string comparison)",
+      "severity": "medium"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "export_data() — os.system(f\"python3 export.py --format {fmt}\") with user-controlled fmt",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled in Production (Werkzeug debugger console → RCE, exposed on 0.0.0.0)",
+      "location": "__main__ — app.run(debug=True, host=\"0.0.0.0\")",
+      "severity": "critical"
+    }
+  ],
+  "count": 15
+}
+```

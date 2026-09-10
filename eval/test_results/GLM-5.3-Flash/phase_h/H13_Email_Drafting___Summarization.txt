@@ -1,0 +1,27 @@
+```json
+{
+  "1": {"action": "yes", "priority": "high", "category": "task"},
+  "2": {"action": "yes", "priority": "medium", "category": "task"},
+  "3": {"action": "yes", "priority": "low", "category": "meeting"},
+  "4": {"action": "yes", "priority": "high", "category": "approval"},
+  "5": {"action": "no", "priority": "low", "category": "fyi"},
+  "6": {"action": "yes", "priority": "medium", "category": "question"},
+  "7": {"action": "no", "priority": "low", "category": "fyi"},
+  "8": {"action": "yes", "priority": "high", "category": "task"},
+  "9": {"action": "no", "priority": "low", "category": "fyi"},
+  "10": {"action": "yes", "priority": "high", "category": "task"},
+  "11": {"action": "yes", "priority": "medium", "category": "meeting"},
+  "12": {"action": "no", "priority": "low", "category": "meeting"},
+  "13": {"action": "yes", "priority": "high", "category": "approval"},
+  "14": {"action": "no", "priority": "low", "category": "fyi"},
+  "15": {"action": "yes", "priority": "medium", "category": "approval"}
+}
+```
+
+Notes on key judgment calls:
+- **#1, #8**: High priority tasks — active incidents requiring immediate action.
+- **#4, #13**: Approvals with hard deadlines (tomorrow / next Friday) → high priority.
+- **#10**: Marked high due to significant amount ($23K) already 15 days overdue, despite soft tone.
+- **#3, #11**: Require a response (RSVP / scheduling) but low-stakes → low/medium.
+- **#12**: Pure confirmation, no action needed, though it's meeting-related.
+- **#15**: Sign-off required but deadline (Jan 15 window) is further out → medium.

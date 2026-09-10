@@ -1,0 +1,32 @@
+```json
+{
+  "s1": {"status": "healthy", "latency_ms": 45, "error_rate_pct": 0.01},
+  "s2": {"status": "degraded", "latency_ms": 200, "error_rate_pct": 2.5},
+  "s3": {"status": "healthy", "latency_ms": 5, "error_rate_pct": 0.0},
+  "s4": {"status": "degraded", "latency_ms": 5, "error_rate_pct": 0.1},
+  "s5": {"status": "healthy", "latency_ms": 1, "error_rate_pct": 0.0},
+  "s6": {"status": "degraded", "latency_ms": 800, "error_rate_pct": 8.0},
+  "s7": {"status": "healthy", "latency_ms": 150, "error_rate_pct": 0.5},
+  "s8": {"status": "down", "latency_ms": 0, "error_rate_pct": 100.0},
+  "s9": {"status": "healthy", "latency_ms": 15, "error_rate_pct": 0.0},
+  "s10": {"status": "degraded", "latency_ms": 10, "error_rate_pct": 0.2},
+  "s11": {"status": "degraded", "latency_ms": 2000, "error_rate_pct": 12.0},
+  "s12": {"status": "healthy", "latency_ms": 100, "error_rate_pct": 0.02},
+  "s13": {"status": "healthy", "latency_ms": 2, "error_rate_pct": 0.0},
+  "s14": {"status": "healthy", "latency_ms": 1, "error_rate_pct": 0.0},
+  "s15": {"status": "down", "latency_ms": 50, "error_rate_pct": 100.0}
+}
+```
+
+**Reasoning notes:**
+
+- **s2 (Auth):** 2.5% error rate and p99 of 1500ms with recent timeouts — functional but clearly degraded.
+- **s4 (Replica):** Low avg latency, but 5.2s replication lag and elevated p99 make it unreliable for reads — degraded.
+- **s6 (Search):** 8% errors, 5s p99, and yellow cluster status — degraded, not fully down.
+- **s7 (Email):** Queue depth of 12 is negligible; 0.5% errors within normal range — healthy.
+- **s8 (Payments):** Connection refused for 30 min, 100% failure — down.
+- **s10 (Kafka):** 50k message consumer lag is a significant backlog despite low error rate — degraded.
+- **s11 (ML):** 12% errors, 8s p99, GPU saturated at 99% — degraded (still serving some traffic).
+- **s15 (Monitoring):** No data for 45 minutes means it's failing its core function — down. Note this also means other services' metrics may be stale, so treat recent reports with caution.
+
+**Priority:** s8 (revenue impact) > s15 (observability blind spot) > s11/s6 > s2/s4/s10.

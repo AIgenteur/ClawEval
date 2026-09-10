@@ -1,0 +1,148 @@
+```json
+{
+  "workflow_name": "customer_refund_processing",
+  "version": "1.0.0",
+  "entry_point": "validation_triage_agent",
+  "terminal_agent": "notification_agent",
+  "agents": [
+    {
+      "id": "A1",
+      "name": "validation_triage_agent",
+      "type": "validation",
+      "input": "Raw refund request: {request_id, customer_id, order_id, amount, currency, reason, evidence[], channel, timestamp}",
+      "output": "{request_id, validation_status: 'valid'|'invalid', invalid_reasons[], triage_category, normalized_request, audit_event}",
+      "next": "IF validation_status == 'valid' THEN fraud_check_agent ELSE notification_agent (outcome='request_rejected_invalid')",
+      "fallback": "On schema/system error: emit audit event and route to human_escalation_agent (reason='validation_system_error'); requests are never silently dropped",
+      "timeout_seconds": 5,
+      "expected_time_seconds": 2,
+      "audit": "Appends immutable event {agent_id, request_id, timestamp, input_hash, output, decision, duration_ms} to append-only audit_log"
+    },
+    {
+      "id": "A2",
+      "name": "fraud_check_agent",
+      "type": "fraud_check",
+      "input": "Normalized request from validation_triage_agent: {request_id, customer_id, order_id, amount, reason, triage_category}",
+      "output": "{request_id, fraud_risk_score: 0-100, risk_level: 'low'|'medium'|'high', risk_flags[], audit_event}",
+      "next": "IF risk_level IN ('low','medium') THEN policy_eligibility_agent ELSE human_escalation_agent (reason='high_fraud_risk')",
+      "fallback": "On fraud service unavailability or timeout: fail-safe route to human_escalation_agent (reason='fraud_service_unavailable'); auto-approval is blocked without a completed fraud check",
+      "timeout_seconds": 10,
+      "expected_time_seconds": 5,
+      "audit": "Appends fraud assessment event including risk_score, risk_flags, and data sources queried"
+    },
+    {
+      "id": "A3",
+      "name": "policy_eligibility_agent",
+      "type": "policy_check",
+      "input": "Validated request + fraud result: {request_id, normalized_request, fraud_risk_score, risk_level}",
+      "output": "{request_id, eligibility_status: 'eligible'|'not_eligible', policy_reasons[], recommended_action: 'auto_approve'|'auto_reject'|'manual_review', max_refundable_amount, audit_event}",
+      "next": "IF eligibility_status == 'eligible' THEN approval_agent ELSE notification_agent (outcome='request_rejected_policy')",
+      "fallback": "On policy engine error: route to approval_agent with flag manual_review_required=true; approval agent is prohibited from auto-approving when this flag is set",
+      "timeout_seconds": 5,
+      "expected_time_seconds": 2,
+      "audit": "Appends eligibility event including matched policy rules and computed refund window"
+    },
+    {
+      "id": "A4",
+      "name": "approval_agent",
+      "type": "approval",
+      "input": "Request + fraud result + eligibility result: {request_id, normalized_request, fraud_risk_score, risk_level, eligibility_status, recommended_action, manual_review_required}",
+      "output": "{request_id, decision: 'approved'|'rejected'|'escalated', decision_rationale, approved_amount, decision_id, audit_event}",
+      "next": "IF decision == 'approved' THEN payment_agent ELSE IF decision == 'rejected' THEN notification_agent (outcome='request_rejected') ELSE human_escalation_agent (reason='approval_ambiguous')",
+      "fallback": "On decision engine failure or confidence below threshold: route to human_escalation_agent (reason='approval_engine_error'); no refund proceeds without an explicit decision",
+      "timeout_seconds": 8,
+      "expected_time_seconds": 3,
+      "audit": "Appends decision event including rationale, rules fired, and approver identity (system/model version)"
+    },
+    {
+      "id": "A5",
+      "name": "human_escalation_agent",
+      "type": "escalation",
+      "input": "Request context + escalation_reason + all prior agent outputs: {request_id, escalation_reason, payload, priority}",
+      "output": "{request_id, escalation_ticket_id, assigned_queue, escalation_status: 'queued_for_human_review', review_sla_hours, audit_event}",
+      "next": "ALWAYS notification_agent (outcome='escalated_pending_review'). Async re-entry: when a human resolves the ticket, the decision re-enters as a NEW workflow instance at payment_agent (approved) or notification_agent (rejected) — instance re-entry, not a graph edge, preserving acyclicity",
+      "fallback": "On ticketing system failure: route to notification_agent (outcome='escalation_delayed') and enqueue ticket to dead-letter queue for ops retry; customer is never left without a response",
+      "timeout_seconds": 15,
+      "expected_time_seconds": 5,
+      "audit": "Appends escalation event including reason, priority, queue, and ticket_id; human resolution is logged upon async re-entry"
+    },
+    {
+      "id": "A6",
+      "name": "payment_agent",
+      "type": "payment",
+      "input": "Approved refund: {request_id, decision_id, approved_amount, currency, original_payment_method, customer_id}",
+      "output": "{request_id, transaction_id, payment_status: 'success'|'failed', processed_amount, processor_reference, audit_event}",
+      "next": "IF payment_status == 'success' THEN notification_agent (outcome='refund_processed') ELSE notification_agent (outcome='payment_delayed') AND create ops ticket for manual payment retry (side effect)",
+      "fallback": "On gateway timeout/failure: 1 bounded internal retry (max_retries=1, counted within timeout); if retry fails, proceed to notification_agent (outcome='payment_delayed') with ops ticket — never re-enters approval or escalation (prevents cycles)",
+      "timeout_seconds": 15,
+      "expected_time_seconds": 8,
+      "audit": "Appends payment event including transaction_id, processor reference, amount, and retry count"
+    },
+    {
+      "id": "A7",
+      "name": "notification_agent",
+      "type": "notification",
+      "input": "Final outcome envelope: {request_id, customer_id, outcome: 'refund_processed'|'request_rejected'|'request_rejected_invalid'|'request_rejected_policy'|'payment_delayed'|'escalated_pending_review'|'escalation_delayed', details, audit_event}",
+      "output": "{request_id, notification_id, delivery_status: 'sent'|'queued', channel, audit_event}",
+      "next": "END (terminal agent; 'queued' items are retried asynchronously by the notification service)",
+      "fallback": "On delivery failure: write to notification retry queue (max 3 async retries, exponential backoff) and alert ops; workflow terminates with status 'completed_with_pending_notification'",
+      "timeout_seconds": 5,
+      "expected_time_seconds": 2,
+      "audit": "Appends terminal audit event closing the request lifecycle with final outcome and delivery status"
+    }
+  ],
+  "constraints": {
+    "agent_count": {"minimum_required": 6, "actual": 7},
+    "required_agents_present": ["validation_triage_agent", "fraud_check_agent", "approval_agent", "payment_agent", "notification_agent"],
+    "ordering_rules": {
+      "first_agent": "validation_triage_agent",
+      "last_agent": "notification_agent",
+      "fraud_check_before_approval": true,
+      "approval_before_payment": true
+    },
+    "conditional_branches": [
+      {"agent": "validation_triage_agent", "condition": "validation_status == 'valid'", "true_next": "fraud_check_agent", "false_next": "notification_agent"},
+      {"agent": "fraud_check_agent", "condition": "risk_level IN ('low','medium')", "true_next": "policy_eligibility_agent", "false_next": "human_escalation_agent"},
+      {"agent": "policy_eligibility_agent", "condition": "eligibility_status == 'eligible'", "true_next": "approval_agent", "false_next": "notification_agent"},
+      {"agent": "approval_agent", "condition": "decision", "branches": {"approved": "payment_agent", "rejected": "notification_agent", "escalated": "human_escalation_agent"}},
+      {"agent": "payment_agent", "condition": "payment_status == 'success'", "true_next": "notification_agent (refund_processed)", "false_next": "notification_agent (payment_delayed) + ops ticket"}
+    ],
+    "time_budget": {
+      "total_max_seconds": 60,
+      "happy_path_expected_seconds": 22,
+      "worst_case_critical_path_seconds": 48,
+      "critical_path": "validation(5) + fraud(10) + policy(5) + approval(8) + payment(15) + notification(5) = 48s",
+      "global_watchdog": "Hard workflow timeout at 60s; on breach, route immediately to notification_agent (outcome='processing_delayed') and open a human_escalation_agent ticket",
+      "per_agent_timeouts_seconds": {"validation_triage_agent": 5, "fraud_check_agent": 10, "policy_eligibility_agent": 5, "approval_agent": 8, "human_escalation_agent": 15, "payment_agent": 15, "notification_agent": 5},
+      "note": "human_escalation_agent timeout covers ticket creation/routing only; asynchronous human review occurs outside the 60s automated SLA and re-enters as a new workflow instance"
+    },
+    "outcome_handling": {
+      "approved_path": "validation -> fraud -> policy -> approval -> payment -> notification (outcome='refund_processed')",
+      "rejected_path": "validation -> fraud -> policy -> approval -> notification (outcome='request_rejected')",
+      "rejected_invalid_path": "validation -> notification (outcome='request_rejected_invalid')",
+      "rejected_policy_path": "validation -> fraud -> policy -> notification (outcome='request_rejected_policy')",
+      "escalated_path": "... -> human_escalation_agent -> notification (outcome='escalated_pending_review')"
+    },
+    "audit_logging": {
+      "mechanism": "Every agent appends an immutable, timestamped event to the append-only audit_log before returning",
+      "event_schema": "{agent_id, request_id, timestamp, input_hash, output, decision, duration_ms, status}",
+      "retention": "7 years (financial compliance)"
+    },
+    "graph_properties": {
+      "acyclic": true,
+      "note": "Agent graph is a DAG. Payment retry is a bounded self-retry (max 1) within a single agent execution, and human decisions re-enter as new workflow instances — neither creates a graph cycle"
+    },
+    "human_escalation_triggers": [
+      "high fraud risk (risk_level == 'high')",
+      "fraud service unavailable",
+      "approval engine error or low confidence",
+      "ambiguous/edge-case approval decision",
+      "validation system error",
+      "global 60s watchdog breach"
+    ],
+    "error_handling": {
+      "policy": "Every agent has a defined fallback; no request may terminate without an audit event and a customer-facing outcome",
+      "fail_safe_direction": "Fail closed for money movement (no payment without completed fraud check + explicit approval); fail open for customer communication (notification always attempted)"
+    }
+  }
+}
+```

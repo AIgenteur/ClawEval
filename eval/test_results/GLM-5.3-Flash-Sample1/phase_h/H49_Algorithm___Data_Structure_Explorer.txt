@@ -1,0 +1,165 @@
+### 1. LRU Cache — hash map + doubly linked list (O(1) get/put)
+
+```python
+class LRUCache:
+    """LRU cache: hash map for lookup + doubly linked list ordered from
+    most recently used (front) to least recently used (back)."""
+
+    class _Node:
+        __slots__ = ("key", "value", "prev", "next")
+
+        def __init__(self, key=None, value=None):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self._map = {}
+        self._head = self._Node()  # sentinel: MRU side
+        self._tail = self._Node()  # sentinel: LRU side
+        self._head.next = self._tail
+        self._tail.prev = self._head
+
+    def _unlink(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _link_front(self, node):
+        first = self._head.next
+        node.prev = self._head
+        node.next = first
+        self._head.next = node
+        first.prev = node
+
+    def get(self, key):
+        node = self._map.get(key)
+        if node is None:
+            return -1
+        self._unlink(node)
+        self._link_front(node)  # mark as recently used
+        return node.value
+
+    def put(self, key, value):
+        if self.capacity <= 0:
+            return
+        node = self._map.get(key)
+        if node is not None:
+            node.value = value
+            self._unlink(node)
+            self._link_front(node)
+            return
+        if len(self._map) >= self.capacity:
+            lru = self._tail.prev
+            self._unlink(lru)
+            del self._map[lru.key]
+        node = self._Node(key, value)
+        self._map[key] = node
+        self._link_front(node)
+```
+
+### 2. Min Stack — parallel running-minimum stack (all ops O(1))
+
+```python
+class MinStack:
+    """Stack with O(1) push, pop, top, and get_min via a parallel
+    stack that tracks the minimum at each depth."""
+
+    def __init__(self):
+        self._stack = []
+        self._mins = []
+
+    def push(self, val):
+        self._stack.append(val)
+        if self._mins:
+            self._mins.append(min(val, self._mins[-1]))
+        else:
+            self._mins.append(val)
+
+    def pop(self):
+        self._mins.pop()
+        return self._stack.pop()
+
+    def top(self):
+        return self._stack[-1]
+
+    def get_min(self):
+        return self._mins[-1]
+```
+
+### 3. Running median — two heaps (O(log n) per element, no imports)
+
+```python
+class _Heap:
+    """Minimal binary min-heap (self-contained, no imports)."""
+
+    def __init__(self):
+        self._data = []
+
+    def __len__(self):
+        return len(self._data)
+
+    def peek(self):
+        return self._data[0]
+
+    def push(self, val):
+        data = self._data
+        data.append(val)
+        i = len(data) - 1
+        while i > 0:
+            parent = (i - 1) // 2
+            if data[i] < data[parent]:
+                data[i], data[parent] = data[parent], data[i]
+                i = parent
+            else:
+                break
+
+    def pop(self):
+        data = self._data
+        top = data[0]
+        last = data.pop()
+        if data:
+            data[0] = last
+            i, n = 0, len(data)
+            while True:
+                left, right, smallest = 2 * i + 1, 2 * i + 2, i
+                if left < n and data[left] < data[smallest]:
+                    smallest = left
+                if right < n and data[right] < data[smallest]:
+                    smallest = right
+                if smallest == i:
+                    break
+                data[i], data[smallest] = data[smallest], data[i]
+                i = smallest
+        return top
+
+
+def find_median(stream):
+    """Return the running median (float) after each element of `stream`.
+
+    `low` is a max-heap (negated values) holding the smaller half,
+    `high` is a min-heap holding the larger half. Invariant:
+    len(low) == len(high) or len(low) == len(high) + 1.
+    """
+    low = _Heap()
+    high = _Heap()
+    medians = []
+    for x in stream:
+        if len(low) == 0 or x <= -low.peek():
+            low.push(-x)
+        else:
+            high.push(x)
+        # Rebalance so the halves differ in size by at most one.
+        if len(low) > len(high) + 1:
+            high.push(-low.pop())
+        elif len(high) > len(low):
+            low.push(-high.pop())
+        if len(low) > len(high):
+            medians.append(float(-low.peek()))
+        else:
+            medians.append((-low.peek() + high.peek()) / 2.0)
+    return medians
+```
+
+**Verification of example:** `find_median([2, 1, 3])` → after `2`: `[2]` → `2.0`; after `1`: `[1,2]` → `1.5`; after `3`: `[1,2,3]` → `2.0`, i.e. `[2.0, 1.5, 2.0]`. ✓

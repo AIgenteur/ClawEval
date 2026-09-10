@@ -1,0 +1,116 @@
+```json
+{
+  "agents": [
+    {
+      "name": "validation_triage_agent",
+      "role": "Gate 1 (entry point): schema validation, order existence, amount sanity, duplicate-request detection",
+      "input": "Raw refund request {request_id, customer_id, order_id, refund_amount, currency, reason, channel, attachments} + order-record lookup",
+      "output": "{validation_passed: bool, rejection_code?, normalized_request, duplicate_of?}",
+      "next": "IF validation_passed == true → policy_resolution_agent; ELSE → notification_agent (outcome=rejected, reason=validation_failed)",
+      "fallback": "On internal error: one auto-enrichment retry from order DB; if unresolved → notification_agent (outcome=rejected, reason=request_incomplete) + audit event 'validation_error'",
+      "timeout_seconds": 5,
+      "expected_seconds": 2,
+      "audit_events": ["request_received", "validation_result", "rejection_code"]
+    },
+    {
+      "name": "policy_resolution_agent",
+      "role": "Gate 2: resolve applicable refund policy (window, eligible items, evidence requirements, auto-approve ceiling)",
+      "input": "Normalized request from validation_triage_agent",
+      "output": "{eligible: bool, policy_id, refund_window_days, max_auto_approve_amount, missing_evidence[]}",
+      "next": "IF eligible == true → fraud_check_agent; ELSE → notification_agent (outcome=rejected, reason=policy_ineligible)",
+      "fallback": "Policy service down → use last-known-good cached policy (24h TTL); cache miss → human_escalation_agent (reason=policy_service_unavailable)",
+      "timeout_seconds": 5,
+      "expected_seconds": 1,
+      "audit_events": ["policy_lookup", "policy_id", "eligibility_result"]
+    },
+    {
+      "name": "fraud_check_agent",
+      "role": "Gate 3: fraud/abuse screening — must complete before any approval decision",
+      "input": "Eligible request + customer risk profile + claim/chargeback history",
+      "output": "{risk_score: 0-100, risk_level: low|medium|high, signals_detected[]}",
+      "next": "IF risk_level == low → approval_agent; IF risk_level == medium → approval_agent (manual_review_required=true); IF risk_level == high → human_escalation_agent (reason=high_fraud_risk)",
+      "fallback": "Fraud service timeout/unavailable → human_escalation_agent (reason=fraud_service_unavailable); fail-safe: never auto-approve on unknown risk",
+      "timeout_seconds": 10,
+      "expected_seconds": 3,
+      "audit_events": ["risk_score", "risk_signals", "screening_outcome"]
+    },
+    {
+      "name": "approval_agent",
+      "role": "Gate 4: policy-based decision engine",
+      "input": "Fraud-cleared request + policy rules + risk assessment + manual_review_required flag",
+      "output": "{approved: bool, decision_id, approved_amount, decision_basis, rejection_reason?}",
+      "next": "IF approved AND NOT manual_review_required AND approved_amount <= max_auto_approve_amount → payment_agent; ELSE IF approved AND (manual_review_required OR approved_amount > max_auto_approve_amount) → human_escalation_agent (reason=requires_manual_approval); ELSE → notification_agent (outcome=rejected, reason=approval_denied)",
+      "fallback": "Decision engine error → human_escalation_agent (reason=decision_engine_error)",
+      "timeout_seconds": 8,
+      "expected_seconds": 2,
+      "audit_events": ["decision_id", "decision_basis", "approved_amount"]
+    },
+    {
+      "name": "payment_agent",
+      "role": "Execute refund via payment gateway — reachable only after approval",
+      "input": "Approved request {decision_id, approved_amount, payment_method_token}",
+      "output": "{transaction_id, status: settled|failed, gateway_response_code}",
+      "next": "IF status == settled → notification_agent (outcome=approved); IF status == failed after retry → human_escalation_agent (reason=payment_gateway_failure)",
+      "fallback": "One internal retry (2s backoff) within timeout; second failure → human_escalation_agent; request marked refund_status=payment_pending to prevent duplicate refunds",
+      "timeout_seconds": 12,
+      "expected_seconds": 6,
+      "audit_events": ["gateway_call", "transaction_id", "payment_status"]
+    },
+    {
+      "name": "human_escalation_agent",
+      "role": "Edge-case path: create prioritized review ticket; never blocks synchronously on a human",
+      "input": "Request context + escalation_reason + audit trail so far",
+      "output": "{ticket_id, priority, assigned_queue, sla_due_at, customer_status=under_manual_review}",
+      "next": "→ notification_agent (outcome=escalated_pending_review); human decision completes out-of-band and re-enters as a NEW async workflow instance (not a graph edge)",
+      "fallback": "Ticket queue unavailable → notification_agent (outcome=delayed, reason=escalation_queue_down) + critical page to on-call + audit event 'escalation_failure'",
+      "timeout_seconds": 10,
+      "expected_seconds": 3,
+      "audit_events": ["escalation_reason", "ticket_id", "sla_due_at"]
+    },
+    {
+      "name": "notification_agent",
+      "role": "Terminal agent: send customer outcome + finalize audit trail",
+      "input": "Final outcome packet {outcome: approved|rejected|escalated_pending_review|delayed, reason, refund_amount, transaction_id?, ticket_id?, contact_prefs}",
+      "output": "{notification_sent: bool, channel, audit_trail_status=closed, final_workflow_status}",
+      "next": "END — terminal; every path and fallback converges here",
+      "fallback": "Provider failure → write to notification dead-letter queue (3 retries over 24h); audit finalization is independent of delivery success",
+      "timeout_seconds": 7,
+      "expected_seconds": 2,
+      "audit_events": ["outcome", "notification_status", "audit_trail_closed"]
+    }
+  ],
+  "constraints": {
+    "c1_minimum_six_agents": { "required": ">= 6", "actual": 7, "satisfied": true },
+    "c2_required_agent_types": { "validation": "validation_triage_agent", "fraud_check": "fraud_check_agent", "approval": "approval_agent", "payment": "payment_agent", "notification": "notification_agent", "satisfied": true },
+    "c3_input_output_next_defined": "All 7 agents define input, output, next, and fallback (plus timeout_seconds, expected_seconds, audit_events)",
+    "c4_conditional_branches": { "count": 6, "branches": ["validation pass/fail", "policy eligible/ineligible", "fraud low/medium/high", "approval auto-pay/manual-review/rejected", "payment settled/failed", "escalation ticketed/queue-down"], "satisfied": true },
+    "c5_fallback_per_agent": "Every agent has a fallback; all fallbacks terminate at notification_agent or human_escalation_agent — no dead ends, no silent drops",
+    "c6_first_agent_is_validation_triage": { "entry_point": "validation_triage_agent", "satisfied": true },
+    "c7_last_agent_is_notification": { "terminal": "notification_agent", "note": "all paths and fallbacks converge here", "satisfied": true },
+    "c8_fraud_check_before_approval": { "order": ["validation_triage_agent", "policy_resolution_agent", "fraud_check_agent", "approval_agent"], "satisfied": true },
+    "c9_payment_after_approval": { "rule": "payment_agent is reachable only from approval_agent with approved=true", "satisfied": true },
+    "c10_total_time_under_60s": {
+      "budget_seconds": 60,
+      "happy_path_expected_seconds": 16,
+      "happy_path_timeout_sum_seconds": 47,
+      "worst_case_timeout_sum_seconds": 57,
+      "per_agent_timeouts_seconds": { "validation_triage_agent": 5, "policy_resolution_agent": 5, "fraud_check_agent": 10, "approval_agent": 8, "payment_agent": 12, "human_escalation_agent": 10, "notification_agent": 7 },
+      "satisfied": true
+    },
+    "c11_approved_and_rejected_outcomes": {
+      "approved": "validation → policy → fraud → approval → payment → notification(approved)",
+      "rejected": "any gate failure routes directly to notification_agent with a machine-readable reason code",
+      "escalated": "edge cases → notification(escalated_pending_review)",
+      "satisfied": true
+    },
+    "c12_audit_logging_each_step": "Every agent emits immutable audit events (request_id, agent_name, timestamp, input_hash, output, decision_basis) to the audit store as a side-channel write; notification_agent finalizes and closes the trail",
+    "c13_no_circular_dependencies": "Topological order: validation(1) → policy(2) → fraud(3) → approval(4) → payment(5) → escalation(6) → notification(7); every next/fallback edge points to a strictly higher-numbered agent; payment retry is internal to payment_agent (not a graph edge); human decisions re-enter as new workflow instances",
+    "c14_human_escalation_path": {
+      "agent": "human_escalation_agent",
+      "triggers": ["high_fraud_risk", "fraud_service_unavailable", "policy_service_unavailable", "requires_manual_approval (above auto-approve ceiling or manual_review flag)", "decision_engine_error", "payment_gateway_failure", "escalation_queue_down (pages on-call)"],
+      "satisfied": true
+    },
+    "c15_timeout_per_agent": "Each agent carries timeout_seconds; on timeout its fallback fires immediately; worst-case synchronous path (all 7 agents, incl. payment failure → escalation) = 57s < 60s"
+  }
+}
+```

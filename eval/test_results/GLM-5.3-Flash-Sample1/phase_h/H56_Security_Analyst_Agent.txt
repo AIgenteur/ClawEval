@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() — f-string interpolation of user/password directly into SQL query (line 17)",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "login() — raw password used in query with no hashing (lines 15, 17)",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Cryptographic Hash (MD5) / Predictable Session Token",
+      "location": "login() — token generated as MD5 of username (line 20)",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() — user-controlled username embedded in template string before render_template_string (lines 25-26)",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() — unescaped query parameter 'q' reflected into HTML response (line 31)",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection (shell=True)",
+      "location": "run_command() — user-supplied command executed via subprocess.run with shell=True (lines 35-36)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Unrestricted File Upload",
+      "location": "upload() — unsanitized f.filename used in save path, allows writing outside UPLOAD_DIR (lines 42-43)",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read",
+      "location": "download() — unvalidated 'path' parameter passed directly to send_file (lines 48-49)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "load_config() — yaml.load() on raw request body without safe Loader (line 54)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Pickle Deserialization (Remote Code Execution)",
+      "location": "restore_session() — pickle.loads() on attacker-controlled request data (line 60)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Credentials/Secret",
+      "location": "SECRET = \"admin123\" module-level constant (line 6)",
+      "severity": "high"
+    },
+    {
+      "type": "Broken Access Control / Weak Token Check",
+      "location": "admin() — static token compared with == (non-constant-time, guessable) instead of proper auth (lines 65-66)",
+      "severity": "medium"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "export_data() — user-controlled 'format' parameter interpolated into os.system() command (lines 72-74)",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled in Production (Werkzeug Debugger RCE)",
+      "location": "app.run(debug=True) (line 78)",
+      "severity": "critical"
+    },
+    {
+      "type": "Exposed Network Binding (listens on all interfaces)",
+      "location": "app.run(host=\"0.0.0.0\") (line 78)",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

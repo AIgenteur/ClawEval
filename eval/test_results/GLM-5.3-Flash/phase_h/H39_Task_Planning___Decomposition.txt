@@ -1,0 +1,45 @@
+## Constraint Verification
+
+| Constraint | Status |
+|---|---|
+| Exactly 20 tasks | ✅ 20 |
+| Total effort 80–120 days | ✅ 90 days |
+| Team counts ≥3 each | ✅ backend: 8, devops: 6, frontend: 3, qa: 3 |
+| Task 1 has no dependencies | ✅ |
+| Task 20 depends on ≥2 tasks | ✅ [18, 19] |
+| No circular/forward dependencies | ✅ All deps reference lower IDs |
+| ≥2 parallelizable tasks | ✅ Tasks 5 & 6 (both depend only on 3); tasks 11 & 12; tasks 18 & 19 |
+| Required topics included | ✅ DB migration (9), API gateway (8), CI/CD (5), testing (17–19) |
+
+## Task List
+
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Audit monolithic Django app: map modules, dependencies, and data flows", "depends_on": [], "effort_days": 5, "team": "backend"},
+    {"id": 2, "task": "Define microservice boundaries and domain model from audit results", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 3, "task": "Containerize monolith and provision Kubernetes cluster", "depends_on": [1], "effort_days": 5, "team": "devops"},
+    {"id": 4, "task": "Design inter-service communication standards (REST/gRPC, event bus)", "depends_on": [2], "effort_days": 3, "team": "backend"},
+    {"id": 5, "task": "Set up CI/CD pipeline with automated build, test, and deploy stages", "depends_on": [3], "effort_days": 4, "team": "devops"},
+    {"id": 6, "task": "Establish observability stack: centralized logging, metrics, distributed tracing", "depends_on": [3], "effort_days": 4, "team": "devops"},
+    {"id": 7, "task": "Design database-per-service schema and data ownership plan", "depends_on": [2, 4], "effort_days": 4, "team": "backend"},
+    {"id": 8, "task": "Set up API gateway: routing, authentication, rate limiting", "depends_on": [4, 6], "effort_days": 5, "team": "devops"},
+    {"id": 9, "task": "Build data migration tooling (dual-write, CDC sync) and execute database split", "depends_on": [7], "effort_days": 8, "team": "backend"},
+    {"id": 10, "task": "Extract User/Auth service from monolith", "depends_on": [7, 9], "effort_days": 6, "team": "backend"},
+    {"id": 11, "task": "Extract Orders service from monolith", "depends_on": [9, 10], "effort_days": 6, "team": "backend"},
+    {"id": 12, "task": "Build frontend API client layer for gateway endpoints", "depends_on": [8, 10], "effort_days": 4, "team": "frontend"},
+    {"id": 13, "task": "Extract Payments service from monolith", "depends_on": [11], "effort_days": 5, "team": "backend"},
+    {"id": 14, "task": "Implement service-to-service authentication (mTLS/JWT)", "depends_on": [8], "effort_days": 3, "team": "devops"},
+    {"id": 15, "task": "Refactor frontend views and state management to consume microservices", "depends_on": [12, 13], "effort_days": 4, "team": "frontend"},
+    {"id": 16, "task": "Implement frontend feature flags and graceful degradation for rollout", "depends_on": [15], "effort_days": 3, "team": "frontend"},
+    {"id": 17, "task": "Write integration and contract tests for extracted services", "depends_on": [11, 13], "effort_days": 4, "team": "qa"},
+    {"id": 18, "task": "End-to-end regression testing of migrated user flows", "depends_on": [16, 17], "effort_days": 4, "team": "qa"},
+    {"id": 19, "task": "Load, performance, and security testing of service landscape", "depends_on": [14, 17], "effort_days": 4, "team": "qa"},
+    {"id": 20, "task": "Production cutover, monitoring validation, and monolith decommission", "depends_on": [18, 19], "effort_days": 5, "team": "devops"}
+  ]
+}
+```
+
+**Effort total:** 5+4+5+3+4+4+4+5+8+6+6+4+5+3+4+3+4+4+4+5 = **90 days**
+
+**Key parallel tracks:** Infrastructure (3→5/6) runs alongside domain design (2→4→7); frontend work (12→15→16) proceeds independently of Payments extraction (13); regression (18) and load/security testing (19) can run concurrently before cutover.

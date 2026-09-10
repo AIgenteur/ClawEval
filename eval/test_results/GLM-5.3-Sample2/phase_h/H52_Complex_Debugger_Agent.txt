@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8 — self.requests = []",
+      "bug": "Plain unsynchronized list used as shared rate-limit state. acquire() awaits (sleeps) between the limit check and the append, so multiple coroutines can pass the check, sleep, and then all append afterwards (TOCTOU race) — the limiter can exceed max_requests. The appended 'now' is also the stale pre-sleep timestamp, skewing the sliding window.",
+      "fix": "Use collections.deque guarded by an asyncio.Lock; after sleeping, recompute the time, re-prune, and re-check the limit in a loop before appending."
+    },
+    {
+      "line": "11 — asyncio.get_event_loop().time()",
+      "bug": "asyncio.get_event_loop() is a deprecated API (Python 3.10+) and can emit DeprecationWarning or raise depending on version/context.",
+      "fix": "Use asyncio.get_running_loop().time() inside the coroutine, or simply time.monotonic()."
+    },
+    {
+      "line": "25 — async with aiohttp.ClientSession() as session:",
+      "bug": "A brand-new ClientSession (each with its own connector/connection pool) is created and destroyed for every single request, destroying connection reuse and adding heavy per-request overhead.",
+      "fix": "Create one ClientSession in fetch_all (async with aiohttp.ClientSession() as session:) and pass it into fetch_one so all requests share it."
+    },
+    {
+      "line": "27 — response = await session.get(url, timeout=30)",
+      "bug": "The response is not used as a context manager, so on any error path (ContentTypeError, timeout, cancellation) the connection is never released and leaks from the pool.",
+      "fix": "async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response: data = await response.json()"
+    },
+    {
+      "line": "29 — results[url] = data",
+      "bug": "Results are collected in a dict keyed by URL, so duplicate URLs overwrite each other — main()'s 100 identical URLs collapse into a single entry. Also relies on mutating shared state from tasks instead of using return values.",
+      "fix": "Have fetch_one return (url, data) and build results from gather()'s return value, or key by task index; use a list if duplicates must be preserved."
+    },
+    {
+      "line": "31 — results[url] = None (except Exception)",
+      "bug": "Blanket 'except Exception' converts every failure into a silent None — errors are completely masked, and a failed duplicate fetch can overwrite a successful result.",
+      "fix": "Catch specific exceptions (aiohttp.ClientError, asyncio.TimeoutError, aiohttp.ContentTypeError) and log them, e.g. logging.exception('fetch failed: %s', url)."
+    },
+    {
+      "line": "32 — pass",
+      "bug": "'pass' is dead code that guarantees the exception is swallowed with no log or traceback, making failures undebuggable.",
+      "fix": "Remove 'pass' and log the error (logging.exception) or store/re-raise it; never silently discard exceptions."
+    },
+    {
+      "line": "35 — await asyncio.gather(*tasks)",
+      "bug": "gather() is called without return_exceptions=True and its return value is discarded. Any exception escaping fetch_one's try block (e.g., from limiter.acquire or session creation) aborts the entire batch, and results are collected only via side effects.",
+      "fix": "gathered = await asyncio.gather(*tasks, return_exceptions=True), then build results from 'gathered' and handle exception entries."
+    },
+    {
+      "line": "42 — task = process_item(item)",
+      "bug": "The async function is called without await (or asyncio.create_task), so 'task' is just an unawaited coroutine object. It only happens to work because gather() accepts coroutines; if gather is never reached, you get 'coroutine was never awaited' RuntimeWarnings and nothing runs.",
+      "fix": "tasks.append(asyncio.create_task(process_item(item))) — or pass the coroutines directly into asyncio.gather()."
+    },
+    {
+      "line": "45 — yield r",
+      "bug": "'yield' inside 'async def' makes process_batch an async generator: it cannot be awaited directly (await process_batch(...) fails) and must be consumed with 'async for' — yet it is never used anywhere in the program.",
+      "fix": "Consume it with 'async for r in process_batch(items): ...', or remove the yield and 'return results' as a list if generator semantics aren't needed."
+    },
+    {
+      "line": "52 — self.pool = []",
+      "bug": "The pool is a bare list with no asyncio.Lock/Condition and no waiting mechanism: when empty, get_connection() silently creates a brand-new connection instead of waiting for a release, so the pool never actually limits anything.",
+      "fix": "Guard the pool with an asyncio.Lock and use an asyncio.Condition so callers await a free connection when the pool is empty (optionally pre-populate up to size)."
+    },
+    {
+      "line": "60 — self.pool.append(conn)",
+      "bug": "release() appends unconditionally without checking self.size, so the pool can grow unboundedly past its configured capacity (and returned connections are never validated).",
+      "fix": "if len(self.pool) < self.size: self.pool.append(conn) else: close/discard the connection."
+    },
+    {
+      "line": "63 — return object()",
+      "bug": "create_connection() returns a bare object() — a dummy placeholder that is not a real connection and performs no async I/O, so the pool stores useless tokens.",
+      "fix": "Actually establish a connection asynchronously (e.g., asyncio.open_connection(...), a socket, or a client session) and return that live handle."
+    },
+    {
+      "line": "68 — print(f'Got {len(results)} results')",
+      "bug": "The count is wrong: all 100 URLs are identical and results is URL-keyed, so len(results) is 1, not 100 — and None entries (failures) are still counted as 'results'.",
+      "fix": "Use distinct URLs (or list-based results) and count successes separately, e.g. sum(1 for v in results.values() if v is not None)."
+    },
+    {
+      "line": "missing — end of file (after main())",
+      "bug": "main() is defined but never executed: there is no asyncio.run(main()) entry point, so running the script does nothing at all.",
+      "fix": "Add: if __name__ == '__main__': asyncio.run(main())"
+    }
+  ],
+  "count": 15
+}
+```

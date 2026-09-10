@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "RateLimiter has no locking around its shared request list. acquire() contains an await (the sleep), so multiple coroutines interleave: tasks that wake from sleep append without re-checking, and there is no mutual exclusion, so concurrent callers can exceed max_requests (check-then-act race condition).",
+      "fix": "Add self._lock = asyncio.Lock() in __init__ and wrap the body of acquire() in 'async with self._lock:' so check/wait/append are atomic; re-prune and re-check after sleeping, and append a fresh timestamp."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated inside a running coroutine (DeprecationWarning on Python 3.10+/3.12, and it raises RuntimeError when no running loop is set); it can also bind the wrong loop.",
+      "fix": "Use asyncio.get_running_loop().time()."
+    },
+    {
+      "line": "25",
+      "bug": "A new aiohttp.ClientSession is created and torn down for every single request. This defeats connection pooling/keep-alive, wastes resources, and under load exhausts sockets/file descriptors.",
+      "fix": "Create one shared ClientSession in fetch_all ('async with aiohttp.ClientSession() as session:' wrapping the gather) and pass it into fetch_one."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 passes a bare int; aiohttp expects an aiohttp.ClientTimeout instance (numeric timeouts are deprecated and handled inconsistently across versions).",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30)."
+    },
+    {
+      "line": "27-28",
+      "bug": "The response is never closed/released if response.json() raises (e.g., non-JSON content type), leaking the connection back to the pool and eventually exhausting it.",
+      "fix": "Use 'async with session.get(url, timeout=...) as response:' so the response is always released, even on error."
+    },
+    {
+      "line": "29",
+      "bug": "The response status is never checked (no response.raise_for_status()), so HTTP 4xx/5xx error bodies are read and stored as if they were valid results.",
+      "fix": "Call response.raise_for_status() (or pass raise_for_status=True to session.get) before reading the JSON body."
+    },
+    {
+      "line": "31",
+      "bug": "Blanket 'except Exception' silently swallows every possible error (timeouts, DNS failures, JSON errors, real bugs) with no logging, collapsing all failures into an indistinguishable None.",
+      "fix": "Catch specific exceptions (aiohttp.ClientError, asyncio.TimeoutError) and log the exception before recording the failure."
+    },
+    {
+      "line": "32",
+      "bug": "'pass' after the assignment inside the except block is redundant dead code.",
+      "fix": "Delete the pass statement."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather(*tasks) is called without return_exceptions=True. Any exception that escapes fetch_one (e.g., from the semaphore or rate limiter) makes gather raise immediately while the remaining tasks keep running unmanaged, their results/exceptions never retrieved.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) (or schedule each fetch with asyncio.create_task and handle errors per task)."
+    },
+    {
+      "line": "42",
+      "bug": "process_item(item) is called without await and without asyncio.create_task() — a bare coroutine that is never explicitly scheduled ('missing await'). It only runs implicitly via gather; if gather is never reached (exception/cancellation), the coroutines are never awaited (RuntimeWarning) and cannot be cancelled or introspected individually.",
+      "fix": "Use task = asyncio.create_task(process_item(item)) so each item becomes a real, schedulable Task."
+    },
+    {
+      "line": "45",
+      "bug": "The async generator has no error handling or cleanup around the batch loop: if asyncio.gather raises, the exception aborts the generator mid-iteration and every remaining batch is silently skipped; a whole batch is also buffered before the first yield (no incremental output).",
+      "fix": "Wrap batch processing in try/except (and finally for cleanup) so one failed batch doesn't kill the generator, and/or use asyncio.as_completed to yield results as they finish."
+    },
+    {
+      "line": "52",
+      "bug": "ConnectionPool never enforces self.size: get_connection() creates a brand-new connection whenever the pool is empty, so concurrent callers can create unbounded connections (no cap, no waiting). The plain list also has no locking or condition variable.",
+      "fix": "Enforce the cap with asyncio.Semaphore/asyncio.Condition (or asyncio.Queue(maxsize=size)) so callers wait for a free connection instead of creating new ones."
+    },
+    {
+      "line": "60",
+      "bug": "release() appends unconditionally with no size check and no locking: the pool can grow beyond 'size', and a double-release inserts the same connection twice, corrupting the pool.",
+      "fix": "Guard release() with a lock/condition, only return the connection if the pool is below capacity (or use asyncio.Queue(maxsize=size)), and track checked-out connections to reject duplicate releases."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection() returns object() — a placeholder that is not a connection at all — and the method is declared async despite doing no async work.",
+      "fix": "Return a real connection/resource (e.g., an actual client or socket object) from this factory."
+    },
+    {
+      "line": "68",
+      "bug": "main() is defined but never invoked — there is no asyncio.run(main()) / 'if __name__ == \"__main__\":' entry point, so running the script produces nothing. Additionally, because urls is [\"http://example.com\"] * 100 and results is a dict keyed by URL, len(results) would print 1, not 100 (99 duplicate results silently overwrite each other).",
+      "fix": "Add 'if __name__ == \"__main__\": asyncio.run(main())', and use unique URLs (or collect results in a list) so the reported count is correct."
+    }
+  ],
+  "count": 15
+}
+```

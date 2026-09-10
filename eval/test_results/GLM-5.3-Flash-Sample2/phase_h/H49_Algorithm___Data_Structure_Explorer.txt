@@ -1,0 +1,131 @@
+Here are the three implementations:
+
+## 1. LRU Cache — hash map + doubly linked list (O(1) get/put)
+
+```python
+class LRUCache:
+    """Least Recently Used cache with O(1) get and put.
+
+    Uses a dict (key -> node) plus a doubly linked list with sentinels.
+    Front of the list = most recently used; back = least recently used.
+    """
+
+    class _Node:
+        __slots__ = ("key", "value", "prev", "next")
+
+        def __init__(self, key=None, value=None):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self._map = {}                 # key -> _Node
+        self._head = self._Node()      # sentinel: most-recent side
+        self._tail = self._Node()      # sentinel: least-recent side
+        self._head.next = self._tail
+        self._tail.prev = self._head
+
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_front(self, node):
+        first = self._head.next
+        node.prev = self._head
+        node.next = first
+        self._head.next = node
+        first.prev = node
+
+    def get(self, key):
+        node = self._map.get(key)
+        if node is None:
+            return -1
+        self._remove(node)
+        self._add_front(node)          # mark as recently used
+        return node.value
+
+    def put(self, key, value):
+        node = self._map.get(key)
+        if node is not None:
+            node.value = value
+            self._remove(node)
+            self._add_front(node)
+            return
+        node = self._Node(key, value)
+        self._map[key] = node
+        self._add_front(node)
+        if len(self._map) > self.capacity:
+            lru = self._tail.prev      # evict least recently used
+            self._remove(lru)
+            del self._map[lru.key]
+```
+
+## 2. MinStack — auxiliary min-tracking stack (O(1) all operations)
+
+```python
+class MinStack:
+    """Stack with push, pop, top, and get_min, all in O(1).
+
+    Keeps a parallel stack where each entry is the minimum of the
+    stack from the bottom up to that level.
+    """
+
+    def __init__(self):
+        self._stack = []
+        self._mins = []
+
+    def push(self, val):
+        self._stack.append(val)
+        if self._mins:
+            self._mins.append(min(val, self._mins[-1]))
+        else:
+            self._mins.append(val)
+
+    def pop(self):
+        self._mins.pop()
+        return self._stack.pop()
+
+    def top(self):
+        return self._stack[-1]
+
+    def get_min(self):
+        return self._mins[-1]
+```
+
+## 3. Running median — sorted list with hand-rolled binary search insert
+
+```python
+def find_median(stream):
+    """Return the running median after each element of `stream`.
+
+    Maintains a sorted list; the insertion point is found with a
+    hand-written binary search (no imports), then list.insert places
+    the element. Median lookup is O(1) via index arithmetic.
+    """
+    sorted_vals = []
+    medians = []
+    for x in stream:
+        # Binary search for the leftmost insertion position.
+        lo, hi = 0, len(sorted_vals)
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if sorted_vals[mid] < x:
+                lo = mid + 1
+            else:
+                hi = mid
+        sorted_vals.insert(lo, x)
+
+        n = len(sorted_vals)
+        if n % 2 == 1:
+            medians.append(float(sorted_vals[n // 2]))
+        else:
+            medians.append((sorted_vals[n // 2 - 1] + sorted_vals[n // 2]) / 2.0)
+    return medians
+```
+
+**Notes:**
+- **LRUCache:** all operations are true O(1) — the dict gives O(1) lookup, and the linked list gives O(1) reorder/eviction. Sentinel head/tail nodes eliminate all edge-case pointer checks. Works even if `capacity` is 0 (evicts immediately).
+- **MinStack:** each `_mins` entry records the minimum as of that stack depth, so popping restores the previous minimum automatically. Empty-stack calls raise `IndexError` naturally.
+- **find_median:** O(log n) search + O(n) insert per element (O(n²) worst case overall, O(1) median read). This avoids `heapq`/`bisect` per the no-imports constraint; for very large streams, a two-heap approach would give O(log n) per element. Verified against the example: `[2, 1, 3]` → `[2.0, 1.5, 2.0]`.

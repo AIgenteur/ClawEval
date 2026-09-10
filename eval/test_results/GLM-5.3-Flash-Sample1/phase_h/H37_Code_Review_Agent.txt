@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount multiplies subtotal by 0.20, charging the customer only 20% of the subtotal (an 80% discount) instead of reducing it by 20%. Should be `subtotal * 0.80` or `subtotal -= subtotal * 0.20`.",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 discount subtracts 10x the subtotal (`subtotal -= subtotal * 10`), producing a large negative subtotal. Should subtract 10%: `subtotal -= subtotal * 0.10`.",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is silently ignored (`pass`): the order is still marked 'completed' and inventory is left negative, allowing overselling. Stock should be validated before decrementing, and the order skipped/rejected.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "`total_revenue =+ total` parses as `total_revenue = (+total)` — an assignment, not an accumulation. Revenue ends up equal to only the last order's total. Should be `total_revenue += total`.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero: `total_revenue / len(orders)` raises ZeroDivisionError when `orders` is an empty list. Needs a guard or default value.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "`max()` over an empty generator raises ValueError when there are no orders. Should use `max(..., default=0)` or check `results` first.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for the presence of '@' — accepts invalid addresses like 'a@', '@b', 'a@@b', or strings with no valid domain/TLD. Needs proper structural validation (e.g., regex).",
+      "severity": "major"
+    },
+    {
+      "line": 53,
+      "bug": "`distance + per_km` adds a flat $0.01 instead of multiplying distance by the per-km rate. Should be `distance * per_km` — long-distance shipments are massively undercharged.",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable branch: any weight > 50 also satisfies `weight > 30`, so `elif weight > 50` never executes and the $25 oversize surcharge is never applied. Conditions must be reordered or the `elif` changed to a separate `if`.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "`round(cost)` rounds to a whole number, dropping cents from the shipping price. Should be `round(cost, 2)` to preserve currency precision.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "`merged = profile_a` creates an alias, not a copy — all mutations (adding profile_b's keys, setting 'updated_at') modify the caller's original `profile_a` dict. Should be `merged = profile_a.copy()` (deep copy if nested values exist).",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded timestamp '2024-01-01' instead of the actual current time (e.g., `datetime.now().isoformat()`), so 'updated_at' is always wrong.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive `line.split(',')` breaks on quoted fields containing commas (e.g., `\"Smith, John\",30`), escaped quotes, or embedded newlines. Should use the `csv` module (e.g., `next(csv.reader([line]))`).",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "`seen.append(item)` runs unconditionally, so an item appearing 3+ times is added to `duplicates` once per extra occurrence (the duplicates list itself contains duplicates). Should append to `seen` only in the `else` branch.",
+      "severity": "minor"
+    },
+    {
+      "line": 73,
+      "bug": "`seen` is a list, making `item in seen` an O(n) scan and the whole function O(n²). Should be a `set()` for O(1) membership testing.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

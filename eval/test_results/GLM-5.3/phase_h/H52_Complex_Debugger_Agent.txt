@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Rate limiter race condition: self.requests is shared state with no asyncio.Lock. Multiple coroutines that hit the limit compute the same wait time, sleep concurrently, wake together, and all append — exceeding max_requests. The condition is never re-checked after sleeping, and the stale pre-sleep 'now' timestamp gets appended.",
+      "fix": "Guard acquire() with an asyncio.Lock and use a while loop: prune expired entries, and while len(self.requests) >= self.max_requests, sleep, then recompute now and re-check before appending."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated (Python 3.10+) and warns/raises when there is no set event loop; inside a coroutine you should fetch the running loop explicitly.",
+      "fix": "Use asyncio.get_running_loop().time(), or simply time.monotonic()."
+    },
+    {
+      "line": "25",
+      "bug": "A new aiohttp.ClientSession (each with its own connector/connection pool) is created for every single request — a documented anti-pattern that destroys connection reuse and wastes resources.",
+      "fix": "Create one ClientSession in fetch_all (async with aiohttp.ClientSession() as session:) and close over it / pass it into fetch_one."
+    },
+    {
+      "line": "27",
+      "bug": "session.get(url, timeout=30) passes a raw int as timeout — aiohttp requires an aiohttp.ClientTimeout object; numeric timeouts raise TypeError in current aiohttp versions.",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30), and wrap the call in 'async with session.get(...) as response' so the response is always released."
+    },
+    {
+      "line": "29",
+      "bug": "results is a dict keyed by URL, so duplicate URLs overwrite each other — with urls = ['http://example.com'] * 100, 99 of the 100 results are silently lost.",
+      "fix": "Key results by index (pass i from enumerate(urls) into fetch_one) or append (url, data) tuples to a list."
+    },
+    {
+      "line": "31",
+      "bug": "Every exception is silently converted to None: failures are invisible, indistinguishable from each other, and None could even be a legitimate JSON response body.",
+      "fix": "Log the exception and/or store the error (e.g., results[url] = {'error': repr(e)}), or re-raise so the caller can handle it."
+    },
+    {
+      "line": "32",
+      "bug": "'pass' is dead code and the bare except block swallows all errors with no logging or telemetry — failures are completely unobservable.",
+      "fix": "Remove 'pass' and log the failure, e.g., logger.exception('fetch failed for %s', url)."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather(*tasks) is called without return_exceptions=True: any exception escaping a task (e.g., CancelledError, or an error raised outside the inner try) propagates immediately and abandons the remaining tasks, which keep running unawaited.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) and inspect the returned values, or guarantee each task handles all of its own exceptions."
+    },
+    {
+      "line": "42",
+      "bug": "process_item(item) returns a coroutine that is never awaited on this line — it only executes because gather() happens to accept bare coroutines; if gather were skipped or an error occurred first, you would get 'coroutine was never awaited' and the work would silently never run. (Note: adding a plain 'await' here would serialize the batch and destroy concurrency.)",
+      "fix": "task = asyncio.create_task(process_item(item)) to schedule each item explicitly; gather() then awaits the resulting Tasks."
+    },
+    {
+      "line": "45",
+      "bug": "'yield r' inside 'async def' silently turns process_batch into an async generator: it cannot be awaited (await process_batch(...) raises TypeError), must be consumed with 'async for', and if the consumer stops early the remaining batches never execute.",
+      "fix": "Either collect all results and return them as a list (extend a list with each gather() result and return it), or keep the generator but ensure callers consume it fully with 'async for'."
+    },
+    {
+      "line": "52",
+      "bug": "The pool is a plain list that never enforces self.size: when empty, get_connection() creates unlimited brand-new connections, so the pool provides no concurrency control and there is no way to wait for a connection to be returned.",
+      "fix": "Use asyncio.Queue(maxsize=size) pre-filled with connections (await queue.get() / queue.put()), or cap total connections with an asyncio.Semaphore so callers await a free slot."
+    },
+    {
+      "line": "60",
+      "bug": "release() appends unconditionally, so the pool can grow beyond self.size without bound — the size limit is never checked on release.",
+      "fix": "if len(self.pool) < self.size: self.pool.append(conn) else: close/discard the connection."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection() returns a bare object() — a dummy placeholder that is not a real connection, so the pool manages useless objects and no actual connection is ever established.",
+      "fix": "Create and return a real connection here (actually open the socket/session/client), honoring the pool's size limit."
+    },
+    {
+      "line": "68",
+      "bug": "The success check is meaningless: since all 100 URLs are identical and results is keyed by URL, this prints 'Got 1 results' — it cannot detect failures or lost data and gives false confidence.",
+      "fix": "Use unique URLs and/or list-based results, and validate against the request count (e.g., check len(results) == len(urls))."
+    },
+    {
+      "line": "missing (after line 68)",
+      "bug": "main() is never executed — the script defines it but has no asyncio.run(main()) or 'if __name__ == __main__': guard, so running the file does nothing at all.",
+      "fix": "Add at the bottom: if __name__ == '__main__': asyncio.run(main())"
+    }
+  ],
+  "count": 15
+}
+```

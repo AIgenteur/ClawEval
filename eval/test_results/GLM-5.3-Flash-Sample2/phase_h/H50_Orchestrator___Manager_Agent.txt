@@ -1,0 +1,108 @@
+```json
+{
+  "agents": [
+    {
+      "name": "validation-agent",
+      "input": "Raw refund request: {request_id, customer_id, order_id, refund_amount, currency, reason, channel, timestamp}",
+      "output": "ValidatedRequest: {is_valid, normalized_amount, eligibility_flags, rejection_reason (if invalid)}",
+      "next": "IF is_valid=true → fraud-check-agent; ELSE → notification-agent (outcome=rejected, reason=validation_failed)",
+      "fallback": "error-handler (log error, single retry, then escalate)",
+      "timeout_seconds": 5,
+      "audit_log": "REFUND_RECEIVED + REFUND_VALIDATED (result, flags)"
+    },
+    {
+      "name": "fraud-check-agent",
+      "input": "ValidatedRequest from validation-agent",
+      "output": "FraudAssessment: {risk_score (0-100), risk_tier (low|medium|high), signals[]}",
+      "next": "IF risk_tier in (low, medium) → approval-agent; IF risk_tier=high → human-escalation-agent",
+      "fallback": "error-handler",
+      "timeout_seconds": 10,
+      "audit_log": "REFUND_FRAUD_CHECKED (score, signals)"
+    },
+    {
+      "name": "approval-agent",
+      "input": "ValidatedRequest + FraudAssessment",
+      "output": "ApprovalDecision: {decision (approved|rejected), policy_version, reason, approver=auto}",
+      "next": "IF decision=approved → payment-agent; IF decision=rejected → notification-agent (outcome=rejected, reason)",
+      "fallback": "error-handler",
+      "timeout_seconds": 8,
+      "audit_log": "REFUND_DECISION (decision, policy_version)"
+    },
+    {
+      "name": "payment-agent",
+      "input": "ApprovalDecision (approved) + ValidatedRequest",
+      "output": "PaymentResult: {transaction_id, status (settled|pending), settled_amount, executed_at}",
+      "next": "notification-agent (outcome=approved, transaction_id included)",
+      "fallback": "error-handler (idempotent retry max 2, then escalate)",
+      "timeout_seconds": 15,
+      "audit_log": "REFUND_PAYMENT_EXECUTED (transaction_id, amount)"
+    },
+    {
+      "name": "human-escalation-agent",
+      "input": "Escalated case packet: {high fraud risk | error-handler referral | policy edge case} + full request context",
+      "output": "HumanDecision: {decision (approved|rejected|manual_resolution), reviewer_id, notes}",
+      "next": "IF decision=approved AND payment_status=pending → payment-agent; IF decision=rejected → notification-agent (outcome=rejected); IF decision=manual_resolution → END (case closed by ops)",
+      "fallback": "error-handler → re-queue to senior reviewer",
+      "timeout_seconds": 86400,
+      "audit_log": "REFUND_ESCALATED + REFUND_HUMAN_DECISION (reviewer_id)"
+    },
+    {
+      "name": "notification-agent",
+      "input": "Final outcome packet: {outcome (approved|rejected), customer_contact, transaction_id?, reason?, refund_amount}",
+      "output": "NotificationReceipt: {channel, delivery_status, message_id}",
+      "next": "END (emit REFUND_CLOSED; workflow complete)",
+      "fallback": "error-handler (alternate-channel retry: email → SMS)",
+      "timeout_seconds": 5,
+      "audit_log": "REFUND_NOTIFIED + REFUND_CLOSED"
+    },
+    {
+      "name": "error-handler",
+      "input": "Failure packet: {failed_agent, error_type, error_context, retry_count, request_id}",
+      "output": "ErrorResolution: {action=escalated, ticket_id, severity}",
+      "next": "human-escalation-agent (forward-only escalation; no retry cycles to preserve acyclic graph)",
+      "fallback": "Persist to dead-letter queue + page on-call engineer",
+      "timeout_seconds": 10,
+      "audit_log": "REFUND_ERROR (failed_agent, error_type)"
+    }
+  ],
+  "constraints": {
+    "1_min_agents": { "required": 6, "actual": 7, "status": "pass" },
+    "2_required_agent_types": { "required": ["validation", "fraud-check", "approval", "payment", "notification"], "present": true, "status": "pass" },
+    "3_io_next_defined": { "every_agent_has_input_output_next": true, "status": "pass" },
+    "4_conditional_branches": { "count": 3, "locations": ["validation-agent (valid/invalid)", "fraud-check-agent (risk_tier routing)", "approval-agent (approved/rejected)"], "status": "pass" },
+    "5_fallbacks": { "every_agent_has_fallback": true, "central_handler": "error-handler", "terminal_safety": "dead-letter queue + on-call page", "status": "pass" },
+    "6_first_agent": { "value": "validation-agent", "status": "pass" },
+    "7_last_agent": { "value": "notification-agent", "status": "pass" },
+    "8_fraud_before_approval": { "edge": "fraud-check-agent → approval-agent", "status": "pass" },
+    "9_payment_after_approval": { "edge": "approval-agent (approved) → payment-agent", "status": "pass" },
+    "10_sla": {
+      "limit_seconds": 60,
+      "automated_path_worst_case_seconds": 43,
+      "breakdown": { "validation": 5, "fraud-check": 10, "approval": 8, "payment": 15, "notification": 5 },
+      "note": "human-escalation-agent runs async with a 24h SLA and is exempt from the automated-path SLA",
+      "status": "pass"
+    },
+    "11_outcomes": {
+      "approved": "payment-agent → notification-agent (confirmation + transaction_id)",
+      "rejected": "notification-agent (rejection reason code)",
+      "status": "pass"
+    },
+    "12_audit_logging": {
+      "per_step": true,
+      "events": ["REFUND_RECEIVED", "REFUND_VALIDATED", "REFUND_FRAUD_CHECKED", "REFUND_DECISION", "REFUND_PAYMENT_EXECUTED", "REFUND_ESCALATED", "REFUND_HUMAN_DECISION", "REFUND_ERROR", "REFUND_NOTIFIED", "REFUND_CLOSED"],
+      "status": "pass"
+    },
+    "13_acyclic": {
+      "is_dag": true,
+      "verification": "All edges point forward; error-handler escalates only to human-escalation-agent (forward edge); no agent routes back upstream",
+      "status": "pass"
+    },
+    "14_human_escalation": {
+      "agent": "human-escalation-agent",
+      "triggers": ["fraud risk_tier=high", "error-handler referral", "policy edge cases"],
+      "status": "pass"
+    },
+    "15_timeouts": { "every_agent_has_timeout": true, "unit": "seconds", "status": "pass" }
+  }
+}
+```

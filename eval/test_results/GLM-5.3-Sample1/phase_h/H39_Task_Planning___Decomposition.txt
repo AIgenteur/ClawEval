@@ -1,0 +1,37 @@
+```json
+{
+  "tasks": [
+    {"id": 1, "task": "Audit monolith: map modules, dependencies, data flows, and technical debt", "depends_on": [], "effort_days": 5, "team": "backend"},
+    {"id": 2, "task": "Define microservice boundaries, API contracts, and phased migration roadmap", "depends_on": [1], "effort_days": 4, "team": "backend"},
+    {"id": 3, "task": "Provision container infrastructure: Kubernetes cluster, container registry, networking", "depends_on": [1], "effort_days": 6, "team": "devops"},
+    {"id": 4, "task": "Build CI/CD pipeline templates with automated build, test, and deploy stages", "depends_on": [3], "effort_days": 5, "team": "devops"},
+    {"id": 5, "task": "Define test strategy, provision test environments, and set acceptance criteria", "depends_on": [2], "effort_days": 4, "team": "qa"},
+    {"id": 6, "task": "Design API gateway architecture: routing, authentication, and rate limiting", "depends_on": [2], "effort_days": 3, "team": "backend"},
+    {"id": 7, "task": "Deploy and configure API gateway in staging environment", "depends_on": [4, 6], "effort_days": 6, "team": "devops"},
+    {"id": 8, "task": "Set up observability stack: centralized logging, metrics, and distributed tracing", "depends_on": [3], "effort_days": 5, "team": "devops"},
+    {"id": 9, "task": "Define data ownership and design per-service database schemas", "depends_on": [2], "effort_days": 4, "team": "backend"},
+    {"id": 10, "task": "Extract authentication/identity service from the monolith", "depends_on": [7], "effort_days": 8, "team": "backend"},
+    {"id": 11, "task": "Execute database migration: split shared database into service-owned databases", "depends_on": [9, 10], "effort_days": 9, "team": "backend"},
+    {"id": 12, "task": "Extract user profile service", "depends_on": [11], "effort_days": 7, "team": "backend"},
+    {"id": 13, "task": "Extract core orders/catalog service", "depends_on": [11], "effort_days": 7, "team": "backend"},
+    {"id": 14, "task": "Extract billing/payments service", "depends_on": [11], "effort_days": 7, "team": "backend"},
+    {"id": 15, "task": "Implement inter-service communication: gRPC/REST clients and message queue event bus", "depends_on": [12, 13, 14], "effort_days": 6, "team": "backend"},
+    {"id": 16, "task": "Refactor frontend to consume API gateway endpoints (CORS, session handling)", "depends_on": [7, 15], "effort_days": 6, "team": "frontend"},
+    {"id": 17, "task": "Build ops dashboard for service health and monitoring visualization", "depends_on": [8, 16], "effort_days": 5, "team": "frontend"},
+    {"id": 18, "task": "Update shared frontend component library and remove monolith-coupled code", "depends_on": [16], "effort_days": 4, "team": "frontend"},
+    {"id": 19, "task": "Integration, contract, and data-migration validation testing across services", "depends_on": [15], "effort_days": 6, "team": "qa"},
+    {"id": 20, "task": "End-to-end regression, load/performance testing, and production cutover sign-off", "depends_on": [17, 18, 19], "effort_days": 7, "team": "qa"}
+  ]
+}
+```
+
+**Constraint verification:**
+
+- **Exactly 20 tasks** ✓ (ids 1–20)
+- **Team coverage (≥3 each):** backend = 10 (1, 2, 6, 9–15), devops = 4 (3, 4, 7, 8), frontend = 3 (16, 17, 18), qa = 3 (5, 19, 20) ✓
+- **Total effort:** 5+4+6+5+4+3+6+5+4+8+9+7+7+7+6+6+5+4+6+7 = **114 days** (within 80–120) ✓
+- **Dependency validity:** every `depends_on` references a strictly lower id → tasks are topologically ordered, no cycles, no forward references ✓
+- **First task:** id 1 has `depends_on: []` ✓
+- **Last task:** id 20 depends on 3 tasks (17, 18, 19) ✓
+- **Parallelizable tasks:** tasks 2 & 3 (both depend only on 1, independent of each other); tasks 12, 13, 14 (all depend only on 11, mutually independent); tasks 17 & 18 ✓
+- **Required content:** database migration (11), API gateway setup (6, 7), CI/CD (4), testing (5, 19, 20) ✓

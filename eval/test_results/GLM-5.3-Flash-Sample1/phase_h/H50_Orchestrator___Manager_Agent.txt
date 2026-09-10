@@ -1,0 +1,92 @@
+```json
+{
+  "workflow": {
+    "name": "customer-refund-processing",
+    "entry_point": "validation-agent",
+    "terminal_state": "END",
+    "expected_processing_seconds": 43
+  },
+  "agents": [
+    {
+      "name": "validation-agent",
+      "input": "raw refund request {request_id, customer_id, order_id, requested_amount, currency, reason, channel}",
+      "output": "validated_request {validation_status: valid|invalid, normalized_amount, order_snapshot, rejection_reason?}",
+      "next": "if validation_status == 'valid' -> fraud-check-agent; else -> notification-agent (rejection_path)",
+      "fallback": "retry once, then route to error-handler-agent with stage='validation'",
+      "timeout_seconds": 5,
+      "audit": "emit refund.request.validated {request_id, validation_status, payload_hash}"
+    },
+    {
+      "name": "fraud-check-agent",
+      "input": "validated_request from validation-agent",
+      "output": "risk_assessment {fraud_score: 0-100, risk_level: low|high, fraud_check_id, signals_summary}",
+      "next": "if risk_level == 'low' -> approval-agent; else -> human-escalation-agent (edge_case_path)",
+      "fallback": "retry once, then route to error-handler-agent with stage='fraud_check' (fraud check is never bypassed)",
+      "timeout_seconds": 10,
+      "audit": "emit refund.fraud.checked {fraud_check_id, risk_level, score_band}"
+    },
+    {
+      "name": "approval-agent",
+      "input": "validated_request + risk_assessment",
+      "output": "approval_decision {decision: approved|rejected|borderline, approved_amount, policy_rule_ids, reason}",
+      "next": "if decision == 'approved' -> payment-agent; if decision == 'rejected' -> notification-agent (rejection_path); if decision == 'borderline' -> human-escalation-agent (edge_case_path)",
+      "fallback": "retry once, then route to error-handler-agent with stage='approval'",
+      "timeout_seconds": 8,
+      "audit": "emit refund.approval.decided {decision, policy_rule_ids, actor: 'system'}"
+    },
+    {
+      "name": "payment-agent",
+      "input": "approval_decision (approved) + validated_request",
+      "output": "payment_result {transaction_id, refunded_amount, payment_status: succeeded|failed, settlement_eta}",
+      "next": "notification-agent (always; carries payment_result or failure context)",
+      "fallback": "retry 2x with exponential backoff on gateway timeout, then route to error-handler-agent with stage='payment'",
+      "timeout_seconds": 15,
+      "audit": "emit refund.payment.processed {transaction_id, refunded_amount, payment_status}"
+    },
+    {
+      "name": "human-escalation-agent",
+      "input": "escalation_case {request context, risk_assessment or borderline approval_decision, escalation_reason}",
+      "output": "human_decision {decision: approved|rejected, approved_amount, reviewer_id, notes}",
+      "next": "if human_decision == 'approved' -> payment-agent; else -> notification-agent (rejection_path)",
+      "fallback": "reassign reviewer once, then route to error-handler-agent with stage='escalation'",
+      "timeout_seconds": 86400,
+      "audit": "emit refund.escalation.opened / refund.escalation.resolved {reviewer_id, decision, notes}"
+    },
+    {
+      "name": "error-handler-agent",
+      "input": "failure_context {stage, request_id, error_code, retry_count, payload_snapshot}",
+      "output": "incident_record {ticket_id, severity, notify_customer: bool}",
+      "next": "if notify_customer == true -> notification-agent (delay/failure notice); else -> END (offline ticket only)",
+      "fallback": "write to dead_letter_queue for offline replay",
+      "timeout_seconds": 5,
+      "audit": "emit refund.error.handled {ticket_id, stage, error_code}"
+    },
+    {
+      "name": "notification-agent",
+      "input": "outcome_envelope {request_id, outcome: approved|rejected|delayed, refunded_amount?, transaction_id?, rejection_reason?, ticket_id?}",
+      "output": "notification_receipt {channel, delivery_status, message_id}",
+      "next": "END (workflow terminal)",
+      "fallback": "retry 3x across channels (email -> sms), then dead_letter_queue + manual follow-up ticket",
+      "timeout_seconds": 5,
+      "audit": "emit refund.notification.sent {message_id, channel, outcome}"
+    }
+  ],
+  "constraints": {
+    "1_min_six_agents": { "pass": true, "detail": "7 agents in pipeline" },
+    "2_required_agents_present": { "pass": true, "detail": "validation-agent, fraud-check-agent, approval-agent, payment-agent, notification-agent all included" },
+    "3_io_next_defined": { "pass": true, "detail": "every agent defines input, output, and next" },
+    "4_conditional_branches": { "pass": true, "count": 5, "locations": ["validation-agent valid|invalid", "fraud-check-agent low|high risk", "approval-agent approved|rejected|borderline", "human-escalation-agent approved|rejected", "error-handler-agent notify|silent"] },
+    "5_fallback_per_agent": { "pass": true, "detail": "every agent has an explicit fallback; shared error-handler-agent plus dead_letter_queue terminal sink" },
+    "6_first_agent_is_validation": { "pass": true, "detail": "validation-agent is the entry point" },
+    "7_last_agent_is_notification": { "pass": true, "detail": "notification-agent is the terminal step (next = END)" },
+    "8_fraud_before_approval": { "pass": true, "detail": "all paths to approval-agent pass through fraud-check-agent; fallbacks never bypass the fraud check" },
+    "9_payment_after_approval": { "pass": true, "detail": "payment-agent is reachable only from approval-agent or human-escalation-agent with an approve decision" },
+    "10_time_under_60s": { "pass": true, "expected_seconds": 43, "detail": "happy path 5+10+8+15+5 = 43s; rejection fast path 28s; human escalation is async (24h SLA) and excluded from the automated budget" },
+    "11_approved_and_rejected_handled": { "pass": true, "detail": "rejection paths from validation-agent, approval-agent, and human-escalation-agent; approval path via payment-agent; both converge on notification-agent" },
+    "12_audit_each_step": { "pass": true, "detail": "each agent emits a structured audit event (per-agent 'audit' field)" },
+    "13_no_circular_dependencies": { "pass": true, "detail": "next/fallback edges form a DAG; sinks are END and dead_letter_queue; no edge returns to an upstream agent" },
+    "14_human_escalation_path": { "pass": true, "detail": "human-escalation-agent triggered by high fraud risk or borderline approval; 24h reviewer SLA" },
+    "15_timeouts": { "pass": true, "detail": "timeout_seconds defined for all 7 agents" }
+  }
+}
+```

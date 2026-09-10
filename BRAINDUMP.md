@@ -196,6 +196,17 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
 - Laguna-M.1 H-12 is scored 0/30 on a malformed API response (`ERROR: Expecting value`), not a
   model failure. Needs a clean retest.
 - Token-efficiency and per-role tables were last regenerated at 32 and 48 models respectively.
+- Ollama Cloud IGNORES all thinking controls for GLM-5.3 / GLM-5.3-Flash (probed 2026-09-10:
+  `enable_thinking=false`, `chat_template_kwargs.thinking=false`, `thinking_budget`, native `think=false`
+  all leave reasoning on and unbounded). Only `reasoning_effort=low` changes anything. Treat earlier
+  GLM "Think (bounded)" / "NoThink" labels on Ollama with suspicion. Verify a flag with a tiny probe
+  (compare completion_tokens / reasoning field) BEFORE labelling a run Think or NoThink.
+- Superseded-model policy (owner, 2026-09-10): newer version of the same family on the same
+  deployment type (cloud/local) at comparable size → older rows move to
+  `docs/results-previous-versions.md`. Kimi K2.7 Code counts as the successor of K2.5/K2.6.
+- Multi-sample publishing (owner, 2026-09-10, first used for GLM-5.3): when a model is run more than
+  once in full, publish the best valid score per test via `eval/combine_samples.py` (copies the
+  winning raw response so `rescore_phase_h.py` reproduces the number) and say so in the README note.
 
 ### Infra retest queue (COMPLETED as of 2026-05-04)
 All infrastructure errors have been resolved. Every remaining zero in the leaderboard is a confirmed model failure.

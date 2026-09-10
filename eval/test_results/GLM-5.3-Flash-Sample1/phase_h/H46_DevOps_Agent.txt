@@ -1,0 +1,86 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas: 1 — single replica is a single point of failure; any pod/node loss causes an outage. Use >=3 replicas plus a PodDisruptionBudget.",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image: myapp:latest — mutable tag makes deployments non-reproducible and rollbacks unreliable (also implies imagePullPolicy: Always). Pin an immutable version tag or digest.",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "resources: {} — api container has no requests/limits; runs as BestEffort QoS, first to be evicted, and can starve neighbors or OOM the node.",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true — container runs as root, violating least privilege (note: 'runAsRoot' is not a valid securityContext field and would fail API validation; the secure setting is runAsNonRoot: true).",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true — grants near-full host access and is a primary container-escape vector. Remove privilege; also missing hardening: allowPrivilegeEscalation: false, capability drops, seccompProfile: RuntimeDefault.",
+      "severity": "critical"
+    },
+    {
+      "line": "25-26",
+      "issue": "DB_PASSWORD hardcoded as plaintext env var — exposed in the manifest, git history, and via kubectl describe. Use a Secret (secretKeyRef/envFrom) or external secrets manager.",
+      "severity": "critical"
+    },
+    {
+      "line": "27-28",
+      "issue": "API_KEY hardcoded as plaintext (a live 'ak_live_' key) — same exposure as DB_PASSWORD; rotate the leaked credential and move it to a Secret/vault.",
+      "severity": "critical"
+    },
+    {
+      "line": "36",
+      "issue": "sidecar requests memory: 10Gi — grossly oversized request wastes cluster capacity and may make the pod unschedulable on most nodes. Right-size to actual usage.",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "sidecar requests cpu: \"8\" — 8 full cores for a logger sidecar is wildly excessive; hoards schedulable capacity and can block scheduling.",
+      "severity": "major"
+    },
+    {
+      "line": "40-41",
+      "issue": "hostPath volume (/tmp/data) — couples the pod to a specific node, is a security risk (especially combined with the privileged container), and data is lost when the pod reschedules. Use a PersistentVolumeClaim or managed storage.",
+      "severity": "major"
+    },
+    {
+      "line": "16-31",
+      "issue": "api container defines no livenessProbe — a hung or deadlocked process is never detected or restarted.",
+      "severity": "major"
+    },
+    {
+      "line": "16-31",
+      "issue": "api container defines no readinessProbe — the Service routes traffic to pods that aren't ready, causing failed requests during startup, deploys, and recovery.",
+      "severity": "major"
+    },
+    {
+      "line": "34-37",
+      "issue": "sidecar sets requests but no limits — unbounded CPU/memory consumption; a runaway logger can starve the api container and other workloads on the node.",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "type: LoadBalancer — provisions a dedicated cloud load balancer (cost + broad external exposure). Use ClusterIP if the service is internal, or an Ingress to share one LB across services.",
+      "severity": "minor"
+    },
+    {
+      "line": "50",
+      "issue": "Service exposes plaintext port 80 with no TLS — traffic is unencrypted end-to-end. Serve 443 with TLS termination (Ingress/LB) or mesh mTLS.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```
+
+**Severity summary:** 4 critical (root, privileged, 2 hardcoded secrets), 9 major (HA, image tag, resources ×4, hostPath, probes ×2, sidecar limits), 2 minor (LoadBalancer, no TLS).
+
+*Additional minor gaps not counted in the 15 (would overlap with items above): no `readOnlyRootFilesystem`, no explicit namespace, default ServiceAccount token auto-mounted, no topology spread/anti-affinity rules.*

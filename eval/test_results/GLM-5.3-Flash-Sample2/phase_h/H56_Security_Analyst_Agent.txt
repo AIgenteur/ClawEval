@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - f-string interpolation of user/pwd directly into SQL query",
+      "severity": "critical"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - user-controlled username rendered via render_template_string",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "search() - unescaped query parameter 'q' embedded in HTML response",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection (shell=True)",
+      "location": "run_command() - user-supplied command passed to subprocess.run with shell=True",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Unrestricted File Upload",
+      "location": "upload() - f.filename unsanitized, allows writing outside UPLOAD_DIR",
+      "severity": "high"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read",
+      "location": "download() - unvalidated 'path' parameter passed to send_file",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "load_config() - yaml.load() without safe Loader allows arbitrary object instantiation",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Pickle Deserialization (RCE)",
+      "location": "restore_session() - pickle.loads() on untrusted request data",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Credentials",
+      "location": "SECRET = \"admin123\" at module level",
+      "severity": "high"
+    },
+    {
+      "type": "Broken Access Control / Weak Admin Authentication",
+      "location": "admin() - simple string comparison against hardcoded token, no session or rate limiting",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection (os.system)",
+      "location": "export_data() - user-controlled 'format' parameter interpolated into shell command",
+      "severity": "critical"
+    },
+    {
+      "type": "Use of Weak Cryptographic Hash (MD5)",
+      "location": "login() - MD5 used to generate authentication token",
+      "severity": "medium"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "login() - password compared directly in SQL, no hashing",
+      "severity": "high"
+    },
+    {
+      "type": "Debug Mode Enabled in Production",
+      "location": "app.run(debug=True) - exposes interactive Werkzeug debugger allowing RCE",
+      "severity": "high"
+    },
+    {
+      "type": "Network Exposure (bind to 0.0.0.0)",
+      "location": "app.run(host=\"0.0.0.0\") - development server exposed on all interfaces",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}
+```

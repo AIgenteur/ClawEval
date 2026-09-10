@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas: 1 - single replica provides no high availability; any pod failure or node drain causes a full outage and makes safe rolling updates impossible",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image: myapp:latest - mutable 'latest' tag makes deployments non-reproducible, prevents rollback, and risks different nodes running different versions",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "resources: {} - no requests/limits on the api container; unpredictable scheduling, BestEffort QoS (first killed under node pressure), noisy-neighbor exposure",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true - invalid securityContext field (correct field is runAsNonRoot); fails strict API validation, and the intent of running as root is itself a security violation",
+      "severity": "major"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true - privileged container escapes container isolation with full host access (devices, kernel capabilities); defeats the Kubernetes security model",
+      "severity": "critical"
+    },
+    {
+      "line": "25-26",
+      "issue": "DB_PASSWORD hardcoded as plaintext env var - secret is committed to source control and visible via 'kubectl describe'/'kubectl exec env'; use a Secret with secretKeyRef or an external secrets manager",
+      "severity": "critical"
+    },
+    {
+      "line": "27-28",
+      "issue": "API_KEY hardcoded as plaintext env var - live credential exposed in the manifest and version control history; same remediation as above",
+      "severity": "critical"
+    },
+    {
+      "line": "36",
+      "issue": "sidecar memory request of 10Gi - wildly excessive for a logging sidecar; reserves huge capacity and will fail scheduling on most nodes",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "sidecar cpu request of 8 cores - excessive for a logger; blocks scheduling and wastes reserved cluster capacity",
+      "severity": "major"
+    },
+    {
+      "line": "34-37",
+      "issue": "sidecar defines requests but no limits - unbounded Burstable container; a runaway logger can consume all node memory/CPU and starve co-located workloads",
+      "severity": "major"
+    },
+    {
+      "line": "40-41",
+      "issue": "hostPath volume /tmp/data - node-tied storage (data lost on reschedule), host filesystem access is a security risk (/tmp is world-writable, symlink attacks), and no 'type' is specified; use a PVC instead",
+      "severity": "major"
+    },
+    {
+      "line": "16-31 (missing)",
+      "issue": "no liveness/readiness probes on the api container - Kubernetes cannot detect hangs (no automatic restart) or gate traffic on readiness; rolling updates will route requests to unready pods",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "type: LoadBalancer - API exposed directly to the public internet on plaintext HTTP port 80 with no TLS or source restrictions; use ClusterIP + Ingress with TLS termination (or at minimum loadBalancerSourceRanges + HTTPS)",
+      "severity": "major"
+    },
+    {
+      "line": "3-4",
+      "issue": "no metadata.namespace - resources deploy to the 'default' namespace, mixing workloads and complicating RBAC, ResourceQuotas, and NetworkPolicies",
+      "severity": "minor"
+    },
+    {
+      "line": "14 (missing)",
+      "issue": "automountServiceAccountToken not set to false and no dedicated serviceAccountName - the default service account's API token is mounted into the containers, handing cluster credentials to any compromised pod",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

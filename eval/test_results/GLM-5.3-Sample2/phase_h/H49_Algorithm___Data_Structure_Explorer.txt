@@ -1,0 +1,203 @@
+```python
+# =====================================================================
+# 1. LRUCache — O(1) get/put via hash map + doubly linked list
+# =====================================================================
+
+class _DLLNode:
+    """Doubly linked list node used internally by LRUCache."""
+
+    __slots__ = ("key", "value", "prev", "next")
+
+    def __init__(self, key=None, value=None):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+
+class LRUCache:
+    """
+    Least Recently Used cache with O(1) get and put.
+
+    Recency order lives in a doubly linked list: the node after
+    `self._head` is the most recently used, the node before
+    `self._tail` is the least recently used. A dict maps keys to
+    nodes for O(1) lookup.
+    """
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self._map = {}                # key -> _DLLNode
+        self._head = _DLLNode()       # sentinel (MRU side)
+        self._tail = _DLLNode()       # sentinel (LRU side)
+        self._head.next = self._tail
+        self._tail.prev = self._head
+
+    # -- internal link helpers --------------------------------------
+    def _unlink(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _link_front(self, node):
+        first = self._head.next
+        node.prev = self._head
+        node.next = first
+        first.prev = node
+        self._head.next = node
+
+    # -- public API ---------------------------------------------------
+    def get(self, key):
+        """Return value for `key` (or -1), marking it most recently used."""
+        node = self._map.get(key)
+        if node is None:
+            return -1
+        self._unlink(node)
+        self._link_front(node)
+        return node.value
+
+    def put(self, key, value):
+        """Insert/update `key`; evict the LRU entry if at capacity."""
+        if self.capacity <= 0:
+            return
+        node = self._map.get(key)
+        if node is not None:                 # update existing entry
+            node.value = value
+            self._unlink(node)
+            self._link_front(node)
+            return
+        if len(self._map) >= self.capacity:   # evict least recently used
+            lru = self._tail.prev
+            self._unlink(lru)
+            del self._map[lru.key]
+        node = _DLLNode(key, value)
+        self._link_front(node)
+        self._map[key] = node
+
+
+# =====================================================================
+# 2. MinStack — O(1) push, pop, top, and get_min
+# =====================================================================
+
+class MinStack:
+    """
+    Stack that tracks the current minimum in O(1).
+
+    `_mins[i]` holds the minimum of the stack from the bottom up to
+    depth i+1, so the top of `_mins` is always the current minimum.
+    """
+
+    def __init__(self):
+        self._stack = []   # actual values
+        self._mins = []    # running minimum, parallel to _stack
+
+    def push(self, val):
+        self._stack.append(val)
+        if self._mins:
+            self._mins.append(min(val, self._mins[-1]))
+        else:
+            self._mins.append(val)
+
+    def pop(self):
+        """Remove and return the top element (IndexError if empty)."""
+        val = self._stack.pop()
+        self._mins.pop()
+        return val
+
+    def top(self):
+        """Return the top element without removing it."""
+        return self._stack[-1]
+
+    def get_min(self):
+        """Return the smallest element currently in the stack."""
+        return self._mins[-1]
+
+
+# =====================================================================
+# 3. find_median — running median of a stream via two heaps
+# =====================================================================
+
+class _MinHeap:
+    """Minimal array-backed binary min-heap (sift-up / sift-down)."""
+
+    def __init__(self):
+        self._h = []
+
+    def __len__(self):
+        return len(self._h)
+
+    def peek(self):
+        return self._h[0]
+
+    def push(self, item):
+        h = self._h
+        h.append(item)
+        i = len(h) - 1
+        while i > 0:
+            parent = (i - 1) // 2
+            if h[parent] <= h[i]:
+                break
+            h[parent], h[i] = h[i], h[parent]
+            i = parent
+
+    def pop(self):
+        h = self._h
+        last = h.pop()
+        if not h:
+            return last
+        root = h[0]
+        h[0] = last
+        n = len(h)
+        i = 0
+        while True:
+            left = 2 * i + 1
+            right = left + 1
+            smallest = i
+            if left < n and h[left] < h[smallest]:
+                smallest = left
+            if right < n and h[right] < h[smallest]:
+                smallest = right
+            if smallest == i:
+                break
+            h[i], h[smallest] = h[smallest], h[i]
+            i = smallest
+        return root
+
+
+def find_median(stream):
+    """
+    Return the running median after each element of `stream`.
+
+    Maintains two heaps:
+      - `low`  : max-heap (values negated) holding the smaller half
+      - `high` : min-heap holding the larger half
+    Invariant: len(low) == len(high) or len(low) == len(high) + 1,
+    so the median is always readable from the heap tops in O(1).
+    O(log n) per element.
+
+    Example: [2, 1, 3] -> [2.0, 1.5, 2.0]
+    """
+    low = _MinHeap()    # smaller half (negated => max-heap)
+    high = _MinHeap()   # larger half (min-heap)
+    medians = []
+
+    for num in stream:
+        # 1. Insert into the appropriate half.
+        if len(low) == 0 or num <= -low.peek():
+            low.push(-num)
+        else:
+            high.push(num)
+
+        # 2. Rebalance so len(low) is len(high) or len(high) + 1.
+        if len(low) > len(high) + 1:
+            high.push(-low.pop())
+        elif len(high) > len(low):
+            low.push(-high.pop())
+
+        # 3. Read the median off the heap tops.
+        if len(low) > len(high):                    # odd count
+            medians.append(float(-low.peek()))
+        else:                                       # even count
+            medians.append((-low.peek() + high.peek()) / 2.0)
+
+    return medians
+```

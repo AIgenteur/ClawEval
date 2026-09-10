@@ -1,0 +1,241 @@
+```json
+{
+  "overall_score": 2,
+  "score_justification": "The application may function, but it contains three independently exploitable critical vulnerabilities (SQL injection, hardcoded application credentials, and leaked AWS credentials) plus systemic engineering-practice failures: near-zero test coverage, no documentation, unpinned dependencies, and a monolithic architecture. Any single critical vulnerability would justify a score this low; having all three, along with world-writable files and a root-running container, means a breach is a matter of when, not if. The score is 2 rather than 1 only because basic file separation exists (config, database, and utils are at least distinct files), a test file was attempted, and containerization was attempted.",
+  "categories": [
+    {
+      "name": "security",
+      "score": 1,
+      "severity": "critical",
+      "summary": "Multiple directly exploitable vulnerabilities spanning application code, configuration, and deployment scripts.",
+      "findings": [
+        "SQL injection via f-string query construction in database.py",
+        "Database password and API key hardcoded in config.py",
+        "AWS credentials committed inline in deploy.sh",
+        "chmod 777 grants world-write access to all files",
+        "Docker container runs as root with no USER directive",
+        "Python 3.8 base image is past end-of-life (October 2024) and receives no security patches"
+      ]
+    },
+    {
+      "name": "architecture_and_code_organization",
+      "score": 3,
+      "severity": "medium",
+      "summary": "Monolithic design with poor separation of concerns throughout the codebase.",
+      "findings": [
+        "app.py (500 lines) entangles routing, business logic, and database queries",
+        "utils.py is a low-cohesion grab-bag mixing string helpers, date parsing, API calls, and file I/O",
+        "No layering (routes -> services -> repositories) and no use of Flask blueprints or an application factory"
+      ]
+    },
+    {
+      "name": "testing",
+      "score": 2,
+      "severity": "high",
+      "summary": "Testing is effectively absent as a quality gate.",
+      "findings": [
+        "Only 3 test functions (~50 lines) guarding 700+ lines of application code",
+        "No mocking, so tests likely hit real databases and external APIs (slow, flaky, potentially destructive)",
+        "No coverage measurement and no CI enforcement"
+      ]
+    },
+    {
+      "name": "dependency_management",
+      "score": 3,
+      "severity": "high",
+      "summary": "Dependencies are completely unpinned, making builds non-reproducible.",
+      "findings": [
+        "requirements.txt lists flask, requests, sqlalchemy with no version constraints",
+        "Any upstream breaking release (e.g., Flask 2.x -> 3.x) can fail production deployment with zero code changes",
+        "No lockfile or hash verification, increasing supply-chain exposure"
+      ]
+    },
+    {
+      "name": "documentation",
+      "score": 1,
+      "severity": "medium",
+      "summary": "Documentation is effectively nonexistent, blocking onboarding and safe configuration.",
+      "findings": [
+        "README.md contains only 'TODO: add docs'",
+        ".env.example is missing, so required configuration variables are undocumented — a direct contributing factor to the hardcoded-secrets problem",
+        "No setup, run, test, or deployment instructions anywhere"
+      ]
+    },
+    {
+      "name": "devops_and_deployment",
+      "score": 2,
+      "severity": "critical",
+      "summary": "Deployment tooling leaks credentials and embeds insecure defaults.",
+      "findings": [
+        "deploy.sh embeds AWS credentials in plaintext",
+        "deploy.sh applies chmod 777 to all files",
+        "Dockerfile uses an EOL python:3.8 base, runs as root, and lacks a multi-stage build",
+        "No CI/CD pipeline, no automated security scanning, no secret detection"
+      ]
+    }
+  ],
+  "critical_issues": [
+    {
+      "id": "SEC-001",
+      "title": "SQL injection vulnerability",
+      "severity": "critical",
+      "file": "database.py",
+      "evidence": "f\"SELECT * FROM users WHERE id={user_id}\"",
+      "impact": "User-supplied input is interpolated directly into SQL. An attacker can manipulate the query to exfiltrate the entire database (e.g., id=1 OR 1=1), tamper with records, or — depending on driver configuration — execute stacked queries such as DROP TABLE. This is trivially exploitable and likely exposes all user data.",
+      "remediation": "Replace all f-string/format-built SQL with parameterized queries: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,)). Since SQLAlchemy is already a dependency, prefer its ORM or Core expression language, which parameterizes by construction. Add bandit (B608) or ruff (S608) to CI to prevent regression."
+    },
+    {
+      "id": "SEC-002",
+      "title": "Hardcoded database password and API key",
+      "severity": "critical",
+      "file": "config.py",
+      "evidence": "DB_PASSWORD = \"admin123\", API_KEY = \"sk-xxx\"",
+      "impact": "Credentials committed to version control are exposed to everyone with repository access and persist permanently in git history. 'admin123' is also trivially guessable. The API key grants access to a third-party service whose abuse could carry direct financial cost. These must be treated as already compromised.",
+      "remediation": "Rotate both credentials immediately. Move secrets to environment variables loaded via os.environ (python-dotenv for local dev), add .env to .gitignore, and use a secrets manager (AWS Secrets Manager, HashiCorp Vault) in production. If the repo is shared, scrub history with git filter-repo or BFG."
+    },
+    {
+      "id": "ARC-001",
+      "title": "Monolithic app.py violating separation of concerns",
+      "severity": "medium",
+      "file": "app.py",
+      "evidence": "500 lines combining routes, business logic, and DB queries in one file",
+      "impact": "Routing, business rules, and data access are entangled, so nothing can be tested in isolation, changes have unpredictable blast radius, merge conflicts are frequent, and onboarding is slow. This structure is also what allowed SQL construction to sprawl outside any auditable data-access layer.",
+      "remediation": "Split into Flask blueprints for routing, a service layer for business logic, and repository modules for data access, wired together with an application factory pattern."
+    },
+    {
+      "id": "REL-001",
+      "title": "Unpinned dependencies",
+      "severity": "high",
+      "file": "requirements.txt",
+      "evidence": "flask, requests, sqlalchemy — no versions specified",
+      "impact": "Builds are non-reproducible: a breaking upstream release can fail production deployment at any moment with no code change. Unpinned installs also forgo integrity verification, widening supply-chain attack exposure.",
+      "remediation": "Pin exact versions (flask==3.0.3) or adopt a lockfile workflow via pip-tools, Poetry, or uv. Add pip-audit to CI for dependency CVE scanning; use --require-hashes in security-sensitive environments."
+    },
+    {
+      "id": "TST-001",
+      "title": "Insufficient test coverage with no mocking",
+      "severity": "high",
+      "file": "test_app.py",
+      "evidence": "50 lines, 3 test functions, no mocks",
+      "impact": "Roughly 700+ lines of application logic are guarded by 3 tests — likely under 10% coverage. Without mocking, tests probably hit live databases and external APIs, making them slow, flaky, and potentially destructive against shared environments. Regressions and vulnerabilities will ship undetected.",
+      "remediation": "Adopt pytest with fixtures; mock external boundaries (DB, HTTP, filesystem) with unittest.mock or responses. Enforce a minimum of 80% line coverage in CI (coverage report --fail-under=80), prioritizing SQL paths and auth logic."
+    },
+    {
+      "id": "SEC-003",
+      "title": "AWS credentials embedded in deploy script",
+      "severity": "critical",
+      "file": "deploy.sh",
+      "evidence": "AWS credentials inline in a committed shell script",
+      "impact": "Long-lived cloud credentials in the repo can lead to full AWS account compromise: attackers routinely use leaked keys to mine cryptocurrency on your account, exfiltrate S3 data, and pivot across services. This is among the most common and most expensive causes of cloud breaches.",
+      "remediation": "Rotate the AWS keys immediately and treat them as compromised. Replace with IAM roles (instance profiles on EC2, task roles on ECS), OIDC federation for CI/CD (e.g., aws-actions/configure-aws-credentials with GitHub OIDC), or short-lived STS tokens. Never place long-lived credentials in scripts or source control."
+    },
+    {
+      "id": "SEC-004",
+      "title": "World-writable files via chmod 777",
+      "severity": "high",
+      "file": "deploy.sh",
+      "evidence": "chmod 777 applied to all files",
+      "impact": "Any user or process on the host — including compromised low-privilege accounts — can modify application code, scripts, and configuration. This is a direct privilege-escalation and code-tampering vector that undermines every other access control on the system.",
+      "remediation": "Apply least privilege: 750 for scripts and executables, 640 for config files, owned by a dedicated service account. If 777 was added to 'fix' a permissions error, diagnose the underlying ownership problem instead of opening everything up."
+    },
+    {
+      "id": "OPS-001",
+      "title": "End-of-life Python 3.8 base image",
+      "severity": "medium",
+      "file": "Dockerfile",
+      "evidence": "FROM python:3.8",
+      "impact": "Python 3.8 reached end-of-life in October 2024 and no longer receives security patches, so interpreter-level CVEs will accumulate unpatched. The project also misses years of performance gains (3.11+ is roughly 25% faster) and modern typing syntax.",
+      "remediation": "Rebuild on python:3.12-slim (3.11 minimum). Run pyupgrade to modernize syntax, verify the test suite passes, and confirm dependency compatibility before promoting."
+    },
+    {
+      "id": "SEC-005",
+      "title": "Container runs as root",
+      "severity": "high",
+      "file": "Dockerfile",
+      "evidence": "No USER directive; container executes as root by default",
+      "impact": "If the application is compromised — which the SQL injection makes likely — the attacker holds root inside the container, dramatically amplifying the blast radius of container escapes and abuse of mounted volumes or the container runtime API.",
+      "remediation": "Create and switch to an unprivileged user (RUN useradd -m appuser, then USER appuser). Prefer minimal bases such as python:3.12-slim or distroless to shrink attack surface."
+    },
+    {
+      "id": "DOC-001",
+      "title": "Missing .env.example",
+      "severity": "low",
+      "file": ".env.example (absent)",
+      "evidence": "File does not exist",
+      "impact": "Developers have no manifest of required configuration variables, which slows environment setup to trial-and-error and directly encourages the credential-hardcoding behavior observed in config.py.",
+      "remediation": "Create .env.example listing every required variable with placeholder values (DB_PASSWORD=changeme, API_KEY=your-key-here). Pair it with a .gitignore entry for .env and reference it in the README setup instructions."
+    },
+    {
+      "id": "DOC-002",
+      "title": "Empty README",
+      "severity": "medium",
+      "file": "README.md",
+      "evidence": "Contains only 'TODO: add docs'",
+      "impact": "No instructions exist for setup, running, testing, or deployment. This blocks onboarding, invites divergent local environments, and leaves the repo effectively unmaintainable by anyone other than the original author.",
+      "remediation": "Write a README covering: project purpose, prerequisites, local setup (referencing .env.example), how to run, how to run tests, how to deploy, and the project structure. Even 30 lines dramatically improves maintainability."
+    },
+    {
+      "id": "ARC-002",
+      "title": "Low-cohesion utils.py grab-bag",
+      "severity": "medium",
+      "file": "utils.py",
+      "evidence": "200 lines mixing string helpers, date parsing, API calls, and file I/O",
+      "impact": "A 'utils' module that does everything creates hidden coupling — any change risks breaking unrelated callers — and drags network and filesystem dependencies into every importer, making mocking harder and imports slower. Ownership and testing boundaries are unclear.",
+      "remediation": "Split by responsibility: strings.py, dates.py, api_client.py, file_io.py. Reserve the name 'utils' for genuinely shared, dependency-free helpers only."
+    },
+    {
+      "id": "OPS-002",
+      "title": "No multi-stage Docker build",
+      "severity": "low",
+      "file": "Dockerfile",
+      "evidence": "Single-stage build; build tooling ships in the runtime image",
+      "impact": "The runtime image carries compilers, pip caches, and build dependencies that the application never needs — a larger attack surface, bigger pull size, and slower deploys.",
+      "remediation": "Adopt a multi-stage build: install dependencies in a builder stage, copy only the venv/venv-equivalent and application code into a slim runtime stage."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "REC-001",
+      "title": "Restructure into a layered application using Flask blueprints",
+      "priority": "high",
+      "addresses": "Monolithic app.py and mixed-responsibility utils.py",
+      "details": "Target structure:\nmyapp/\n├── app/\n│   ├── __init__.py (application factory)\n│   ├── routes/ (Flask blueprints per domain: users.py, orders.py)\n│   ├── services/ (business logic — no HTTP, no SQL)\n│   ├── repositories/ (all SQL confined here, parameterized)\n│   ├── schemas/ (request validation)\n│   └── core/ (config loaded from environment)\n├── tests/ (mirrors app structure)\n├── pyproject.toml (pinned dependencies)\n├── Dockerfile (multi-stage, non-root)\n├── .env.example\n└── README.md\nThis enforces separation of concerns, makes each layer independently testable, and confines all SQL to one auditable location."
+    },
+    {
+      "id": "REC-002",
+      "title": "Use parameterized queries exclusively",
+      "priority": "immediate",
+      "addresses": "SQL injection in database.py",
+      "details": "Replace every f-string/format-built SQL statement with DB-API parameter markers: cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,)). Better still, since SQLAlchemy is already installed, use its ORM or Core (session.get(User, user_id) or select(User).where(User.id == user_id)), which parameterizes by construction. Add bandit (B608) and ruff (S608) checks to CI so string-built SQL cannot regress."
+    },
+    {
+      "id": "REC-003",
+      "title": "Implement proper secrets management",
+      "priority": "immediate",
+      "addresses": "Hardcoded credentials in config.py and AWS credentials in deploy.sh",
+      "details": "Short term: load all secrets from environment variables via os.environ, keep a gitignored .env for local development, and rotate every credential currently in the repo (DB password, API key, AWS keys) — they must be treated as compromised. Production: use AWS Secrets Manager or HashiCorp Vault with IAM-based access; never pass secrets through files or shell scripts. Scrub git history with git filter-repo or BFG if the repository has ever been shared."
+    },
+    {
+      "id": "REC-004",
+      "title": "Add a CI/CD pipeline with security gates",
+      "priority": "high",
+      "addresses": "Absent automation; prevents recurrence of most found issues",
+      "details": "Adopt GitHub Actions or GitLab CI with stages: (1) lint/format (ruff, black), (2) type check (mypy), (3) tests with coverage gate (pytest + coverage report --fail-under=80), (4) security scanning — bandit for SAST, pip-audit for dependency CVEs, gitleaks/trufflehog for secret detection, (5) multi-stage image build scanned with trivy, (6) deploy via OIDC-assumed IAM role with no static credentials. Fail the pipeline on any critical or high finding."
+    },
+    {
+      "id": "REC-005",
+      "title": "Establish a minimum 80% test coverage floor",
+      "priority": "high",
+      "addresses": "Insufficient test coverage and missing mocks",
+      "details": "Set an immediate floor of 80% line coverage — the widely accepted industry minimum — enforced in CI via coverage report --fail-under=80. Prioritize test writing in this order: (1) all SQL query paths, (2) auth/authorization logic, (3) service-layer business rules. Use pytest fixtures plus unittest.mock/responses to isolate the database and external APIs. Track the coverage trend and raise the floor as the suite matures."
+    },
+    {
+      "id": "REC-006",
+      "title": "Rebuild the Dockerfile: multi-stage, non-root, current Python",
+      "priority": "high",
+      "addresses": "EOL Python 3.8, root execution, single-stage build",
+      "details": "Target pattern: FROM python:3.12-slim AS builder (install dependencies into an isolated prefix/venv), then FROM python:3.12-slim AS runtime (copy only the venv and application code). Create and switch to an unprivileged user with USER appuser, add a HEALTHCHECK, ship a .dockerignore (excluding .git, tests, .env), and where the platform allows, run with a read-only root filesystem and dropped capabilities. This shrinks the image, removes build tooling from the runtime layer, eliminates root execution, and returns to a supported, patched Python."
+    }
+  ]
+}
+```

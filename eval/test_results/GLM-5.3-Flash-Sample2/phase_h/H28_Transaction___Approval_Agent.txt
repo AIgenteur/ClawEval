@@ -1,0 +1,35 @@
+```json
+{
+  "1": "approve",
+  "2": "flag",
+  "3": "approve",
+  "4": "flag",
+  "5": "approve",
+  "6": "flag",
+  "7": "reject",
+  "8": "approve",
+  "9": "flag",
+  "10": "reject",
+  "11": "approve",
+  "12": "flag",
+  "13": "flag",
+  "14": "flag",
+  "15": "reject",
+  "16": "approve",
+  "17": "approve",
+  "18": "flag",
+  "19": "approve",
+  "20": "reject"
+}
+```
+
+Key reasoning notes:
+- **#2, #6, #18**: Over $10,000 → VP approval flag
+- **#4, #13**: International over $5,000 → compliance flag
+- **#7, #15**: Sanctioned countries (North Korea, Cuba) → reject
+- **#10, #20**: Suspended accounts → reject (#20 also exceeds $10,000, but reject takes precedence)
+- **#9, #14**: Round-number transactions → fraud pattern flag
+- **#12**: Over $10,000 AND weekend over $20,000 → flag
+- **#3, #17**: International but under $5,000 → approve
+- **#8**: Weekend but under $20,000 → approve
+- **#6**: Different amount than #2 ($12,000 vs $15,000), so no duplicate flag, but caught by the $10,000 rule

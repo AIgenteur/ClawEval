@@ -1,0 +1,185 @@
+```python
+# ---------------------------------------------------------------------------
+# 1. LRU Cache — O(1) get/put via hash map + doubly linked list
+# ---------------------------------------------------------------------------
+
+class _Node:
+    """Doubly-linked-list node used by LRUCache."""
+    __slots__ = ("key", "value", "prev", "next")
+
+    def __init__(self, key=None, value=None):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+
+class LRUCache:
+    """
+    Least Recently Used cache with O(1) get and put.
+
+    A dict maps keys to nodes of a doubly linked list ordered from
+    most-recently-used (next to dummy head) to least-recently-used
+    (next to dummy tail).
+    """
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self._map = {}
+        self._head = _Node()  # dummy head (MRU side)
+        self._tail = _Node()  # dummy tail (LRU side)
+        self._head.next = self._tail
+        self._tail.prev = self._head
+
+    def _unlink(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _link_front(self, node):
+        first = self._head.next
+        node.prev = self._head
+        node.next = first
+        self._head.next = node
+        first.prev = node
+
+    def get(self, key):
+        node = self._map.get(key)
+        if node is None:
+            return -1
+        self._unlink(node)
+        self._link_front(node)          # mark as recently used
+        return node.value
+
+    def put(self, key, value):
+        if self.capacity <= 0:
+            return
+        node = self._map.get(key)
+        if node is not None:            # update existing entry
+            node.value = value
+            self._unlink(node)
+            self._link_front(node)
+            return
+        if len(self._map) >= self.capacity:   # evict least recently used
+            lru = self._tail.prev
+            self._unlink(lru)
+            del self._map[lru.key]
+        node = _Node(key, value)
+        self._map[key] = node
+        self._link_front(node)
+
+
+# ---------------------------------------------------------------------------
+# 2. Min Stack — O(1) push/pop/top/get_min
+# ---------------------------------------------------------------------------
+
+class MinStack:
+    """
+    Stack with O(1) push, pop, top, and get_min.
+
+    Each frame stores (value, minimum_of_stack_up_to_this_frame),
+    so the current minimum is always available at the top frame.
+    """
+
+    def __init__(self):
+        self._stack = []
+
+    def push(self, val):
+        if self._stack:
+            min_so_far = self._stack[-1][1]
+            self._stack.append((val, val if val < min_so_far else min_so_far))
+        else:
+            self._stack.append((val, val))
+
+    def pop(self):
+        """Remove and return the top value (None if empty)."""
+        if self._stack:
+            return self._stack.pop()[0]
+        return None
+
+    def top(self):
+        """Return the top value without removing it (None if empty)."""
+        if self._stack:
+            return self._stack[-1][0]
+        return None
+
+    def get_min(self):
+        """Return the smallest value currently in the stack (None if empty)."""
+        if self._stack:
+            return self._stack[-1][1]
+        return None
+
+
+# ---------------------------------------------------------------------------
+# 3. Running Median — two manually implemented heaps, O(log n) per element
+# ---------------------------------------------------------------------------
+
+def _heap_push(heap, item):
+    """Insert item into min-heap `heap` (a list), maintaining heap order."""
+    heap.append(item)
+    i = len(heap) - 1
+    while i > 0:
+        parent = (i - 1) // 2
+        if heap[i] < heap[parent]:
+            heap[i], heap[parent] = heap[parent], heap[i]
+            i = parent
+        else:
+            break
+
+
+def _heap_pop(heap):
+    """Remove and return the smallest item from min-heap `heap`."""
+    smallest = heap[0]
+    last = heap.pop()
+    if heap:
+        heap[0] = last
+        n = len(heap)
+        i = 0
+        while True:
+            left = 2 * i + 1
+            right = 2 * i + 2
+            smallest_idx = i
+            if left < n and heap[left] < heap[smallest_idx]:
+                smallest_idx = left
+            if right < n and heap[right] < heap[smallest_idx]:
+                smallest_idx = right
+            if smallest_idx == i:
+                break
+            heap[i], heap[smallest_idx] = heap[smallest_idx], heap[i]
+            i = smallest_idx
+    return smallest
+
+
+def find_median(stream):
+    """
+    Return the running median of `stream` as a list of floats.
+
+    Maintains two heaps:
+      * `lower` -- max-heap (values negated) holding the smaller half
+      * `upper` -- min-heap holding the larger half
+    Invariant: len(lower) == len(upper) or len(lower) == len(upper) + 1,
+    so the median is the max of `lower` (odd count) or the mean of
+    both tops (even count).
+    """
+    lower = []   # max-heap via negated values
+    upper = []   # min-heap
+    medians = []
+
+    for num in stream:
+        if not lower or num <= -lower[0]:
+            _heap_push(lower, -num)
+        else:
+            _heap_push(upper, num)
+
+        # Rebalance so len(lower) - len(upper) is 0 or 1.
+        if len(lower) > len(upper) + 1:
+            _heap_push(upper, -_heap_pop(lower))
+        elif len(upper) > len(lower):
+            _heap_push(lower, -_heap_pop(upper))
+
+        if len(lower) > len(upper):
+            medians.append(float(-lower[0]))
+        else:
+            medians.append((-lower[0] + upper[0]) / 2.0)
+
+    return medians
+```

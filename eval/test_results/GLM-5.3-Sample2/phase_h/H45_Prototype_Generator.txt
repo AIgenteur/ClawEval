@@ -1,0 +1,199 @@
+Here's a complete implementation with the classic Python gotchas handled (especially the `bool`/`int` subclass issue):
+
+```python
+class JSONValidator:
+    """
+    Validates JSON-like data against a schema.
+
+    Schema format:
+        {
+            "field_name": {
+                "type": "str" | "int" | "float" | "bool" | "list" | "dict",
+                "required": True/False,   # default: False
+                "min": N,                 # numbers only
+                "max": N,                 # numbers only
+                "min_length": N,          # strings and lists
+                "max_length": N,          # strings and lists
+            },
+            ...
+        }
+
+    Behavior notes:
+        - All constraint keys are optional; only ones present are enforced.
+        - `required` defaults to False.
+        - Extra fields in the data (not in schema) are allowed.
+        - ALL errors are collected and returned, not just the first.
+        - bool is NOT accepted where "int" is declared (in Python,
+          isinstance(True, int) is True, so this needs an explicit check).
+        - int IS accepted where "float" is declared, since JSON itself
+          makes no distinction between 5 and 5.0.
+        - Constraint checks are skipped when the type check fails,
+          so you never get nonsense like comparing "abc" to a minimum.
+    """
+
+    SUPPORTED_TYPES = {"str", "int", "float", "bool", "list", "dict"}
+
+    def validate(self, data, schema):
+        """Validate `data` against `schema`.
+
+        Returns:
+            {"valid": True/False, "errors": [list of error strings]}
+        """
+        errors = []
+
+        # -- Sanity-check the inputs themselves ---------------------------
+        if not isinstance(schema, dict):
+            return {"valid": False, "errors": ["Schema must be a dict"]}
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dict (JSON object)"]}
+
+        # -- Check every field the schema knows about ---------------------
+        for field, rules in schema.items():
+            if not isinstance(rules, dict):
+                errors.append(f"Invalid rules for field '{field}': expected a dict")
+                continue
+
+            required = rules.get("required", False)
+            declared_type = rules.get("type")
+
+            # 1) Missing-field check
+            if field not in data:
+                if required:
+                    errors.append(f"Field '{field}' is required but missing")
+                continue  # absent field -> nothing else to check
+
+            value = data[field]
+
+            # 2) Type check. If it fails, constraints are meaningless.
+            if declared_type is not None:
+                if declared_type not in self.SUPPORTED_TYPES:
+                    errors.append(
+                        f"Field '{field}' has unsupported type '{declared_type}' in schema")
+                    continue
+                if not self._type_matches(value, declared_type):
+                    errors.append(
+                        f"Field '{field}' expected type '{declared_type}', "
+                        f"got '{self._type_name(value)}'")
+                    continue
+
+            # 3) Constraint checks, dispatched on the value's actual type.
+            #    (bool must be tested FIRST, since bool is a subclass of int)
+            if isinstance(value, bool):
+                pass  # no constraints apply to bool
+            elif isinstance(value, (int, float)):
+                errors.extend(self._check_range(field, value, rules))
+            elif isinstance(value, (str, list)):
+                errors.extend(self._check_length(field, value, rules))
+            # dicts: no constraints defined in this schema format
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _type_matches(value, declared_type):
+        """True if `value` satisfies the declared schema type."""
+        if declared_type == "bool":
+            return isinstance(value, bool)
+        if declared_type == "int":
+            # Exclude bool: isinstance(True, int) is True in Python!
+            return isinstance(value, int) and not isinstance(value, bool)
+        if declared_type == "float":
+            # Accept ints for float fields (JSON has no int/float split).
+            # For strict matching instead, use: isinstance(value, float)
+            return isinstance(value, (int, float)) and not isinstance(value, bool)
+        if declared_type == "str":
+            return isinstance(value, str)
+        if declared_type == "list":
+            return isinstance(value, list)
+        if declared_type == "dict":
+            return isinstance(value, dict)
+        return False
+
+    @staticmethod
+    def _type_name(value):
+        """Human-readable type name for error messages."""
+        return "null" if value is None else type(value).__name__
+
+    @staticmethod
+    def _check_range(field, value, rules):
+        """Enforce min/max on numeric values."""
+        errors = []
+        minimum = rules.get("min")
+        maximum = rules.get("max")
+        if minimum is not None and value < minimum:
+            errors.append(f"Field '{field}' value {value} is below minimum {minimum}")
+        if maximum is not None and value > maximum:
+            errors.append(f"Field '{field}' value {value} exceeds maximum {maximum}")
+        return errors
+
+    @staticmethod
+    def _check_length(field, value, rules):
+        """Enforce min_length/max_length on strings and lists."""
+        errors = []
+        length = len(value)
+        min_length = rules.get("min_length")
+        max_length = rules.get("max_length")
+        if min_length is not None and length < min_length:
+            errors.append(f"Field '{field}' length {length} is below minimum length {min_length}")
+        if max_length is not None and length > max_length:
+            errors.append(f"Field '{field}' length {length} exceeds maximum length {max_length}")
+        return errors
+```
+
+Demo:
+
+```python
+if __name__ == "__main__":
+    v = JSONValidator()
+
+    schema = {
+        "name":   {"type": "str",  "required": True, "min_length": 1, "max_length": 50},
+        "age":    {"type": "int",  "required": True, "min": 0, "max": 120},
+        "email":  {"type": "str"},                          # optional
+        "score":  {"type": "float", "min": 0.0, "max": 100.0},
+        "active": {"type": "bool"},
+        "tags":   {"type": "list", "max_length": 5},
+        "meta":   {"type": "dict"},
+    }
+
+    # 1) Valid data -- extra field "nickname" is allowed
+    good = {"name": "Alice", "age": 30, "score": 95.5, "active": True,
+            "tags": ["admin"], "meta": {"dept": "eng"}, "nickname": "Al"}
+    print(v.validate(good, schema))
+    # {'valid': True, 'errors': []}
+
+    # 2) Broken data -- every problem reported at once
+    bad = {"name": "", "score": 150.0, "active": "yes",
+           "tags": [1, 2, 3, 4, 5, 6], "meta": ["not", "a", "dict"]}  # age missing!
+    result = v.validate(bad, schema)
+    print(result["valid"])   # False
+    for err in result["errors"]:
+        print("  -", err)
+
+    # 3) The bool/int gotcha
+    print(v.validate({"age": True}, {"age": {"type": "int"}}))
+    # {'valid': False, 'errors': ["Field 'age' expected type 'int', got 'bool'"]}
+```
+
+Output for the broken data:
+
+```
+  - Field 'name' length 0 is below minimum length 1
+  - Field 'age' is required but missing
+  - Field 'score' value 150.0 exceeds maximum 100.0
+  - Field 'active' expected type 'bool', got 'str'
+  - Field 'tags' length 6 exceeds maximum length 5
+  - Field 'meta' expected type 'dict', got 'list'
+```
+
+**Design decisions worth knowing:**
+
+- **`bool` vs `int`**: Python treats `bool` as a subclass of `int`, so `isinstance(True, int)` is `True`. The code explicitly excludes bools from int/float checks — otherwise `{"age": True}` would silently pass an `"int"` schema.
+- **`int` accepted for `float`**: JSON has no int/float distinction (`5` and `5.0` are both just numbers), so an int value passes a `"float"` field. One commented line in `_type_matches` shows how to make it strict if you prefer.
+- **Constraints skipped on type failure**: if the type is wrong, `min`/`max`/length checks are skipped — this both avoids redundant errors and prevents crashes like `"abc" < 5`.
+- **`is not None` instead of truthiness**: `rules.get("min")` with `min: 0` would be falsy — using `is not None` ensures a minimum of `0` is actually enforced.
+- **Extra fields allowed for free**: the loop iterates over *schema* keys, not data keys, so unknown data fields are simply never examined.
+- **Defensive guards**: non-dict data/schema and malformed field rules produce error entries instead of raising exceptions.

@@ -1,0 +1,31 @@
+```json
+{
+  "1": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "2": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "3": {"urgency": "p2", "category": "billing", "action": "respond"},
+  "4": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "5": {"urgency": "p2", "category": "account", "action": "respond"},
+  "6": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "7": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "8": {"urgency": "p3", "category": "billing", "action": "respond"},
+  "9": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "10": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "11": {"urgency": "p2", "category": "account", "action": "respond"},
+  "12": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "13": {"urgency": "p3", "category": "billing", "action": "respond"},
+  "14": {"urgency": "p2", "category": "bug", "action": "escalate"},
+  "15": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "16": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "17": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "18": {"urgency": "p2", "category": "billing", "action": "respond"},
+  "19": {"urgency": "p4", "category": "feature", "action": "respond"},
+  "20": {"urgency": "p2", "category": "bug", "action": "escalate"}
+}
+```
+
+**Classification logic:**
+- **p1**: Complete blockers, data loss, or privacy/security violations (tickets 1, 6, 16) — all escalated immediately
+- **p2**: Account lockouts, billing errors, server errors, and reproducible crashes (3, 5, 11, 14, 18, 20)
+- **p3**: Bugs with workarounds, cancellations, and non-urgent billing matters (7, 8, 9, 12, 13, 17)
+- **p4**: Feature requests and simple how-to questions (2, 4, 10, 15, 19)
+- **Automate** used for documentation-answerable questions and feature request acknowledgments; ticket 19 gets a human response since "we need" suggests a business account with sales implications

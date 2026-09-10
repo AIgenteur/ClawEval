@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount multiplies subtotal by 0.20, giving an 80% discount instead of 20% off. Should be subtotal * 0.80 (or subtotal -= subtotal * 0.20).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 subtracts 10x the subtotal (subtotal * 10) instead of 10% (subtotal * 0.10), driving the subtotal negative.",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is silently ignored with `pass`; inventory can go negative and the order is still marked 'completed'. Should raise an error or flag/skip the order.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "`total_revenue =+ total` parses as assignment with unary plus (= (+total)), not compound addition. Should be `+=`; total_revenue ends up holding only the last order's total.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by len(orders) raises ZeroDivisionError when orders is empty; needs a guard clause.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "max() over an empty generator raises ValueError when there are no orders/results; needs a default or empty check.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks that '@' appears somewhere; accepts invalid values like 'a@', '@b', 'a@@b', or strings with no domain/TLD. Needs structural/pattern validation.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Shipping formula adds per_km as a flat constant (`distance + per_km`) instead of multiplying (`distance * per_km`), so distance barely affects the cost.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "`elif weight > 50` is unreachable: any weight > 50 is already captured by `weight > 30`, so the $25 surcharge never applies. Check > 50 first (descending order).",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "round(cost) rounds to a whole number (and returns an int), discarding cents. Should be round(cost, 2).",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "`merged = profile_a` binds a reference, not a copy — all mutations (adding profile_b keys, 'updated_at') modify the caller's profile_a. Should be profile_a.copy() (or deepcopy for nested data).",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded 'updated_at' value '2024-01-01' instead of the actual current timestamp (e.g., datetime.now().isoformat()).",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive line.split(',') breaks on quoted CSV fields containing commas (e.g., \"Smith, John\",30) and ignores escaped quotes; should use the csv module.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "seen.append(item) runs unconditionally, so items appearing 3+ times are added to `duplicates` once per extra occurrence (and re-added to seen). The append should be in an else branch.",
+      "severity": "minor"
+    },
+    {
+      "line": 73,
+      "bug": "`seen` is a list; `item in seen` is O(n), making find_duplicates O(n^2). Should be a set for O(1) membership tests.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

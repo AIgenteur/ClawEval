@@ -1,0 +1,31 @@
+```json
+{
+  "q1": "7",
+  "q2": "50",
+  "q3": "30",
+  "q4": "45",
+  "q5": "13",
+  "q6": "Alice",
+  "q7": "Runaway query from a batch job consuming 200 database connections, exhausting the connection pool (max_connections 500/500 reached)",
+  "q8": "13",
+  "q9": "200",
+  "q10": "500",
+  "q11": "no",
+  "q12": "45",
+  "q13": "12",
+  "q14": "P2",
+  "q15": "10"
+}
+```
+
+**Key calculation notes:**
+- **q1**: 02:15 alert → 02:22 ack = 7 min
+- **q2**: 02:15 alert → 03:05 resolution declared = 50 min
+- **q3**: 02:15 detection → 02:45 root cause (runaway query identified) = 30 min
+- **q4**: 02:15 alert → 03:00 error rate normal = 45 min
+- **q5**: 02:22 ack → 02:35 escalation = 13 min
+- **q8**: 02:35 escalation → 02:48 batch job killed = 13 min
+- **q12**: 02:15 (alert, error rate already >5%) → 03:00 (back under 2% threshold) = 45 min
+- **q13**: 02:48 fix applied → 03:00 full recovery = 12 min
+- **q14**: P2 — significant degradation (>5% errors) but not a total outage, resolved in ~50 minutes
+- **q15**: 03:05 resolution → 03:15 stakeholder report = 10 min

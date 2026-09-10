@@ -1,0 +1,31 @@
+```json
+{
+  "1": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "2": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "3": {"urgency": "p2", "category": "billing", "action": "respond"},
+  "4": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "5": {"urgency": "p2", "category": "account", "action": "respond"},
+  "6": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "7": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "8": {"urgency": "p3", "category": "account", "action": "automate"},
+  "9": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "10": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "11": {"urgency": "p3", "category": "account", "action": "respond"},
+  "12": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "13": {"urgency": "p4", "category": "billing", "action": "respond"},
+  "14": {"urgency": "p2", "category": "bug", "action": "escalate"},
+  "15": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "16": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "17": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "18": {"urgency": "p3", "category": "billing", "action": "respond"},
+  "19": {"urgency": "p3", "category": "feature", "action": "respond"},
+  "20": {"urgency": "p2", "category": "bug", "action": "escalate"}
+}
+```
+
+**Reasoning highlights:**
+- **P1 escalations (1, 6, 16):** Total app failure for a premium user, a privacy/data exposure incident, and data loss — all critical, security/legal-sensitive, and requiring immediate engineering or security team involvement.
+- **P2 (3, 5, 14, 20):** Financial discrepancy, account lockout, server-side 500 errors, and a reproducible crash — significant impact but not full outages; need human/engineering response.
+- **P3 (7, 9, 11, 12, 17, 18, 19):** Non-blocking bugs with workarounds, failed password reset email, invoice correction, and a business-driven feature request — standard queue handling.
+- **P4 automations (2, 4, 10, 15):** FAQ-style how-to questions and pure feature wishes — handled by knowledge base replies or backlog logging.
+- **Ticket 8** routed to automation since subscription cancellation is typically self-service; **ticket 13** kept as a human response since pricing negotiation isn't scriptable.

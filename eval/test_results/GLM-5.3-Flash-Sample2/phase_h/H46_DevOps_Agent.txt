@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Mutable 'latest' tag — non-reproducible deployments, no version pinning; also defaults imagePullPolicy to Always, causing silent drift between restarts",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "Main container has no resource requests or limits — unbounded CPU/memory usage, risk of node exhaustion, unpredictable eviction and scheduling",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Container runs as root, violating least privilege; note 'runAsRoot' is not even a valid securityContext field (should be runAsNonRoot: true with a non-root UID)",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Privileged container — grants full host access (all capabilities, devices, kernel); extreme container-escape/compromise risk",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "DB_PASSWORD hardcoded in plaintext manifest — should be a Kubernetes Secret (ideally volume-mounted, not env-injected)",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "Live API key hardcoded in plaintext manifest — credential leaks via git history, CI logs, kubectl describe",
+      "severity": "critical"
+    },
+    {
+      "line": "memory: \"10Gi\" / cpu: \"8\"",
+      "issue": "Logging sidecar requests 10Gi memory and 8 CPUs — wildly oversized; pod will be unschedulable on typical nodes",
+      "severity": "critical"
+    },
+    {
+      "line": "sidecar resources (no limits)",
+      "issue": "Sidecar defines requests but no limits — unbounded resource consumption can starve co-located workloads",
+      "severity": "minor"
+    },
+    {
+      "line": "hostPath: /tmp/data",
+      "issue": "hostPath volume — security risk (host filesystem access), breaks portability/scheduling, data pinned to one node; /tmp is world-writable and ephemeral; no 'type' specified",
+      "severity": "major"
+    },
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica — no high availability; any node failure or rolling update causes downtime",
+      "severity": "major"
+    },
+    {
+      "line": "(missing) liveness/readiness probes",
+      "issue": "No health probes — kubelet cannot detect/restart hung containers, and the Service will route traffic to unready pods",
+      "severity": "major"
+    },
+    {
+      "line": "(missing) allowPrivilegeEscalation / capabilities",
+      "issue": "No allowPrivilegeEscalation: false and no capabilities drop (ALL) — missing standard container hardening",
+      "severity": "minor"
+    },
+    {
+      "line": "(missing) readOnlyRootFilesystem",
+      "issue": "Root filesystem left writable — should set readOnlyRootFilesystem: true with explicit writable emptyDir mounts for temp paths",
+      "severity": "minor"
+    },
+    {
+      "line": "type: LoadBalancer / port: 80",
+      "issue": "External LoadBalancer on plain HTTP port 80 — no TLS termination; also incurs cloud LB cost if external exposure is unintended",
+      "severity": "minor"
+    },
+    {
+      "line": "(missing) namespace",
+      "issue": "No namespace specified — deploys into 'default', mixing workloads and complicating RBAC, quotas, and network policies",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

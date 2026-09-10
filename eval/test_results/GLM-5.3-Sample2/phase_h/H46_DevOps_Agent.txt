@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "metadata:",
+      "issue": "No namespace specified on the Deployment (or Service) — resources deploy to 'default', weakening isolation and RBAC/network-policy boundaries",
+      "severity": "minor"
+    },
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica — no high availability; any crash, node failure, or rollout causes complete downtime",
+      "severity": "major"
+    },
+    {
+      "line": "image: myapp:latest",
+      "issue": "Mutable 'latest' tag — non-reproducible deployments, no reliable rollback, and imagePullPolicy defaults to Always causing unpredictable pulls; use an immutable tag or digest",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "Empty resources for the 'api' container — no CPU/memory requests or limits; BestEffort QoS (first evicted under pressure), poor scheduling, and risk of starving the node",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "'runAsRoot' is not a valid securityContext field (Kubernetes uses runAsNonRoot/runAsUser) — the setting is silently ignored/rejected, and the intent to run as root is a critical security violation; should be runAsNonRoot: true with a non-root runAsUser",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Privileged container — grants near-unrestricted host access (devices, kernel capabilities, all namespaces); a textbook container-escape vector, unnecessary for a web API",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "DB_PASSWORD hardcoded as a plaintext env var — leaks via source control, 'kubectl describe', and audit logs; use a Secret with secretKeyRef or an external secrets manager",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "API_KEY hardcoded as a plaintext env var — same exposure risk as the DB password; must come from a Secret (secretKeyRef), and this live-looking key should be rotated since it is now committed",
+      "severity": "critical"
+    },
+    {
+      "line": "- name: api",
+      "issue": "No livenessProbe defined — a hung or deadlocked api process is never detected or restarted by the kubelet",
+      "severity": "major"
+    },
+    {
+      "line": "- name: api",
+      "issue": "No readinessProbe defined — traffic is routed to the container before it is ready and never drained when it becomes unhealthy, causing failed requests during startup and outages",
+      "severity": "major"
+    },
+    {
+      "line": "memory: \"10Gi\"",
+      "issue": "Sidecar 'logger' requests 10Gi memory and 8 CPUs — grossly oversized for a logging sidecar; pods become unschedulable on smaller nodes and waste reserved cluster capacity",
+      "severity": "major"
+    },
+    {
+      "line": "requests:",
+      "issue": "Sidecar 'logger' defines resource requests but no limits — CPU/memory usage is unbounded (Burstable QoS), risking node resource pressure",
+      "severity": "minor"
+    },
+    {
+      "line": "path: /tmp/data",
+      "issue": "hostPath volume — mounts a node filesystem path (world-writable /tmp) into the pod: security risk, ties the pod to a specific node, and data is lost on rescheduling; use a PersistentVolumeClaim (or emptyDir if ephemeral)",
+      "severity": "critical"
+    },
+    {
+      "line": "hostPath:",
+      "issue": "hostPath volume declares no 'type' — path existence/kind is not validated, allowing unexpected mounts; should specify type (e.g., DirectoryOrCreate)",
+      "severity": "minor"
+    },
+    {
+      "line": "type: LoadBalancer",
+      "issue": "Service type LoadBalancer exposes the API directly to the internet over plain HTTP port 80 — no TLS termination and a public attack surface for a DB-backed API; typically use ClusterIP + Ingress with TLS",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

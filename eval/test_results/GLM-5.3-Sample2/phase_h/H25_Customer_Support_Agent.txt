@@ -1,0 +1,31 @@
+```json
+{
+  "1": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "2": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "3": {"urgency": "p2", "category": "billing", "action": "respond"},
+  "4": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "5": {"urgency": "p2", "category": "account", "action": "respond"},
+  "6": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "7": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "8": {"urgency": "p3", "category": "billing", "action": "automate"},
+  "9": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "10": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "11": {"urgency": "p2", "category": "account", "action": "respond"},
+  "12": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "13": {"urgency": "p3", "category": "billing", "action": "respond"},
+  "14": {"urgency": "p2", "category": "bug", "action": "escalate"},
+  "15": {"urgency": "p4", "category": "how-to", "action": "automate"},
+  "16": {"urgency": "p1", "category": "bug", "action": "escalate"},
+  "17": {"urgency": "p3", "category": "bug", "action": "respond"},
+  "18": {"urgency": "p2", "category": "billing", "action": "respond"},
+  "19": {"urgency": "p4", "category": "feature", "action": "automate"},
+  "20": {"urgency": "p2", "category": "bug", "action": "escalate"}
+}
+```
+
+**Classification rationale (brief):**
+- **p1**: Total app failure (#1), privacy breach (#6), data loss (#16) — all escalated immediately
+- **p2**: Billing errors (#3, #18), account lockouts (#5, #11), server errors (#14), reproducible crashes (#20)
+- **p3**: Non-blocking bugs (#7, #9, #12, #17), cancellations (#8), retention/pricing (#13)
+- **p4**: How-to questions (#2, #15) and feature requests (#4, #10, #19) — handled via automated docs links or feature-request intake
+- **Automate** was chosen where canned responses or self-service flows fully resolve the ticket; **escalate** where engineering/security/data-recovery teams must be involved

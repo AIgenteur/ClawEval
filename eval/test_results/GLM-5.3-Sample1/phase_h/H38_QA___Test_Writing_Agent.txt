@@ -1,0 +1,71 @@
+```python
+def is_valid_password(password):
+    # Rules 1 & 2: Length must be between 8 and 64 characters
+    if len(password) < 8 or len(password) > 64:
+        return False
+
+    # Rule 8: Cannot start with a digit
+    if password[0].isdigit():
+        return False
+
+    # Rule 7: No spaces allowed
+    if ' ' in password:
+        return False
+
+    # Rule 3: At least 1 uppercase letter
+    if not any(c.isupper() for c in password):
+        return False
+
+    # Rule 4: At least 1 lowercase letter
+    if not any(c.islower() for c in password):
+        return False
+
+    # Rule 5: At least 1 digit
+    if not any(c.isdigit() for c in password):
+        return False
+
+    # Rule 6: At least 1 special character from the allowed set
+    special_chars = "!@#$%^&*()-_+="
+    if not any(c in special_chars for c in password):
+        return False
+
+    # Rule 9: No more than 3 consecutive identical characters
+    run_length = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i - 1]:
+            run_length += 1
+            if run_length > 3:
+                return False
+        else:
+            run_length = 1
+
+    # Rule 10: Cannot contain "password" (case-insensitive)
+    if "password" in password.lower():
+        return False
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Abcdef1!", True),                 # 1: fully valid password
+        ("Ab1!", False),                     # 2: too short (4 chars)
+        ("Ab1!xyzW9" * 7 + "Qz", False),    # 3: too long (65 chars)
+        ("abcdef1!", False),                 # 4: missing uppercase
+        ("ABCDEF1!", False),                 # 5: missing lowercase
+        ("Abcdefg!", False),                 # 6: missing digit
+        ("Abcdefg1", False),                 # 7: missing special character
+        ("Abc def1!", False),                # 8: contains a space
+        ("1Abcdef!", False),                 # 9: starts with a digit
+        ("Aaaaabc1!", False),                # 10: more than 3 consecutive 'a'
+        ("MyPassword1!", False),             # 11: contains "password"
+        ("xPASSWORD1!", False),              # 12: contains "PASSWORD" (case-insensitive)
+        ("AaaaBb1!", True),                  # 13: exactly 3 consecutive 'a' (allowed)
+        ("Ab1!xyzW9" * 7 + "Q", True),       # 14: exactly 64 chars (upper boundary)
+        ("MyPassw0rd1!", True),               # 15: "passw0rd" (zero, not 'o') is not "password"
+    ]
+    results = []
+    for pwd, expected in tests:
+        results.append((pwd, expected, is_valid_password(pwd)))
+    return results
+```
