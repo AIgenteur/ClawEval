@@ -36,7 +36,7 @@ def _load_existing(scores_file):
     return data
 
 
-def merge_scores(existing, model, new_results, now=None):
+def merge_scores(existing, model, new_results, now=None, note=None):
     """
     Merge freshly run results into an existing score document.
 
@@ -45,6 +45,7 @@ def merge_scores(existing, model, new_results, now=None):
     new_results  -- list of flat result dicts: id, role, tier, scoring_type,
                     score, max, detail, tokens
     now          -- datetime override for tests
+    note         -- optional provenance string stored on this run entry
 
     Returns a new document. Results are keyed by test id: a new result replaces
     an existing one with the same id; all other existing results are kept.
@@ -68,11 +69,14 @@ def merge_scores(existing, model, new_results, now=None):
     pct = total_score / total_max * 100 if total_max > 0 else 0
 
     runs = list(existing.get("runs", [])) if existing else []
-    runs.append({
+    run_entry = {
         "timestamp": now.isoformat(),
         "test_ids": new_ids,
         "count": len(new_ids),
-    })
+    }
+    if note:
+        run_entry["note"] = note
+    runs.append(run_entry)
 
     return {
         "model": model,
@@ -87,15 +91,21 @@ def merge_scores(existing, model, new_results, now=None):
     }
 
 
-def save_scores(scores_file, model, new_results, now=None):
-    """Merge new_results into scores_file on disk (atomic write). Returns the merged doc."""
+def save_scores(scores_file, model, new_results, now=None, note=None, replace=False):
+    """Merge new_results into scores_file on disk (atomic write). Returns the merged doc.
+
+    replace=True ignores any existing results (used by full rebuilds from raw files);
+    the previous run history is still carried forward.
+    """
     scores_file = Path(scores_file)
     existing = _load_existing(scores_file)
+    if replace and existing:
+        existing = {"runs": existing.get("runs", [])}
     kept = 0
     if existing:
         new_ids = {r["id"] for r in new_results}
         kept = sum(1 for r in existing.get("results", []) if r.get("id") not in new_ids)
-    merged = merge_scores(existing, model, new_results, now=now)
+    merged = merge_scores(existing, model, new_results, now=now, note=note)
 
     tmp = scores_file.with_suffix(scores_file.suffix + ".tmp")
     with open(tmp, "w") as f:
