@@ -161,35 +161,34 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 17 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
 | 18 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
 | 19 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
-| 20 | **Gemini-3.5-Flash** | ☁️ Google (OpenRouter) | 978/1220 | **80.2%** | 22 |
-| 21 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
-| 22 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
-| 23 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
-| 24 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
-| 25 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
-| 26 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
-| 27 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
-| 28 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
-| 29 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 30 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 31 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 32 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
-| 33 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
-| 34 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
-| 35 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 36 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
-| 37 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
-| 38 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 39 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
-| 40 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
-| 41 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
-| 42 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
-| 43 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 44 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
-| 45 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
-| 46 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
-| 47 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
-| 48 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
+| 20 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
+| 21 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
+| 22 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
+| 23 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
+| 24 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
+| 25 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
+| 26 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
+| 27 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
+| 28 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 29 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
+| 30 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 31 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
+| 32 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
+| 33 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
+| 34 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 35 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
+| 36 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
+| 37 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 38 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
+| 39 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
+| 40 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
+| 41 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
+| 42 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 43 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
+| 44 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
+| 45 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 46 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
+| 47 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 > **GLM-5.3 / GLM-5.3-Flash (2026-09-10):** tested via Ollama Cloud in default mode with reasoning on. Ollama Cloud ignores every thinking control for these models (`enable_thinking`, `chat_template_kwargs.thinking`, `thinking_budget`, native `think`), so no NoThink variant exists. Each was run twice in full; the published score is the best valid result per test across the two runs, with the standard 16K→32K→48K token escalation applied to both. Both raw samples are in the repo (`GLM-5.3-Sample1/2`, `GLM-5.3-Flash-Sample1/2`); run-to-run totals were 970/971 and 1021/1023. Remaining zeros are tests where the model reasons past 48K tokens without answering.
 
@@ -197,74 +196,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 
 > **Qwen3.8-27B (2026-09-11):** local, single RTX 3090 24 GB — llama.cpp TurboQuant fork (407f3237b), official weights `unsloth/Qwen3.8-27B-GGUF` UD-Q4_K_M, **f16 KV cache, 64K context**, 40.6 t/s. Default thinking mode. One full run with the 16K→32K escalation: all 8 ceiling tests recovered at 32K (H-34's 48K retest produced no answer, so its 32K answer is kept). A NoThink run (`chat_template_kwargs.enable_thinking=false`, the only thinking switch this server honours) scored 1007/1220, so Think is published; NoThink data is in `Qwen3.8-27B-Local-NoThink`. Replaces Qwen3.6-27B, which was run with TurboQuant4 KV at 262K context — a different KV configuration, so the two are not a pure like-for-like.
 
-#### 📋 Gemini-3.5-Flash — Full 59-Agent Breakdown
-
-> Per-role performance across all 59 ClawEval v2 agents. **978/1,220 checkpoints (80.2%)** — 22 roles at 100%, 12 roles below 50%.
-
-| Test | Agent Role | Score | % |
-|------|-----------|-------|---|
-| H-01 | Router / Triage Agent | 29/30 | 97% |
-| H-02 | Input Validator / Sanitizer | 29/30 | 97% |
-| H-03 | Heartbeat / Health Monitor | 14/15 | 93% |
-| H-04 | Notification / Alert Agent | 21/30 | 70% |
-| H-05 | Sentiment Analysis Agent | 29/30 | 97% |
-| H-06 | FAQ Generation Agent | 15/15 | 100% |
-| H-07 | Translation Agent | 15/15 | 100% |
-| H-08 | Calendar / Scheduling Agent | 12/20 | 60% |
-| H-09 | Research / Web Search Agent | 30/30 | 100% |
-| H-10 | Content Writer / Blog Writer | 18/20 | 90% |
-| H-11 | Editor Agent | 29/30 | 97% |
-| H-12 | Content Planner / Strategist | 0/30 | 0% |
-| H-13 | Email Drafting / Summarization | 43/45 | 96% |
-| H-14 | Document Summarization Agent | 15/15 | 100% |
-| H-15 | Meeting Notes / Transcription Agent | 35/35 | 100% |
-| H-16 | Social Media Scouting / Monitoring | 57/60 | 95% |
-| H-17 | Social Media Content Agent | 19/20 | 95% |
-| H-18 | News Aggregation Agent | 7/7 | 100% |
-| H-19 | Shopping / Price Comparison | 15/15 | 100% |
-| H-20 | Memory / Knowledge Management | 20/20 | 100% |
-| H-21 | RAG / Retrieval Agent | 4/15 | 27% |
-| H-22 | Data Analysis Agent | 14/15 | 93% |
-| H-23 | Website Scraping / Understanding | 15/15 | 100% |
-| H-24 | Image Description / Understanding | 20/20 | 100% |
-| H-25 | Customer Support Agent | 33/60 | 55% |
-| H-26 | Lead Scoring / Prospecting | 12/15 | 80% |
-| H-27 | Sprint / Project Summarizer | 15/15 | 100% |
-| H-28 | Transaction / Approval Agent | 19/20 | 95% |
-| H-29 | Home Automation Agent | 9/20 | 45% |
-| H-30 | Fitness / Health Tracking | 15/15 | 100% |
-| H-31 | Recipe / Cooking Agent | 15/15 | 100% |
-| H-32 | Personal Finance Tracking | 15/15 | 100% |
-| H-33 | SEO Optimization Agent | 4/15 | 27% |
-| H-34 | Landing Page Generator | 20/20 | 100% |
-| H-35 | Travel Planning Agent | 6/15 | 40% |
-| H-36 | Code Generation Agent | 30/30 | 100% |
-| H-37 | Code Review Agent | 15/15 | 100% |
-| H-38 | QA / Test Writing Agent | 13/15 | 87% |
-| H-39 | Task Planning / Decomposition | 1/18 | 6% |
-| H-40 | Fact-Checking Agent | 28/30 | 93% |
-| H-41 | Critic / Review Agent | 20/20 | 100% |
-| H-42 | Market Research Agent | 14/15 | 93% |
-| H-43 | Synthesizer / Aggregator | 13/15 | 87% |
-| H-44 | Curriculum / Course Designer | 7/15 | 47% |
-| H-45 | Prototype Generator | 15/15 | 100% |
-| H-46 | DevOps Agent | 8/15 | 53% |
-| H-47 | Math / Logic Reasoning | 14/15 | 93% |
-| H-48 | STEM Research Analyst | 15/15 | 100% |
-| H-49 | Algorithm / Data Structure Explorer | 30/30 | 100% |
-| H-50 | Orchestrator / Manager Agent | 1/15 | 7% |
-| H-51 | Software Architect Agent | 4/15 | 27% |
-| H-52 | Complex Debugger Agent | 13/15 | 87% |
-| H-53 | Legal Document Review | 6/15 | 40% |
-| H-54 | Medical / Health Analysis | 15/15 | 100% |
-| H-55 | Financial Analysis / Stock Research | 14/15 | 93% |
-| H-56 | Security Analyst Agent | 0/15 | 0% |
-| H-57 | SRE / Incident Response | 13/15 | 87% |
-| H-58 | Book / Long-Form Writing | 19/20 | 95% |
-| H-59 | Compliance / Regulatory Agent | 2/15 | 13% |
-
 ---
-
 
 ## 📦 Evaluation Phases
 

@@ -194,7 +194,8 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
   Qwen3.5-Plus, Kimi K2.6, GLM-5.1, MiniMax-M2.7 Think) were rebuilt from their raw `H*.txt` on
   2026-09-10 with `eval/rescore_phase_h.py`; all six reproduce the README totals exactly.
 - Laguna-M.1 H-12 is scored 0/30 on a malformed API response (`ERROR: Expecting value`), not a
-  model failure. Needs a clean retest.
+  model failure. Owner decided 2026-09-11 NOT to retest; the published 1034/1220 keeps that zero
+  (so it is understated by up to 30 points). Do not reopen without the owner.
 - Token-efficiency and per-role tables were last regenerated at 32 and 48 models respectively.
 - Ollama Cloud IGNORES all thinking controls for GLM-5.3 / GLM-5.3-Flash (probed 2026-09-10) and
   deepseek-v4.1-flash (probed 2026-09-11, where even reasoning_effort is ignored). GLM probe:

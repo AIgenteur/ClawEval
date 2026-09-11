@@ -3,7 +3,7 @@
 59 agent roles, 1,220 constraint checkpoints, **47 open-weight models** tested.
 Use this table to pick the best model for each specific agent task.
 
-> Proprietary models are ranked separately — see the [Proprietary Models leaderboard](../README.md#-clameval-v2-leaderboard--proprietary-models) in the README.
+> Only open-weight models are ranked. ClawEval does not publish scores for closed-source models.
 
 ## Tier 1
 
