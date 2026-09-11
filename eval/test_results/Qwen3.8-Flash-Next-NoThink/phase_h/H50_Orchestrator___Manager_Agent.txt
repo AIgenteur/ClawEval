@@ -1,0 +1,81 @@
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "Raw refund request payload (order_id, reason, amount, customer_id)",
+      "output": "Validated request object with normalized fields",
+      "next": "FraudCheckAgent",
+      "fallback": "LogErrorAndNotifyCustomer",
+      "timeout": 5000,
+      "logging": "Log validation status and input hash"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request object",
+      "output": "Fraud risk score (0-100) and decision flag (PASS/FLAG)",
+      "next": "ConditionalRouter",
+      "fallback": "EscalateToHuman",
+      "timeout": 10000,
+      "logging": "Log fraud score and model version"
+    },
+    {
+      "name": "ConditionalRouter",
+      "input": "Fraud risk score and decision flag",
+      "output": "Routing decision (APPROVE_PATH or REJECT_PATH)",
+      "next": "ApprovalAgent",
+      "fallback": "EscalateToHuman",
+      "timeout": 1000,
+      "logging": "Log routing decision and reason"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Validated request object (if routed to APPROVE_PATH)",
+      "output": "Approval status (APPROVED/REJECTED) and reason code",
+      "next": "PaymentAgent",
+      "fallback": "EscalateToHuman",
+      "timeout": 8000,
+      "logging": "Log approval decision and policy checks"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved refund request object",
+      "output": "Transaction ID and payment status (SUCCESS/FAILED)",
+      "next": "NotificationAgent",
+      "fallback": "RetryPaymentThenEscalate",
+      "timeout": 15000,
+      "logging": "Log transaction ID and gateway response"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final outcome (APPROVED/REJECTED) and transaction details",
+      "output": "Notification delivery status (SENT/FAILED)",
+      "next": "END",
+      "fallback": "LogErrorAndRetryNotification",
+      "timeout": 5000,
+      "logging": "Log notification channel and delivery status"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "conditional_branch": "ConditionalRouter routes to ApprovalAgent if fraud score < 50, else to RejectionHandler (implied in ApprovalAgent logic or separate path)",
+    "fallback_handlers": "Each agent has a defined fallback action",
+    "first_agent": "ValidationAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time_ms": 60000,
+    "handle_outcomes": ["approved", "rejected"],
+    "logging_audit": "Each agent logs its step",
+    "no_circular_dependencies": true,
+    "human_escalation": "Fallbacks for FraudCheckAgent, ConditionalRouter, ApprovalAgent, and PaymentAgent escalate to human review",
+    "timeouts": {
+      "ValidationAgent": 5000,
+      "FraudCheckAgent": 10000,
+      "ConditionalRouter": 1000,
+      "ApprovalAgent": 8000,
+      "PaymentAgent": 15000,
+      "NotificationAgent": 5000
+    }
+  }
+}

@@ -1,0 +1,145 @@
+
+
+{
+  "agents": [
+    {
+      "name": "validation_triage",
+      "input": "customer_refund_request with order_id, amount, reason, customer_id, timestamp",
+      "output": "validated_request or invalid_request with status, normalized_fields, triage_category",
+      "next": "conditional: if status=valid then fraud_check else notification_agent",
+      "fallback": "human_escalation",
+      "timeout_seconds": 5,
+      "expected_processing_time_seconds": 3,
+      "audit_logging": {
+        "enabled": true,
+        "event": "refund_request_validated",
+        "log_level": "info",
+        "audit_trail": true
+      },
+      "conditional_branch": {
+        "condition": "status",
+        "valid": "fraud_check",
+        "invalid": "notification_agent"
+      }
+    },
+    {
+      "name": "fraud_check",
+      "input": "validated_request with customer_id, order_id, amount, device_ip, history",
+      "output": "fraud_assessment with risk_score, risk_level, fraud_flags",
+      "next": "approval_decision",
+      "fallback": "human_escalation",
+      "timeout_seconds": 10,
+      "expected_processing_time_seconds": 8,
+      "audit_logging": {
+        "enabled": true,
+        "event": "fraud_check_completed",
+        "log_level": "info",
+        "audit_trail": true
+      }
+    },
+    {
+      "name": "approval_decision",
+      "input": "validated_request and fraud_assessment with policy_rules",
+      "output": "approval_result with decision approved/rejected, reason_code, approved_amount",
+      "next": "conditional: if decision=approved then payment_processor else notification_agent",
+      "fallback": "human_escalation",
+      "timeout_seconds": 10,
+      "expected_processing_time_seconds": 8,
+      "audit_logging": {
+        "enabled": true,
+        "event": "approval_decision_made",
+        "log_level": "info",
+        "audit_trail": true
+      },
+      "conditional_branch": {
+        "condition": "decision",
+        "approved": "payment_processor",
+        "rejected": "notification_agent"
+      }
+    },
+    {
+      "name": "payment_processor",
+      "input": "approval_result with approved_amount, payment_method, transaction_id",
+      "output": "payment_result with status success/failed, refund_transaction_id, provider_response",
+      "next": "notification_agent",
+      "fallback": "human_escalation",
+      "timeout_seconds": 15,
+      "expected_processing_time_seconds": 12,
+      "audit_logging": {
+        "enabled": true,
+        "event": "payment_processed",
+        "log_level": "info",
+        "audit_trail": true
+      }
+    },
+    {
+      "name": "human_escalation",
+      "input": "failed_or_edge_case_context with agent_name, error, request_id, customer_id, amount",
+      "output": "manual_review_result with status manual_approved/manual_rejected/manual_pending, notes",
+      "next": "notification_agent",
+      "fallback": "notification_agent",
+      "timeout_seconds": 10,
+      "expected_processing_time_seconds": 10,
+      "audit_logging": {
+        "enabled": true,
+        "event": "human_escalation_handled",
+        "log_level": "warning",
+        "audit_trail": true
+      }
+    },
+    {
+      "name": "notification_agent",
+      "input": "final_outcome with request_id, customer_id, status, amount, reason_code, refund_transaction_id",
+      "output": "notification_result with channels_sent, message_status, timestamp",
+      "next": "end",
+      "fallback": "dead_letter_queue",
+      "timeout_seconds": 5,
+      "expected_processing_time_seconds": 4,
+      "audit_logging": {
+        "enabled": true,
+        "event": "customer_notified",
+        "log_level": "info",
+        "audit_trail": true
+      }
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents_present": true,
+    "required_agents": [
+      "validation",
+      "fraud-check",
+      "approval",
+      "payment",
+      "notification"
+    ],
+    "first_agent": "validation_triage",
+    "last_agent": "notification_agent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "conditional_branches": [
+      {
+        "agent": "validation_triage",
+        "condition": "status",
+        "valid": "fraud_check",
+        "invalid": "notification_agent"
+      },
+      {
+        "agent": "approval_decision",
+        "condition": "decision",
+        "approved": "payment_processor",
+        "rejected": "notification_agent"
+      }
+    ],
+    "fallback_for_each_agent": true,
+    "total_expected_processing_time_seconds": 45,
+    "max_timeout_sum_seconds": 55,
+    "processing_time_under_60_seconds": true,
+    "approved_outcome_path": "validation_triage -> fraud_check -> approval_decision -> payment_processor -> notification_agent",
+    "rejected_outcome_path": "validation_triage -> fraud_check -> approval_decision -> notification_agent",
+    "logging_audit_at_each_step": true,
+    "no_circular_dependencies": true,
+    "human_escalation_path": "validation_triage/fraud_check/approval_decision/payment_processor fallback -> human_escalation -> notification_agent",
+    "timeout_for_each_agent": true
+  }
+}

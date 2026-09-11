@@ -1,0 +1,82 @@
+
+
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() line 17 (query f-string)",
+      "severity": "critical"
+    },
+    {
+      "type": "Weak Cryptographic Hash / Predictable Token",
+      "location": "login() line 20 (hashlib.md5(user.encode()))",
+      "severity": "high"
+    },
+    {
+      "type": "Plaintext Password Authentication / No Password Hashing",
+      "location": "login() line 17 (password='{pwd}')",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection",
+      "location": "profile() lines 25-26 (render_template_string with username)",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting",
+      "location": "search() line 31 (unescaped q in HTML response)",
+      "severity": "high"
+    },
+    {
+      "type": "Command Injection / Remote Code Execution",
+      "location": "run_command() line 36 (subprocess.run(cmd, shell=True))",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Write",
+      "location": "upload() line 42 (os.path.join with f.filename)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal / Arbitrary File Read",
+      "location": "download() line 49 (send_file(filepath))",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "load_config() line 54 (yaml.load(data))",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe Pickle Deserialization",
+      "location": "restore_session() line 60 (pickle.loads(data))",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret / Weak Authentication",
+      "location": "SECRET line 6 and admin() line 66 (token == SECRET)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "export_data() line 74 (os.system(cmd) with fmt)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Debug Mode",
+      "location": "app.run() line 78 (debug=True)",
+      "severity": "high"
+    },
+    {
+      "type": "Insecure Host Binding / Network Exposure",
+      "location": "app.run() line 78 (host 0.0.0.0)",
+      "severity": "low"
+    },
+    {
+      "type": "Missing Authentication/Authorization",
+      "location": "Sensitive endpoints: /run, /upload, /download, /config, /session, /export",
+      "severity": "critical"
+    }
+  ],
+  "count": 15
+}

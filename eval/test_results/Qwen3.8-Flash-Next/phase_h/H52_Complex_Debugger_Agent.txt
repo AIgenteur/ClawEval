@@ -1,0 +1,82 @@
+
+
+{
+  "bugs": [
+    {
+      "line": "Line 8",
+      "bug": "RateLimiter uses a plain list for shared state without synchronization, so concurrent acquire calls can race.",
+      "fix": "Use an asyncio.Lock and a collections.deque to protect and prune request timestamps."
+    },
+    {
+      "line": "Line 11",
+      "bug": "asyncio.get_event_loop().time() is deprecated/unsafe in async code and may fail if no loop is running.",
+      "fix": "Use asyncio.get_running_loop().time()."
+    },
+    {
+      "line": "Line 16",
+      "bug": "After await asyncio.sleep(wait), it appends the stale now captured before sleeping.",
+      "fix": "Refresh now after sleeping or append asyncio.get_running_loop().time() after the sleep."
+    },
+    {
+      "line": "Line 25",
+      "bug": "A new aiohttp.ClientSession is created for every request, wasting resources and potentially leaking connections.",
+      "fix": "Create one ClientSession in fetch_all and pass it to fetch_one, closing it once."
+    },
+    {
+      "line": "Line 27",
+      "bug": "The response is not closed and timeout=30 is not using aiohttp.ClientTimeout.",
+      "fix": "Use async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response."
+    },
+    {
+      "line": "Line 29",
+      "bug": "results is a shared dict; duplicate URLs overwrite each other and there is no synchronization.",
+      "fix": "Use a list of (url, data) or key by index, and protect shared state if needed."
+    },
+    {
+      "line": "Line 31",
+      "bug": "Exceptions are swallowed and replaced with None.",
+      "fix": "Log the exception or re-raise/store the exception instead of silently swallowing it."
+    },
+    {
+      "line": "Line 32",
+      "bug": "pass is redundant after assigning results[url].",
+      "fix": "Remove pass."
+    },
+    {
+      "line": "Line 35",
+      "bug": "gather is called without return_exceptions=True, so one failure can propagate and hide other results.",
+      "fix": "Use asyncio.gather(*tasks, return_exceptions=True) and handle exceptions."
+    },
+    {
+      "line": "Line 42",
+      "bug": "process_item(item) returns a coroutine but is not explicitly scheduled as a task.",
+      "fix": "Use asyncio.create_task(process_item(item)) or await it if serial execution is intended."
+    },
+    {
+      "line": "Line 45",
+      "bug": "process_batch is an async generator because of yield; callers must consume it with async for, not await.",
+      "fix": "Consume with async for, or return a list from a normal coroutine if async generator behavior is not intended."
+    },
+    {
+      "line": "Line 52",
+      "bug": "ConnectionPool.pool is a plain list and is not bounded by self.size or async-safe.",
+      "fix": "Use asyncio.Queue(maxsize=size) or a deque protected by an asyncio.Lock."
+    },
+    {
+      "line": "Line 60",
+      "bug": "release appends connections without checking pool size, allowing unbounded growth.",
+      "fix": "Only append if len(self.pool) < self.size; otherwise close the connection."
+    },
+    {
+      "line": "Line 63",
+      "bug": "create_connection returns a placeholder object instead of a real connection.",
+      "fix": "Return a real connection object appropriate for the backend."
+    },
+    {
+      "line": "Line 68",
+      "bug": "main is never executed; the print only runs if main is awaited.",
+      "fix": "Add asyncio.run(main()) under an if __name__ == '__main__' guard."
+    }
+  ],
+  "count": 15
+}

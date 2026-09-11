@@ -1,0 +1,19 @@
+
+
+{
+  "q1": "CRDT (e.g., Yjs) for conflict-free merging of text, formatting, and collaborative edits; server persists canonical CRDT state and broadcasts updates.",
+  "q2": "WebSocket for bidirectional, low-latency sync; SSE is only suitable for one-way notifications and is insufficient for collaborative editing.",
+  "q3": "PostgreSQL as the primary document store: JSONB for snapshots, relational tables for metadata/permissions, and WAL for durability; large binary blobs can be offloaded to object storage.",
+  "q4": "Client-side CRDT persistence in IndexedDB; edits apply locally while offline, pending updates are queued, and on reconnect the server merges them conflict-free.",
+  "q5": "Redis Pub/Sub for low-latency ephemeral document and presence events; durable operation logs are stored separately in PostgreSQL.",
+  "q6": "Stateless WebSocket nodes behind an L7 load balancer with sticky sessions; Redis Pub/Sub for cross-node fanout; Kubernetes autoscaling and graceful connection draining.",
+  "q7": "Use a separate ephemeral presence channel over WebSocket; broadcast cursor and selection updates with throttling/debounce; keep presence in memory, not in document history.",
+  "q8": "OAuth 2.0/OIDC with short-lived JWT access tokens, refresh tokens, and WebSocket authentication via short-lived tickets or bearer tokens.",
+  "q9": "Append-only operation log plus periodic CRDT snapshots; immutable version IDs; diff/merge support; restore by loading a snapshot and replaying subsequent operations.",
+  "q10": "Use CloudFront or Cloudflare for hashed immutable static assets with long cache lifetimes; serve the SPA from the CDN; use origin shield, Brotli, and signed URLs only for private assets.",
+  "q11": "Chunk documents into sections/subdocuments; lazy-load pages; virtualize editor rendering; use server-side pagination and compressed CRDT binary payloads.",
+  "q12": "API gateway plus Redis token-bucket rate limiting per user, IP, and document; apply WebSocket message quotas and backpressure with burst allowances for typing.",
+  "q13": "Continuous PostgreSQL WAL archiving to object storage, periodic snapshots, point-in-time recovery, cross-region replication, encrypted backups, and regular restore drills.",
+  "q14": "Client uploads directly to object storage via presigned multipart URLs; use a queue for background processing, dedupe by content hash, virus scan, generate thumbnails, and serve via CDN.",
+  "q15": "OpenTelemetry for traces/metrics/logs, Prometheus and Grafana for metrics/dashboards, Loki or ELK for logs, Tempo for tracing, Sentry for errors, and PagerDuty for alerting."
+}

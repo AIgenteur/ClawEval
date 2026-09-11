@@ -1,0 +1,54 @@
+
+
+def merge_overlapping(intervals):
+    if not intervals:
+        return []
+
+    merged = []
+    for start, end in sorted(intervals, key=lambda x: (x[0], x[1])):
+        if not merged or start > merged[-1][1]:
+            merged.append([start, end])
+        else:
+            merged[-1][1] = max(merged[-1][1], end)
+
+    return merged
+
+
+def eval_rpn(tokens):
+    stack = []
+
+    for token in tokens:
+        if token in ("+", "-", "*", "/"):
+            b = stack.pop()
+            a = stack.pop()
+
+            if token == "+":
+                stack.append(a + b)
+            elif token == "-":
+                stack.append(a - b)
+            elif token == "*":
+                stack.append(a * b)
+            else:
+                result = abs(a) // abs(b)
+                if (a < 0) ^ (b < 0):
+                    result = -result
+                stack.append(result)
+        else:
+            stack.append(int(token))
+
+    return stack[-1] if stack else 0
+
+
+def deep_flatten(nested):
+    result = []
+    stack = [nested]
+
+    while stack:
+        item = stack.pop()
+
+        if isinstance(item, (list, tuple)):
+            stack.extend(reversed(item))
+        else:
+            result.append(item)
+
+    return result

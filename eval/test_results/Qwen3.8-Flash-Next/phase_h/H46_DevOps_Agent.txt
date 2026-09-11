@@ -1,0 +1,82 @@
+
+
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas: 1 creates a single point of failure and no high availability",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "api container has no readiness, liveness, or startup probes",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image: myapp:latest is mutable and not pinned to a digest",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "resources: {} leaves the api container without CPU/memory requests or limits",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true is an invalid securityContext field and indicates unsafe root execution",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true grants excessive host access and is a severe security risk",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "DB_PASSWORD is exposed as a plaintext environment variable instead of a Secret",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "API_KEY is exposed as a plaintext environment variable instead of a Secret",
+      "severity": "critical"
+    },
+    {
+      "line": "30",
+      "issue": "volumeMount for /data does not set readOnly: true, increasing host filesystem risk",
+      "severity": "major"
+    },
+    {
+      "line": "32",
+      "issue": "sidecar container has no securityContext, missing privilege and filesystem hardening",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "sidecar resources define requests but no limits, allowing unbounded resource consumption",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "memory request of 10Gi for sidecar is excessive and can cause scheduling failures or waste capacity",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "CPU request of 8 for sidecar is excessive and can cause scheduling failures or waste capacity",
+      "severity": "major"
+    },
+    {
+      "line": "41",
+      "issue": "hostPath /tmp/data is insecure, ephemeral, and exposes host filesystem",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Service type LoadBalancer exposes the application externally without shown need or controls",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}

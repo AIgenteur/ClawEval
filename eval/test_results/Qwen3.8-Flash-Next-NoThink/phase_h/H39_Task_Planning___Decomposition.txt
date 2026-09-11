@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Analyze monolithic architecture and define service boundaries",
+      "depends_on": [],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Set up Kubernetes cluster and infrastructure as code (Terraform)",
+      "depends_on": [],
+      "effort_days": 10,
+      "team": "devops"
+    },
+    {
+      "id": 3,
+      "task": "Design API Gateway architecture and routing rules",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 4,
+      "task": "Implement CI/CD pipeline for microservices deployment",
+      "depends_on": [2],
+      "effort_days": 8,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Extract User Service from monolith",
+      "depends_on": [1],
+      "effort_days": 12,
+      "team": "backend"
+    },
+    {
+      "id": 6,
+      "task": "Extract Order Service from monolith",
+      "depends_on": [1],
+      "effort_days": 12,
+      "team": "backend"
+    },
+    {
+      "id": 7,
+      "task": "Extract Product Service from monolith",
+      "depends_on": [1],
+      "effort_days": 10,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Implement API Gateway with authentication and rate limiting",
+      "depends_on": [3],
+      "effort_days": 10,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Design distributed database schema and migration strategy",
+      "depends_on": [1],
+      "effort_days": 8,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Execute database migration for User Service",
+      "depends_on": [5, 9],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Execute database migration for Order Service",
+      "depends_on": [6, 9],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 12,
+      "task": "Execute database migration for Product Service",
+      "depends_on": [7, 9],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 13,
+      "task": "Update frontend to consume new microservices APIs",
+      "depends_on": [8],
+      "effort_days": 15,
+      "team": "frontend"
+    },
+    {
+      "id": 14,
+      "task": "Implement service discovery and load balancing",
+      "depends_on": [2, 8],
+      "effort_days": 8,
+      "team": "devops"
+    },
+    {
+      "id": 15,
+      "task": "Write unit tests for User Service",
+      "depends_on": [5],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 16,
+      "task": "Write unit tests for Order Service",
+      "depends_on": [6],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 17,
+      "task": "Write unit tests for Product Service",
+      "depends_on": [7],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "Perform integration testing across services",
+      "depends_on": [10, 11, 12, 15, 16, 17],
+      "effort_days": 10,
+      "team": "qa"
+    },
+    {
+      "id": 19,
+      "task": "Conduct performance and load testing",
+      "depends_on": [14, 18],
+      "effort_days": 8,
+      "team": "qa"
+    },
+    {
+      "id": 20,
+      "task": "Final production deployment and monitoring setup",
+      "depends_on": [13, 19],
+      "effort_days": 5,
+      "team": "devops"
+    }
+  ]
+}

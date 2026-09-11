@@ -1,0 +1,189 @@
+{
+  "overall_score": 2,
+  "categories": [
+    {
+      "name": "Security",
+      "score": 1,
+      "comment": "Critical vulnerabilities including SQL injection, hardcoded secrets, and insecure deployment practices."
+    },
+    {
+      "name": "Architecture & Design",
+      "score": 2,
+      "comment": "Monolithic structure with poor separation of concerns and mixed responsibilities in utility modules."
+    },
+    {
+      "name": "Testing & Quality",
+      "score": 1,
+      "comment": "Extremely low test coverage, lack of mocking, and no automated quality gates."
+    },
+    {
+      "name": "DevOps & Infrastructure",
+      "score": 2,
+      "comment": "Insecure Docker configuration, outdated base image, and dangerous deployment scripts."
+    },
+    {
+      "name": "Documentation & Maintainability",
+      "score": 1,
+      "comment": "Empty documentation, missing environment templates, and unmanaged dependencies."
+    }
+  ],
+  "critical_issues": [
+    {
+      "id": 1,
+      "severity": "critical",
+      "title": "SQL Injection Vulnerability",
+      "description": "database.py uses f-strings for SQL queries (e.g., f\"SELECT * FROM users WHERE id={user_id}\"), allowing attackers to execute arbitrary SQL commands.",
+      "recommendation": "Use parameterized queries provided by SQLAlchemy or raw DB-API connectors (e.g., execute(\"SELECT * FROM users WHERE id = :id\", {\"id\": user_id}))."
+    },
+    {
+      "id": 2,
+      "severity": "critical",
+      "title": "Hardcoded Credentials in Source Code",
+      "description": "config.py contains hardcoded DB_PASSWORD and API_KEY. These are exposed in version control and logs.",
+      "recommendation": "Remove all secrets from code. Use environment variables loaded via python-dotenv or a secrets manager like AWS Secrets Manager/Vault."
+    },
+    {
+      "id": 3,
+      "severity": "critical",
+      "title": "Inline AWS Credentials in Deployment Script",
+      "description": "deploy.sh contains AWS credentials inline, exposing cloud infrastructure access to anyone with repo access.",
+      "recommendation": "Use IAM roles, instance profiles, or CI/CD secret injection. Never store cloud credentials in scripts."
+    },
+    {
+      "id": 4,
+      "severity": "high",
+      "title": "Insecure File Permissions (chmod 777)",
+      "description": "deploy.sh sets chmod 777 on all files, allowing any user on the system to read, write, and execute application files.",
+      "recommendation": "Use restrictive permissions (e.g., 644 for files, 755 for executables) and ensure the application runs under a dedicated non-privileged user."
+    },
+    {
+      "id": 5,
+      "severity": "high",
+      "title": "Docker Container Runs as Root",
+      "description": "The Dockerfile does not specify a USER, causing the application to run as root inside the container, increasing the blast radius of a container escape.",
+      "recommendation": "Create a non-root user in the Dockerfile (e.g., RUN adduser --disabled-password appuser && USER appuser)."
+    },
+    {
+      "id": 6,
+      "severity": "high",
+      "title": "Outdated Python Base Image",
+      "description": "Using python:3.8 which is approaching end-of-life or already EOL, missing security patches and performance improvements.",
+      "recommendation": "Upgrade to a supported LTS version like python:3.11-slim or python:3.12-slim."
+    },
+    {
+      "id": 7,
+      "severity": "high",
+      "title": "Lack of Dependency Version Pinning",
+      "description": "requirements.txt lists packages without versions, leading to non-reproducible builds and potential breakage from upstream changes.",
+      "recommendation": "Pin all dependencies to specific versions (e.g., flask==3.0.0) or use a lock file like poetry.lock or pip-tools."
+    },
+    {
+      "id": 8,
+      "severity": "medium",
+      "title": "Monolithic Application Structure",
+      "description": "app.py contains routes, business logic, and DB queries in a single 500-line file, violating separation of concerns.",
+      "recommendation": "Refactor into a modular structure using Flask Blueprints, separating routes, services, and repositories."
+    },
+    {
+      "id": 9,
+      "severity": "medium",
+      "title": "Insufficient Test Coverage",
+      "description": "Only 3 tests with no mocking, leaving most business logic and edge cases untested.",
+      "recommendation": "Implement unit tests with pytest and unittest.mock. Aim for >80% code coverage."
+    },
+    {
+      "id": 10,
+      "severity": "medium",
+      "title": "Mixed Responsibilities in utils.py",
+      "description": "utils.py mixes string helpers, date parsing, API calls, and file I/O, making it hard to maintain and test.",
+      "recommendation": "Split utils.py into domain-specific modules (e.g., string_utils.py, date_utils.py, api_client.py)."
+    },
+    {
+      "id": 11,
+      "severity": "medium",
+      "title": "Missing .env.example",
+      "description": "No template for environment variables, making onboarding difficult and increasing risk of misconfiguration.",
+      "recommendation": "Add a .env.example file listing all required environment variables with placeholder values."
+    },
+    {
+      "id": 12,
+      "severity": "low",
+      "title": "Empty README",
+      "description": "README.md is empty, providing no context, setup instructions, or API documentation.",
+      "recommendation": "Document project purpose, installation steps, configuration, and usage examples."
+    },
+    {
+      "id": 13,
+      "severity": "medium",
+      "title": "No CI/CD Pipeline",
+      "description": "No evidence of automated testing, linting, or security scanning in the repository structure.",
+      "recommendation": "Add GitHub Actions or GitLab CI to run tests, linting (flake8/black), and security scans (bandit) on every push."
+    },
+    {
+      "id": 14,
+      "severity": "high",
+      "title": "Single-Stage Docker Build",
+      "description": "Dockerfile uses a single stage, including build tools in the final image, increasing size and attack surface.",
+      "recommendation": "Implement multi-stage builds to separate build dependencies from runtime dependencies."
+    },
+    {
+      "id": 15,
+      "severity": "critical",
+      "title": "Direct Database Access in Routes",
+      "description": "Business logic and DB queries are mixed in app.py, making it hard to swap DBs or test logic independently.",
+      "recommendation": "Introduce a Repository pattern or Service layer to abstract database interactions."
+    },
+    {
+      "id": 16,
+      "severity": "high",
+      "title": "No Input Validation",
+      "description": "No mention of input validation libraries (e.g., marshmallow, pydantic) in requirements or code structure.",
+      "recommendation": "Implement strict input validation for all API endpoints to prevent malformed data and injection attacks."
+    },
+    {
+      "id": 17,
+      "severity": "medium",
+      "title": "No Logging Configuration",
+      "description": "No indication of structured logging, making debugging and monitoring difficult in production.",
+      "recommendation": "Configure Python logging with JSON formatters and send logs to a centralized system."
+    },
+    {
+      "id": 18,
+      "severity": "low",
+      "title": "No Error Handling Strategy",
+      "description": "No global error handlers or custom exception classes visible in the structure.",
+      "recommendation": "Implement global error handlers in Flask to return consistent JSON error responses."
+    },
+    {
+      "id": 19,
+      "severity": "medium",
+      "title": "No Configuration Management",
+      "description": "config.py is static and hardcoded, lacking support for different environments (dev, staging, prod).",
+      "recommendation": "Use a configuration class that loads settings from environment variables based on FLASK_ENV."
+    },
+    {
+      "id": 20,
+      "severity": "high",
+      "title": "No Security Headers or Middleware",
+      "description": "No indication of security middleware (e.g., CORS, CSRF protection, rate limiting) in the app structure.",
+      "recommendation": "Add Flask-Talisman for security headers and Flask-Limiter for rate limiting."
+    }
+  ],
+  "recommendations": [
+    "Immediately rotate all exposed credentials (DB, API, AWS) and remove them from source control.",
+    "Refactor database.py to use parameterized queries exclusively to prevent SQL injection.",
+    "Restructure the application using Flask Blueprints to separate routes, services, and data access layers.",
+    "Upgrade Dockerfile to use python:3.11-slim, implement multi-stage builds, and run as a non-root user.",
+    "Add a .env.example file and migrate all secrets to environment variables or a secrets manager.",
+    "Pin all dependencies in requirements.txt to specific versions to ensure reproducible builds.",
+    "Increase test coverage to at least 80% using pytest and unittest.mock for external dependencies.",
+    "Implement a CI/CD pipeline with automated testing, linting, and security scanning.",
+    "Split utils.py into domain-specific modules to improve maintainability and testability.",
+    "Write a comprehensive README.md with setup, configuration, and usage instructions.",
+    "Remove chmod 777 from deploy.sh and enforce least-privilege file permissions.",
+    "Add input validation using Pydantic or Marshmallow for all API endpoints.",
+    "Implement structured logging and global error handling for better observability.",
+    "Add security middleware for CORS, CSRF, and rate limiting.",
+    "Use a configuration management system that supports multiple environments (dev, staging, prod)."
+  ]
+}

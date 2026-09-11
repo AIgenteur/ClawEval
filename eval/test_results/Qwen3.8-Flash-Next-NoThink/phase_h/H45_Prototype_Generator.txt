@@ -1,0 +1,84 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        # Check if data is a dict
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dictionary"]}
+        
+        # Check required fields
+        for field_name, field_schema in schema.items():
+            if field_schema.get("required", False) and field_name not in data:
+                errors.append(f"Missing required field: {field_name}")
+                continue
+            
+            if field_name not in data:
+                continue
+            
+            value = data[field_name]
+            expected_type = field_schema.get("type")
+            
+            # Type checking
+            if expected_type:
+                type_valid = False
+                if expected_type == "str":
+                    type_valid = isinstance(value, str)
+                elif expected_type == "int":
+                    # In Python, bool is a subclass of int, so we need to exclude bool
+                    type_valid = isinstance(value, int) and not isinstance(value, bool)
+                elif expected_type == "float":
+                    # Accept both int and float for float type? Typically float means float, but sometimes int is accepted.
+                    # Let's be strict: only float, but also accept int as it can be converted? 
+                    # The problem says "float" type, so let's accept only float. But often in JSON, integers are valid floats.
+                    # Let's accept both int and float for "float" type, but exclude bool.
+                    type_valid = isinstance(value, (int, float)) and not isinstance(value, bool)
+                elif expected_type == "bool":
+                    type_valid = isinstance(value, bool)
+                elif expected_type == "list":
+                    type_valid = isinstance(value, list)
+                elif expected_type == "dict":
+                    type_valid = isinstance(value, dict)
+                else:
+                    type_valid = True  # Unknown type, skip check
+                
+                if not type_valid:
+                    errors.append(f"Field '{field_name}' expected type {expected_type}, got {type(value).__name__}")
+                    continue
+            
+            # Numeric constraints (min/max)
+            if expected_type in ("int", "float"):
+                if "min" in field_schema:
+                    min_val = field_schema["min"]
+                    if value < min_val:
+                        errors.append(f"Field '{field_name}' value {value} is less than minimum {min_val}")
+                if "max" in field_schema:
+                    max_val = field_schema["max"]
+                    if value > max_val:
+                        errors.append(f"Field '{field_name}' value {value} is greater than maximum {max_val}")
+            
+            # String constraints (min_length/max_length)
+            if expected_type == "str":
+                if "min_length" in field_schema:
+                    min_len = field_schema["min_length"]
+                    if len(value) < min_len:
+                        errors.append(f"Field '{field_name}' length {len(value)} is less than minimum length {min_len}")
+                if "max_length" in field_schema:
+                    max_len = field_schema["max_length"]
+                    if len(value) > max_len:
+                        errors.append(f"Field '{field_name}' length {len(value)} is greater than maximum length {max_len}")
+            
+            # List constraints (min_length/max_length for list length)
+            if expected_type == "list":
+                if "min_length" in field_schema:
+                    min_len = field_schema["min_length"]
+                    if len(value) < min_len:
+                        errors.append(f"Field '{field_name}' length {len(value)} is less than minimum length {min_len}")
+                if "max_length" in field_schema:
+                    max_len = field_schema["max_length"]
+                    if len(value) > max_len:
+                        errors.append(f"Field '{field_name}' length {len(value)} is greater than maximum length {max_len}")
+        
+        valid = len(errors) == 0
+        return {"valid": valid, "errors": errors}
+```

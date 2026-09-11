@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using 'latest' tag for container image is non-deterministic and unsafe for production deployments.",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "No resource requests or limits defined for the 'api' container, leading to potential resource starvation or unbounded usage.",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Invalid securityContext field. 'runAsRoot' is not a valid Kubernetes field; should use 'runAsUser: 0' or omit to run as non-root.",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Running container in privileged mode grants excessive host access, posing a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "Hardcoded sensitive credential (DB_PASSWORD) in plain text within the manifest.",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "Hardcoded sensitive credential (API_KEY) in plain text within the manifest.",
+      "severity": "critical"
+    },
+    {
+      "line": "hostPath:",
+      "issue": "Using hostPath volume mounts exposes host filesystem to the container, which is insecure and restricts portability.",
+      "severity": "major"
+    },
+    {
+      "line": "path: /tmp/data",
+      "issue": "Mounting /tmp from the host is insecure and may contain sensitive data or be world-writable.",
+      "severity": "major"
+    },
+    {
+      "line": "memory: \"10Gi\"",
+      "issue": "Excessive memory request for a sidecar logger container, likely causing scheduling failures or wasted resources.",
+      "severity": "minor"
+    },
+    {
+      "line": "cpu: \"8\"",
+      "issue": "Excessive CPU request for a sidecar logger container, likely causing scheduling failures or wasted resources.",
+      "severity": "minor"
+    },
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica deployment lacks high availability and resilience against node failures.",
+      "severity": "major"
+    },
+    {
+      "line": "type: LoadBalancer",
+      "issue": "Exposing the service directly via LoadBalancer without network policies or ingress controls increases attack surface.",
+      "severity": "major"
+    },
+    {
+      "line": "targetPort: 8080",
+      "issue": "Service targetPort matches containerPort, but no readiness/liveness probes are defined to ensure traffic is only sent to healthy pods.",
+      "severity": "major"
+    },
+    {
+      "line": "containers:",
+      "issue": "No liveness or readiness probes defined for any container, risking traffic to unhealthy pods.",
+      "severity": "major"
+    },
+    {
+      "line": "spec:",
+      "issue": "No NetworkPolicy or PodSecurityPolicy/Admission Control constraints defined to enforce security best practices.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

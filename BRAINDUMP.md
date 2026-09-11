@@ -197,6 +197,14 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
   model failure. Owner decided 2026-09-11 NOT to retest; the published 1034/1220 keeps that zero
   (so it is understated by up to 30 points). Do not reopen without the owner.
 - Token-efficiency and per-role tables were last regenerated at 32 and 48 models respectively.
+- OPEN (found 2026-09-11): a `--test-ids` retest REPLACES the earlier result AND overwrites the
+  earlier raw `H*.txt`, even if the retest scores lower. The published policy is "best valid
+  score per test", so a lower retest silently loses points, and the higher answer can no longer
+  be reproduced from disk. No points were lost so far (checked Qwen3.8-27B H-34, Qwen3.8-Flash-Next
+  H-12/25/34/45/52). Workaround until fixed: retest a test that already has a non-zero score into a
+  SEPARATE model dir and keep the better one (as done for Qwen3.8-27B H-34 at 48K). Proper fix
+  would keep the previous raw answer and have the merge keep the max — a scoring-policy change,
+  so confirm with the owner first.
 - Ollama Cloud IGNORES all thinking controls for GLM-5.3 / GLM-5.3-Flash (probed 2026-09-10) and
   deepseek-v4.1-flash (probed 2026-09-11, where even reasoning_effort is ignored). GLM probe:
   `enable_thinking=false`, `chat_template_kwargs.thinking=false`, `thinking_budget`, native `think=false`
@@ -206,6 +214,7 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
 - llama.cpp `--jinja` + Qwen3.x (verified on Qwen3.8-27B 2026-09-11): only
   `chat_template_kwargs.enable_thinking=false` disables thinking — use `--nothink-template`.
   `--nothink-root` and `--nothink` are silently ignored there. Always probe before labelling a run.
+  Same on vLLM with `--reasoning-parser qwen3` (verified on Qwen3.8-Flash-Next, 2026-09-11).
 - Superseded-model policy (owner, 2026-09-10): newer version of the same family on the same
   deployment type (cloud/local) at comparable size → older rows move to
   `docs/results-previous-versions.md`. Kimi K2.7 Code counts as the successor of K2.5/K2.6.

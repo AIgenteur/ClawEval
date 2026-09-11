@@ -30,7 +30,7 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 > 🏆 **[The definitive dense evaluation →](docs/results-phase-h.md)**
 >
-> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **58 open-weight models tested — 47 current on the board, 11 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
+> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **59 open-weight models tested — 48 current on the board, 11 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
 
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 
@@ -40,9 +40,9 @@ We test quantized open-source models that fit on hardware you already own. Find 
 
 | 🔴 8GB VRAM | 🟠 12GB VRAM | 🟡 16GB VRAM | 🟢 24GB VRAM | 🔵 64–96GB VRAM |
 |---|---|---|---|---|
-| Qwen3.5-0.8B Q4_K_M | Qwen3.5-9B Q4_K_M | Qwen3.5-9B Q4_K_M | Qwen3.6-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
-| Qwen3.5-2B Q4_K_M | | | Qwen3.5-35B-A3B Q4_K_M | GPT-OSS-120B GGUF |
-| Qwen3.5-4B Q4_K_M (250K ctx) | | | Qwen3.5-27B Q4_K_M | |
+| Qwen3.5-0.8B Q4_K_M | Qwen3.5-9B Q4_K_M | Qwen3.5-9B Q4_K_M | Qwen3.8-27B UD-Q4_K_M | Qwen3.8-Flash-Next NVFP4 (96 GB) |
+| Qwen3.5-2B Q4_K_M | | | Qwen3.6-35B-A3B Q4_K_M | Qwen3.5-122B-A10B NVFP4 |
+| Qwen3.5-4B Q4_K_M (250K ctx) | | | Qwen3.5-35B-A3B Q4_K_M | GPT-OSS-120B GGUF |
 | ✅ Tested | ✅ Tested | llama.cpp | llama.cpp · SGLang · vLLM | SGLang · vLLM · llama.cpp |
 
 > 📖 **VRAM Guides:** [8–16GB Small Models](docs/results-small-vram.md) · [16GB](docs/OpenClaw%2016GB%20VRAM%20Local%20LLM%20Subagents.md) · [24GB](docs/The%2024GB%20VRAM%20Tier_%20Where%20Local%20AI%20Agents%20Get%20Serious.md) · [32GB](docs/openclaw-model-selection-32gb-tier.md) · [48GB](docs/openclaw-48gb-tier.md) · [64GB](docs/openclaw-64gb-tier.md) · [96GB](docs/openclaw-96gb-tier.md) — Which models fit, context limits, speed estimates
@@ -63,6 +63,7 @@ No discrete GPU? Unified-memory devices can run these models directly. Estimates
 | Qwen3.5-9B Q4_K_M | ~6 GB | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Ministral-14B Q4_K_M | ~9 GB | ⚠️ tight | ✅ | ✅ | ✅ | ✅ |
 | Gemma-4-26B-A4B Q4_K_M | ~15 GB | ❌ | ⚠️ tight | ✅ | ✅ | ✅ |
+| Qwen3.8-27B UD-Q4_K_M | ~16.5 GB | ❌ | ⚠️ tight | ✅ | ✅ | ✅ |
 | Qwen3.5-27B Q4_K_M | ~17 GB | ❌ | ⚠️ tight | ✅ | ✅ | ✅ |
 | Gemma-4-31B Q4_K_M | ~19 GB | ❌ | ⚠️ tight | ✅ | ✅ | ✅ |
 | Qwen3.5-35B-A3B NVFP4 | ~20 GB | ❌ | ❌ | ✅ | ✅ | ✅ |
@@ -71,6 +72,7 @@ No discrete GPU? Unified-memory devices can run these models directly. Estimates
 | Qwen3.5-122B-A10B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
 | Nemotron-3-Super-120B-A12B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
 | Mistral-Small-4-119B NVFP4 | ~70 GB | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Qwen3.8-Flash-Next NVFP4 | ~75 GiB GPU + ~51 GB RAM | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > ⚠️ **tight** = model loads but leaves little room for KV cache / long context. Short prompts only.
 >
@@ -143,58 +145,61 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | Rank | Model | Provider | Score | % | Perfect |
 |------|-------|----------|-------|---|---------|
 | 🥇 | **DeepSeek V4 Pro** | ☁️ DeepSeek | 1060/1220 | **86.9%** | 26 |
-| 🥈 | **Qwen3.8-27B** | 🖥️ Local Q4 | 1054/1220 | **86.4%** | 23 |
-| 🥉 | **DeepSeek V4.1 Flash** | ☁️ Ollama | 1052/1220 | **86.2%** | 27 |
-| 4 | **GLM-5.3-Flash** | ☁️ Ollama | 1043/1220 | **85.5%** | 29 |
-| 5 | **Kimi K2.7 Code** | ☁️ Ollama | 1038/1220 | **85.1%** | 24 |
-| 6 | **Laguna-M.1** | ☁️ OpenRouter | 1034/1220 | **84.8%** | 25 |
-| 7 | **Qwen3.5-Plus** | ☁️ Alibaba | 1031/1220 | **84.5%** | 26 |
-| 8 | **Qwen3.6-35B-A3B** | 🖥️ Local | 1029/1220 | **84.3%** | 24 |
-| 9 | **Qwen3.5-122B-A10B** | ☁️ Ollama | 1025/1220 | **84.0%** | 21 |
-| 10 | **Gemma-4-31B** | ☁️ Ollama | 1024/1220 | **83.9%** | 25 |
-| 11 | **Cobuddy** | ☁️ OpenRouter | 1023/1220 | **83.9%** | 21 |
-| 12 | **Mistral-Large-3** | ☁️ Ollama | 1021/1220 | **83.7%** | 25 |
-| 13 | **Nemotron-3-Super Think** | ☁️ Ollama | 1016/1220 | **83.3%** | 20 |
-| 14 | **GLM-5.3** | ☁️ Ollama | 999/1220 | **81.9%** | 28 |
-| 15 | **Nemotron-3-Super NoThink** | ☁️ Ollama | 996/1220 | **81.6%** | 21 |
-| 16 | **MiniMax-M3** | ☁️ Ollama | 993/1220 | **81.4%** | 25 |
-| 17 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
-| 18 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
-| 19 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
-| 20 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
-| 21 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
-| 22 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
-| 23 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
-| 24 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
-| 25 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
-| 26 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
-| 27 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
-| 28 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
-| 29 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
-| 30 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
-| 31 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
-| 32 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
-| 33 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
-| 34 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
-| 35 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
-| 36 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
-| 37 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
-| 38 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
-| 39 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
-| 40 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
-| 41 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
-| 42 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
-| 43 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
-| 44 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
-| 45 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
-| 46 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
-| 47 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
+| 🥈 | **Qwen3.8-Flash-Next** | 🖥️ Local NVFP4 96GB | 1054/1220 | **86.4%** | 27 |
+| 🥉 | **Qwen3.8-27B** | 🖥️ Local Q4 | 1054/1220 | **86.4%** | 23 |
+| 4 | **DeepSeek V4.1 Flash** | ☁️ Ollama | 1052/1220 | **86.2%** | 27 |
+| 5 | **GLM-5.3-Flash** | ☁️ Ollama | 1043/1220 | **85.5%** | 29 |
+| 6 | **Kimi K2.7 Code** | ☁️ Ollama | 1038/1220 | **85.1%** | 24 |
+| 7 | **Laguna-M.1** | ☁️ OpenRouter | 1034/1220 | **84.8%** | 25 |
+| 8 | **Qwen3.5-Plus** | ☁️ Alibaba | 1031/1220 | **84.5%** | 26 |
+| 9 | **Qwen3.6-35B-A3B** | 🖥️ Local | 1029/1220 | **84.3%** | 24 |
+| 10 | **Qwen3.5-122B-A10B** | ☁️ Ollama | 1025/1220 | **84.0%** | 21 |
+| 11 | **Gemma-4-31B** | ☁️ Ollama | 1024/1220 | **83.9%** | 25 |
+| 12 | **Cobuddy** | ☁️ OpenRouter | 1023/1220 | **83.9%** | 21 |
+| 13 | **Mistral-Large-3** | ☁️ Ollama | 1021/1220 | **83.7%** | 25 |
+| 14 | **Nemotron-3-Super Think** | ☁️ Ollama | 1016/1220 | **83.3%** | 20 |
+| 15 | **GLM-5.3** | ☁️ Ollama | 999/1220 | **81.9%** | 28 |
+| 16 | **Nemotron-3-Super NoThink** | ☁️ Ollama | 996/1220 | **81.6%** | 21 |
+| 17 | **MiniMax-M3** | ☁️ Ollama | 993/1220 | **81.4%** | 25 |
+| 18 | **Nemotron-3-Nano-Omni** | ☁️ OpenRouter | 991/1220 | **81.2%** | 20 |
+| 19 | **Gemma-4-E2B** | 🖥️ Local | 981/1220 | **80.4%** | 14 |
+| 20 | **GPT-OSS-120B** | ☁️ Ollama | 979/1220 | **80.2%** | 19 |
+| 21 | **Phi-4** | 🖥️ Local Q8 | 977/1220 | **80.1%** | 17 |
+| 22 | **Laguna-XS.2** | ☁️ OpenRouter | 950/1220 | **77.9%** | 20 |
+| 23 | **Nemotron-Nano-Omni** | 🖥️ Local IQ4 | 948/1220 | **77.7%** | 20 |
+| 24 | **Granite-4.1 30B** | 🖥️ Local TQ4 | 929/1220 | **76.1%** | 15 |
+| 25 | **Granite-4.1 8B** | 🖥️ Local Q4 | 929/1220 | **76.1%** | 14 |
+| 26 | **Gemma-4-31B** | 🖥️ Local Q4 | 927/1220 | **76.0%** | 25 |
+| 27 | **Nemotron-Nano-Omni** | 🖥️ Local Q4 | 925/1220 | **75.8%** | 19 |
+| 28 | **Trinity-Large-Think** | ☁️ OpenRouter | 914/1220 | **74.9%** | 21 |
+| 29 | **Nemotron-3-Nano-30B** | ☁️ Ollama | 914/1220 | **74.9%** | 19 |
+| 30 | **Ministral-3 8B** | ☁️ Ollama | 906/1220 | **74.3%** | 18 |
+| 31 | **Ministral-3 14B** | ☁️ Ollama | 888/1220 | **72.8%** | 17 |
+| 32 | **GPT-OSS-20B** | ☁️ Ollama | 885/1220 | **72.5%** | 19 |
+| 33 | **Ministral-3 8B** | 🖥️ Local Q4 | 884/1220 | **72.5%** | 16 |
+| 34 | **Ministral-3 14B** | 🖥️ Local Q4 | 877/1220 | **71.9%** | 18 |
+| 35 | **Gemma-4-E4B** | 🖥️ Local | 867/1220 | **71.1%** | 15 |
+| 36 | **Ministral-3 14B Think** | 🖥️ Local Q4 | 858/1220 | **70.3%** | 19 |
+| 37 | **Granite-4.1 3B** | 🖥️ Local Q4 | 846/1220 | **69.3%** | 12 |
+| 38 | **Ministral-3 3B** | ☁️ Ollama | 844/1220 | **69.2%** | 14 |
+| 39 | **Ministral-3 8B Think** | 🖥️ Local Q4 | 791/1220 | **64.8%** | 10 |
+| 40 | **Ministral-3 3B** | 🖥️ Local Q4 | 760/1220 | **62.3%** | 12 |
+| 41 | **RNJ-1-8B** | ☁️ Ollama | 750/1220 | **61.5%** | 18 |
+| 42 | **Ministral-3 3B Think** | 🖥️ Local Q4 | 704/1220 | **57.7%** | 10 |
+| 43 | **Gemma-4-A4B** | 🖥️ Local | 622/1220 | **51.0%** | 10 |
+| 44 | **Qwen3.5-9B** | 🖥️ Local | 543/1220 | **44.5%** | 6 |
+| 45 | **Qwen3.5-4B** | 🖥️ Local | 374/1220 | **30.7%** | 4 |
+| 46 | **LFM2.5-350M** | 🖥️ Local | 308/1220 | **25.2%** | 2 |
+| 47 | **Qwen3.5-0.8B** | 🖥️ Local | 58/1220 | **4.8%** | 0 |
+| 48 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 > **GLM-5.3 / GLM-5.3-Flash (2026-09-10):** tested via Ollama Cloud in default mode with reasoning on. Ollama Cloud ignores every thinking control for these models (`enable_thinking`, `chat_template_kwargs.thinking`, `thinking_budget`, native `think`), so no NoThink variant exists. Each was run twice in full; the published score is the best valid result per test across the two runs, with the standard 16K→32K→48K token escalation applied to both. Both raw samples are in the repo (`GLM-5.3-Sample1/2`, `GLM-5.3-Flash-Sample1/2`); run-to-run totals were 970/971 and 1021/1023. Remaining zeros are tests where the model reasons past 48K tokens without answering.
 
 > **DeepSeek V4.1 Flash (2026-09-11):** `deepseek-v4.1-flash:cloud` via Ollama Cloud in default mode with reasoning on. Like GLM-5.3, Ollama Cloud ignores every thinking control for this model (including `reasoning_effort`). Published score is the best valid result per test across two full runs, both taken through the 16K→32K→48K escalation; run totals were 1029 and 1033. No zeros. Raw samples: `DeepSeek-V4.1-Flash-Sample1/2`.
 
 > **Qwen3.8-27B (2026-09-11):** local, single RTX 3090 24 GB — llama.cpp TurboQuant fork (407f3237b), official weights `unsloth/Qwen3.8-27B-GGUF` UD-Q4_K_M, **f16 KV cache, 64K context**, 40.6 t/s. Default thinking mode. One full run with the 16K→32K escalation: all 8 ceiling tests recovered at 32K (H-34's 48K retest produced no answer, so its 32K answer is kept). A NoThink run (`chat_template_kwargs.enable_thinking=false`, the only thinking switch this server honours) scored 1007/1220, so Think is published; NoThink data is in `Qwen3.8-27B-Local-NoThink`. Replaces Qwen3.6-27B, which was run with TurboQuant4 KV at 262K context — a different KV configuration, so the two are not a pure like-for-like.
+
+> **Qwen3.8-Flash-Next (2026-09-11):** local, single RTX PRO 6000 Blackwell 96 GB — vLLM nightly (0.28.1rc1 dev) with the official `nvidia/Qwen3.8-Flash-Next-NVFP4` checkpoint (routed experts NVFP4, n-gram table and MTP head FP8), 64K context, MTP off, 88.7 t/s. **VRAM, measured:** ~85.5 GiB server footprint; ~79 GiB is the minimum for one 64K sequence, so it does not fit an 80 GB card; plus ~51 GB of system RAM for the CPU-offloaded n-gram table. Default thinking mode, one full run with 16K→32K→48K escalation — every ceiling test recovered, no zeros. Ties Qwen3.8-27B at 1054 and ranks above it on perfect scores (27 vs 23). NoThink (`chat_template_kwargs.enable_thinking=false`) scored 1041; its two open ceiling tests could lift it to at most 1043, so Think is published. NoThink data is in `Qwen3.8-Flash-Next-NoThink`.
 
 ---
 

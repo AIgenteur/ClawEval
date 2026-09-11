@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount logic is incorrect. It sets subtotal to 20% of the original value (subtotal * 0.20) instead of applying a 20% discount (which should be subtotal * 0.80 or subtotal -= subtotal * 0.20).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 discount logic is incorrect. It subtracts 10 times the subtotal (subtotal -= subtotal * 10), resulting in a negative value. It should subtract 10% (subtotal -= subtotal * 0.10).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is ignored. The code uses 'pass' when stock goes below zero, which means overselling is allowed without any error handling or logging. It should raise an exception or handle the error appropriately.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax error/Logic error: 'total_revenue =+ total' is parsed as 'total_revenue = (+total)', which assigns the value of total to total_revenue instead of adding it. It should be 'total_revenue += total'.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Division by zero error. If 'orders' is an empty list, 'len(orders)' is 0, causing a ZeroDivisionError when calculating avg_order.",
+      "severity": "critical"
+    },
+    {
+      "line": 35,
+      "bug": "ValueError if results is empty. If 'orders' is empty, 'results' will be empty, and 'max()' on an empty sequence raises a ValueError.",
+      "severity": "critical"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation. Checking only for the presence of '@' is not enough to validate an email address (e.g., '@', 'a@', '@b.com' would pass).",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect shipping cost calculation. The distance is added directly ('distance + per_km') instead of being multiplied by the rate ('distance * per_km').",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code. The condition 'elif weight > 50' can never be true because the preceding 'if weight > 30' block will catch all weights greater than 30, including those greater than 50.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Loss of precision. 'round(cost)' returns an integer, discarding decimal places which are important for currency calculations. It should likely be 'round(cost, 2)'.",
+      "severity": "major"
+    },
+    {
+      "line": 63,
+      "bug": "Mutable default argument/reference issue. 'merged = profile_a' assigns a reference to the original dictionary, not a copy. Modifying 'merged' will modify 'profile_a' in the caller's scope.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date. The 'updated_at' field is set to a static string '2024-01-01' instead of the current date/time.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Incorrect CSV parsing. 'line.split(\",\")' does not handle quoted fields containing commas, which is standard CSV behavior. It should use the 'csv' module.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Inefficient duplicate detection. Using a list for 'seen' results in O(n^2) complexity for the 'in' check. A set should be used for O(1) lookups.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "Logic error in duplicate detection. If an item appears three times, it will be added to 'duplicates' twice (once for the second occurrence, once for the third). The 'seen' list should only contain unique items, or the logic should check if the item is already in 'duplicates' before appending.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```
