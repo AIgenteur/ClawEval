@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": "8: self.requests = []",
+      "bug": "Shared mutable list mutated by many concurrent coroutines with no synchronization; the check-then-append sequence in acquire() is a race, so multiple coroutines can pass the length check simultaneously and exceed the rate limit.",
+      "fix": "Add self._lock = asyncio.Lock() in __init__ and wrap the whole body of acquire() in 'async with self._lock:'."
+    },
+    {
+      "line": "11: now = asyncio.get_event_loop().time()",
+      "bug": "asyncio.get_event_loop() is deprecated when called inside a running coroutine (DeprecationWarning since 3.10, raises in 3.12+) and may return a loop other than the one actually running.",
+      "fix": "Use now = asyncio.get_running_loop().time()."
+    },
+    {
+      "line": "16: self.requests.append(now)  (after 'await asyncio.sleep(wait)')",
+      "bug": "'now' is stale after the sleep: the old timestamp is appended and the sliding window is never re-filtered or re-checked, so recorded times are wrong and the limit can still be exceeded.",
+      "fix": "After sleeping, recompute now = asyncio.get_running_loop().time(), re-filter self.requests, and loop back to re-check the limit before appending the fresh timestamp."
+    },
+    {
+      "line": "25: async with aiohttp.ClientSession() as session:",
+      "bug": "A new ClientSession is created per request — this defeats connection pooling, wastes sockets and memory, and can exhaust file descriptors under concurrency.",
+      "fix": "Create one ClientSession in fetch_all (async with aiohttp.ClientSession() as session) and pass it into fetch_one for reuse across all requests."
+    },
+    {
+      "line": "27: response = await session.get(url, timeout=30)",
+      "bug": "The response is not used as an async context manager, so the connection is not released back to the pool until garbage collection — a connection/resource leak. (A raw int timeout is also deprecated in favor of ClientTimeout.)",
+      "fix": "Use 'async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:' and read the body inside the block."
+    },
+    {
+      "line": "29: results[url] = data",
+      "bug": "results is keyed by URL, so duplicate URLs overwrite each other; with urls = ['http://example.com'] * 100 only 1 of the 100 responses is kept.",
+      "fix": "Key results by index (results[i] = data) or append to a list so every fetch is recorded."
+    },
+    {
+      "line": "31: except Exception:",
+      "bug": "Overly broad exception handler swallows every failure (DNS errors, JSON decode errors, programming bugs) indiscriminately, making problems impossible to diagnose.",
+      "fix": "Catch specific exceptions, e.g. except (aiohttp.ClientError, asyncio.TimeoutError, json.JSONDecodeError)."
+    },
+    {
+      "line": "32: pass",
+      "bug": "Redundant 'pass' after the assignment, and the exception is silently discarded with no logging — failures vanish without a trace.",
+      "fix": "Delete the pass and log the error, e.g. logger.warning('fetch failed for %s', url, exc_info=True)."
+    },
+    {
+      "line": "35: await asyncio.gather(*tasks)",
+      "bug": "gather is called without return_exceptions=True; any exception raised outside the inner try (e.g. the ClientSession() constructor or limiter.acquire()) propagates immediately and cancels/abandons all remaining fetches.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) and/or move session creation inside the try block."
+    },
+    {
+      "line": "42: task = process_item(item)",
+      "bug": "A bare coroutine is appended instead of a Task. (Do NOT 'await' it — that would serialize the batch.) Bare coroutines are not scheduled as tasks, and if gather raises early they can be left unawaited ('coroutine was never awaited' warnings).",
+      "fix": "Schedule it explicitly: task = asyncio.create_task(process_item(item))."
+    },
+    {
+      "line": "45: yield r",
+      "bug": "The yield turns process_batch into an async generator, not a coroutine — it cannot be awaited or gathered, so 'await process_batch(...)' raises 'object async_generator can't be used in await expression'.",
+      "fix": "Collect results into a list and return it (or keep it an async generator and consume it with 'async for' — don't mix the two paradigms)."
+    },
+    {
+      "line": "52: self.pool = []",
+      "bug": "A plain list is used as the pool with no synchronization, and self.size is never enforced on checkout — concurrent get/release can race and there is no capacity limit or backpressure.",
+      "fix": "Use asyncio.Queue(maxsize=size) (or guard the list with an asyncio.Lock) and actually enforce self.size."
+    },
+    {
+      "line": "60: self.pool.append(conn)",
+      "bug": "release() appends unconditionally, so the pool can grow without bound beyond self.size, leaking connections.",
+      "fix": "if len(self.pool) < self.size: self.pool.append(conn) else: close/discard the connection (e.g. await conn.close())."
+    },
+    {
+      "line": "63: return object()",
+      "bug": "create_connection() returns a dummy object() instead of a real connection, so everything the pool hands out is unusable.",
+      "fix": "Create and return a real connection (e.g. an aiohttp.ClientSession, a database connection, etc.)."
+    },
+    {
+      "line": "68: print(f\"Got {len(results)} results\")",
+      "bug": "len(results) counts dict keys; because all 100 URLs are identical and results is keyed by URL, this prints 'Got 1 results' instead of 100 — a misleading/wrong count.",
+      "fix": "Store results per task (list indexed by position) and report the number of fetches, e.g. len(urls) or the count of non-None results."
+    }
+  ],
+  "count": 15
+}
+```

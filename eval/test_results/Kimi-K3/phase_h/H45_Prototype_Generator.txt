@@ -1,0 +1,131 @@
+```python
+class JSONValidator:
+    """
+    Validates JSON-like data (Python dicts) against a schema.
+
+    Schema format:
+        {
+            "field_name": {
+                "type": "str" | "int" | "float" | "bool" | "list" | "dict",
+                "required": True | False,   # default: False
+                "min": N,                   # numbers only
+                "max": N,                   # numbers only
+                "min_length": N,            # str/list only
+                "max_length": N,            # str/list only
+            }
+        }
+
+    Extra fields in data that are not in the schema are ignored.
+    """
+
+    # NOTE: bool is a subclass of int in Python, so numeric checks
+    # must explicitly exclude booleans.
+    _TYPE_CHECKS = {
+        "str":   lambda v: isinstance(v, str),
+        "int":   lambda v: isinstance(v, int) and not isinstance(v, bool),
+        "float": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+        "bool":  lambda v: isinstance(v, bool),
+        "list":  lambda v: isinstance(v, list),
+        "dict":  lambda v: isinstance(v, dict),
+    }
+
+    def validate(self, data, schema):
+        errors = []
+
+        if not isinstance(data, dict):
+            return {
+                "valid": False,
+                "errors": [f"Expected a dict at the top level, got '{type(data).__name__}'"],
+            }
+
+        for field, rules in schema.items():
+            # --- presence check ---
+            if field not in data:
+                if rules.get("required", False):
+                    errors.append(f"Missing required field: '{field}'")
+                continue
+
+            value = data[field]
+            expected_type = rules.get("type")
+
+            # --- type check ---
+            if expected_type is not None:
+                check = self._TYPE_CHECKS.get(expected_type)
+                if check is None:
+                    errors.append(f"Field '{field}': unknown schema type '{expected_type}'")
+                    continue
+                if not check(value):
+                    errors.append(
+                        f"Field '{field}': expected type '{expected_type}', "
+                        f"got '{type(value).__name__}'"
+                    )
+                    continue  # min/max/length checks are meaningless on the wrong type
+
+            # --- numeric range checks ---
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                if "min" in rules and value < rules["min"]:
+                    errors.append(
+                        f"Field '{field}': value {value} is below minimum {rules['min']}"
+                    )
+                if "max" in rules and value > rules["max"]:
+                    errors.append(
+                        f"Field '{field}': value {value} is above maximum {rules['max']}"
+                    )
+
+            # --- length checks (strings and lists) ---
+            if isinstance(value, (str, list)):
+                if "min_length" in rules and len(value) < rules["min_length"]:
+                    errors.append(
+                        f"Field '{field}': length {len(value)} is below "
+                        f"min_length {rules['min_length']}"
+                    )
+                if "max_length" in rules and len(value) > rules["max_length"]:
+                    errors.append(
+                        f"Field '{field}': length {len(value)} is above "
+                        f"max_length {rules['max_length']}"
+                    )
+
+        return {"valid": not errors, "errors": errors}
+```
+
+**Example usage:**
+
+```python
+if __name__ == "__main__":
+    schema = {
+        "name":    {"type": "str", "required": True, "min_length": 1, "max_length": 50},
+        "age":     {"type": "int", "required": True, "min": 0, "max": 150},
+        "score":   {"type": "float", "min": 0.0, "max": 100.0},
+        "active":  {"type": "bool"},
+        "tags":    {"type": "list", "min_length": 1, "max_length": 5},
+        "address": {"type": "dict"},
+    }
+
+    v = JSONValidator()
+
+    print(v.validate({
+        "name": "Alice", "age": 30, "score": 91.5,
+        "active": True, "tags": ["admin"], "address": {},
+        "extra": "ignored",  # not in schema -> no error
+    }))
+    # {'valid': True, 'errors': []}
+
+    print(v.validate({
+        "name": "",          # too short
+        "age": 200,          # above max
+        "score": "high",     # wrong type
+        "tags": [],          # below min_length
+    }))
+    # {'valid': False, 'errors': [
+    #   "Field 'name': length 0 is below min_length 1",
+    #   "Field 'age': value 200 is above maximum 150",
+    #   "Field 'score': expected type 'float', got 'str'",
+    #   "Field 'tags': length 0 is below min_length 1"]}
+```
+
+**Design notes:**
+
+- **The `bool`/`int` trap:** in Python `isinstance(True, int)` is `True`, so `True` would wrongly pass an `int` check (and `1` would pass a `bool` check in reverse). The type checks exclude this explicitly.
+- **`int` accepted for `float`:** since JSON has a single "number" type, `5` is accepted where `float` is expected. If you want strict floats, change the `"float"` lambda to `isinstance(v, float)`.
+- **All errors collected:** every field is checked even if others fail. Within a single field, a failed type check skips the min/max/length checks for that field (comparing a string against a numeric `min` would produce nonsense errors or `TypeError`s).
+- **Missing optional fields** are skipped silently; only `required: True` fields produce an error when absent.

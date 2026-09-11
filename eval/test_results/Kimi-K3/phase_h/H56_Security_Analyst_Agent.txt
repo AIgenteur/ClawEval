@@ -1,0 +1,82 @@
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "login() - line 17: f-string query with unsanitized username/password",
+      "severity": "critical"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "login() - line 17: password compared directly, implying plaintext storage in DB",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Cryptographic Hash (MD5)",
+      "location": "login() - line 20: hashlib.md5() used for token generation",
+      "severity": "medium"
+    },
+    {
+      "type": "Predictable Authentication Token",
+      "location": "login() - line 20: token is deterministic MD5 of username, easily forgeable",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "profile() - lines 25-26: user-controlled username interpolated into render_template_string",
+      "severity": "critical"
+    },
+    {
+      "type": "Reflected Cross-Site Scripting (XSS)",
+      "location": "search() - line 31: unescaped user input returned in HTML response",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "run_command() - line 36: subprocess.run(cmd, shell=True) with user-controlled command",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Write)",
+      "location": "upload() - line 42: unsanitized f.filename used in os.path.join, allowing '../' traversal",
+      "severity": "high"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "upload() - lines 40-43: no file type/extension/content validation",
+      "severity": "medium"
+    },
+    {
+      "type": "Path Traversal (Arbitrary File Read)",
+      "location": "download() - line 49: send_file() with unvalidated user-supplied path",
+      "severity": "high"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "load_config() - line 54: yaml.load() without SafeLoader allows arbitrary code execution",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization (Pickle RCE)",
+      "location": "restore_session() - line 60: pickle.loads() on attacker-controlled data",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Weak Secret/Credentials",
+      "location": "line 6: SECRET = \"admin123\", used for admin auth in admin() line 66",
+      "severity": "high"
+    },
+    {
+      "type": "OS Command Injection",
+      "location": "export_data() - lines 73-74: os.system() with user-controlled format parameter",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled in Production",
+      "location": "line 78: app.run(debug=True, host=\"0.0.0.0\") exposes Werkzeug debugger (RCE) on all interfaces",
+      "severity": "high"
+    }
+  ],
+  "count": 15
+}
+```

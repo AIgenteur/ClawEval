@@ -1,0 +1,140 @@
+```json
+{
+  "workflow": "customer_refund_processing",
+  "version": "1.0",
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "order": 1,
+      "role": "validation",
+      "input": "Raw refund request: {customer_id, order_id, transaction_id, refund_amount, currency, reason_code, channel}",
+      "output": "ValidatedRefundRequest: {request_id, customer_id, order_id, amount, currency, reason_code, eligibility_status: ELIGIBLE|INELIGIBLE, validation_errors[]}",
+      "next": "if eligibility_status == 'ELIGIBLE' -> FraudCheckAgent; else -> NotificationAgent (outcome=REJECTED, reason=VALIDATION_FAILED)",
+      "fallback": "On schema/parse error or order-service timeout: persist raw payload to durable queue and route to HumanEscalationAgent (queue=manual_triage); if enqueue fails, route to NotificationAgent (outcome=PENDING_REVIEW) and alert on-call ops",
+      "timeout_seconds": 5,
+      "audit": "Append {request_id, agent, input_hash, eligibility_status, latency_ms, timestamp} to WORM audit log before handoff"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "order": 2,
+      "role": "fraud-check",
+      "input": "ValidatedRefundRequest from ValidationTriageAgent",
+      "output": "FraudAssessment: {request_id, risk_score (0-100), risk_flags[], verdict: PASS|REVIEW|BLOCK}",
+      "next": "if risk_score < 70 -> ApprovalAgent; else if 70 <= risk_score < 90 -> HumanEscalationAgent (queue=fraud_review); else -> NotificationAgent (outcome=REJECTED, reason=FRAUD_BLOCK)",
+      "fallback": "Fail-safe: on fraud-service timeout/error, NEVER auto-pass; route to HumanEscalationAgent (queue=fraud_review, flag=fraud_service_down)",
+      "timeout_seconds": 10,
+      "audit": "Append {request_id, agent, model_version, risk_score, verdict, latency_ms, timestamp} to WORM audit log before handoff"
+    },
+    {
+      "name": "ApprovalAgent",
+      "order": 3,
+      "role": "approval",
+      "input": "ValidatedRefundRequest + FraudAssessment",
+      "output": "ApprovalDecision: {request_id, decision: APPROVED|REJECTED|ESCALATE, policy_rule_id, refund_amount, approver: 'auto-policy'}",
+      "next": "if decision == 'APPROVED' -> PaymentAgent; else if decision == 'REJECTED' -> NotificationAgent (outcome=REJECTED, reason=POLICY_DENIED, appeal_url); else -> HumanEscalationAgent (queue=approval_review) [ESCALATE when amount > $500 auto-approve threshold or policy conflict]",
+      "fallback": "On policy-engine error: route to HumanEscalationAgent (queue=approval_review); never default to APPROVED on error",
+      "timeout_seconds": 5,
+      "audit": "Append {request_id, agent, policy_rule_id, decision, latency_ms, timestamp} to WORM audit log before handoff"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "order": 4,
+      "role": "human-escalation",
+      "input": "EscalationCase: {request_id, source_agent, escalation_reason, full_context_bundle}",
+      "output": "EscalationTicket: {ticket_id, queue, sla_hours: 4}; async HumanDecision: {request_id, decision: APPROVED|REJECTED, reviewer_id, notes}",
+      "next": "Synchronously -> NotificationAgent (outcome=PENDING_REVIEW, eta=4h) to close the <60s customer-facing path; asynchronously on HumanDecision: if APPROVED -> PaymentAgent; if REJECTED -> NotificationAgent (outcome=REJECTED, reason=MANUAL_REVIEW_DENIED)",
+      "fallback": "If ticketing system unavailable: write case to durable fallback queue, page on-call ops, route to NotificationAgent (outcome=PENDING_REVIEW, note=delayed_review)",
+      "timeout_seconds": 5,
+      "timeout_note": "Timeout covers enqueue + routing only; human resolution is asynchronous (4h SLA) and excluded from the 60s synchronous budget",
+      "audit": "Append {request_id, agent, ticket_id, queue, reviewer_id (on decision), decision, latency_ms, timestamp} to WORM audit log"
+    },
+    {
+      "name": "PaymentAgent",
+      "order": 5,
+      "role": "payment",
+      "input": "ApprovalDecision (APPROVED) or async HumanDecision (APPROVED) + {original_transaction_id, payment_method_token, amount, currency}; idempotency_key = request_id",
+      "output": "PaymentResult: {request_id, refund_transaction_id, status: SUCCESS|FAILED, gateway_response_code, processed_at}",
+      "next": "if status == 'SUCCESS' -> NotificationAgent (outcome=REFUND_COMPLETED, refund_transaction_id)",
+      "fallback": "On gateway timeout/5xx: retry up to 2x with exponential backoff (2s, 4s) using the same idempotency_key; on 4xx or final failure: open an ops incident for manual refund (resolved out-of-band, no pipeline re-entry, keeping the graph acyclic) and route to NotificationAgent (outcome=REFUND_DELAYED)",
+      "timeout_seconds": 15,
+      "timeout_note": "15s budget includes both retries",
+      "audit": "Append {request_id, agent, idempotency_key, amount, status, gateway_response_code, attempt_count, latency_ms, timestamp} to WORM audit log"
+    },
+    {
+      "name": "NotificationAgent",
+      "order": 6,
+      "role": "notification",
+      "input": "Terminal state from any upstream agent: {request_id, outcome: REFUND_COMPLETED|REJECTED|PENDING_REVIEW|REFUND_DELAYED, reason_code, refund_transaction_id?, customer_contact: {email, phone, preferred_channel, locale}}",
+      "output": "NotificationReceipt: {request_id, channel_used, template_id, delivered: bool, sent_at}",
+      "next": "END (terminal node; no downstream agent)",
+      "fallback": "Channel cascade: email -> SMS -> in-app push; if all channels fail: write to dead-letter queue, alert ops, status remains visible in customer portal",
+      "timeout_seconds": 5,
+      "audit": "Append {request_id, agent, outcome, channel_used, template_id, delivered, latency_ms, timestamp} to WORM audit log"
+    }
+  ],
+  "constraints": {
+    "agent_count": { "min_required": 6, "actual": 6 },
+    "required_roles_present": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "agent_contract": "Every agent defines input, output, next, fallback, timeout_seconds, and audit",
+    "first_agent": "ValidationTriageAgent",
+    "last_agent": "NotificationAgent",
+    "ordering_invariants": [
+      "FraudCheckAgent always executes before ApprovalAgent",
+      "PaymentAgent executes only after an APPROVED decision from ApprovalAgent or HumanEscalationAgent",
+      "NotificationAgent is the terminal node on every path"
+    ],
+    "conditional_branches": [
+      "ValidationTriageAgent: ELIGIBLE -> FraudCheckAgent | INELIGIBLE -> NotificationAgent",
+      "FraudCheckAgent: score<70 -> ApprovalAgent | 70-89 -> HumanEscalationAgent | >=90 -> NotificationAgent (reject)",
+      "ApprovalAgent: APPROVED -> PaymentAgent | REJECTED -> NotificationAgent | ESCALATE -> HumanEscalationAgent",
+      "HumanEscalationAgent (async): APPROVED -> PaymentAgent | REJECTED -> NotificationAgent"
+    ],
+    "latency_budget": {
+      "max_total_seconds": 60,
+      "worst_case_synchronous_path_seconds": 40,
+      "path_breakdown_seconds": {
+        "approve_path": "5 (validate) + 10 (fraud) + 5 (approval) + 15 (payment) + 5 (notify) = 40",
+        "reject_at_validation": "5 + 5 = 10",
+        "reject_at_fraud": "5 + 10 + 5 = 20",
+        "reject_at_approval": "5 + 10 + 5 + 5 = 25",
+        "escalation_pending": "5 + 10 + 5 + 5 + 5 = 30 (customer receives PENDING_REVIEW within budget; human decision completes asynchronously under a 4h SLA)"
+      }
+    },
+    "outcomes_handled": {
+      "approved": "PaymentAgent executes refund -> NotificationAgent sends REFUND_COMPLETED with refund_transaction_id",
+      "rejected": "NotificationAgent sends REJECTED with reason_code and appeal_url (originating from validation, fraud, approval, or human review)"
+    },
+    "audit": {
+      "requirement": "Every agent appends a structured event to an append-only (WORM) audit log BEFORE invoking the next agent",
+      "event_fields": ["request_id", "agent_name", "input_hash", "output_summary", "decision", "latency_ms", "timestamp"],
+      "retention_years": 7,
+      "pii_handling": "PII tokenized/redacted in audit events; full payloads stored encrypted with restricted access"
+    },
+    "acyclic": {
+      "guarantee": "DAG with topological order Validation(1) -> Fraud(2) -> Approval(3) -> HumanEscalation(4) -> Payment(5) -> Notification(6); all routing edges point forward",
+      "note": "Retries are internal to an agent, not graph edges; payment failures exit to an out-of-band ops incident rather than re-entering the pipeline"
+    },
+    "human_escalation": {
+      "agent": "HumanEscalationAgent",
+      "triggers": ["fraud score 70-89", "fraud service unavailable", "amount > $500", "policy conflict or policy-engine error", "unparseable/malformed request"],
+      "sla_hours": 4,
+      "customer_experience": "Customer is notified PENDING_REVIEW within the 60s synchronous budget; final decision delivered asynchronously"
+    },
+    "timeouts": {
+      "unit": "seconds",
+      "ValidationTriageAgent": 5,
+      "FraudCheckAgent": 10,
+      "ApprovalAgent": 5,
+      "HumanEscalationAgent": 5,
+      "PaymentAgent": 15,
+      "NotificationAgent": 5,
+      "on_timeout": "Invoke the agent's defined fallback; never silently drop a request"
+    },
+    "reliability": {
+      "idempotency": "PaymentAgent uses idempotency_key = request_id to prevent duplicate refunds across retries",
+      "durability": "Request state persisted after every agent handoff so a crash resumes at the last completed step",
+      "dead_letter": "Unprocessable messages go to a dead-letter queue with ops alerting"
+    }
+  }
+}
+```

@@ -1,0 +1,22 @@
+```json
+{
+  "bugs": [
+    {"line": 13, "bug": "SAVE20 discount multiplies subtotal by 0.20, which applies an 80% discount instead of 20% off. Should be `subtotal = subtotal * 0.80`.", "severity": "critical"},
+    {"line": 15, "bug": "SAVE10 subtracts `subtotal * 10` (1000% of the subtotal), producing a large negative amount. Should be `subtotal -= subtotal * 0.10`.", "severity": "critical"},
+    {"line": 25, "bug": "`pass` silently ignores negative stock: inventory goes negative and the order is still marked 'completed'. Should raise an error or reject/skip the order.", "severity": "major"},
+    {"line": 36, "bug": "`total_revenue =+ total` is assignment to unary-plus (`= +total`), not `+=`. total_revenue ends up equal to only the last order's total.", "severity": "critical"},
+    {"line": 39, "bug": "`total_revenue / len(orders)` raises ZeroDivisionError when `orders` is empty. Needs a guard for the empty case.", "severity": "major"},
+    {"line": 40, "bug": "`max()` over an empty generator raises ValueError when there are no orders. Needs a default or empty-check.", "severity": "major"},
+    {"line": 53, "bug": "Email validation only checks for the presence of '@', accepting invalid inputs like '@', 'a@', or '@b'. Should verify local part, domain, TLD dot, no spaces, etc.", "severity": "minor"},
+    {"line": 61, "bug": "`distance + per_km` adds the per-km rate only once instead of scaling by distance. Should be `distance * per_km`.", "severity": "major"},
+    {"line": 66, "bug": "`elif weight > 50` is unreachable because `weight > 30` on line 64 already matches every weight above 50. The heavier-tier check must come first (or use independent ifs).", "severity": "major"},
+    {"line": 69, "bug": "`round(cost)` rounds to a whole integer, discarding cents on a monetary value. Should be `round(cost, 2)`.", "severity": "minor"},
+    {"line": 72, "bug": "`merged = profile_a` creates an alias, not a copy, so all mutations (including the 'updated_at' write) modify the caller's `profile_a`. Should use `dict(profile_a)` or a deep copy.", "severity": "major"},
+    {"line": 76, "bug": "Hardcoded 'updated_at' value '2024-01-01'; every merged profile gets the same stale timestamp. Should use the current time (e.g., `datetime.now()`).", "severity": "minor"},
+    {"line": 80, "bug": "`line.split(',')` is naive CSV parsing: it breaks on quoted fields containing commas and doesn't strip whitespace/newlines. Should use the `csv` module.", "severity": "major"},
+    {"line": 87, "bug": "An item appearing 3+ times is appended to `duplicates` once per repeat occurrence (e.g., [1,1,1] -> [1,1]). Should only record each duplicated value once (check `item not in duplicates`).", "severity": "minor"},
+    {"line": 88, "bug": "`seen.append(item)` runs unconditionally, so already-seen items are redundantly re-added (should be in an `else`); also `seen` is a list giving O(n) membership tests — a `set` should be used for O(1) lookups.", "severity": "minor"}
+  ],
+  "count": 15
+}
+```

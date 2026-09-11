@@ -206,7 +206,8 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
   would keep the previous raw answer and have the merge keep the max — a scoring-policy change,
   so confirm with the owner first.
 - Ollama Cloud IGNORES all thinking controls for GLM-5.3 / GLM-5.3-Flash (probed 2026-09-10) and
-  deepseek-v4.1-flash (probed 2026-09-11, where even reasoning_effort is ignored). GLM probe:
+  deepseek-v4.1-flash (probed 2026-09-11, where even reasoning_effort is ignored) and kimi-k3
+  (probed 2026-09-11; reasoning_effort=low only halves reasoning). GLM probe:
   `enable_thinking=false`, `chat_template_kwargs.thinking=false`, `thinking_budget`, native `think=false`
   all leave reasoning on and unbounded). Only `reasoning_effort=low` changes anything. Treat earlier
   GLM "Think (bounded)" / "NoThink" labels on Ollama with suspicion. Verify a flag with a tiny probe

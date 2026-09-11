@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica creates a single point of failure — no high availability, and any pod restart or node failure causes downtime",
+      "severity": "minor"
+    },
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using the ':latest' tag is mutable and non-deterministic — deployments can't be reliably reproduced or rolled back, and different nodes may run different image versions",
+      "severity": "major"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "No resource requests or limits defined for the main 'api' container — risks unschedulable pods, resource starvation of neighbors, and BestEffort QoS (first to be evicted)",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Container explicitly runs as root (also, 'runAsRoot' is not a valid field — should be runAsUser/runAsNonRoot) — a container escape grants root on the host",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Privileged mode gives the container full access to host devices and kernel capabilities — effectively root on the node; one of the most dangerous settings in Kubernetes",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "Database password hardcoded in plaintext in the manifest — secrets in env vars are visible via kubectl describe, logs, and version control; must use a Secret with secretKeyRef",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "Live API key hardcoded in plaintext — same exposure risks as DB_PASSWORD; credentials committed to source control should be considered compromised and rotated",
+      "severity": "critical"
+    },
+    {
+      "line": "containers[0] (api) — missing field",
+      "issue": "No livenessProbe defined — kubelet cannot detect and restart a hung/deadlocked application",
+      "severity": "major"
+    },
+    {
+      "line": "containers[0] (api) — missing field",
+      "issue": "No readinessProbe defined — traffic is routed to the pod before the app is ready and during shutdown, causing failed requests",
+      "severity": "major"
+    },
+    {
+      "line": "requests: memory: \"10Gi\", cpu: \"8\"",
+      "issue": "Sidecar logger requests 10Gi RAM and 8 CPUs — absurdly oversized for a logging sidecar; wastes cluster capacity and may make the pod unschedulable",
+      "severity": "minor"
+    },
+    {
+      "line": "sidecar resources (missing limits)",
+      "issue": "Sidecar defines requests but no limits — it can consume unbounded CPU/memory and starve the main container or the node",
+      "severity": "major"
+    },
+    {
+      "line": "hostPath:",
+      "issue": "hostPath volume mounts the node's filesystem into the pod — a major security risk (container can read/write host files) and breaks pod portability across nodes",
+      "severity": "major"
+    },
+    {
+      "line": "path: /tmp/data",
+      "issue": "Data stored in /tmp on the host is ephemeral (often tmpfs, cleared on reboot) and node-local — all data is lost on pod rescheduling or node reboot; use a PersistentVolumeClaim",
+      "severity": "major"
+    },
+    {
+      "line": "metadata (missing namespace)",
+      "issue": "No namespace specified on either resource — deploys into 'default', mixing workloads and preventing proper RBAC, quotas, and network segmentation",
+      "severity": "minor"
+    },
+    {
+      "line": "type: LoadBalancer",
+      "issue": "Service exposed directly via LoadBalancer with no Ingress, TLS termination, or network policy — app is publicly reachable over plain HTTP on port 80",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

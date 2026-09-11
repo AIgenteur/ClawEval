@@ -15,6 +15,7 @@ When a newer version of a model family is tested on the same deployment type (cl
 | GLM-5 Think | ☁️ Ollama | 927/1220 | **76.0%** | 23 | GLM-5.3 | [`glm-5-think`](../eval/test_results/glm-5-think/phase_h/) |
 | **Kimi family** | | | | | | |
 | Kimi K2.5 Think | ☁️ Ollama | 1048/1220 | **85.9%** | 24 | Kimi K2.7 Code | [`kimi-k2.5-think`](../eval/test_results/kimi-k2.5-think/phase_h/) |
+| Kimi K2.7 Code | ☁️ Ollama | 1038/1220 | **85.1%** | 24 | Kimi K3 | [`Kimi-K2.7-Code`](../eval/test_results/Kimi-K2.7-Code/phase_h/) |
 | Kimi K2.6 | ☁️ Ollama | 1028/1220 | **84.3%** | 24 | Kimi K2.7 Code | [`Kimi-K2.6`](../eval/test_results/Kimi-K2.6/phase_h/) |
 | Kimi K2.5 NoThink | ☁️ Ollama | 935/1220 | **76.6%** | 21 | Kimi K2.7 Code | [`kimi-k2.5-nothink`](../eval/test_results/kimi-k2.5-nothink/phase_h/) |
 | **MiniMax family** | | | | | | |

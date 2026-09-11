@@ -30,7 +30,7 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 > 🏆 **[The definitive dense evaluation →](docs/results-phase-h.md)**
 >
-> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **59 open-weight models tested — 48 current on the board, 11 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
+> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **60 open-weight models tested — 48 current on the board, 12 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
 
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 
@@ -149,7 +149,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 🥉 | **Qwen3.8-27B** | 🖥️ Local Q4 | 1054/1220 | **86.4%** | 23 |
 | 4 | **DeepSeek V4.1 Flash** | ☁️ Ollama | 1052/1220 | **86.2%** | 27 |
 | 5 | **GLM-5.3-Flash** | ☁️ Ollama | 1043/1220 | **85.5%** | 29 |
-| 6 | **Kimi K2.7 Code** | ☁️ Ollama | 1038/1220 | **85.1%** | 24 |
+| 6 | **Kimi K3** | ☁️ Ollama | 1038/1220 | **85.1%** | 28 |
 | 7 | **Laguna-M.1** | ☁️ OpenRouter | 1034/1220 | **84.8%** | 25 |
 | 8 | **Qwen3.5-Plus** | ☁️ Alibaba | 1031/1220 | **84.5%** | 26 |
 | 9 | **Qwen3.6-35B-A3B** | 🖥️ Local | 1029/1220 | **84.3%** | 24 |
@@ -200,6 +200,8 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 > **Qwen3.8-27B (2026-09-11):** local, single RTX 3090 24 GB — llama.cpp TurboQuant fork (407f3237b), official weights `unsloth/Qwen3.8-27B-GGUF` UD-Q4_K_M, **f16 KV cache, 64K context**, 40.6 t/s. Default thinking mode. One full run with the 16K→32K escalation: all 8 ceiling tests recovered at 32K (H-34's 48K retest produced no answer, so its 32K answer is kept). A NoThink run (`chat_template_kwargs.enable_thinking=false`, the only thinking switch this server honours) scored 1007/1220, so Think is published; NoThink data is in `Qwen3.8-27B-Local-NoThink`. Replaces Qwen3.6-27B, which was run with TurboQuant4 KV at 262K context — a different KV configuration, so the two are not a pure like-for-like.
 
 > **Qwen3.8-Flash-Next (2026-09-11):** local, single RTX PRO 6000 Blackwell 96 GB — vLLM nightly (0.28.1rc1 dev) with the official `nvidia/Qwen3.8-Flash-Next-NVFP4` checkpoint (routed experts NVFP4, n-gram table and MTP head FP8), 64K context, MTP off, 88.7 t/s. **VRAM, measured:** ~85.5 GiB server footprint; ~79 GiB is the minimum for one 64K sequence, so it does not fit an 80 GB card; plus ~51 GB of system RAM for the CPU-offloaded n-gram table. Default thinking mode, one full run with 16K→32K→48K escalation — every ceiling test recovered, no zeros. Ties Qwen3.8-27B at 1054 and ranks above it on perfect scores (27 vs 23). NoThink (`chat_template_kwargs.enable_thinking=false`) scored 1041; its two open ceiling tests could lift it to at most 1043, so Think is published. NoThink data is in `Qwen3.8-Flash-Next-NoThink`.
+
+> **Kimi K3 (2026-09-11):** `kimi-k3` via Ollama Cloud in default mode with reasoning on — like GLM-5.3 and DeepSeek V4.1 Flash, this endpoint ignores every thinking control (`enable_thinking`, `chat_template_kwargs.thinking`/`.enable_thinking`, native `think`); `reasoning_effort=low` only halves reasoning. **Published from a single full run**, not best-of-two like GLM-5.3 / DeepSeek V4.1 Flash: K3 is heavy on the Ollama 5-hour quota, so the owner capped it at one pass plus retests of the tests that hit the token ceiling (both recovered at 32K: Code Review and STEM Research, 15/15 each). Its one zero is not a ceiling hit — on H-12 the model reasoned for ~9K tokens and then declined to produce the content calendar, arguing the 30 constraints are mutually unsatisfiable. Exactly ties the Kimi K2.7 Code it replaces (1038/1220) and ranks above it on perfect scores (28 vs 24).
 
 ---
 

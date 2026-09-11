@@ -1,0 +1,130 @@
+```python
+class LRUCache:
+    """O(1) LRU cache: hash map + doubly linked list ordered
+    from most recently used (front) to least recently used (back)."""
+
+    class _Node:
+        __slots__ = ("key", "value", "prev", "next")
+
+        def __init__(self, key=0, value=0):
+            self.key = key
+            self.value = value
+            self.prev = None
+            self.next = None
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+        self.head = self._Node()  # dummy: head.next = most recent
+        self.tail = self._Node()  # dummy: tail.prev = least recent
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_front(self, node):
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        node = self.cache.get(key)
+        if node is None:
+            return -1
+        self._remove(node)
+        self._add_front(node)
+        return node.value
+
+    def put(self, key, value):
+        node = self.cache.get(key)
+        if node is not None:
+            node.value = value
+            self._remove(node)
+            self._add_front(node)
+            return
+        if len(self.cache) >= self.capacity:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+        node = self._Node(key, value)
+        self.cache[key] = node
+        self._add_front(node)
+
+
+class MinStack:
+    """Stack with O(1) get_min via an auxiliary stack that tracks
+    the running minimum (duplicates stored to stay in sync on pop)."""
+
+    def __init__(self):
+        self.stack = []
+        self.mins = []
+
+    def push(self, val):
+        self.stack.append(val)
+        if not self.mins or val <= self.mins[-1]:
+            self.mins.append(val)
+
+    def pop(self):
+        val = self.stack.pop()
+        if val == self.mins[-1]:
+            self.mins.pop()
+        return val
+
+    def top(self):
+        return self.stack[-1]
+
+    def get_min(self):
+        return self.mins[-1]
+
+
+def find_median(stream):
+    """Running median via two heaps: a max-heap for the smaller half
+    and a min-heap (values negated) for the larger half. O(log n) per
+    element, O(1) median lookup."""
+
+    def heappush(heap, val):  # max-heap
+        heap.append(val)
+        i = len(heap) - 1
+        while i > 0:
+            parent = (i - 1) // 2
+            if heap[i] > heap[parent]:
+                heap[i], heap[parent] = heap[parent], heap[i]
+                i = parent
+            else:
+                break
+
+    def heappop(heap):  # max-heap
+        top = heap[0]
+        last = heap.pop()
+        if heap:
+            heap[0] = last
+            i = 0
+            while True:
+                left, right = 2 * i + 1, 2 * i + 2
+                largest = i
+                if left < len(heap) and heap[left] > heap[largest]:
+                    largest = left
+                if right < len(heap) and heap[right] > heap[largest]:
+                    largest = right
+                if largest == i:
+                    break
+                heap[i], heap[largest] = heap[largest], heap[i]
+                i = largest
+        return top
+
+    low, high = [], []  # low = max-heap (smaller half), high = negated min-heap (larger half)
+    medians = []
+    for num in stream:
+        heappush(low, num)
+        heappush(high, -heappop(low))      # route every value through low
+        if len(high) > len(low):
+            heappush(low, -heappop(high))  # rebalance: len(low) >= len(high)
+        if len(low) > len(high):
+            medians.append(float(low[0]))
+        else:
+            medians.append((low[0] - high[0]) / 2.0)
+    return medians
+```
