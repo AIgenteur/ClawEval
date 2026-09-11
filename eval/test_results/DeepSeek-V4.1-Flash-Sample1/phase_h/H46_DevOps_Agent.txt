@@ -1,0 +1,80 @@
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas: 1 - Single replica, no high availability",
+      "severity": "major"
+    },
+    {
+      "line": "15",
+      "issue": "No liveness probe defined for containers",
+      "severity": "major"
+    },
+    {
+      "line": "15",
+      "issue": "No readiness probe defined for containers",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image: myapp:latest - Using latest tag, not immutable",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "resources: {} - No resource requests/limits for api container",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true - Invalid securityContext field; should be runAsUser/runAsNonRoot",
+      "severity": "major"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true - Privileged container, security risk",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "value: \"sup3rs3cret!\" - Plaintext secret in env (DB_PASSWORD)",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "value: \"ak_live_12345\" - Plaintext secret in env (API_KEY)",
+      "severity": "critical"
+    },
+    {
+      "line": "32",
+      "issue": "name: sidecar - No securityContext for sidecar container (runs as root by default)",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "resources: - Sidecar container has no resource limits",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "memory: \"10Gi\" - Excessive memory request for sidecar",
+      "severity": "major"
+    },
+    {
+      "line": "37",
+      "issue": "cpu: \"8\" - Excessive CPU request for sidecar",
+      "severity": "major"
+    },
+    {
+      "line": "40",
+      "issue": "hostPath: - hostPath volume, security risk",
+      "severity": "critical"
+    },
+    {
+      "line": "48",
+      "issue": "type: LoadBalancer - Service exposed externally via LoadBalancer",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}

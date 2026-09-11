@@ -1,0 +1,17 @@
+{
+  "q1": "OT (Operational Transformation) with a central authoritative server that assigns revisions, transforms concurrent operations, and broadcasts them; locking only for coarse-grained resources like renames or comments.",
+  "q2": "WebSocket for bidirectional low-latency sync, presence, cursor updates, and operations; fall back to HTTP long-polling or SSE only for restricted networks.",
+  "q3": "PostgreSQL as the primary document/metadata store, using JSONB for document snapshots and an append-only operations table; object storage for large binary assets.",
+  "q4": "Local-first offline editing: store document state and pending operations in IndexedDB, queue edits while offline, then on reconnect send them with base revisions so the server can transform/rebase them against the latest version.",
+  "q5": "Redis Pub/Sub for low-latency real-time fan-out across WebSocket servers; use Redis Streams or Kafka if durable event replay/audit is required.",
+  "q6": "Route WebSocket connections by document ID to a shard, use sticky sessions at the load balancer, broadcast cross-node via Redis Pub/Sub, and autoscale based on connection count and message throughput.",
+  "q7": "Send throttled cursor/selection presence messages over WebSocket, store ephemeral presence in Redis with TTL, and transform cursor positions against concurrent edits or use relative anchors to prevent drift.",
+  "q8": "OAuth 2.0/OIDC for user login with short-lived JWT access tokens and refresh tokens; authenticate WebSocket connections via token in the handshake and enforce per-document ACLs.",
+  "q9": "Event sourcing: append-only operations log plus periodic document snapshots; each edit has a revision ID, and any version is reconstructed by loading the nearest snapshot and replaying subsequent operations.",
+  "q10": "Serve static assets through a CDN with content-hashed filenames and long cache TTLs; use S3 as origin, signed URLs for private assets, and edge caching for thumbnails and shared media.",
+  "q11": "Use virtualized rendering so only the visible viewport is rendered, split documents into blocks/chunks, lazy-load sections, store incremental snapshots, compress large payloads, and paginate or window operations.",
+  "q12": "Apply token-bucket or leaky-bucket rate limiting per user, IP, and document at the API gateway and WebSocket message layer, backed by Redis for distributed counters, with separate limits for edits, uploads, and connections.",
+  "q13": "Automated daily snapshots plus continuous WAL/oplog archiving, multi-region replication, point-in-time recovery, versioned object storage for blobs, and periodic restore drills.",
+  "q14": "Use pre-signed S3 URLs so clients upload images directly to object storage, then send metadata to the server; process thumbnails/virus scans asynchronously via a queue, deduplicate by hash, and reference attachments by unique ID.",
+  "q15": "OpenTelemetry for traces, metrics, and logs; Prometheus and Grafana for metrics/dashboards; Loki or ELK for logs; Jaeger or Tempo for traces; Alertmanager with PagerDuty for alerting on latency, error rates, conflict rates, and WebSocket health."
+}

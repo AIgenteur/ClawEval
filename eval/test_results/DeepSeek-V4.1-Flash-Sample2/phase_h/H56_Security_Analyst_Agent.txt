@@ -1,0 +1,80 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SQL Injection",
+      "location": "/login (query construction)",
+      "severity": "critical"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "location": "/search (q parameter reflected in HTML)",
+      "severity": "high"
+    },
+    {
+      "type": "Server-Side Template Injection (SSTI)",
+      "location": "/profile/<username> (render_template_string with f-string)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "/run (subprocess.run with shell=True)",
+      "severity": "critical"
+    },
+    {
+      "type": "Command Injection",
+      "location": "/export (os.system with f-string)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unrestricted File Upload",
+      "location": "/upload (f.save with user-controlled filename)",
+      "severity": "critical"
+    },
+    {
+      "type": "Path Traversal",
+      "location": "/download (send_file with user-controlled path)",
+      "severity": "critical"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "location": "/session (pickle.loads on user data)",
+      "severity": "critical"
+    },
+    {
+      "type": "Unsafe YAML Deserialization",
+      "location": "/config (yaml.load without SafeLoader)",
+      "severity": "critical"
+    },
+    {
+      "type": "Hardcoded Secret",
+      "location": "SECRET = \"admin123\" (global variable)",
+      "severity": "high"
+    },
+    {
+      "type": "Weak Hashing (MD5)",
+      "location": "/login (hashlib.md5 for token generation)",
+      "severity": "high"
+    },
+    {
+      "type": "Plaintext Password Storage/Comparison",
+      "location": "/login (password compared directly in SQL query)",
+      "severity": "high"
+    },
+    {
+      "type": "Missing Authentication",
+      "location": "/run, /upload, /download, /config, /session, /export (no auth checks)",
+      "severity": "critical"
+    },
+    {
+      "type": "Debug Mode Enabled",
+      "location": "app.run(debug=True) in main block",
+      "severity": "high"
+    },
+    {
+      "type": "Missing CSRF Protection",
+      "location": "All POST endpoints (/login, /run, /upload, /config, /session)",
+      "severity": "medium"
+    }
+  ],
+  "count": 15
+}

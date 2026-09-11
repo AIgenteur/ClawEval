@@ -30,7 +30,7 @@ Most benchmarks tell you a model is "smart." ClawEval tells you if it can **do t
 
 > 🏆 **[The definitive dense evaluation →](docs/results-phase-h.md)**
 >
-> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **56 open-weight models tested — 47 current on the board, 9 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
+> Phase F scored x/10 — everyone got 8+. **ClawEval v2 upgrades all 59 agents** to 15–30 checkpoints each with adversarial traps, sarcasm, and near-truths. Real separation, real rankings. **57 open-weight models tested — 47 current on the board, 10 superseded versions on the [Previous Versions page](docs/results-previous-versions.md).**
 
 ### 🖥️ LOCAL Models — Run on YOUR Hardware
 
@@ -143,7 +143,7 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | Rank | Model | Provider | Score | % | Perfect |
 |------|-------|----------|-------|---|---------|
 | 🥇 | **DeepSeek V4 Pro** | ☁️ DeepSeek | 1060/1220 | **86.9%** | 26 |
-| 🥈 | **DeepSeek V4 Flash** | ☁️ DeepSeek | 1054/1220 | **86.4%** | 23 |
+| 🥈 | **DeepSeek V4.1 Flash** | ☁️ Ollama | 1052/1220 | **86.2%** | 27 |
 | 🥉 | **GLM-5.3-Flash** | ☁️ Ollama | 1043/1220 | **85.5%** | 29 |
 | 4 | **Kimi K2.7 Code** | ☁️ Ollama | 1038/1220 | **85.1%** | 24 |
 | 5 | **Laguna-M.1** | ☁️ OpenRouter | 1034/1220 | **84.8%** | 25 |
@@ -192,6 +192,8 @@ Phase F gave every model 8–10/10 on most roles. ClawEval v2 replaces that with
 | 48 | **Qwen3.5-2B** | 🖥️ Local | 50/1220 | **4.1%** | 0 |
 
 > **GLM-5.3 / GLM-5.3-Flash (2026-09-10):** tested via Ollama Cloud in default mode with reasoning on. Ollama Cloud ignores every thinking control for these models (`enable_thinking`, `chat_template_kwargs.thinking`, `thinking_budget`, native `think`), so no NoThink variant exists. Each was run twice in full; the published score is the best valid result per test across the two runs, with the standard 16K→32K→48K token escalation applied to both. Both raw samples are in the repo (`GLM-5.3-Sample1/2`, `GLM-5.3-Flash-Sample1/2`); run-to-run totals were 970/971 and 1021/1023. Remaining zeros are tests where the model reasons past 48K tokens without answering.
+
+> **DeepSeek V4.1 Flash (2026-09-11):** `deepseek-v4.1-flash:cloud` via Ollama Cloud in default mode with reasoning on. Like GLM-5.3, Ollama Cloud ignores every thinking control for this model (including `reasoning_effort`). Published score is the best valid result per test across two full runs, both taken through the 16K→32K→48K escalation; run totals were 1029 and 1033. No zeros. Raw samples: `DeepSeek-V4.1-Flash-Sample1/2`.
 
 #### 📋 Gemini-3.5-Flash — Full 59-Agent Breakdown
 

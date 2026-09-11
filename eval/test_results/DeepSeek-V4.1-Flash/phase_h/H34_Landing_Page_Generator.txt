@@ -1,0 +1,980 @@
+Here's a complete, ready-to-run HTML document for the QuillAI SaaS landing page. It includes all requested sections—hero, features, pricing, testimonials, FAQ, and more—with a clean, responsive design.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="QuillAI is an AI writing assistant that drafts, rewrites, and polishes your content in seconds. Trusted by 10,000+ writers and teams. Start your free trial today.">
+  <meta name="theme-color" content="#4f46e5">
+  <title>QuillAI — Your AI Writing Assistant for Faster, Better Content</title>
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --ink: #0f172a;
+      --muted: #475569;
+      --brand: #4f46e5;
+      --brand-dark: #4338ca;
+      --brand-soft: #eef2ff;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --max: 1120px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; height: auto; }
+    a { color: inherit; }
+
+    h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 12px; }
+    h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.25rem); }
+    h3 { font-size: 1.125rem; }
+    p { margin: 0 0 16px; }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--brand);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 0 0 8px 0;
+      z-index: 100;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+      font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-ghost { background: #fff; color: var(--ink); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-light { background: #fff; color: var(--brand); }
+    .btn-light:hover { background: #eef2ff; }
+
+    /* ---------- Header / Nav ---------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.3rem;
+      text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+    .logo span { color: var(--brand); }
+    .nav-links {
+      display: flex;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .nav-links a:hover,
+    .nav-links a:focus-visible { color: var(--brand); }
+
+    /* ---------- Sections ---------- */
+    .section { padding: 76px 0; }
+    .section-alt { background: var(--surface); }
+    .section-head {
+      text-align: center;
+      max-width: 660px;
+      margin: 0 auto 48px;
+    }
+    .section-head p { color: var(--muted); font-size: 1.05rem; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      background: var(--brand-soft);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: 72px 0 64px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 52px;
+      align-items: center;
+    }
+    .hero p.sub {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 34em;
+    }
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 26px 0 22px;
+    }
+    .social-proof {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .logo-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      letter-spacing: 0.02em;
+    }
+    .hero-img {
+      border-radius: 20px;
+      box-shadow: 0 24px 60px -24px rgba(15, 23, 42, 0.35);
+      border: 1px solid var(--border);
+    }
+
+    /* ---------- Steps ---------- */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: step;
+    }
+    .step {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .step p { color: var(--muted); margin: 0; font-size: 0.95rem; }
+
+    /* ---------- Feature cards ---------- */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.35);
+      transform: translateY(-3px);
+    }
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      margin-bottom: 16px;
+    }
+    .icon svg { width: 24px; height: 24px; }
+    .card p { color: var(--muted); margin: 0; font-size: 0.95rem; }
+
+    /* ---------- Comparison ---------- */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .compare-col {
+      border-radius: var(--radius);
+      padding: 28px 26px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    .compare-before { background: #fff7f7; border-color: #fecaca; }
+    .compare-after { background: #f0fdf4; border-color: #bbf7d0; }
+    .compare-col h3 { display: flex; align-items: center; gap: 10px; }
+    .compare-col ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 0.95rem; }
+    .compare-col li { margin-bottom: 8px; }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .badge-before { background: #fee2e2; color: #b91c1c; }
+    .badge-after { background: #dcfce7; color: #15803d; }
+
+    /* ---------- Pricing ---------- */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .plan {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 26px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .plan.featured {
+      border-color: var(--brand);
+      box-shadow: 0 24px 50px -28px rgba(79, 70, 229, 0.6);
+      position: relative;
+    }
+    .plan-tag {
+      position: absolute;
+      top: -13px;
+      left: 26px;
+      background: var(--brand);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 8px 0 2px;
+    }
+    .price small {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+    }
+    .plan-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+    .plan ul {
+      list-style: none;
+      margin: 0 0 26px;
+      padding: 0;
+      font-size: 0.93rem;
+      color: var(--muted);
+      flex-grow: 1;
+    }
+    .plan li {
+      padding-left: 26px;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .plan li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--brand);
+      font-weight: 800;
+    }
+    .plan .btn { width: 100%; text-align: center; }
+
+    /* ---------- Testimonials ---------- */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .testimonial {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .testimonial blockquote {
+      margin: 0 0 20px;
+      font-size: 0.98rem;
+      color: var(--ink);
+      flex-grow: 1;
+    }
+    .testimonial blockquote::before { content: "“"; color: var(--brand); font-size: 1.6rem; line-height: 0; vertical-align: -0.3em; margin-right: 2px; }
+    .person { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--brand-soft);
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .person-name { font-weight: 700; font-size: 0.92rem; }
+    .person-role { color: var(--muted); font-size: 0.82rem; }
+
+    /* ---------- FAQ ---------- */
+    .faq { max-width: 780px; margin: 0 auto; }
+    .faq details {
+      border-bottom: 1px solid var(--border);
+      padding: 4px 0;
+    }
+    .faq summary {
+      cursor: pointer;
+      font-weight: 600;
+      padding: 18px 30px 18px 0;
+      position: relative;
+      list-style: none;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after {
+      content: "+";
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--brand);
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .faq details[open] summary::after { content: "–"; }
+    .faq details p { color: var(--muted); margin: 0 0 20px; font-size: 0.95rem; }
+
+    /* ---------- Newsletter ---------- */
+    .newsletter {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      border-radius: 24px;
+      padding: 52px 32px;
+      text-align: center;
+    }
+    .newsletter h2 { color: #fff; }
+    .newsletter p { color: #e0e7ff; max-width: 46ch; margin: 0 auto 26px; }
+    .newsletter form {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .newsletter label {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .newsletter input[type="email"] {
+      flex: 1 1 260px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+    .newsletter input[type="email"]:focus-visible {
+      outline: 3px solid #c7d2fe;
+      outline-offset: 2px;
+    }
+    .form-note { font-size: 0.8rem; color: #c7d2fe; margin: 16px 0 0; }
+
+    /* ---------- Contact ---------- */
+    .contact-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .contact-box a.email {
+      color: var(--brand);
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 2px solid var(--brand-soft);
+    }
+    .contact-box a.email:hover { border-bottom-color: var(--brand); }
+
+    /* ---------- Footer ---------- */
+    .site-footer {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 60px 0 32px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 36px;
+    }
+    .site-footer h3 {
+      color: #fff;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .site-footer p { font-size: 0.9rem; color: #94a3b8; }
+    .site-footer ul { list-style: none; margin: 0; padding: 0; }
+    .site-footer li { margin-bottom: 10px; }
+    .site-footer a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; }
+    .site-footer a:hover { color: #fff; text-decoration: underline; }
+    .footer-logo { color: #fff; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
+    .footer-logo span { color: #a5b4fc; }
+    .footer-bottom {
+      border-top: 1px solid #1e293b;
+      margin-top: 40px;
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .legal-links { display: flex; gap: 20px; flex-wrap: wrap; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .compare { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .section { padding: 56px 0; }
+      .hero { padding: 48px 0; }
+      .nav { padding: 12px 16px; }
+      .nav-links { gap: 16px; font-size: 0.9rem; }
+      .nav .btn { padding: 10px 16px; font-size: 0.85rem; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .newsletter { padding: 40px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============ HEADER / NAVIGATION ============ -->
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="logo" href="#hero" aria-label="QuillAI home">Quill<span>AI</span></a>
+
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <a class="btn btn-primary" href="#pricing">Start Free Trial</a>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ HERO ============ -->
+    <section id="hero" class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Powered by advanced AI</p>
+          <h1 id="hero-title">Write 10× faster with your AI writing assistant</h1>
+          <p class="sub">
+            QuillAI uses artificial intelligence to draft, rewrite, and polish everything you write —
+            from emails and blog posts to product copy and reports. You bring the idea; our AI handles the words.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#pricing">Start Free Trial</a>
+            <a class="btn btn-ghost" href="#how-it-works">Get Started — it's free</a>
+          </div>
+
+          <p class="social-proof">Trusted by 10,000+ writers, marketers, and product teams</p>
+
+          <ul class="logo-strip" aria-label="Companies using QuillAI">
+            <li>Northwind</li>
+            <li>Lumen Labs</li>
+            <li>Brightpath</li>
+            <li>Vertex Media</li>
+            <li>Orbit&nbsp;Co.</li>
+          </ul>
+        </div>
+
+        <div class="hero-art">
+          <img
+            class="hero-img"
+            src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 420'%3E%3Crect width='640' height='420' rx='24' fill='%23eef2ff'/%3E%3Crect x='40' y='44' width='560' height='42' rx='12' fill='%23c7d2fe'/%3E%3Crect x='40' y='112' width='420' height='18' rx='9' fill='%23a5b4fc'/%3E%3Crect x='40' y='146' width='500' height='18' rx='9' fill='%23a5b4fc'/%3E%3Crect x='40' y='180' width='340' height='18' rx='9' fill='%23a5b4fc'/%3E%3Crect x='40' y='238' width='560' height='130' rx='16' fill='%23ffffff'/%3E%3Crect x='64' y='266' width='300' height='16' rx='8' fill='%234f46e5'/%3E%3Crect x='64' y='298' width='430' height='16' rx='8' fill='%23c7d2fe'/%3E%3Crect x='64' y='330' width='240' height='16' rx='8' fill='%23c7d2fe'/%3E%3C/svg%3E"
+            alt="Screenshot of the QuillAI editor generating a rewritten paragraph from a short prompt"
+            width="640"
+            height="420">
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section id="how-it-works" class="section section-alt" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="how-title">How it works</h2>
+          <p>Three simple steps from blank page to polished draft.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num" aria-hidden="true">1</span>
+            <h3>Describe what you need</h3>
+            <p>Paste a rough idea, a bullet list, or a single sentence. Tell QuillAI the audience, tone, and length you want.</p>
+          </li>
+          <li class="step">
+            <span class="step-num" aria-hidden="true">2</span>
+            <h3>Let the AI draft it</h3>
+            <p>Our AI writing engine generates a complete, on-brand draft in seconds — structured, clear, and ready to edit.</p>
+          </li>
+          <li class="step">
+            <span class="step-num" aria-hidden="true">3</span>
+            <h3>Refine and publish</h3>
+            <p>Adjust tone, shorten sentences, or ask for a rewrite. Export to Google Docs, Notion, or your CMS in one click.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section id="features" class="section" aria-labelledby="features-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="features-title">Everything you need to write well</h2>
+          <p>QuillAI is more than a text generator — it's a full writing partner built into your workflow.</p>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+              </svg>
+            </div>
+            <h3>Instant AI drafts</h3>
+            <p>Turn a one-line prompt into a full blog post, email, or landing page draft in under ten seconds.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <h3>Tone &amp; style rewriter</h3>
+            <p>Switch between professional, friendly, persuasive, or concise — without losing your original meaning.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+            </div>
+            <h3>Grammar &amp; clarity check</h3>
+            <p>Catch typos, passive voice, and clunky sentences before your readers ever see them.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
+              </svg>
+            </div>
+            <h3>30+ language support</h3>
+            <p>Write, translate, and localize content for global audiences while keeping your brand voice intact.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BEFORE / AFTER COMPARISON ============ -->
+    <section id="comparison" class="section section-alt" aria-labelledby="comparison-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="comparison-title">Before QuillAI vs. after QuillAI</h2>
+          <p>See what changes when an AI writing assistant joins your workflow.</p>
+        </div>
+
+        <div class="compare">
+          <div class="compare-col compare-before">
+            <h3><span class="badge badge-before">Before</span> Writing without QuillAI</h3>
+            <ul>
+              <li>Staring at a blank page for 45 minutes</li>
+              <li>Three drafts and still not happy with the intro</li>
+              <li>Inconsistent tone across blog, email, and ads</li>
+              <li>Paying an editor for every small rewrite</li>
+              <li>Publishing 2 articles a month, at best</li>
+            </ul>
+          </div>
+
+          <div class="compare-col compare-after">
+            <h3><span class="badge badge-after">After</span> Writing with QuillAI</h3>
+            <ul>
+              <li>A complete first draft in under 10 seconds</li>
+              <li>Rewrite any paragraph with one click</li>
+              <li>One consistent brand voice everywhere</li>
+              <li>Self-serve editing with built-in suggestions</li>
+              <li>Publishing 12+ articles a month, easily</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING ============ -->
+    <section id="pricing" class="section" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="pricing-title">Simple, transparent pricing</h2>
+          <p>Start free. Upgrade when your writing volume grows. Cancel anytime.</p>
+        </div>
+
+        <div class="pricing">
+          <!-- Free -->
+          <article class="plan" aria-labelledby="plan-free">
+            <h3 id="plan-free">Free</h3>
+            <p class="price">$0 <small>/ month</small></p>
+            <p class="plan-desc">For trying out AI writing on personal projects.</p>
+            <ul>
+              <li>5,000 AI words per month</li>
+              <li>1 active project</li>
+              <li>Basic grammar &amp; clarity check</li>
+              <li>Community support</li>
+            </ul>
+            <a class="btn btn-ghost" href="#newsletter">Get Started Free</a>
+          </article>
+
+          <!-- Pro -->
+          <article class="plan featured" aria-labelledby="plan-pro">
+            <span class="plan-tag">Most popular</span>
+            <h3 id="plan-pro">Pro</h3>
+            <p class="price">$19 <small>/ month</small></p>
+            <p class="plan-desc">For freelancers and marketers who write every day.</p>
+            <ul>
+              <li>Unlimited AI words</li>
+              <li>20 active projects</li>
+              <li>Tone &amp; style rewriter</li>
+              <li>30+ languages</li>
+              <li>Priority email support</li>
+            </ul>
+            <a class="btn btn-primary" href="#newsletter">Start Free Trial</a>
+          </article>
+
+          <!-- Enterprise -->
+          <article class="plan" aria-labelledby="plan-enterprise">
+            <h3 id="plan-enterprise">Enterprise</h3>
+            <p class="price">$49 <small>/ user / month</small></p>
+            <p class="plan-desc">For teams that need control, security, and scale.</p>
+            <ul>
+              <li>Everything in Pro</li>
+              <li>Unlimited projects &amp; seats</li>
+              <li>Custom brand voice training</li>
+              <li>SSO, audit logs &amp; SOC 2 report</li>
+              <li>Dedicated success manager</li>
+            </ul>
+            <a class="btn btn-ghost" href="#contact">Talk to Sales</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <section id="testimonials" class="section section-alt" aria-labelledby="testimonials-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="testimonials-title">Loved by writers and teams</h2>
+          <p>Here's what people say after switching to QuillAI.</p>
+        </div>
+
+        <div class="testimonials">
+          <article class="testimonial">
+            <blockquote>
+              QuillAI cut my content production time in half. I go from outline to publishable draft
+              in one sitting, and the tone controls actually sound like me.
+            </blockquote>
+            <div class="person">
+              <div class="avatar" aria-hidden="true">MR</div>
+              <div>
+                <div class="person-name">Maya Rodriguez</div>
+                <div class="person-role">Content Lead, Brightpath</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial">
+            <blockquote>
+              We write hundreds of product descriptions a month. QuillAI keeps every one on-brand
+              and our team finally stopped arguing about word choice.
+            </blockquote>
+            <div class="person">
+              <div class="avatar" aria-hidden="true">DK</div>
+              <div>
+                <div class="person-name">Daniel Kim</div>
+                <div class="person-role">Head of Ecommerce, Orbit Co.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial">
+            <blockquote>
+              As a non-native English speaker, the clarity suggestions are a lifesaver. My reports
+              read sharper and I get fewer follow-up questions from clients.
+            </blockquote>
+            <div class="person">
+              <div class="avatar" aria-hidden="true">AS</div>
+              <div>
+                <div class="person-name">Amara Silva</div>
+                <div class="person-role">Freelance Consultant</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section id="faq" class="section" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="faq-title">Frequently asked questions</h2>
+          <p>Everything you might want to know before you start writing.</p>
+        </div>
+
+        <div class="faq">
+          <details>
+            <summary>What exactly is QuillAI?</summary>
+            <p>
+              QuillAI is an AI writing assistant that helps you draft, rewrite, and edit text.
+              It combines a large language model with editing tools for tone, grammar, and clarity,
+              so you can go from rough idea to finished copy in one place.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is there a free plan?</summary>
+            <p>
+              Yes. The Free tier includes 5,000 AI words per month, one active project, and the basic
+              grammar and clarity checker. No credit card is required to sign up.
+            </p>
+          </details>
+
+          <details>
+            <summary>Will the content sound like me, or like a robot?</summary>
+            <p>
+              You control the output. Set a tone, paste a sample of your own writing, and QuillAI will
+              match your voice. Pro and Enterprise plans also support custom brand voice profiles.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is my data used to train your models?</summary>
+            <p>
+              No. Your documents are never used to train our models. Enterprise customers get additional
+              controls including SSO, audit logs, and a signed data processing agreement.
+            </p>
+          </details>
+
+          <details>
+            <summary>Can I cancel or change my plan at any time?</summary>
+            <p>
+              Absolutely. You can upgrade, downgrade, or cancel from your account settings at any time.
+              Changes take effect at the start of your next billing cycle, and we offer a 14-day refund
+              on annual plans.
+            </p>
+          </details>
+
+          <details>
+            <summary>Does QuillAI work in languages other than English?</summary>
+            <p>
+              Yes — QuillAI supports more than 30 languages for drafting, rewriting, and translation,
+              including Spanish, French, German, Portuguese, Japanese, and Hindi.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ NEWSLETTER / EMAIL SIGNUP ============ -->
+    <section id="newsletter" class="section" aria-labelledby="newsletter-title">
+      <div class="wrap">
+        <div class="newsletter">
+          <h2 id="newsletter-title">Start writing with QuillAI today</h2>
+          <p>Enter your email and we'll send you a free trial link plus our AI writing playbook.</p>
+
+          <form action="/subscribe" method="post" aria-label="Sign up for the QuillAI newsletter">
+            <label for="newsletter-email">Email address</label>
+            <input
+              type="email"
+              id="newsletter-email"
+              name="email"
+              placeholder="you@company.com"
+              autocomplete="email"
+              required
+              aria-required="true">
+            <button type="submit" class="btn btn-light">Get Started</button>
+          </form>
+
+          <p class="form-note">No spam, ever. Unsubscribe in one click.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" class="section section-alt" aria-labelledby="contact-title">
+      <div class="wrap">
+        <div class="contact-box">
+          <h2 id="contact-title">Talk to the QuillAI team</h2>
+          <p>
+            Questions about pricing, security, or rolling QuillAI out across your organization?
+            We usually reply within one business day.
+          </p>
+          <p>
+            Email us at
+            <a class="email" href="mailto:hello@quillai.com">hello@quillai.com</a>
+          </p>
+          <a class="btn btn-primary" href="mailto:hello@quillai.com?subject=QuillAI%20Enterprise%20Enquiry">Contact Sales</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-logo">Quill<span>AI</span></p>
+          <p>
+            The AI writing assistant for people who write for a living.
+            Draft faster, edit smarter, publish more.
+          </p>
+        </div>
+
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Follow us</h3>
+          <ul>
+            <li><a href="https://twitter.com/quillai" aria-label="QuillAI on X (formerly Twitter)" rel="noopener">X / Twitter</a></li>
+            <li><a href="https://www.linkedin.com/company/quillai" aria-label="QuillAI on LinkedIn" rel="noopener">LinkedIn</a></li>
+            <li><a href="https://github.com/quillai" aria-label="QuillAI on GitHub" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.youtube.com/@quillai" aria-label="QuillAI on YouTube" rel="noopener">YouTube</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p style="margin:0;">&copy; 2025 QuillAI, Inc. All rights reserved.</p>
+        <nav class="legal-links" aria-label="Legal links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/cookies">Cookie Policy</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+```
+### Design Highlights for a Trustworthy AI Writing Assistant
+
+The page balances a friendly, modern look with clear information hierarchy, making it easy for visitors to understand the product and take action.
+
+- **Color and mood:** A soft indigo brand color paired with white and light gray backgrounds creates a calm, professional feel. The gradient newsletter section adds a subtle energy boost without overwhelming the page.
+- **Typography and spacing:** Large, tight headlines draw the eye, while generous section padding and a max-width container keep content readable and focused. The use of system fonts ensures fast loading and a native feel.
+- **Card-based layout:** Feature cards, pricing plans, and testimonials all use rounded corners and subtle borders, giving the page a cohesive, approachable structure. Hover effects on cards add a touch of interactivity.
+- **Visual storytelling:** The hero image is a custom SVG illustration that mimics an editor interface, reinforcing the product's purpose. The before/after comparison uses color-coded panels to make the value proposition instantly clear.
+- **Responsive behavior:** The grid layouts collapse gracefully on smaller screens, and the sticky navigation stays accessible without taking up too much space.
+---
+
+**Optimization Tip:** You may want to replace the placeholder company names in the logo strip and the SVG hero image with your actual brand assets or real customer logos for a more authentic look.

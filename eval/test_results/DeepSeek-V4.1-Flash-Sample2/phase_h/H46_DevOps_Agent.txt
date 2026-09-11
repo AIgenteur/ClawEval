@@ -1,0 +1,80 @@
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas: 1 - single replica, no high availability",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image: myapp:latest - mutable image tag, not pinned to a specific version/digest",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "resources: {} - no resource requests or limits defined for api container",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "securityContext.runAsRoot: true - invalid field (should be runAsUser/runAsNonRoot) and implies running as root",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "securityContext.privileged: true - container runs in privileged mode",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "DB_PASSWORD hardcoded in environment variable",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "API_KEY hardcoded in environment variable",
+      "severity": "critical"
+    },
+    {
+      "line": "40",
+      "issue": "hostPath volume /tmp/data - insecure and ties pod to node",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "sidecar resources requests memory 10Gi and cpu 8 - unrealistic, likely unschedulable",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "sidecar has no resource limits defined",
+      "severity": "major"
+    },
+    {
+      "line": "32",
+      "issue": "sidecar has no securityContext defined",
+      "severity": "major"
+    },
+    {
+      "line": "32",
+      "issue": "sidecar has no liveness/readiness probes",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "api container has no liveness/readiness probes",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Service type LoadBalancer - exposes service externally",
+      "severity": "major"
+    },
+    {
+      "line": "3",
+      "issue": "No namespace specified, defaults to 'default'",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}

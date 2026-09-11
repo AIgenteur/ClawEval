@@ -1,0 +1,52 @@
+def is_valid_password(password):
+    if not isinstance(password, str):
+        return False
+    if len(password) < 8 or len(password) > 64:
+        return False
+    if password[0].isdigit():
+        return False
+    if any(c.isspace() for c in password):
+        return False
+    if "password" in password.lower():
+        return False
+
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    specials = "!@#$%^&*()-_+="
+    has_special = any(c in specials for c in password)
+
+    if not (has_upper and has_lower and has_digit and has_special):
+        return False
+
+    count = 1
+    for i in range(1, len(password)):
+        if password[i] == password[i - 1]:
+            count += 1
+            if count > 3:
+                return False
+        else:
+            count = 1
+
+    return True
+
+
+def run_tests():
+    tests = [
+        ("Abcdef1!", True),
+        ("abcdef1!", False),
+        ("ABCDEF1!", False),
+        ("Abcdefg!", False),
+        ("Abcdefg1", False),
+        ("Abcdef1! ", False),
+        ("1Abcdef!", False),
+        ("Abcdef1!a", True),
+        ("Abc1111!", False),
+        ("Abc111!x", True),
+        ("Password1!", False),
+        ("MyPassWord1!", False),
+        ("Abcdef1!@#", True),
+        ("Aa1!" + "bc" * 31, False),
+        ("A1!aaaaa", False),
+    ]
+    return [(p, expected, is_valid_password(p)) for p, expected in tests]

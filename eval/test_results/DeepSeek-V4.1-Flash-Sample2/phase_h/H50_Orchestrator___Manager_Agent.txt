@@ -1,0 +1,91 @@
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "refund_request {request_id, customer_id, order_id, amount, currency, reason, metadata}",
+      "output": "validated_request {status: valid|invalid, normalized_fields, triage_priority, audit_event}",
+      "next": "FraudCheckAgent if status=valid; NotificationAgent if status=invalid",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request",
+      "output": "fraud_assessment {risk_score, decision: pass|review|block, reasons, audit_event}",
+      "next": "ApprovalAgent if decision=pass; HumanEscalationAgent if decision=review; NotificationAgent if decision=block",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "validated_request + fraud_assessment",
+      "output": "approval_decision {approved: true|false, approver, reason, audit_event}",
+      "next": "PaymentAgent if approved=true; NotificationAgent if approved=false",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 8
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "approval_decision + validated_request",
+      "output": "payment_result {status: success|failed, transaction_id, refund_amount, audit_event}",
+      "next": "NotificationAgent if status=success; NotificationAgent if status=failed",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 15
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "escalation_context {request_id, reason, prior_agent, data, audit_event}",
+      "output": "human_decision {decision: approve|reject, notes, audit_event}",
+      "next": "PaymentAgent if decision=approve; NotificationAgent if decision=reject",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 15
+    },
+    {
+      "name": "ErrorHandlerAgent",
+      "input": "error_context {request_id, failed_agent, error, audit_event}",
+      "output": "error_resolution {status: logged|escalated, audit_event}",
+      "next": "END",
+      "fallback": "END",
+      "timeout_seconds": 5
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_outcome {request_id, outcome: approved|refunded|rejected|blocked|escalated|error, message, audit_event}",
+      "output": "notification_result {sent: true, channel, timestamp, audit_event}",
+      "next": "END",
+      "fallback": "ErrorHandlerAgent",
+      "timeout_seconds": 5
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": ["validation", "fraud-check", "approval", "payment", "notification"],
+    "agent_io_defined": true,
+    "conditional_branches": [
+      "ValidationTriageAgent: valid -> FraudCheckAgent, invalid -> NotificationAgent",
+      "FraudCheckAgent: pass -> ApprovalAgent, review -> HumanEscalationAgent, block -> NotificationAgent",
+      "ApprovalAgent: approved -> PaymentAgent, rejected -> NotificationAgent",
+      "HumanEscalationAgent: approve -> PaymentAgent, reject -> NotificationAgent"
+    ],
+    "fallback_per_agent": true,
+    "first_agent": "ValidationTriageAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "expected_processing_time_seconds": 43,
+    "max_escalation_path_time_seconds": 58,
+    "handles_approved_rejected": true,
+    "logging_audit": "Each agent emits audit_event to a centralized audit sink; audit_event is included in every output.",
+    "no_circular_dependencies": true,
+    "human_escalation_path": "HumanEscalationAgent",
+    "agent_timeouts_seconds": {
+      "ValidationTriageAgent": 5,
+      "FraudCheckAgent": 10,
+      "ApprovalAgent": 8,
+      "PaymentAgent": 15,
+      "HumanEscalationAgent": 15,
+      "ErrorHandlerAgent": 5,
+      "NotificationAgent": 5
+    }
+  }
+}

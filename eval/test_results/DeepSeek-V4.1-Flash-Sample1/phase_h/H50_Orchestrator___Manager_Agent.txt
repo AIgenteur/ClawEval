@@ -1,0 +1,118 @@
+{
+  "agents": [
+    {
+      "name": "ValidationTriageAgent",
+      "input": "refund_request: {customer_id, order_id, amount, currency, reason, payment_method, contact, metadata}",
+      "output": "validation_result: {status: valid|invalid|ambiguous, validated_request, errors[], audit_log}",
+      "next": "FraudCheckAgent if status=valid; NotificationAgent if status=invalid; HumanEscalationAgent if status=ambiguous",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 4,
+      "expected_seconds": 2,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "validated_request from ValidationTriageAgent",
+      "output": "fraud_assessment: {risk_score, risk_level: low|medium|high, reasons[], audit_log}",
+      "next": "ApprovalAgent if risk_level in [low, medium]; HumanEscalationAgent if risk_level=high",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 8,
+      "expected_seconds": 3,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "validated_request + fraud_assessment",
+      "output": "approval_decision: {approved: true|false, reason, approver, conditions[], audit_log}",
+      "next": "PaymentAgent if approved=true; NotificationAgent if approved=false; HumanEscalationAgent if edge_case=true",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 6,
+      "expected_seconds": 2,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "approved_request + approval_decision",
+      "output": "payment_result: {status: success|failed, transaction_id, amount, method, audit_log}",
+      "next": "NotificationAgent if status=success; HumanEscalationAgent if status=failed",
+      "fallback": "HumanEscalationAgent",
+      "timeout_seconds": 10,
+      "expected_seconds": 5,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "escalation_payload: {source_agent, reason, refund_request, partial_results, priority}",
+      "output": "escalation_result: {escalated: true, assigned_to, ticket_id, decision, audit_log}",
+      "next": "NotificationAgent",
+      "fallback": "DeadLetterQueueAgent",
+      "timeout_seconds": 15,
+      "expected_seconds": 8,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "DeadLetterQueueAgent",
+      "input": "error_payload: {source_agent, error, refund_request, partial_results, timestamp}",
+      "output": "dlq_result: {queued: true, dlq_id, audit_log}",
+      "next": "End",
+      "fallback": "END_WITH_ERROR",
+      "timeout_seconds": 2,
+      "expected_seconds": 1,
+      "logging": "writes audit_log entry"
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "final_outcome: {status: approved|rejected|escalated|error, customer_id, contact, details, audit_log}",
+      "output": "notification_result: {sent: true, channel, message_id, audit_log}",
+      "next": "End",
+      "fallback": "DeadLetterQueueAgent",
+      "timeout_seconds": 4,
+      "expected_seconds": 2,
+      "logging": "writes audit_log entry"
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "agent_count": 7,
+    "required_agents_present": [
+      "ValidationTriageAgent",
+      "FraudCheckAgent",
+      "ApprovalAgent",
+      "PaymentAgent",
+      "NotificationAgent"
+    ],
+    "agent_contract": "Each agent defines input, output, next, fallback, timeout_seconds, expected_seconds, logging",
+    "conditional_branches": [
+      "ValidationTriageAgent: valid->FraudCheckAgent, invalid->NotificationAgent, ambiguous->HumanEscalationAgent",
+      "FraudCheckAgent: low/medium->ApprovalAgent, high->HumanEscalationAgent",
+      "ApprovalAgent: approved->PaymentAgent, rejected->NotificationAgent, edge->HumanEscalationAgent",
+      "PaymentAgent: success->NotificationAgent, failed->HumanEscalationAgent"
+    ],
+    "fallback_error_handler": "Each agent has fallback; business exceptions -> HumanEscalationAgent; terminal errors -> DeadLetterQueueAgent; DeadLetterQueueAgent fallback is END_WITH_ERROR",
+    "first_agent": "ValidationTriageAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "expected_total_seconds": 22,
+    "max_timeout_path_seconds": 47,
+    "handles_outcomes": [
+      "approved",
+      "rejected",
+      "escalated",
+      "error"
+    ],
+    "logging_audit": "Each agent writes audit_log entry with timestamp, agent, input_hash, output, decision, latency_ms",
+    "no_circular_dependencies": true,
+    "dag": true,
+    "human_escalation_path": "ValidationTriageAgent/FraudCheckAgent/ApprovalAgent/PaymentAgent -> HumanEscalationAgent -> NotificationAgent",
+    "timeouts": {
+      "ValidationTriageAgent": 4,
+      "FraudCheckAgent": 8,
+      "ApprovalAgent": 6,
+      "PaymentAgent": 10,
+      "HumanEscalationAgent": 15,
+      "NotificationAgent": 4,
+      "DeadLetterQueueAgent": 2
+    }
+  }
+}

@@ -6,6 +6,8 @@ When a newer version of a model family is tested on the same deployment type (cl
 
 | Model | Provider | Score | % | Perfect | Replaced by | Results |
 |-------|----------|-------|---|---------|-------------|---------|
+| **DeepSeek family** | | | | | | |
+| DeepSeek V4 Flash | ☁️ DeepSeek | 1054/1220 | **86.4%** | 23 | DeepSeek V4.1 Flash | [`DeepSeek-V4-Flash`](../eval/test_results/DeepSeek-V4-Flash/phase_h/) |
 | **GLM family** | | | | | | |
 | GLM-5.1 | ☁️ Ollama | 1020/1220 | **83.6%** | 26 | GLM-5.3 | [`GLM-5.1`](../eval/test_results/GLM-5.1/phase_h/) |
 | GLM-5.2 | ☁️ Ollama | 957/1220 | **78.4%** | 23 | GLM-5.3 | [`GLM-5.2-Think`](../eval/test_results/GLM-5.2-Think/phase_h/) |

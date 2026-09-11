@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "Missing asyncio.Lock to protect shared self.requests from concurrent access.",
+      "fix": "Add self.lock = asyncio.Lock() in __init__ and use 'async with self.lock:' in acquire."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop() is deprecated and can fail if no running loop.",
+      "fix": "Use asyncio.get_running_loop().time() instead."
+    },
+    {
+      "line": "14-16",
+      "bug": "After awaiting sleep, the code does not re-check the rate limit and appends the stale 'now' value.",
+      "fix": "Loop until the request is allowed, updating 'now' after each sleep."
+    },
+    {
+      "line": "25",
+      "bug": "Creating a new aiohttp.ClientSession for every request is inefficient and can leak resources.",
+      "fix": "Create one ClientSession in fetch_all and pass it to fetch_one."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 should be an aiohttp.ClientTimeout object, and the response should be used as an async context manager to ensure it is closed.",
+      "fix": "Use 'async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:'."
+    },
+    {
+      "line": "29",
+      "bug": "Using URL as the dict key causes overwrites when there are duplicate URLs.",
+      "fix": "Use a list or key by index to preserve all results."
+    },
+    {
+      "line": "31",
+      "bug": "Catching all exceptions with 'except Exception' hides errors and makes debugging difficult.",
+      "fix": "Catch specific exceptions or log/re-raise the exception."
+    },
+    {
+      "line": "32",
+      "bug": "The 'pass' statement is redundant after setting results[url] = None.",
+      "fix": "Remove the 'pass' statement."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather without return_exceptions=True will cancel other tasks on the first exception.",
+      "fix": "Add return_exceptions=True to gather."
+    },
+    {
+      "line": "42",
+      "bug": "process_batch is an async generator, so it cannot be awaited. The comment about missing await is misleading.",
+      "fix": "Consume process_batch with 'async for' instead of awaiting it."
+    },
+    {
+      "line": "45",
+      "bug": "yield inside an async generator is correct, but the function cannot be used as a coroutine.",
+      "fix": "Use 'async for' to iterate over the async generator."
+    },
+    {
+      "line": "52",
+      "bug": "Missing asyncio.Lock to protect the connection pool from concurrent access.",
+      "fix": "Add self.lock = asyncio.Lock() and use it in get_connection and release."
+    },
+    {
+      "line": "60",
+      "bug": "release does not check the pool size before appending, allowing the pool to grow beyond self.size.",
+      "fix": "Only append if len(self.pool) < self.size."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection returns a plain object() instead of a real connection.",
+      "fix": "Implement actual connection creation logic."
+    },
+    {
+      "line": "68",
+      "bug": "len(results) on a dict gives the number of unique URLs. Since all URLs are the same, it prints 1 instead of 100.",
+      "fix": "Use a list or key by index to count all results."
+    }
+  ],
+  "count": 15
+}

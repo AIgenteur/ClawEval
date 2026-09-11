@@ -1,0 +1,58 @@
+```python
+class JSONValidator:
+    @staticmethod
+    def validate(data, schema):
+        errors = []
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dict"]}
+        if not isinstance(schema, dict):
+            return {"valid": False, "errors": ["Schema must be a dict"]}
+
+        for field, rules in schema.items():
+            if not isinstance(rules, dict):
+                continue
+
+            required = rules.get("required", False)
+            if field not in data:
+                if required:
+                    errors.append(f"Missing required field: {field}")
+                continue
+
+            value = data[field]
+            expected_type = rules.get("type")
+
+            if expected_type:
+                if not JSONValidator._check_type(value, expected_type):
+                    errors.append(f"Field '{field}' must be of type {expected_type}")
+                    continue
+
+            if expected_type in ("int", "float"):
+                if "min" in rules and value < rules["min"]:
+                    errors.append(f"Field '{field}' must be >= {rules['min']}")
+                if "max" in rules and value > rules["max"]:
+                    errors.append(f"Field '{field}' must be <= {rules['max']}")
+
+            if expected_type in ("str", "list"):
+                if "min_length" in rules and len(value) < rules["min_length"]:
+                    errors.append(f"Field '{field}' length must be >= {rules['min_length']}")
+                if "max_length" in rules and len(value) > rules["max_length"]:
+                    errors.append(f"Field '{field}' length must be <= {rules['max_length']}")
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    @staticmethod
+    def _check_type(value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+        elif expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+        elif expected_type == "float":
+            return isinstance(value, float)
+        elif expected_type == "bool":
+            return isinstance(value, bool)
+        elif expected_type == "list":
+            return isinstance(value, list)
+        elif expected_type == "dict":
+            return isinstance(value, dict)
+        return False
+```

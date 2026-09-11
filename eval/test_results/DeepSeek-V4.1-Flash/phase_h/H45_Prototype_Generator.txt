@@ -1,0 +1,78 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dict"]}
+
+        if not isinstance(schema, dict):
+            return {"valid": False, "errors": ["Schema must be a dict"]}
+
+        for field, rules in schema.items():
+            if not isinstance(rules, dict):
+                errors.append(f"Schema for field '{field}' must be a dict")
+                continue
+
+            required = rules.get("required", False)
+
+            if field not in data:
+                if required:
+                    errors.append(f"Missing required field: {field}")
+                continue
+
+            value = data[field]
+            expected_type = rules.get("type")
+
+            if expected_type is not None:
+                if not self._check_type(value, expected_type):
+                    errors.append(f"Field '{field}' must be of type {expected_type}")
+                    continue
+
+            # Number checks
+            if expected_type in ("int", "float"):
+                min_val = rules.get("min")
+                max_val = rules.get("max")
+
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field}' must be >= {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field}' must be <= {max_val}")
+
+            # String length checks
+            if expected_type == "str":
+                min_len = rules.get("min_length")
+                max_len = rules.get("max_length")
+
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field}' length must be >= {min_len}")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field}' length must be <= {max_len}")
+
+            # List length checks
+            if expected_type == "list":
+                min_len = rules.get("min_length")
+                max_len = rules.get("max_length")
+
+                if min_len is not None and len(value) < min_len:
+                    errors.append(f"Field '{field}' length must be >= {min_len}")
+                if max_len is not None and len(value) > max_len:
+                    errors.append(f"Field '{field}' length must be <= {max_len}")
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _check_type(self, value, expected_type):
+        if expected_type == "str":
+            return type(value) is str
+        if expected_type == "int":
+            return type(value) is int
+        if expected_type == "float":
+            return type(value) is float
+        if expected_type == "bool":
+            return type(value) is bool
+        if expected_type == "list":
+            return type(value) is list
+        if expected_type == "dict":
+            return type(value) is dict
+        return False
+```
