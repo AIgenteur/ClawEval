@@ -1,0 +1,144 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Inventory monolith modules and define service boundaries",
+      "depends_on": [],
+      "effort_days": 3,
+      "team": "backend"
+    },
+    {
+      "id": 2,
+      "task": "Define target microservice architecture and service contracts",
+      "depends_on": [1],
+      "effort_days": 4,
+      "team": "backend"
+    },
+    {
+      "id": 3,
+      "task": "Set up base CI/CD pipeline and environment strategy",
+      "depends_on": [1],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 4,
+      "task": "Provision infrastructure and service platform for microservices",
+      "depends_on": [3],
+      "effort_days": 4,
+      "team": "devops"
+    },
+    {
+      "id": 5,
+      "task": "Implement API gateway setup and routing",
+      "depends_on": [4],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 6,
+      "task": "Extract authentication service from monolith",
+      "depends_on": [2, 5],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 7,
+      "task": "Extract user profile service from monolith",
+      "depends_on": [2, 5],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 8,
+      "task": "Extract order service from monolith",
+      "depends_on": [2, 5],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 9,
+      "task": "Extract payment service from monolith",
+      "depends_on": [2, 5],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 10,
+      "task": "Design database migration strategy and schema split",
+      "depends_on": [2],
+      "effort_days": 5,
+      "team": "backend"
+    },
+    {
+      "id": 11,
+      "task": "Migrate legacy data to service databases",
+      "depends_on": [10],
+      "effort_days": 6,
+      "team": "backend"
+    },
+    {
+      "id": 12,
+      "task": "Refactor frontend to consume API gateway endpoints",
+      "depends_on": [5],
+      "effort_days": 5,
+      "team": "frontend"
+    },
+    {
+      "id": 13,
+      "task": "Implement service-specific UI modules and feature flags",
+      "depends_on": [12],
+      "effort_days": 4,
+      "team": "frontend"
+    },
+    {
+      "id": 14,
+      "task": "Update frontend error handling and observability",
+      "depends_on": [13],
+      "effort_days": 3,
+      "team": "frontend"
+    },
+    {
+      "id": 15,
+      "task": "Define test strategy and acceptance criteria",
+      "depends_on": [2],
+      "effort_days": 3,
+      "team": "qa"
+    },
+    {
+      "id": 16,
+      "task": "Build integration test suite for extracted services",
+      "depends_on": [6, 7, 8, 9, 11],
+      "effort_days": 6,
+      "team": "qa"
+    },
+    {
+      "id": 17,
+      "task": "Perform load and chaos testing",
+      "depends_on": [16],
+      "effort_days": 4,
+      "team": "qa"
+    },
+    {
+      "id": 18,
+      "task": "Deploy microservices to staging and enable monitoring",
+      "depends_on": [5, 11, 12],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 19,
+      "task": "Execute production rollout and traffic shift",
+      "depends_on": [18, 17],
+      "effort_days": 5,
+      "team": "devops"
+    },
+    {
+      "id": 20,
+      "task": "Final regression and production validation",
+      "depends_on": [19, 14],
+      "effort_days": 4,
+      "team": "qa"
+    }
+  ]
+}

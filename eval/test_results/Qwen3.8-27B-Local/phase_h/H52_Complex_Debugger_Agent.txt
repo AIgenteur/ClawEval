@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": "8",
+      "bug": "RateLimiter has no lock protecting self.requests, so concurrent acquire() calls can race and exceed the limit.",
+      "fix": "Add self.lock = asyncio.Lock() and use async with self.lock: around the check/update logic."
+    },
+    {
+      "line": "11",
+      "bug": "asyncio.get_event_loop().time() is deprecated/unreliable; use the running loop or monotonic time.",
+      "fix": "Use now = asyncio.get_running_loop().time() or time.monotonic()."
+    },
+    {
+      "line": "14",
+      "bug": "acquire() sleeps once and then appends the stale now without rechecking the rate limit, so it can still exceed max_requests.",
+      "fix": "Loop while len(self.requests) >= self.max_requests, recompute now after sleep, and append the new timestamp."
+    },
+    {
+      "line": "25",
+      "bug": "A new aiohttp.ClientSession is created for every request, causing unnecessary connection setup/teardown.",
+      "fix": "Create one ClientSession in fetch_all and reuse it for all requests, closing it at the end."
+    },
+    {
+      "line": "27",
+      "bug": "timeout=30 is not a valid aiohttp timeout value.",
+      "fix": "Use timeout=aiohttp.ClientTimeout(total=30)."
+    },
+    {
+      "line": "29",
+      "bug": "The response status is not checked before parsing/storing JSON, so error responses may be treated as successful data.",
+      "fix": "Call response.raise_for_status() before response.json()."
+    },
+    {
+      "line": "31",
+      "bug": "The except block silently swallows exceptions by only setting results[url] = None.",
+      "fix": "Log the exception or store error details, e.g. results[url] = {'error': str(exc)}."
+    },
+    {
+      "line": "32",
+      "bug": "pass after the assignment is redundant and obscures the error handling.",
+      "fix": "Remove the pass statement."
+    },
+    {
+      "line": "35",
+      "bug": "asyncio.gather is used without return_exceptions=True, so an unexpected task failure can abort the whole gather.",
+      "fix": "Use await asyncio.gather(*tasks, return_exceptions=True) or ensure tasks handle all exceptions."
+    },
+    {
+      "line": "42",
+      "bug": "process_item(item) returns a coroutine; the code relies on gather to await it instead of explicitly creating/awaiting the task.",
+      "fix": "Use task = asyncio.create_task(process_item(item)) or await process_item(item) if sequential execution is intended."
+    },
+    {
+      "line": "45",
+      "bug": "yield makes process_batch an async generator, so callers expecting await process_batch(...) to return a list will get a generator instead.",
+      "fix": "Collect results and return them, or explicitly consume the async generator with async for."
+    },
+    {
+      "line": "52",
+      "bug": "ConnectionPool uses an unbounded plain list and no synchronization/queue, so pool size is not enforced.",
+      "fix": "Use an asyncio.Queue(maxsize=size) or a list protected by a lock/semaphore that enforces size."
+    },
+    {
+      "line": "60",
+      "bug": "release() appends connections without checking the pool size, allowing the pool to grow beyond size.",
+      "fix": "Only append if len(self.pool) < self.size; otherwise close the connection."
+    },
+    {
+      "line": "63",
+      "bug": "create_connection() returns a dummy object() instead of a real connection.",
+      "fix": "Create and return an actual connection, e.g. await aiohttp.ClientSession() or a TCP/HTTP connection."
+    },
+    {
+      "line": "68",
+      "bug": "main() uses 100 duplicate URLs and stores results in a dict keyed by URL, so len(results) will be 1, not 100.",
+      "fix": "Use unique URLs or store results in a list/counter if duplicate URLs are expected."
+    }
+  ],
+  "count": 15
+}

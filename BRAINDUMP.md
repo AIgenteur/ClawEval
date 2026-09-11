@@ -202,6 +202,9 @@ TurboQuant compresses KV cache from 8-bit to 3-bit. Model weights unchanged.
   all leave reasoning on and unbounded). Only `reasoning_effort=low` changes anything. Treat earlier
   GLM "Think (bounded)" / "NoThink" labels on Ollama with suspicion. Verify a flag with a tiny probe
   (compare completion_tokens / reasoning field) BEFORE labelling a run Think or NoThink.
+- llama.cpp `--jinja` + Qwen3.x (verified on Qwen3.8-27B 2026-09-11): only
+  `chat_template_kwargs.enable_thinking=false` disables thinking — use `--nothink-template`.
+  `--nothink-root` and `--nothink` are silently ignored there. Always probe before labelling a run.
 - Superseded-model policy (owner, 2026-09-10): newer version of the same family on the same
   deployment type (cloud/local) at comparable size → older rows move to
   `docs/results-previous-versions.md`. Kimi K2.7 Code counts as the successor of K2.5/K2.6.

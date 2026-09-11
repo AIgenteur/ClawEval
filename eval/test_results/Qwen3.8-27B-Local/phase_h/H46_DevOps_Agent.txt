@@ -1,0 +1,80 @@
+{
+  "issues": [
+    {
+      "line": "6",
+      "issue": "replicas is set to 1, providing no high availability",
+      "severity": "major"
+    },
+    {
+      "line": "17",
+      "issue": "image uses mutable :latest tag instead of a pinned tag or digest",
+      "severity": "major"
+    },
+    {
+      "line": "20",
+      "issue": "api container has no CPU or memory requests/limits",
+      "severity": "major"
+    },
+    {
+      "line": "22",
+      "issue": "runAsRoot: true is invalid/insecure; use runAsNonRoot: false",
+      "severity": "critical"
+    },
+    {
+      "line": "23",
+      "issue": "privileged: true grants the container full node privileges",
+      "severity": "critical"
+    },
+    {
+      "line": "26",
+      "issue": "DB_PASSWORD is hardcoded in plaintext in the manifest",
+      "severity": "critical"
+    },
+    {
+      "line": "28",
+      "issue": "API_KEY is hardcoded in plaintext in the manifest",
+      "severity": "critical"
+    },
+    {
+      "line": "40",
+      "issue": "hostPath volume exposes the node filesystem to the pod",
+      "severity": "critical"
+    },
+    {
+      "line": "41",
+      "issue": "hostPath uses /tmp/data, which is world-writable and ephemeral",
+      "severity": "major"
+    },
+    {
+      "line": "34",
+      "issue": "sidecar has resource requests but no limits",
+      "severity": "major"
+    },
+    {
+      "line": "36",
+      "issue": "sidecar requests excessive resources: 10Gi memory and 8 CPU",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "api container has no livenessProbe",
+      "severity": "major"
+    },
+    {
+      "line": "16",
+      "issue": "api container has no readinessProbe",
+      "severity": "major"
+    },
+    {
+      "line": "48",
+      "issue": "Service type LoadBalancer may be unnecessary external exposure/cost",
+      "severity": "minor"
+    },
+    {
+      "line": "50",
+      "issue": "Service exposes HTTP on port 80 without TLS",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}

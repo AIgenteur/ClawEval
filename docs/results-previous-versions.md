@@ -20,5 +20,7 @@ When a newer version of a model family is tested on the same deployment type (cl
 | **MiniMax family** | | | | | | |
 | MiniMax-M2.7 Medium | ☁️ Ollama | 1014/1220 | **83.1%** | 20 | MiniMax-M3 | [`MiniMax-M2.7-Medium`](../eval/test_results/MiniMax-M2.7-Medium/phase_h/) |
 | MiniMax-M2.7 Think | ☁️ Ollama | 993/1220 | **81.4%** | 19 | MiniMax-M3 | [`MiniMax-M2.7-Think`](../eval/test_results/MiniMax-M2.7-Think/phase_h/) |
+| **Qwen family** | | | | | | |
+| Qwen3.6-27B (TurboQuant4) | 🖥️ Local TQ4 | 1012/1220 | **83.0%** | 26 | Qwen3.8-27B | [`Qwen3.6-27B-Local`](../eval/test_results/Qwen3.6-27B-Local/phase_h/) |
 
 > Rule: same family + same deployment type + comparable size, newer version tested → older rows move here. Local and cloud entries are tracked separately, so a local small model is only superseded by a newer local model of similar size.

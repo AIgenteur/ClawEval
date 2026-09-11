@@ -1,0 +1,119 @@
+```python
+class JSONValidator:
+    """
+    Validates JSON-like data against a simple schema.
+
+    Schema format:
+    {
+        "field_name": {
+            "type": "str/int/float/bool/list/dict",
+            "required": true/false,
+            "min": N,
+            "max": N,
+            "min_length": N,
+            "max_length": N
+        }
+    }
+    """
+
+    def validate(self, data, schema):
+        errors = []
+
+        if not isinstance(schema, dict):
+            return {"valid": False, "errors": ["schema must be a dict"]}
+
+        if not isinstance(data, dict):
+            if not schema:
+                return {"valid": True, "errors": []}
+
+            errors.append("data must be a dict")
+            for field, rules in schema.items():
+                if isinstance(rules, dict) and rules.get("required", False):
+                    errors.append(f"{field}: required field is missing")
+
+            return {"valid": False, "errors": errors}
+
+        for field, rules in schema.items():
+            if not isinstance(rules, dict):
+                errors.append(f"{field}: schema rule must be a dict")
+                continue
+
+            if field not in data:
+                if rules.get("required", False):
+                    errors.append(f"{field}: required field is missing")
+                continue
+
+            value = data[field]
+            expected_type = rules.get("type")
+
+            if expected_type is not None and not self._matches_type(value, expected_type):
+                errors.append(
+                    f"{field}: expected type {expected_type}, got {self._type_name(value)}"
+                )
+                continue
+
+            if self._is_number(value):
+                self._check_number(value, rules, field, errors)
+            elif isinstance(value, str):
+                self._check_length(value, rules, field, errors, "string")
+            elif isinstance(value, list):
+                self._check_length(value, rules, field, errors, "list")
+
+        return {"valid": len(errors) == 0, "errors": errors}
+
+    def _matches_type(self, value, expected_type):
+        if expected_type == "str":
+            return isinstance(value, str)
+
+        if expected_type == "int":
+            return isinstance(value, int) and not isinstance(value, bool)
+
+        if expected_type == "float":
+            # Accept integral numbers for float because JSON numbers may be whole numbers.
+            return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+        if expected_type == "bool":
+            return isinstance(value, bool)
+
+        if expected_type == "list":
+            return isinstance(value, list)
+
+        if expected_type == "dict":
+            return isinstance(value, dict)
+
+        return False
+
+    def _is_number(self, value):
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+    def _type_name(self, value):
+        if isinstance(value, bool):
+            return "bool"
+        if isinstance(value, int):
+            return "int"
+        if isinstance(value, float):
+            return "float"
+        return type(value).__name__
+
+    def _check_number(self, value, rules, field, errors):
+        min_value = rules.get("min")
+        if self._is_number(min_value) and value < min_value:
+            errors.append(f"{field}: value {value} is less than min {min_value}")
+
+        max_value = rules.get("max")
+        if self._is_number(max_value) and value > max_value:
+            errors.append(f"{field}: value {value} is greater than max {max_value}")
+
+    def _check_length(self, value, rules, field, errors, kind):
+        min_length = rules.get("min_length")
+        if self._is_number(min_length) and len(value) < min_length:
+            errors.append(
+                f"{field}: {kind} length {len(value)} is less than min_length {min_length}"
+            )
+
+        max_length = rules.get("max_length")
+        if self._is_number(max_length) and len(value) > max_length:
+            errors.append(
+                f"{field}: {kind} length {len(value)} is greater than max_length {max_length}"
+            )
+```

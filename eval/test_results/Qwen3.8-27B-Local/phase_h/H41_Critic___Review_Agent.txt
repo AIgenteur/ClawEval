@@ -1,0 +1,189 @@
+{
+  "overall_score": 2,
+  "categories": [
+    {
+      "point_id": 1,
+      "category": "Overall Code Quality",
+      "severity": "high",
+      "finding": "Overall code quality is rated 2/10. The project contains multiple critical security vulnerabilities, unsafe deployment practices, no meaningful documentation, weak tests, and a monolithic design. It is not suitable for production without major remediation.",
+      "recommendation": "Treat this as a pre-production codebase. Prioritize credential removal, SQL injection fixes, least-privilege deployment, dependency pinning, tests, and modularization before any release."
+    },
+    {
+      "point_id": 2,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "database.py uses raw SQL with string formatting: f\"SELECT * FROM users WHERE id={user_id}\". This is a SQL injection vulnerability because user-controlled input can alter query structure.",
+      "recommendation": "Replace all raw SQL with parameterized queries, for example: cursor.execute(\"SELECT * FROM users WHERE id = :user_id\", {\"user_id\": user_id}) or SQLAlchemy ORM/Core bound parameters."
+    },
+    {
+      "point_id": 3,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "config.py contains hardcoded secrets: DB_PASSWORD = \"admin123\" and API_KEY = \"sk-xxx\". These credentials are exposed in source control and may already be compromised.",
+      "recommendation": "Remove secrets from config.py immediately, rotate the database password and API key, and load configuration from environment variables or a secrets manager."
+    },
+    {
+      "point_id": 4,
+      "category": "Architecture",
+      "severity": "high",
+      "finding": "app.py is 500 lines and mixes routes, business logic, and database queries. This violates separation of concerns, making the code hard to test, review, and maintain.",
+      "recommendation": "Split the application into Flask blueprints or modules: routes/controllers, services for business logic, repositories for data access, and models for domain objects."
+    },
+    {
+      "point_id": 5,
+      "category": "Dependencies",
+      "severity": "medium",
+      "finding": "requirements.txt lists flask, requests, and sqlalchemy without version pinning. This creates non-reproducible builds and increases risk of breaking changes or vulnerable package versions.",
+      "recommendation": "Pin exact versions or use a lockfile such as pip-tools, Poetry, or uv. Add dependency scanning to CI."
+    },
+    {
+      "point_id": 6,
+      "category": "Testing",
+      "severity": "high",
+      "finding": "test_app.py is only 50 lines with 3 test functions and no mocking. This is insufficient coverage for a 500-line application with database and external API dependencies.",
+      "recommendation": "Add unit tests for business logic, integration tests for routes, and mocked tests for database and external API calls. Enforce coverage thresholds in CI."
+    },
+    {
+      "point_id": 7,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "deploy.sh contains inline AWS credentials. This is a severe credential exposure risk and violates least-privilege and secret-management practices.",
+      "recommendation": "Remove AWS credentials from deploy.sh, rotate the exposed AWS keys, and use IAM roles, OIDC, or environment-injected secrets for deployment."
+    },
+    {
+      "point_id": 8,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "deploy.sh runs chmod 777 on all files. This grants read, write, and execute permissions to all users and can expose sensitive files or enable privilege escalation.",
+      "recommendation": "Remove chmod 777. Use least-privilege permissions, for example 755 for directories and 644 for files, and run processes under a non-root user."
+    },
+    {
+      "point_id": 9,
+      "category": "Deployment",
+      "severity": "medium",
+      "finding": "Dockerfile uses FROM python:3.8. Python 3.8 is outdated and no longer receives security updates, increasing vulnerability and compatibility risk.",
+      "recommendation": "Upgrade to a supported Python version such as 3.11 or 3.12, and use a slim or distroless base image where appropriate."
+    },
+    {
+      "point_id": 10,
+      "category": "Deployment",
+      "severity": "high",
+      "finding": "Dockerfile runs as root by default. Running containers as root increases the impact of container escapes and violates container security best practices.",
+      "recommendation": "Create and switch to a non-root user in the Dockerfile, for example: RUN useradd -m appuser && USER appuser."
+    },
+    {
+      "point_id": 11,
+      "category": "Configuration",
+      "severity": "medium",
+      "finding": ".env.example is missing. Developers have no safe template for required environment variables, which encourages hardcoding secrets or inconsistent local setup.",
+      "recommendation": "Add .env.example with placeholder values for all required configuration, and document which variables are required, optional, and secret."
+    },
+    {
+      "point_id": 12,
+      "category": "Documentation",
+      "severity": "medium",
+      "finding": "README.md is empty except for TODO: add docs. The repository lacks setup, architecture, configuration, testing, and deployment documentation.",
+      "recommendation": "Add a README with project overview, prerequisites, installation, environment configuration, running tests, API endpoints, and deployment instructions."
+    },
+    {
+      "point_id": 13,
+      "category": "Architecture",
+      "severity": "medium",
+      "finding": "utils.py is 200 lines and mixes string helpers, date parsing, API calls, and file I/O. This is a god module with unclear ownership and poor testability.",
+      "recommendation": "Split utils into focused modules such as text_utils.py, date_utils.py, api_client.py, and file_utils.py, or move logic into domain-specific services."
+    },
+    {
+      "point_id": 14,
+      "category": "Architecture",
+      "severity": "high",
+      "finding": "The current flat structure does not scale. Routes, business logic, data access, and utilities are not separated into maintainable modules.",
+      "recommendation": "Adopt a structure such as: app/ with __init__.py, config.py, extensions.py, blueprints/, services/, repositories/, models/, schemas/, and tests/."
+    },
+    {
+      "point_id": 15,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "The SQL implementation should use parameterized queries to prevent injection. The current f-string query is unsafe.",
+      "recommendation": "Use SQLAlchemy ORM, Core bind parameters, or DB-API placeholders. Never concatenate or format user input into SQL."
+    },
+    {
+      "point_id": 16,
+      "category": "Security",
+      "severity": "critical",
+      "finding": "Secrets are managed by hardcoding them in source files. This is unsafe and does not support rotation or environment isolation.",
+      "recommendation": "Use environment variables for local development and a secrets manager such as AWS Secrets Manager, HashiCorp Vault, or cloud KMS for production. Inject secrets at runtime, not in code."
+    },
+    {
+      "point_id": 17,
+      "category": "CI/CD",
+      "severity": "high",
+      "finding": "No CI/CD pipeline is evident. Without automated checks, security vulnerabilities, failing tests, and broken builds can reach production.",
+      "recommendation": "Add CI/CD with linting, type checking, unit tests, coverage gates, dependency scanning, secret scanning, Docker build, and deployment approvals."
+    },
+    {
+      "point_id": 18,
+      "category": "Testing",
+      "severity": "high",
+      "finding": "There is no stated minimum test coverage percentage. Given the current low test count, coverage is likely far below acceptable levels.",
+      "recommendation": "Set a minimum coverage threshold, for example 80% line coverage for business logic and 70% overall, and enforce it in CI with pytest-cov."
+    },
+    {
+      "point_id": 19,
+      "category": "Deployment",
+      "severity": "high",
+      "finding": "The Dockerfile is basic and insecure: outdated base image, root user, no multi-stage build, and likely unnecessary build tools in the final image.",
+      "recommendation": "Use a multi-stage build, copy only required files, pin base image digests, install dependencies in a builder stage, and run the final image as a non-root user."
+    },
+    {
+      "point_id": 20,
+      "category": "Severity Ratings",
+      "severity": "n/a",
+      "finding": "Severity ratings assigned: critical for SQL injection, hardcoded credentials, inline AWS credentials, chmod 777, and unsafe secret management; high for monolithic app.py, insufficient tests, root Docker user, missing CI/CD, low coverage, and poor project structure; medium for unpinned dependencies, outdated Python, missing .env.example, empty README, and mixed utils.py.",
+      "recommendation": "Block release on all critical issues. Remediate high issues before production. Schedule medium issues as part of technical debt reduction."
+    }
+  ],
+  "critical_issues": [
+    {
+      "id": 2,
+      "issue": "SQL injection in database.py via f-string query",
+      "severity": "critical",
+      "impact": "Attacker can read, modify, or delete data and potentially compromise the database.",
+      "fix": "Use parameterized queries and validate input."
+    },
+    {
+      "id": 3,
+      "issue": "Hardcoded DB password and API key in config.py",
+      "severity": "critical",
+      "impact": "Credentials are exposed to anyone with repository access and may be leaked in logs or backups.",
+      "fix": "Remove secrets, rotate credentials, and use environment variables or a secrets manager."
+    },
+    {
+      "id": 7,
+      "issue": "Inline AWS credentials in deploy.sh",
+      "severity": "critical",
+      "impact": "Exposes cloud account credentials and can lead to unauthorized infrastructure access or data exfiltration.",
+      "fix": "Remove credentials, rotate AWS keys, and use IAM roles or OIDC for deployment."
+    },
+    {
+      "id": 8,
+      "issue": "chmod 777 on all files in deploy.sh",
+      "severity": "critical",
+      "impact": "Grants excessive permissions to all users and can expose secrets or enable malicious modification.",
+      "fix": "Use least-privilege file permissions and run as a non-root user."
+    }
+  ],
+  "recommendations": [
+    "Immediately remove all hardcoded and inline credentials from config.py and deploy.sh, then rotate the exposed database password, API key, and AWS credentials.",
+    "Replace all raw SQL string formatting with parameterized queries or SQLAlchemy ORM/Core bound parameters.",
+    "Implement secrets management using environment variables for development and a secrets manager such as AWS Secrets Manager or HashiCorp Vault for production.",
+    "Refactor app.py into Flask blueprints or separate modules with clear separation between routes, services, repositories, and models.",
+    "Split utils.py into focused modules or domain services instead of a single mixed utility file.",
+    "Pin dependency versions in requirements.txt or use a lockfile, and add dependency vulnerability scanning to CI.",
+    "Expand test coverage with unit, integration, and mocked external dependency tests; enforce a minimum coverage threshold such as 80% for business logic.",
+    "Add a CI/CD pipeline with linting, type checking, tests, coverage gates, secret scanning, Docker image builds, and deployment approvals.",
+    "Improve the Dockerfile by upgrading to a supported Python version, using a multi-stage build, pinning base image versions, and running as a non-root user.",
+    "Add .env.example with placeholder configuration values and document required environment variables.",
+    "Write a complete README covering setup, configuration, architecture, testing, API usage, and deployment.",
+    "Adopt a scalable project structure such as app/, blueprints/, services/, repositories/, models/, config.py, extensions.py, and tests/."
+  ]
+}

@@ -1,0 +1,82 @@
+```json
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "Incorrect discount calculation: multiplies subtotal by 0.20 instead of 0.80 (or subtracting 20%).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "Incorrect discount calculation: subtracts 10x the subtotal instead of 10% (0.10).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Silently ignores negative stock; should raise an error or handle the out-of-stock condition.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "Syntax error: '=+' is not a valid operator; should be '+=' to accumulate total revenue.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "Potential ZeroDivisionError if 'orders' is empty.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "Potential ValueError if 'results' is empty (e.g., if orders list was empty).",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Insufficient email validation: only checks for '@', missing domain, TLD, and other RFC 5322 rules.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Incorrect shipping cost formula: adds 'distance' and 'per_km' instead of multiplying them (distance * per_km).",
+      "severity": "critical"
+    },
+    {
+      "line": 57,
+      "bug": "Unreachable code: 'elif weight > 50' is never executed because 'if weight > 30' catches all weights > 30.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "Loses decimal precision by rounding to integer; shipping costs should retain cents.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "Mutates the original 'profile_a' dictionary instead of creating a new merged copy.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "Hardcoded date '2024-01-01' instead of using current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "Naive CSV parsing: does not handle quoted fields, commas within quotes, or escaped characters.",
+      "severity": "major"
+    },
+    {
+      "line": 78,
+      "bug": "Inefficient duplicate detection: uses list 'in' check (O(n)) instead of set (O(1)); also appends duplicates multiple times if item appears >2 times.",
+      "severity": "minor"
+    },
+    {
+      "line": 1,
+      "bug": "Function signature lacks type hints and docstring, making API contract unclear (minor design issue).",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}
+```

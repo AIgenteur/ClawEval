@@ -1,0 +1,83 @@
+```python
+class JSONValidator:
+    def validate(self, data, schema):
+        errors = []
+        
+        if not isinstance(data, dict):
+            return {"valid": False, "errors": ["Data must be a dictionary"]}
+        
+        for field_name, field_schema in schema.items():
+            # Check if field is required
+            if field_schema.get("required", False):
+                if field_name not in data:
+                    errors.append(f"Field '{field_name}' is required but missing")
+                    continue
+            
+            # If field is not present and not required, skip validation
+            if field_name not in data:
+                continue
+            
+            value = data[field_name]
+            expected_type = field_schema.get("type")
+            
+            # Type checking
+            if expected_type == "str":
+                if not isinstance(value, str):
+                    errors.append(f"Field '{field_name}' expected type 'str', got {type(value).__name__}")
+                    continue
+                # String length checks
+                min_length = field_schema.get("min_length")
+                max_length = field_schema.get("max_length")
+                if min_length is not None and len(value) < min_length:
+                    errors.append(f"Field '{field_name}' length {len(value)} is less than min_length {min_length}")
+                if max_length is not None and len(value) > max_length:
+                    errors.append(f"Field '{field_name}' length {len(value)} is greater than max_length {max_length}")
+            
+            elif expected_type == "int":
+                # bool is a subclass of int in Python, so we need to exclude bool
+                if isinstance(value, bool) or not isinstance(value, int):
+                    errors.append(f"Field '{field_name}' expected type 'int', got {type(value).__name__}")
+                    continue
+                min_val = field_schema.get("min")
+                max_val = field_schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}' value {value} is less than min {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}' value {value} is greater than max {max_val}")
+            
+            elif expected_type == "float":
+                # bool is a subclass of int, and int is a subclass of float in terms of isinstance
+                # We need to check that it's a number (int or float) but not bool
+                if isinstance(value, bool) or not isinstance(value, (int, float)):
+                    errors.append(f"Field '{field_name}' expected type 'float', got {type(value).__name__}")
+                    continue
+                min_val = field_schema.get("min")
+                max_val = field_schema.get("max")
+                if min_val is not None and value < min_val:
+                    errors.append(f"Field '{field_name}' value {value} is less than min {min_val}")
+                if max_val is not None and value > max_val:
+                    errors.append(f"Field '{field_name}' value {value} is greater than max {max_val}")
+            
+            elif expected_type == "bool":
+                if not isinstance(value, bool):
+                    errors.append(f"Field '{field_name}' expected type 'bool', got {type(value).__name__}")
+                    continue
+            
+            elif expected_type == "list":
+                if not isinstance(value, list):
+                    errors.append(f"Field '{field_name}' expected type 'list', got {type(value).__name__}")
+                    continue
+                min_length = field_schema.get("min_length")
+                max_length = field_schema.get("max_length")
+                if min_length is not None and len(value) < min_length:
+                    errors.append(f"Field '{field_name}' length {len(value)} is less than min_length {min_length}")
+                if max_length is not None and len(value) > max_length:
+                    errors.append(f"Field '{field_name}' length {len(value)} is greater than max_length {max_length}")
+            
+            elif expected_type == "dict":
+                if not isinstance(value, dict):
+                    errors.append(f"Field '{field_name}' expected type 'dict', got {type(value).__name__}")
+                    continue
+        
+        return {"valid": len(errors) == 0, "errors": errors}
+```

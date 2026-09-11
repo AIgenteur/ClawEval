@@ -1,0 +1,679 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="QuillAI is an AI writing assistant that drafts, rewrites, and polishes in your voice. 100+ languages, plagiarism shield, and a private style guide. Start free — no credit card required.">
+<title>QuillAI — The AI Writing Assistant That Sounds Like You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS & RESET ============ */
+:root{
+  --paper:#F6F1E5; --paper-2:#EFE7D3; --card:#FBF8F0;
+  --ink:#17130C; --ink-2:#3E382B; --muted:#6E6653; --line:#D8CFB8;
+  --blue:#2B3AE0; --blue-deep:#1E2AB8; --red:#D9482B; --yellow:#F5D547;
+  --font-display:"Fraunces",Georgia,serif;
+  --font-body:"Instrument Sans",system-ui,sans-serif;
+  --font-mono:"Spline Sans Mono",ui-monospace,monospace;
+  --shadow-lg:0 30px 60px -22px rgba(23,19,12,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+ul,ol{list-style:none}
+button{font:inherit;cursor:pointer}
+section{scroll-margin-top:92px}
+::selection{background:var(--yellow);color:var(--ink)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+
+/* paper grain overlay */
+body::after{content:"";position:fixed;inset:0;z-index:2000;pointer-events:none;opacity:.045;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:16px;top:-60px;z-index:3000;background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:8px;text-decoration:none;transition:top .2s}
+.skip-link:focus{top:14px}
+
+/* ============ SHARED PIECES ============ */
+.eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);display:inline-flex;align-items:center;gap:10px;font-weight:500}
+.eyebrow::before{content:"";width:26px;height:1.5px;background:var(--blue)}
+.section-head{max-width:640px;margin-bottom:56px}
+.section-head h2{font-family:var(--font-display);font-weight:560;font-size:clamp(2rem,4vw,3.1rem);line-height:1.08;letter-spacing:-.02em;margin:18px 0 16px}
+.section-head p{color:var(--muted);font-size:1.08rem;max-width:52ch}
+.dark .section-head p{color:#B9B09A}
+
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:1rem;padding:14px 26px;border-radius:10px;border:1.5px solid var(--ink);text-decoration:none;transition:transform .2s ease,background .2s ease,color .2s ease,box-shadow .2s ease,border-color .2s ease;background:transparent;color:var(--ink)}
+.btn svg{transition:transform .2s ease}
+.btn:hover svg{transform:translateX(4px)}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);transform:translateY(-2px);box-shadow:0 12px 26px -10px rgba(43,58,224,.55)}
+.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+.btn-light{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.btn-light:hover{background:var(--yellow);border-color:var(--yellow);transform:translateY(-2px)}
+.btn-outline-light{color:var(--paper);border-color:rgba(246,241,229,.4)}
+.btn-outline-light:hover{border-color:var(--paper);background:rgba(246,241,229,.08)}
+
+/* reveal on scroll */
+[data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.22,1,.36,1)}
+[data-reveal].in{opacity:1;transform:none}
+
+/* ============ HEADER / NAV ============ */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--paper);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+.site-header.scrolled{border-color:var(--line);box-shadow:0 8px 24px -14px rgba(23,19,12,.18)}
+.nav-bar{display:flex;align-items:center;justify-content:space-between;height:72px;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--font-display);font-weight:640;font-size:1.35rem;letter-spacing:-.02em}
+.brand .feather{color:var(--blue);display:grid;place-items:center}
+.brand em{font-style:italic;color:var(--blue)}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a{text-decoration:none;font-weight:500;font-size:.95rem;color:var(--ink-2);position:relative;padding:6px 0}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-cta{display:flex;align-items:center;gap:14px}
+.nav-cta .btn{padding:10px 20px;font-size:.92rem}
+.nav-toggle{display:none;background:none;border:0;width:44px;height:44px;position:relative;z-index:1100}
+.nav-toggle span{position:absolute;left:10px;width:24px;height:2px;background:var(--ink);transition:transform .3s,opacity .3s}
+.nav-toggle span:nth-child(1){top:15px}
+.nav-toggle span:nth-child(2){top:21px}
+.nav-toggle span:nth-child(3){top:27px}
+.nav-open .nav-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-open .nav-toggle span:nth-child(2){opacity:0}
+.nav-open .nav-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* ============ HERO ============ */
+.hero{position:relative;padding:158px 0 40px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(transparent 0 34px,rgba(23,19,12,.055) 34px 35px);
+  -webkit-mask-image:linear-gradient(to bottom,black 20%,transparent 92%);mask-image:linear-gradient(to bottom,black 20%,transparent 92%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{font-family:var(--font-display);font-weight:580;font-size:clamp(2.7rem,5.6vw,4.5rem);line-height:1.02;letter-spacing:-.025em;margin:22px 0 24px}
+.line{display:block;overflow:hidden;padding-bottom:.06em}
+.line>span{display:block;transform:translateY(112%);transition:transform 1s cubic-bezier(.22,1,.36,1)}
+body.is-loaded .line>span{transform:none}
+.line:nth-child(2)>span{transition-delay:.12s}
+.line:nth-child(3)>span{transition-delay:.24s}
+.u{position:relative;font-style:italic;color:var(--blue);white-space:nowrap}
+.u svg{position:absolute;left:0;bottom:-.14em;width:100%;height:.28em;overflow:visible}
+.u svg path{stroke:var(--blue);stroke-width:5;fill:none;stroke-linecap:round;stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.1s ease .9s}
+body.is-loaded .u svg path{stroke-dashoffset:0}
+.hero-sub{font-size:1.15rem;color:var(--ink-2);max-width:50ch;margin-bottom:34px}
+.hero-sub strong{color:var(--ink)}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:18px}
+.hero-note{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.margin-note{position:absolute;right:-8px;top:34%;font-family:var(--font-mono);font-size:.78rem;color:var(--red);transform:rotate(4deg);display:flex;align-items:center;gap:8px}
+.margin-note svg{flex:none}
+
+/* editor mockup */
+.editor-zone{position:relative}
+.editor{background:var(--card);border:1.5px solid var(--ink);border-radius:16px;box-shadow:var(--shadow-lg);transform:rotate(1.4deg);transition:transform .5s ease}
+.editor:hover{transform:rotate(0deg)}
+.editor-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--line)}
+.dot.r{background:var(--red)}.dot.y{background:var(--yellow)}.dot.b{background:var(--blue)}
+.editor-title{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);margin-left:8px}
+.editor-badge{margin-left:auto;font-family:var(--font-mono);font-size:.72rem;background:var(--ink);color:var(--paper);padding:4px 10px;border-radius:999px;display:flex;align-items:center;gap:6px}
+.editor-badge i{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:pulse 1.6s ease infinite;font-style:normal}
+@keyframes pulse{50%{opacity:.3}}
+.editor-body{padding:30px 28px 26px;min-height:190px;font-family:var(--font-mono);font-size:.98rem;line-height:1.85;color:var(--ink-2)}
+.editor-body .typed{white-space:pre-wrap}
+.caret{display:inline-block;width:2px;height:1.15em;background:var(--blue);vertical-align:-.18em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.editor-status{display:flex;gap:22px;padding:12px 20px;border-top:1px dashed var(--line);font-family:var(--font-mono);font-size:.74rem;color:var(--muted)}
+.editor-status b{color:var(--ink);font-weight:600}
+.chip-float{position:absolute;font-family:var(--font-mono);font-size:.78rem;background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:9px 16px;box-shadow:0 10px 24px -10px rgba(23,19,12,.3);animation:floaty 5s ease-in-out infinite}
+.chip-float.one{top:-20px;right:-14px;background:var(--yellow)}
+.chip-float.two{bottom:-18px;left:-18px;animation-delay:1.4s}
+@keyframes floaty{50%{transform:translateY(-9px)}}
+
+/* logo marquee + stats */
+.proof{margin-top:72px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0 26px}
+.proof-label{text-align:center;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,black 12%,black 88%,transparent);mask-image:linear-gradient(90deg,transparent,black 12%,black 88%,transparent)}
+.marquee-track{display:flex;gap:72px;width:max-content;animation:scrollx 30s linear infinite;padding-right:72px}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes scrollx{to{transform:translateX(-50%)}}
+.wordmark{white-space:nowrap;color:var(--ink-2);opacity:.75;font-size:1.15rem}
+.wm-serif{font-family:var(--font-display);font-style:italic;font-weight:600}
+.wm-mono{font-family:var(--font-mono);letter-spacing:.14em;text-transform:uppercase;font-size:.95rem}
+.wm-bold{font-weight:700;letter-spacing:-.02em}
+.wm-wide{letter-spacing:.3em;text-transform:uppercase;font-size:.9rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px;text-align:center}
+.stat b{display:block;font-family:var(--font-display);font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:600;letter-spacing:-.02em}
+.stat b sup{color:var(--blue);font-size:.55em}
+.stat span{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ============ FEATURES BENTO ============ */
+.features{padding:110px 0}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+.f-card{border:1.5px solid var(--ink);border-radius:16px;padding:32px;background:var(--card);position:relative;overflow:hidden;transition:transform .35s ease,box-shadow .35s ease}
+.f-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.f-card h3{font-family:var(--font-display);font-size:1.45rem;font-weight:600;letter-spacing:-.01em;margin:20px 0 10px}
+.f-card p{color:var(--muted);font-size:.98rem;max-width:46ch}
+.icon-box{width:48px;height:48px;border:1.5px solid var(--ink);border-radius:12px;display:grid;place-items:center;background:var(--paper)}
+.f-a{grid-column:span 7;background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.f-a h3{color:var(--paper)}
+.f-a p{color:#B9B09A}
+.f-a .icon-box{background:transparent;border-color:rgba(246,241,229,.35);color:var(--yellow)}
+.f-b{grid-column:span 5;background:var(--blue);color:var(--paper);border-color:var(--blue)}
+.f-b h3{color:var(--paper)}
+.f-b p{color:#D9DCFF}
+.f-b .icon-box{background:transparent;border-color:rgba(246,241,229,.4);color:var(--yellow)}
+.f-c,.f-d,.f-e{grid-column:span 4}
+.f-f{grid-column:span 12;display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}
+.tone-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.tone-chips li{font-family:var(--font-mono);font-size:.76rem;border:1px solid rgba(246,241,229,.35);border-radius:999px;padding:6px 14px;color:#D8D2C0}
+.tone-chips li.on{background:var(--yellow);color:var(--ink);border-color:var(--yellow);font-weight:600}
+.swap-demo{margin-top:20px;font-family:var(--font-mono);font-size:.82rem;line-height:1.9;background:rgba(23,19,12,.18);border-radius:10px;padding:14px 16px}
+.swap-demo s{color:#B9B09A}
+.swap-demo mark{background:var(--yellow);color:var(--ink);padding:1px 5px;border-radius:4px}
+.style-chips{display:flex;flex-wrap:wrap;gap:10px}
+.style-chips li{font-family:var(--font-mono);font-size:.76rem;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--ink-2)}
+.style-chips li b{color:var(--red)}
+
+/* ============ COMPARE ============ */
+.compare{padding:110px 0;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.compare-frame{position:relative;--pos:50%;border:1.5px solid var(--ink);border-radius:18px;overflow:hidden;min-height:360px;box-shadow:var(--shadow-lg);background:var(--card)}
+.compare-panel{position:absolute;inset:0;padding:56px 52px;font-family:var(--font-mono);font-size:1.02rem;line-height:2}
+.compare-before{background:#F1EAD9;background-image:repeating-linear-gradient(transparent 0 33px,rgba(23,19,12,.05) 33px 34px)}
+.compare-before s{color:var(--red);text-decoration-color:var(--red)}
+.compare-after{background:var(--card);clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
+.compare-after mark{background:var(--yellow);padding:1px 6px;border-radius:4px}
+.cmp-tag{position:absolute;top:18px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;padding:6px 12px;border-radius:6px;font-weight:600}
+.cmp-tag.left{left:18px;background:var(--blue);color:var(--paper)}
+.cmp-tag.right{right:18px;background:var(--red);color:var(--paper)}
+.compare-handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;background:var(--ink);pointer-events:none;transform:translateX(-1px)}
+.compare-handle span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:1rem;box-shadow:0 8px 20px rgba(23,19,12,.35)}
+#compare-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0;-webkit-appearance:none;appearance:none}
+#compare-range:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+.compare-caption{text-align:center;font-family:var(--font-mono);font-size:.8rem;color:var(--muted);margin-top:18px}
+
+/* ============ HOW IT WORKS ============ */
+.how{padding:120px 0}
+.how-grid{display:grid;grid-template-columns:5fr 7fr;gap:72px;align-items:start}
+.how-left{position:sticky;top:120px}
+.how-progress{margin-top:40px;border-top:1px solid var(--line)}
+.how-progress li{font-family:var(--font-mono);font-size:.85rem;padding:14px 0;border-bottom:1px solid var(--line);color:var(--muted);transition:color .3s,padding-left .3s}
+.how-progress li.is-active{color:var(--ink);padding-left:14px;font-weight:600}
+.how-progress li.is-active::before{content:"→ ";color:var(--blue)}
+.step{border:1.5px solid var(--ink);border-radius:16px;background:var(--card);padding:36px;margin-bottom:26px;display:grid;grid-template-columns:auto 1fr;gap:26px;transition:transform .35s ease,box-shadow .35s ease}
+.step:hover{transform:translateX(8px);box-shadow:var(--shadow-lg)}
+.step-num{font-family:var(--font-display);font-style:italic;font-size:3rem;font-weight:500;color:var(--blue);line-height:1}
+.step h3{font-family:var(--font-display);font-size:1.5rem;font-weight:600;margin-bottom:8px}
+.step p{color:var(--muted);font-size:.98rem;max-width:48ch}
+.step-tag{display:inline-block;margin-top:14px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink-2)}
+
+/* ============ TESTIMONIALS ============ */
+.testimonials{padding:110px 0;background:var(--paper-2);border-top:1px solid var(--line)}
+.t-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:34px}
+.t-card{position:relative;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:38px 32px 30px;box-shadow:0 16px 34px -20px rgba(23,19,12,.3);transition:transform .4s ease}
+.t-card::before{content:"";position:absolute;top:-13px;left:50%;width:98px;height:26px;background:rgba(245,213,71,.55);transform:translateX(-50%) rotate(-2.5deg);border:1px solid rgba(23,19,12,.08)}
+.t-card:nth-child(1){transform:rotate(-1.3deg)}
+.t-card:nth-child(2){transform:rotate(1.1deg)}
+.t-card:nth-child(3){transform:rotate(.9deg)}
+.t-card:nth-child(4){transform:rotate(-1deg)}
+.t-card:hover{transform:rotate(0) translateY(-6px)}
+.stars{display:flex;gap:3px;color:var(--blue);margin-bottom:16px}
+.t-quote{font-family:var(--font-display);font-size:1.18rem;font-weight:480;line-height:1.5;letter-spacing:-.01em;margin-bottom:24px}
+.t-quote::before{content:"“";color:var(--blue);font-size:1.4em;line-height:0;margin-right:2px}
+.t-person{display:flex;align-items:center;gap:14px;border-top:1px dashed var(--line);padding-top:18px}
+.t-person img{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink)}
+.t-person b{display:block;font-size:.95rem}
+.t-person span{font-family:var(--font-mono);font-size:.74rem;color:var(--muted)}
+
+/* ============ PRICING ============ */
+.pricing{padding:120px 0}
+.billing-toggle{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;padding:4px;background:var(--card);margin-bottom:52px}
+.bill-btn{border:0;background:transparent;border-radius:999px;padding:9px 22px;font-weight:600;font-size:.92rem;color:var(--muted);transition:background .25s,color .25s}
+.bill-btn.is-active{background:var(--ink);color:var(--paper)}
+.bill-btn .save{font-family:var(--font-mono);font-size:.72rem;color:var(--red);margin-left:6px}
+.bill-btn.is-active .save{color:var(--yellow)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.tier{border:1.5px solid var(--ink);border-radius:18px;background:var(--card);padding:38px 32px;display:flex;flex-direction:column;position:relative;transition:transform .35s ease,box-shadow .35s ease}
+.tier:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+.tier h3{font-family:var(--font-display);font-size:1.5rem;font-weight:600}
+.tier .tier-sub{font-family:var(--font-mono);font-size:.76rem;color:var(--muted);margin:4px 0 24px}
+.price{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.price-num{font-family:var(--font-display);font-size:3rem;font-weight:600;letter-spacing:-.03em}
+.price-num.bump{animation:bump .35s ease}
+@keyframes bump{0%{transform:scale(.82);opacity:0}100%{transform:scale(1);opacity:1}}
+.price-per{font-family:var(--font-mono);font-size:.85rem;color:var(--muted)}
+.price-note{font-family:var(--font-mono);font-size:.74rem;color:var(--muted);margin-bottom:26px;min-height:1.2em}
+.tier ul{margin-bottom:32px;flex:1}
+.tier li{padding:9px 0;border-bottom:1px dashed var(--line);font-size:.94rem;display:flex;gap:10px;align-items:flex-start}
+.tier li::before{content:"✓";color:var(--blue);font-weight:700;flex:none}
+.tier .btn{justify-content:center}
+.tier-pop{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:scale(1.03)}
+.tier-pop:hover{transform:scale(1.03) translateY(-8px)}
+.tier-pop .tier-sub,.tier-pop .price-per,.tier-pop .price-note{color:#B9B09A}
+.tier-pop li{border-color:rgba(246,241,229,.18)}
+.tier-pop li::before{color:var(--yellow)}
+.pop-badge{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:var(--yellow);color:var(--ink);font-family:var(--font-mono);font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:7px 16px;border-radius:999px;border:1.5px solid var(--ink);white-space:nowrap}
+
+/* ============ FAQ ============ */
+.faq{padding:110px 0;background:var(--paper-2);border-top:1px solid var(--line)}
+.faq-grid{display:grid;grid-template-columns:5fr 7fr;gap:72px;align-items:start}
+.faq-left{position:sticky;top:120px}
+.faq-left a{color:var(--blue);font-weight:600;text-decoration-thickness:2px;text-underline-offset:4px}
+.faq-item{border-bottom:1.5px solid var(--ink)}
+.faq-item:first-child{border-top:1.5px solid var(--ink)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 4px;background:none;border:0;text-align:left;font-family:var(--font-display);font-size:1.18rem;font-weight:560;letter-spacing:-.01em;color:var(--ink)}
+.faq-q .plus{flex:none;width:30px;height:30px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:var(--font-mono);font-size:1rem;transition:transform .35s ease,background .3s,color .3s}
+.faq-item.open .plus{transform:rotate(45deg);background:var(--ink);color:var(--paper)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.22,1,.36,1)}
+.faq-a>div{overflow:hidden}
+.faq-a p{padding:0 44px 26px 4px;color:var(--muted);font-size:.98rem;max-width:60ch}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+
+/* ============ NEWSLETTER BAND ============ */
+.newsletter{background:var(--ink);color:var(--paper);padding:96px 0;position:relative;overflow:hidden}
+.newsletter::before{content:"✦";position:absolute;font-family:var(--font-display);font-size:22rem;color:rgba(246,241,229,.05);right:-40px;top:-70px;line-height:1}
+.nl-inner{max-width:720px;position:relative}
+.nl-inner h2{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.12;letter-spacing:-.02em;margin-bottom:14px}
+.nl-inner h2 em{color:var(--yellow);font-style:italic}
+.nl-inner>p{color:#B9B09A;margin-bottom:36px;max-width:48ch}
+.nl-form{display:flex;gap:12px;max-width:520px;flex-wrap:wrap}
+.nl-form input{flex:1;min-width:220px;background:transparent;border:1.5px solid rgba(246,241,229,.4);border-radius:10px;padding:14px 18px;color:var(--paper);font:inherit;font-size:.98rem;transition:border-color .25s}
+.nl-form input::placeholder{color:#8A8270}
+.nl-form input:focus{outline:none;border-color:var(--yellow)}
+.nl-msg{margin-top:16px;font-family:var(--font-mono);font-size:.85rem;min-height:1.4em}
+.nl-msg.ok{color:var(--yellow)}
+.nl-msg.err{color:#F08A6E}
+.nl-fine{margin-top:10px;font-family:var(--font-mono);font-size:.72rem;color:#8A8270}
+
+/* ============ CONTACT ============ */
+.contact{padding:120px 0}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.contact-list{margin:34px 0;display:grid;gap:22px}
+.contact-list li{display:flex;gap:16px;align-items:flex-start}
+.contact-list .icon-box{flex:none;width:42px;height:42px}
+.contact-list b{display:block;font-size:.95rem}
+.contact-list a{color:var(--blue);font-weight:600;text-decoration-thickness:2px;text-underline-offset:4px}
+.contact-list span{font-size:.88rem;color:var(--muted)}
+.contact-photo{position:relative}
+.contact-photo img{border:1.5px solid var(--ink);border-radius:16px;box-shadow:var(--shadow-lg);transform:rotate(-1.2deg)}
+.contact-photo figcaption{position:absolute;bottom:-16px;right:14px;background:var(--yellow);border:1.5px solid var(--ink);font-family:var(--font-mono);font-size:.74rem;padding:7px 14px;border-radius:8px;transform:rotate(1.5deg)}
+
+/* ============ FOOTER ============ */
+.site-footer{background:var(--ink);color:var(--paper);padding:72px 0 36px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:52px;border-bottom:1px solid rgba(246,241,229,.15)}
+.footer-brand p{color:#B9B09A;font-size:.94rem;max-width:30ch;margin:16px 0 24px}
+.socials{display:flex;gap:12px}
+.socials a{width:40px;height:40px;border:1px solid rgba(246,241,229,.3);border-radius:50%;display:grid;place-items:center;color:var(--paper);transition:background .25s,transform .25s,border-color .25s}
+.socials a:hover{background:var(--yellow);color:var(--ink);border-color:var(--yellow);transform:translateY(-3px)}
+.footer-col h4{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:#8A8270;margin-bottom:20px;font-weight:500}
+.footer-col li{margin-bottom:12px}
+.footer-col a{color:#D8D2C0;text-decoration:none;font-size:.94rem;transition:color .2s}
+.footer-col a:hover{color:var(--yellow)}
+.footer-bottom{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:30px;font-size:.85rem;color:#8A8270}
+.footer-bottom .legal{display:flex;gap:24px}
+.footer-bottom .legal a{color:#B9B09A;text-decoration:none}
+.footer-bottom .legal a:hover{color:var(--yellow)}
+.to-top{font-family:var(--font-mono);font-size:.78rem;color:#B9B09A;text-decoration:none}
+.to-top:hover{color:var(--yellow)}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1024px){
+  .f-a,.f-b{grid-column:span 12}
+  .f-c,.f-d,.f-e{grid-column:span 6}
+  .f-f{grid-column:span 12;grid-template-columns:1fr}
+  .how-grid,.faq-grid{grid-template-columns:1fr;gap:48px}
+  .how-left,.faq-left{position:static}
+}
+@media (max-width:960px){
+  .hero{padding-top:128px}
+  .hero-grid{grid-template-columns:1fr;gap:64px}
+  .editor-zone{max-width:580px;margin:0 auto;width:100%}
+  .margin-note{display:none}
+  .tiers{grid-template-columns:1fr;max-width:520px;margin:0 auto}
+  .tier-pop{transform:none;order:-1}
+  .tier-pop:hover{transform:translateY(-8px)}
+  .contact-grid{grid-template-columns:1fr;gap:56px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:40px}
+}
+@media (max-width:860px){
+  .nav-links{position:fixed;top:72px;left:0;right:0;background:var(--paper);flex-direction:column;align-items:flex-start;gap:4px;padding:20px 24px 28px;border-bottom:1.5px solid var(--ink);transform:translateY(-130%);transition:transform .4s cubic-bezier(.22,1,.36,1);z-index:1050;box-shadow:0 24px 40px -20px rgba(23,19,12,.25)}
+  .nav-open .nav-links{transform:translateY(0)}
+  .nav-links a{padding:12px 0;font-size:1.05rem;width:100%}
+  .nav-toggle{display:block}
+  .nav-cta .btn{display:none}
+}
+@media (max-width:640px){
+  .f-c,.f-d,.f-e{grid-column:span 12}
+  .t-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr;gap:32px}
+  .compare-panel{padding:52px 26px;font-size:.9rem}
+  .step{grid-template-columns:1fr;gap:10px;padding:28px}
+  .nl-form{flex-direction:column}
+  .footer-grid{grid-template-columns:1fr}
+  .chip-float.one{right:0}
+  .chip-float.two{left:0}
+}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .marquee-track{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
+  [data-reveal]{opacity:1;transform:none}
+  .line>span{transform:none}
+  .u svg path{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap nav-bar">
+    <a class="brand" href="#top" aria-label="QuillAI home">
+      <span class="feather" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+      </span>
+      Quill<em>AI</em>
+    </a>
+    <nav aria-label="Primary navigation">
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#pricing">Start Free Trial</a>
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================= HERO ================= -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow" data-scramble="AI WRITING ASSISTANT">AI WRITING ASSISTANT</p>
+        <h1 id="hero-title">
+          <span class="line"><span>The blank page</span></span>
+          <span class="line"><span>just got a</span></span>
+          <span class="line"><span><span class="u">co-writer.<svg viewBox="0 0 220 14" aria-hidden="true"><path d="M3 10 C 60 2, 160 2, 217 8"/></svg></span></span></span>
+        </h1>
+        <p class="hero-sub">QuillAI is an <strong>artificial intelligence</strong> writing partner that drafts, rewrites, and polishes in <strong>your</strong> voice — from the first rough bullet to the final send. No templates. No robot smell.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#pricing">Start Free Trial
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#how-it-works">See how it works ↓</a>
+        </div>
+        <p class="hero-note">No credit card required · Free plan forever · Cancel anytime</p>
+        <p class="margin-note" aria-hidden="true">
+          <svg width="34" height="14" viewBox="0 0 34 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M33 7H4M10 2 3 7l7 5"/></svg>
+          3× faster first drafts
+        </p>
+      </div>
+
+      <div class="editor-zone">
+        <p class="sr-only">Live demo: QuillAI typing a marketing email draft in real time.</p>
+        <div class="editor" aria-hidden="true">
+          <div class="editor-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot b"></span>
+            <span class="editor-title">launch-email.md</span>
+            <span class="editor-badge"><i></i>QuillAI active</span>
+          </div>
+          <div class="editor-body"><span class="typed" id="typed"></span><span class="caret"></span></div>
+          <div class="editor-status">
+            <span><b id="word-count">0</b> words</span>
+            <span>Tone: <b>Confident</b></span>
+            <span>EN · US</span>
+          </div>
+        </div>
+        <span class="chip-float one" aria-hidden="true">✨ “Make it punchier”</span>
+        <span class="chip-float two" aria-hidden="true">✓ 14 words rewritten</span>
+      </div>
+    </div>
+
+    <!-- social proof -->
+    <div class="proof" data-reveal>
+      <p class="proof-label">Trusted by 10,000+ writers at</p>
+      <div class="marquee" aria-label="Logos of companies using QuillAI">
+        <div class="marquee-track">
+          <span class="wordmark wm-serif">Lumen</span>
+          <span class="wordmark wm-mono">Northwind</span>
+          <span class="wordmark wm-bold">Papertrail</span>
+          <span class="wordmark wm-wide">Vertex&amp;Co</span>
+          <span class="wordmark wm-serif">Halcyon</span>
+          <span class="wordmark wm-mono">Inkwell</span>
+          <span class="wordmark wm-bold">Meridian</span>
+          <span class="wordmark wm-wide">Fieldnote</span>
+          <span class="wordmark wm-serif" aria-hidden="true">Lumen</span>
+          <span class="wordmark wm-mono" aria-hidden="true">Northwind</span>
+          <span class="wordmark wm-bold" aria-hidden="true">Papertrail</span>
+          <span class="wordmark wm-wide" aria-hidden="true">Vertex&amp;Co</span>
+          <span class="wordmark wm-serif" aria-hidden="true">Halcyon</span>
+          <span class="wordmark wm-mono" aria-hidden="true">Inkwell</span>
+          <span class="wordmark wm-bold" aria-hidden="true">Meridian</span>
+          <span class="wordmark wm-wide" aria-hidden="true">Fieldnote</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b><span data-count="10000" data-format="comma">0</span><sup>+</sup></b><span>Writers on board</span></div>
+        <div class="stat"><b><span data-count="120">0</span>M</b><span>Words polished</span></div>
+        <div class="stat"><b><span data-count="4.9" data-decimals="1">0</span><sup>/5</sup></b><span>Average rating</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="features" id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow" data-scramble="01 — FEATURES">01 — FEATURES</p>
+      <h2 id="features-title">Everything between “hmm” and “sent.”</h2>
+      <p>Six tools that turn rough thinking into finished writing — without ever making it sound like a machine did it.</p>
+    </div>
+    <div class="bento">
+      <article class="f-card f-a" data-reveal>
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
+        </div>
+        <h3>Drafts that sound like you</h3>
+        <p>QuillAI learns your cadence from samples you approve. Every rewrite keeps your rhythm, your vocabulary, your quirks — minus the filler words and the second thoughts.</p>
+        <ul class="tone-chips" aria-label="Tone presets">
+          <li class="on">Confident</li><li>Warm</li><li>Direct</li><li>Playful</li><li>Academic</li><li>Wry</li>
+        </ul>
+      </article>
+      <article class="f-card f-b" data-reveal data-delay="80">
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </div>
+        <h3>Real-time rewrites</h3>
+        <p>Select a sentence, get three alternatives in under a second. Keep, swap, or blend — the cursor never leaves your flow.</p>
+        <p class="swap-demo" aria-hidden="true">
+          <s>we are excited to announce</s><br>
+          → <mark>it’s here.</mark>
+        </p>
+      </article>
+      <article class="f-card f-c" data-reveal>
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>
+        </div>
+        <h3>100+ languages</h3>
+        <p>Draft in one, publish in another. Translation that keeps idioms, tone, and humor intact — not just the words.</p>
+      </article>
+      <article class="f-card f-d" data-reveal data-delay="80">
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <h3>Plagiarism shield</h3>
+        <p>Every draft is checked against 20B+ pages before it leaves your hands. Originality, verified — not vibes.</p>
+      </article>
+      <article class="f-card f-e" data-reveal data-delay="160">
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Works everywhere</h3>
+        <p>Browser extension, Docs &amp; Notion add-ons, desktop app, and API. Your words move; QuillAI follows.</p>
+      </article>
+      <article class="f-card f-f" data-reveal>
+        <div class="icon-box" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div>
+          <h3>A private style guide, enforced on every draft</h3>
+          <p>Set banned words, house style, and brand voice once. QuillAI applies it everywhere — and never trains on your content.</p>
+        </div>
+        <ul class="style-chips" aria-label="Example style rules">
+          <li><b>ban:</b> “leverage”</li><li>Oxford comma: yes</li><li>One CTA per email</li><li>Sentences &lt; 22 words</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BEFORE / AFTER COMPARE ================= -->
+<section class="compare" id="compare" aria-labelledby="compare-title">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow" data-scramble="02 — THE DIFFERENCE">02 — THE DIFFERENCE</p>
+      <h2 id="compare-title">The red pen, but faster.</h2>
+      <p>Same brief, same facts, same writer. Drag the handle to see what changes when QuillAI is in the loop.</p>
+    </div>
+    <div class="compare-frame" id="compare-frame" data-reveal>
+      <div class="compare-panel compare-before" aria-label="Draft without QuillAI">
+        <span class="cmp-tag right">WITHOUT</span>
+        <p>um so basically our new feature lets you export stuff faster i guess. it is a good thing and people will like it i think. it used to take a while but now it is quicker. please try it out when you get a chance.</p>
+      </div>
+      <div class="compare-panel compare-after" aria-label="Draft with QuillAI">
+        <span class="cmp-tag left">WITH QUILLAI ✦</span>
+        <p><mark>Export in one click.</mark> What used to take three steps now takes one — and your <mark>formatting survives the trip</mark>. Try it before your next deadline.</p>
+      </div>
+      <div class="compare-handle" aria-hidden="true"><span>⟷</span></div>
+      <input type="range" id="compare-range" min="0" max="100" value="50" step="1" aria-label="Comparison slider: reveal the draft without QuillAI or with QuillAI">
+    </div>
+    <p class="compare-caption">← drag the handle · same brief, two outcomes →</p>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="how" id="how-it-works" aria-labelledby="how-title">
+  <div class="wrap how-grid">
+    <div class="how-left" data-reveal>
+      <p class="eyebrow" data-scramble="03 — HOW IT WORKS">03 — HOW IT WORKS</p>
+      <h2 class="section-head" style="margin-bottom:16px" id="how-title">From blank page to shipped in four moves.</h2>
+      <p style="color:var(--muted);max-width:40ch">No prompt engineering degree required. If you can type a sentence, you can drive QuillAI.</p>
+      <ol class="how-progress" id="how-progress" aria-hidden="true">
+        <li class="is-active">01 — Drop in your notes</li>
+        <li>02 — Set tone &amp; audience</li>
+        <li>03 — Draft, then direct</li>
+        <li>04 — Ship anywhere</li>
+      </ol>
+    </div>
+    <div>
+      <article class="step" data-step="0" data-reveal>
+        <span class="step-num" aria-hidden="true">01</span>
+        <div>
+          <h3>Drop in your rough notes</h3>
+          <p>Paste bullets, a voice memo, a half-sentence, or a wall of stream-of-consciousness. QuillAI finds the argument hiding in there.</p>
+          <span class="step-tag">~10 seconds</span>
+        </div>
+      </article>
+      <article class="step" data-step="1" data-reveal>
+        <span class="step-num" aria-hidden="true">02</span>
+        <div>
+          <h3>Set tone &amp; audience</h3>
+          <p>Pick a preset — Confident, Warm, Direct — or teach it your voice with three samples. It remembers, privately, forever.</p>
+          <span class="step-tag">One-time setup</span>
+        </div>
+      </article>
+      <article class="step" data-step="2" data-reveal>
+        <span class="step-num" aria-hidden="true">03</span>
+        <div>
+          <h3>Draft, then direct</h3>
+          <p>Steer with plain English: “shorter”, “less formal”, “lead with the number”. Every suggestion is one keystroke away from accepted.</p>
+          <span class="step-tag">You stay in control</span>
+        </div>
+      </article>
+      <article class="step" data-step="3" data-reveal>
+        <span class="step-num" aria-hidden="true">04</span>
+        <div>
+          <h3>Ship anywhere</h3>
+          <p>Export to Google Docs, Notion, email, or your CMS — or copy straight to the clipboard. Formatting intact, plagiarism-checked.</p>
+          <span class="step-tag">One click</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials" id="testimonials" aria-labelledby="testimonials-title">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow" data-scramble="04 — TESTIMONIALS">04 — TESTIMONIALS</p>
+      <h2 id="testimonials-title">Writers who stopped dreading Mondays.</h2>
+      <p>10,000+ writers, marketers, and academics keep QuillAI open. Here’s what a few of them say.</p>
+    </div>
+    <div class="t-grid">
+      <figure class="t-card" data-reveal>
+        <div class="stars" aria-label="Rated 5 out of 5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+        </div>
+        <blockquote class="t-quote">I used to spend Mondays rewriting last week’s drafts. Now I spend Mondays shipping. QuillAI’s tone memory is uncanny — clients think I hired a ghostwriter.”</blockquote>
+        <figcaption class="t-person">
+          <img src="https://picsum.photos/seed/quillai-maya-chen/96/96" alt="Portrait of Maya Chen" width="48" height="48" loading="lazy">
+          <div><b>Maya Chen</b><span>Content Lead, Lumen</span></div>
+        </figcaption>
+      </figure>
+      <figure class="t-card" data-reveal data-delay="80">
+        <div class="stars" aria-label="Rated 5 out of 5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+        </div>
+        <blockquote class="t-quote">The before/after is embarrassing in the best way. Same brief, same facts — but the QuillAI version actually gets read.”</blockquote>
+        <figcaption class="t-person">
+          <img src="https://picsum.photos/seed/quillai-daniel-okafor/96/96" alt="Portrait of Daniel Okafor" width="48" height="48" loading="lazy">
+          <div><b>Daniel Okafor</b><span>Founder, Papertrail</span></div>
+        </figcaption>
+      </figure>
+      <figure class="t-card" data-reveal>
+        <div class="stars" aria-label="Rated 5 out of 5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+        </div>
+        <blockquote class="t-quote">It turned 40 pages of scattered notes into a coherent literature review in one afternoon. My advisor asked what had changed.”</blockquote>
+        <figcaption class="t-person">
+          <img src="https://picsum.photos/seed/quillai-sofia-reyes/96/96" alt="Portrait of Sofia Reyes" width="48" height="48" loading="lazy">
+          <div><b>Sofia Reyes</b><span>PhD Candidate, ETH Zürich</span></div>
+        </figcaption>
+      </figure>
+      <figure class="t-card" data-reveal data-delay="80">
+        <div class="stars" aria-label="Rated 5 out of 5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+        </div>
+        <blockquote class="t-quote">I was the skeptic. Now every deck goes through it before it goes to the client. It’s the red pen that never runs out of ink.”</blockquote>
+        <figcaption class="t-person">
+          <img src="https://picsum.photos/seed/quillai-tom-whitfield/96/96" alt="Portrait of Tom Whitfield" width="48" height="48" loading="lazy">
+          <div><b>Tom Whitfield</b><span>Senior Copywriter, Vertex&amp;Co</span></div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section class="pricing" id="pricing" aria-labelledby="pricing-title">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow" data-scramble="05 — PRICING">05 — PRICING</p>
+      <h2 id="pricing-title">

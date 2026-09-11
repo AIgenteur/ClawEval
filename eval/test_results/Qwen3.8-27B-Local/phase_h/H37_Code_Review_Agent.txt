@@ -1,0 +1,80 @@
+{
+  "bugs": [
+    {
+      "line": 12,
+      "bug": "SAVE20 discount multiplies subtotal by 0.20 instead of applying a 20% discount (should multiply by 0.80 or subtract 20%).",
+      "severity": "critical"
+    },
+    {
+      "line": 14,
+      "bug": "SAVE10 discount subtracts 10 times the subtotal instead of 10% (should subtract subtotal * 0.10 or multiply by 0.90).",
+      "severity": "critical"
+    },
+    {
+      "line": 22,
+      "bug": "Negative stock is ignored with pass; should raise an error, skip the order, or otherwise prevent overselling.",
+      "severity": "major"
+    },
+    {
+      "line": 31,
+      "bug": "total_revenue =+ total assigns +total instead of accumulating with +=, so total_revenue only holds the last order total.",
+      "severity": "critical"
+    },
+    {
+      "line": 34,
+      "bug": "avg_order divides by len(orders) without handling an empty orders list, causing ZeroDivisionError.",
+      "severity": "major"
+    },
+    {
+      "line": 35,
+      "bug": "max_order calls max() on an empty results list when there are no orders, causing ValueError.",
+      "severity": "major"
+    },
+    {
+      "line": 46,
+      "bug": "Email validation only checks for '@' and accepts invalid addresses such as 'a@' or 'a@@b'.",
+      "severity": "minor"
+    },
+    {
+      "line": 53,
+      "bug": "Shipping cost adds distance and per_km instead of multiplying distance by per_km.",
+      "severity": "major"
+    },
+    {
+      "line": 57,
+      "bug": "elif weight > 50 is unreachable because the preceding if weight > 30 already handles all weights above 50.",
+      "severity": "major"
+    },
+    {
+      "line": 60,
+      "bug": "round(cost) rounds to an integer, losing cent precision; should round to 2 decimal places.",
+      "severity": "minor"
+    },
+    {
+      "line": 63,
+      "bug": "merged = profile_a aliases the input dict, so the function mutates profile_a; should copy it.",
+      "severity": "major"
+    },
+    {
+      "line": 65,
+      "bug": "Merge only adds keys missing from profile_a, so profile_b cannot override or update existing keys.",
+      "severity": "major"
+    },
+    {
+      "line": 67,
+      "bug": "updated_at is hardcoded to a fixed date instead of using the current timestamp.",
+      "severity": "minor"
+    },
+    {
+      "line": 71,
+      "bug": "CSV parsing uses naive split(',') and does not handle quoted fields, escaped commas, or surrounding whitespace.",
+      "severity": "minor"
+    },
+    {
+      "line": 78,
+      "bug": "Duplicate detection uses a list for seen, making lookup O(n^2); should use a set.",
+      "severity": "minor"
+    }
+  ],
+  "count": 15
+}

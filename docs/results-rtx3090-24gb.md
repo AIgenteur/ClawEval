@@ -8,12 +8,12 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 
 | Rank | Model | Quant | Params | Score | % | Context |
 |------|-------|-------|--------|-------|---|---------|
-| 🥇 | **Qwen3.6-35B-A3B** | UD-Q4_K_M | 35B MoE (3B active) | 1029/1220 | **84.3%** | 32K |
-| 🥈 | **Gemma-4-E2B** | BF16 | 2B | 981/1220 | **80.4%** | 32K |
-| 🥉 | **Phi-4** | Q8_0 | 14B | 977/1220 | **80.1%** | 32K |
-| 4 | **Nemotron-Nano-Omni** (IQ4) | IQ4_NL_XL | 30B MoE (3B active) | 948/1220 | **77.7%** | 262K |
-| 5 | **Gemma-4-31B** (TurboQuant3) | Q4_K_M + turbo3 KV | 31B | 1014/1220 | **83.1%** | 262K |
-| 6 | **Qwen3.6-27B** (TurboQuant4) | Q4_K_M + turbo4 KV | 27B | 1012/1220 | **83.0%** | 262K |
+| 🥇 | **Qwen3.8-27B** | UD-Q4_K_M | 27B | 1054/1220 | **86.4%** | 64K |
+| 🥈 | **Qwen3.6-35B-A3B** | UD-Q4_K_M | 35B MoE (3B active) | 1029/1220 | **84.3%** | 32K |
+| 🥉 | **Gemma-4-31B** (TurboQuant3) | Q4_K_M + turbo3 KV | 31B | 1014/1220 | **83.1%** | 262K |
+| 4 | **Gemma-4-E2B** | BF16 | 2B | 981/1220 | **80.4%** | 32K |
+| 5 | **Phi-4** | Q8_0 | 14B | 977/1220 | **80.1%** | 32K |
+| 6 | **Nemotron-Nano-Omni** (IQ4) | IQ4_NL_XL | 30B MoE (3B active) | 948/1220 | **77.7%** | 262K |
 | 7 | **Granite-4.1 30B** (TurboQuant4) | Q4_K_M + turbo4 KV | 30B | 929/1220 | **76.1%** | 65K |
 | 8 | **Granite-4.1 8B** | Q4_K_M | 8B | 929/1220 | **76.1%** | 32K |
 | 9 | **Gemma-4-31B** | Q4_K_M | 31B | 927/1220 | **76.0%** | 53K |
@@ -23,8 +23,8 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 | 13 | **Gemma-4-E4B** | BF16 | 4B | 867/1220 | **71.1%** | 32K |
 | 14 | **Ministral-3 14B Think** | Q4_K_M | 14B | 858/1220 | **70.3%** | 32K |
 | 15 | **Granite-4.1 3B** | Q4_K_M | 3B | 846/1220 | **69.3%** | 32K |
-| 16 | **Ministral-3 3B** | Q4_K_M | 3B | 760/1220 | **62.3%** | 32K |
-| 17 | **Ministral-3 8B Think** | Q4_K_M | 8B | 791/1220 | **64.8%** | 32K |
+| 16 | **Ministral-3 8B Think** | Q4_K_M | 8B | 791/1220 | **64.8%** | 32K |
+| 17 | **Ministral-3 3B** | Q4_K_M | 3B | 760/1220 | **62.3%** | 32K |
 | 18 | **Ministral-3 3B Think** | Q4_K_M | 3B | 704/1220 | **57.7%** | 32K |
 | 19 | **Gemma-4-A4B** | UD-Q4_K_M | 26B MoE (4B active) | 622/1220 | **51.0%** | 32K |
 | 20 | **Qwen3.5-9B** | Q4_K_M | 9B | 543/1220 | **44.5%** | 32K |
@@ -33,7 +33,7 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 | 23 | **Qwen3.5-0.8B** | Q4_K_M | 0.8B | 58/1220 | **4.8%** | 32K |
 | 24 | **Qwen3.5-2B** | Q4_K_M | 2B | 50/1220 | **4.1%** | 32K |
 
-> Qwen3.6-35B-A3B at 84.3% **ties Kimi K2.6 cloud** — the best local model matches top-tier cloud APIs.
+> Qwen3.8-27B at 86.4% is **#2 on the full ClawEval v2 board**, behind only DeepSeek V4 Pro (86.9%).
 
 ---
 
@@ -56,7 +56,7 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 | Granite-4.1 3B | Q4_K_M | 133.2 | 116.7 | 141.7 |
 | Granite-4.1 8B | Q4_K_M | 83.2 | 55.4 | 91.2 |
 | Granite-4.1 30B (TQ4) | Q4_K_M + turbo4 | 33.8 | 29.6 | 36.5 |
-| Qwen3.6-27B (TQ4) | Q4_K_M + turbo4 | 33.2 | 27.6 | 35.6 |
+| Qwen3.8-27B | UD-Q4_K_M, f16 KV | 40.6 | 36.8 | 41.4 |
 | Phi-4 | Q8_0 | 61.9 | 55.5 | 65.6 |
 | Gemma-4-E2B | BF16 | 101.1 | 98.9 | 111.7 |
 | Qwen3.6-35B-A3B | UD-Q4_K_M | 99.3 | 94.8 | 108.6 |
@@ -70,90 +70,89 @@ All models tested on a single NVIDIA RTX 3090 24GB. No cloud, no API costs — f
 
 ## 🎯 Best Model Per Agent Role
 
-Which local model to pick for each of the 59 agent roles. Qwen3.6-35B-A3B leads with **28/59 wins**. Ties broken by overall leaderboard score.
+Which local model to pick for each of the 59 agent roles. Qwen3.8-27B leads with **35/59 wins**. Ties broken by overall leaderboard score. Superseded versions (see [Previous Versions](results-previous-versions.md)) are excluded.
 
 | Wins | Model |
 |------|-------|
-| **28** | Qwen3.6-35B-A3B |
-| **6** | Qwen3.6-27B (TQ4) |
-| **5** | Gemma-4-31B (TQ3) |
-| **2** | Qwen3.6-35B-A3B (TQ3) |
-| **2** | Gemma-4-31B |
-| **2** | Granite-4.1 8B |
-| **2** | Nemotron-Nano-Omni (IQ4) |
-| **2** | Ministral-3 14B |
+| **35** | Qwen3.8-27B |
+| **4** | Gemma-4-31B (TQ3) |
+| **3** | Qwen3.6-35B-A3B (TQ3) |
+| **2** | Qwen3.6-35B-A3B |
+| **2** | Phi-4 |
 | **2** | Ministral-3 8B |
-| **1** | Gemma-4-A4B |
+| **2** | Ministral-3 14B |
 | **1** | Gemma-4-E2B |
-| **1** | Ministral-3 14B Think |
+| **1** | Nemotron-Nano-Omni (IQ4) |
+| **1** | Granite-4.1 8B |
 | **1** | Granite-4.1 30B (TQ4) |
-| **1** | Gemma-4-E4B |
-| **1** | Phi-4 |
-| **1** | Ministral-3 8B Think |
+| **1** | Gemma-4-31B |
 | **1** | Nemotron-Nano-Omni (Q4) |
+| **1** | Gemma-4-E4B |
+| **1** | Ministral-3 14B Think |
+| **1** | Ministral-3 8B Think |
 
 ### Full Role Breakdown
 
 | Test | Agent Role | Best Local Model | Score | % |
 |------|-----------|-----------------|-------|---|
 | H-01 | Router / Triage Agent | Gemma-4-31B (TQ3) | 30/30 | 100% |
-| H-02 | Input Validator / Sanitizer | Qwen3.6-35B-A3B | 29/30 | 97% |
+| H-02 | Input Validator / Sanitizer | Qwen3.8-27B | 29/30 | 97% |
 | H-03 | Heartbeat / Health Monitor | Gemma-4-31B (TQ3) | 15/15 | 100% |
-| H-04 | Notification / Alert Agent | Qwen3.6-35B-A3B (TQ3) | 25/30 | 83% |
-| H-05 | Sentiment Analysis Agent | Qwen3.6-27B (TQ4) | 28/30 | 93% |
-| H-06 | FAQ Generation Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-07 | Translation Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
+| H-04 | Notification / Alert Agent | Qwen3.8-27B | 25/30 | 83% |
+| H-05 | Sentiment Analysis Agent | Qwen3.6-35B-A3B (TQ3) | 28/30 | 93% |
+| H-06 | FAQ Generation Agent | Qwen3.8-27B | 15/15 | 100% |
+| H-07 | Translation Agent | Qwen3.8-27B | 15/15 | 100% |
 | H-08 | Calendar / Scheduling Agent | Gemma-4-31B | 12/20 | 60% |
 | H-09 | Research / Web Search Agent | Gemma-4-31B (TQ3) | 30/30 | 100% |
 | H-10 | Content Writer / Blog Writer | Qwen3.6-35B-A3B (TQ3) | 20/20 | 100% |
-| H-11 | Editor Agent | Gemma-4-31B (TQ3) | 29/30 | 97% |
-| H-12 | Content Planner / Strategist | Qwen3.6-35B-A3B | 26/30 | 87% |
-| H-13 | Email Drafting / Summarization | Qwen3.6-27B (TQ4) | 45/45 | 100% |
-| H-14 | Document Summarization Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-15 | Meeting Notes / Transcription Agent | Granite-4.1 8B | 35/35 | 100% |
-| H-16 | Social Media Scouting / Monitoring | Gemma-4-A4B | 57/60 | 95% |
-| H-17 | Social Media Content Agent | Qwen3.6-27B (TQ4) | 20/20 | 100% |
-| H-18 | News Aggregation Agent | Qwen3.6-35B-A3B | 7/7 | 100% |
-| H-19 | Shopping / Price Comparison | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-20 | Memory / Knowledge Management | Qwen3.6-35B-A3B | 20/20 | 100% |
+| H-11 | Editor Agent | Qwen3.8-27B | 29/30 | 97% |
+| H-12 | Content Planner / Strategist | Qwen3.8-27B | 26/30 | 87% |
+| H-13 | Email Drafting / Summarization | Qwen3.8-27B | 45/45 | 100% |
+| H-14 | Document Summarization Agent | Qwen3.8-27B | 15/15 | 100% |
+| H-15 | Meeting Notes / Transcription Agent | Qwen3.8-27B | 35/35 | 100% |
+| H-16 | Social Media Scouting / Monitoring | Qwen3.8-27B | 57/60 | 95% |
+| H-17 | Social Media Content Agent | Phi-4 | 20/20 | 100% |
+| H-18 | News Aggregation Agent | Qwen3.8-27B | 7/7 | 100% |
+| H-19 | Shopping / Price Comparison | Qwen3.8-27B | 15/15 | 100% |
+| H-20 | Memory / Knowledge Management | Qwen3.8-27B | 20/20 | 100% |
 | H-21 | RAG / Retrieval Agent | Nemotron-Nano-Omni (IQ4) | 13/15 | 87% |
-| H-22 | Data Analysis Agent | Qwen3.6-35B-A3B | 14/15 | 93% |
-| H-23 | Website Scraping / Understanding | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-24 | Image Description / Understanding | Qwen3.6-35B-A3B | 20/20 | 100% |
+| H-22 | Data Analysis Agent | Qwen3.8-27B | 14/15 | 93% |
+| H-23 | Website Scraping / Understanding | Qwen3.8-27B | 15/15 | 100% |
+| H-24 | Image Description / Understanding | Qwen3.8-27B | 20/20 | 100% |
 | H-25 | Customer Support Agent | Gemma-4-E2B | 53/60 | 88% |
 | H-26 | Lead Scoring / Prospecting | Ministral-3 14B Think | 15/15 | 100% |
-| H-27 | Sprint / Project Summarizer | Qwen3.6-35B-A3B | 15/15 | 100% |
+| H-27 | Sprint / Project Summarizer | Qwen3.8-27B | 15/15 | 100% |
 | H-28 | Transaction / Approval Agent | Granite-4.1 8B | 20/20 | 100% |
 | H-29 | Home Automation Agent | Granite-4.1 30B (TQ4) | 8/20 | 40% |
-| H-30 | Fitness / Health Tracking | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-31 | Recipe / Cooking Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-32 | Personal Finance Tracking | Qwen3.6-35B-A3B | 15/15 | 100% |
+| H-30 | Fitness / Health Tracking | Qwen3.8-27B | 15/15 | 100% |
+| H-31 | Recipe / Cooking Agent | Qwen3.8-27B | 15/15 | 100% |
+| H-32 | Personal Finance Tracking | Qwen3.8-27B | 15/15 | 100% |
 | H-33 | SEO Optimization Agent | Gemma-4-E4B | 9/15 | 60% |
 | H-34 | Landing Page Generator | Qwen3.6-35B-A3B | 20/20 | 100% |
 | H-35 | Travel Planning Agent | Ministral-3 14B | 12/15 | 80% |
-| H-36 | Code Generation Agent | Qwen3.6-35B-A3B | 30/30 | 100% |
-| H-37 | Code Review Agent | Qwen3.6-35B-A3B | 15/15 | 100% |
+| H-36 | Code Generation Agent | Qwen3.8-27B | 30/30 | 100% |
+| H-37 | Code Review Agent | Qwen3.8-27B | 15/15 | 100% |
 | H-38 | QA / Test Writing Agent | Phi-4 | 14/15 | 93% |
 | H-39 | Task Planning / Decomposition | Ministral-3 8B | 13/18 | 72% |
 | H-40 | Fact-Checking Agent | Ministral-3 8B Think | 30/30 | 100% |
-| H-41 | Critic / Review Agent | Qwen3.6-35B-A3B | 20/20 | 100% |
-| H-42 | Market Research Agent | Qwen3.6-35B-A3B | 14/15 | 93% |
-| H-43 | Synthesizer / Aggregator | Qwen3.6-27B (TQ4) | 15/15 | 100% |
+| H-41 | Critic / Review Agent | Qwen3.8-27B | 20/20 | 100% |
+| H-42 | Market Research Agent | Qwen3.8-27B | 14/15 | 93% |
+| H-43 | Synthesizer / Aggregator | Qwen3.8-27B | 14/15 | 93% |
 | H-44 | Curriculum / Course Designer | Ministral-3 8B | 9/15 | 60% |
-| H-45 | Prototype Generator | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-46 | DevOps Agent | Qwen3.6-27B (TQ4) | 11/15 | 73% |
-| H-47 | Math / Logic Reasoning | Qwen3.6-35B-A3B | 14/15 | 93% |
-| H-48 | STEM Research Analyst | Qwen3.6-35B-A3B | 15/15 | 100% |
-| H-49 | Algorithm / Data Structure Explorer | Qwen3.6-35B-A3B | 30/30 | 100% |
+| H-45 | Prototype Generator | Qwen3.8-27B | 15/15 | 100% |
+| H-46 | DevOps Agent | Qwen3.8-27B | 9/15 | 60% |
+| H-47 | Math / Logic Reasoning | Qwen3.8-27B | 14/15 | 93% |
+| H-48 | STEM Research Analyst | Qwen3.8-27B | 15/15 | 100% |
+| H-49 | Algorithm / Data Structure Explorer | Qwen3.8-27B | 30/30 | 100% |
 | H-50 | Orchestrator / Manager Agent | Qwen3.6-35B-A3B | 13/15 | 87% |
-| H-51 | Software Architect Agent | Qwen3.6-35B-A3B | 6/15 | 40% |
-| H-52 | Complex Debugger Agent | Nemotron-Nano-Omni (IQ4) | 15/15 | 100% |
+| H-51 | Software Architect Agent | Qwen3.8-27B | 7/15 | 47% |
+| H-52 | Complex Debugger Agent | Qwen3.8-27B | 15/15 | 100% |
 | H-53 | Legal Document Review | Nemotron-Nano-Omni (Q4) | 8/15 | 53% |
-| H-54 | Medical / Health Analysis | Qwen3.6-35B-A3B | 15/15 | 100% |
+| H-54 | Medical / Health Analysis | Qwen3.8-27B | 15/15 | 100% |
 | H-55 | Financial Analysis / Stock Research | Gemma-4-31B (TQ3) | 15/15 | 100% |
-| H-56 | Security Analyst Agent | Qwen3.6-27B (TQ4) | 15/15 | 100% |
-| H-57 | SRE / Incident Response | Gemma-4-31B | 13/15 | 87% |
-| H-58 | Book / Long-Form Writing | Qwen3.6-35B-A3B | 20/20 | 100% |
+| H-56 | Security Analyst Agent | Qwen3.6-35B-A3B (TQ3) | 15/15 | 100% |
+| H-57 | SRE / Incident Response | Qwen3.8-27B | 13/15 | 87% |
+| H-58 | Book / Long-Form Writing | Qwen3.8-27B | 20/20 | 100% |
 | H-59 | Compliance / Regulatory Agent | Ministral-3 14B | 7/15 | 47% |
 
 ---
@@ -164,7 +163,7 @@ Which local model to pick for each of the 59 agent roles. Qwen3.6-35B-A3B leads 
 
 | Priority | Recommended Model | Why |
 |----------|------------------|-----|
-| **Best accuracy** | Qwen3.6-35B-A3B | 84.3% — ties cloud-tier models |
+| **Best accuracy** | Qwen3.8-27B | 86.4% — #2 on the full board (cloud included) |
 | **Best speed + quality** | Gemma-4-E2B | 101 t/s at 80.4% — tiny 2B model |
 | **Fastest 70%+** | Nemotron-Nano-Omni (IQ4) | 127 t/s at 77.7% |
 | **Longest context** | Gemma-4-31B (TQ3) or Nemotron-Omni | 262K tokens |
@@ -188,4 +187,4 @@ Small thinking models are **dramatically worse** than non-thinking models of the
 
 **Why?** Thinking models spend tokens on chain-of-thought reasoning *before* producing the answer. At small sizes (≤4B), the CoT consumes most of the token budget, leaving the model unable to produce structured output. Even with `reasoning_budget_tokens` caps, the model's capacity is too limited to both reason *and* format answers correctly.
 
-**Takeaway:** For local agent deployment, prefer non-thinking models at ≤4B. Thinking architectures only become viable at ≥30B MoE (e.g. Qwen3.6-35B-A3B at 84.3%).
+**Takeaway:** For local agent deployment, prefer non-thinking models at ≤4B. Thinking pays off from the ~27B class up — Qwen3.8-27B (dense) at 86.4% and Qwen3.6-35B-A3B (MoE) at 84.3%.

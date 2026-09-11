@@ -1,0 +1,82 @@
+```json
+{
+  "issues": [
+    {
+      "line": "replicas: 1",
+      "issue": "Single replica provides no high availability; a node failure or rolling update will cause downtime.",
+      "severity": "major"
+    },
+    {
+      "line": "image: myapp:latest",
+      "issue": "Using the 'latest' tag is non-deterministic and makes rollbacks and auditing difficult; use specific version tags.",
+      "severity": "minor"
+    },
+    {
+      "line": "resources: {}",
+      "issue": "No resource requests or limits defined for the main container, leading to potential resource starvation or node instability.",
+      "severity": "major"
+    },
+    {
+      "line": "runAsRoot: true",
+      "issue": "Container runs as root, increasing the risk of container escape and host compromise.",
+      "severity": "critical"
+    },
+    {
+      "line": "privileged: true",
+      "issue": "Container runs in privileged mode, granting full access to host devices and kernel capabilities, a severe security risk.",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"sup3rs3cret!\"",
+      "issue": "Database password is hardcoded in plaintext in the manifest; should use a Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "value: \"ak_live_12345\"",
+      "issue": "API key is hardcoded in plaintext in the manifest; should use a Secret.",
+      "severity": "critical"
+    },
+    {
+      "line": "memory: \"10Gi\"",
+      "issue": "Excessive memory request (10Gi) for a sidecar logger, likely to cause scheduling failures or waste cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "cpu: \"8\"",
+      "issue": "Excessive CPU request (8 cores) for a sidecar logger, likely to cause scheduling failures or waste cluster resources.",
+      "severity": "major"
+    },
+    {
+      "line": "hostPath: /tmp/data",
+      "issue": "Using hostPath volume exposes host filesystem to the container, posing a security risk and breaking portability.",
+      "severity": "critical"
+    },
+    {
+      "line": "type: LoadBalancer",
+      "issue": "Using LoadBalancer service type incurs cost and requires cloud provider support; ClusterIP is often sufficient for internal services.",
+      "severity": "minor"
+    },
+    {
+      "line": "image: logger:v1",
+      "issue": "Sidecar image uses a mutable tag; should use a specific digest or immutable tag for reproducibility.",
+      "severity": "minor"
+    },
+    {
+      "line": "containerPort: 8080",
+      "issue": "No readiness or liveness probes defined for the container, making it harder for Kubernetes to manage health and traffic.",
+      "severity": "major"
+    },
+    {
+      "line": "name: api",
+      "issue": "No resource limits defined for the main container, allowing it to consume unbounded resources and potentially evict other pods.",
+      "severity": "major"
+    },
+    {
+      "line": "name: sidecar",
+      "issue": "Sidecar container has no resource limits, allowing it to consume unbounded resources and potentially evict other pods.",
+      "severity": "major"
+    }
+  ],
+  "count": 15
+}
+```

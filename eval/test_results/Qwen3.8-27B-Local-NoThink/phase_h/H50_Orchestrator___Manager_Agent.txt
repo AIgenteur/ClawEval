@@ -1,0 +1,85 @@
+{
+  "agents": [
+    {
+      "name": "ValidationAgent",
+      "input": "Raw customer refund request payload (JSON)",
+      "output": "Validated request object with normalized fields and confidence score",
+      "next": "FraudCheckAgent",
+      "fallback": "RejectRequestAgent",
+      "timeout": 5
+    },
+    {
+      "name": "FraudCheckAgent",
+      "input": "Validated request object",
+      "output": "Risk assessment score and fraud flag (boolean)",
+      "next": "ApprovalAgent",
+      "fallback": "RejectRequestAgent",
+      "timeout": 10
+    },
+    {
+      "name": "ApprovalAgent",
+      "input": "Validated request object and risk assessment score",
+      "output": "Approval decision (approved/rejected) with reason code",
+      "next": "PaymentAgent",
+      "fallback": "RejectRequestAgent",
+      "timeout": 15
+    },
+    {
+      "name": "PaymentAgent",
+      "input": "Approved request object",
+      "output": "Payment transaction ID and status",
+      "next": "NotificationAgent",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 20
+    },
+    {
+      "name": "NotificationAgent",
+      "input": "Final request status (approved/rejected) and transaction details",
+      "output": "Confirmation message sent to customer and internal audit log entry",
+      "next": "END",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5
+    },
+    {
+      "name": "RejectRequestAgent",
+      "input": "Request object and rejection reason",
+      "output": "Rejection notification sent to customer and audit log entry",
+      "next": "END",
+      "fallback": "HumanEscalationAgent",
+      "timeout": 5
+    },
+    {
+      "name": "HumanEscalationAgent",
+      "input": "Failed request context and error details",
+      "output": "Ticket created for human review and customer notified of delay",
+      "next": "END",
+      "fallback": "SystemAlertAgent",
+      "timeout": 30
+    }
+  ],
+  "constraints": {
+    "min_agents": 6,
+    "required_agents": [
+      "ValidationAgent",
+      "FraudCheckAgent",
+      "ApprovalAgent",
+      "PaymentAgent",
+      "NotificationAgent"
+    ],
+    "conditional_branching": "ApprovalAgent routes to PaymentAgent if approved, else RejectRequestAgent",
+    "error_handling": "Each agent has a defined fallback agent",
+    "first_agent": "ValidationAgent",
+    "last_agent": "NotificationAgent",
+    "fraud_before_approval": true,
+    "payment_after_approval": true,
+    "max_processing_time_seconds": 60,
+    "outcomes_handled": [
+      "approved",
+      "rejected"
+    ],
+    "logging": "Audit log entry created at each agent step",
+    "circular_dependencies": false,
+    "human_escalation": "HumanEscalationAgent handles edge cases and failures",
+    "timeouts_defined": true
+  }
+}

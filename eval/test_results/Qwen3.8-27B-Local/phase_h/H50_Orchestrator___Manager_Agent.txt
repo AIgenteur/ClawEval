@@ -1,0 +1,96 @@
+{
+  "agents": [
+    {
+      "name": "validation",
+      "input": "raw_refund_request containing customer_id, order_id, amount, currency, reason, and channel",
+      "output": "validated_refund_request with triage_status, normalized fields, and missing_field_errors",
+      "next": "fraud-check if triage_status == 'valid' else notification",
+      "fallback": "human-escalation",
+      "timeout_seconds": 5,
+      "expected_seconds": 3,
+      "logging": "audit event with request_id, agent, timestamp, input_hash, output_status, and latency"
+    },
+    {
+      "name": "fraud-check",
+      "input": "validated_refund_request",
+      "output": "fraud_result with risk_score, flags, and fraud_decision",
+      "next": "approval if fraud_decision == 'clear' else notification",
+      "fallback": "human-escalation",
+      "timeout_seconds": 10,
+      "expected_seconds": 8,
+      "logging": "audit event with request_id, agent, timestamp, risk_score, fraud_decision, and latency"
+    },
+    {
+      "name": "approval",
+      "input": "validated_refund_request and fraud_result",
+      "output": "approval_decision with approved boolean, approver, policy_reason, and amount",
+      "next": "payment if approved == true else notification",
+      "fallback": "human-escalation",
+      "timeout_seconds": 10,
+      "expected_seconds": 7,
+      "logging": "audit event with request_id, agent, timestamp, approval_decision, policy_reason, and latency"
+    },
+    {
+      "name": "payment",
+      "input": "approval_decision and validated_refund_request",
+      "output": "payment_result with transaction_id, payment_status, amount, and failure_reason",
+      "next": "notification if payment_status == 'success' else human-escalation",
+      "fallback": "human-escalation",
+      "timeout_seconds": 15,
+      "expected_seconds": 12,
+      "logging": "audit event with request_id, agent, timestamp, transaction_id, payment_status, and latency"
+    },
+    {
+      "name": "human-escalation",
+      "input": "failed_agent_context, validated_refund_request, and error_or_edge_case_reason",
+      "output": "escalation_record with case_id, assigned_team, resolution, and final_outcome",
+      "next": "notification",
+      "fallback": "audit_dead_letter",
+      "timeout_seconds": 10,
+      "expected_seconds": 10,
+      "logging": "audit event with request_id, agent, timestamp, escalation_reason, assigned_team, and latency"
+    },
+    {
+      "name": "notification",
+      "input": "final_outcome, rejection_reason or payment_result, and customer_contact_preferences",
+      "output": "notification_result with customer_message, channel, delivery_status, and audit_reference",
+      "next": "END",
+      "fallback": "audit_dead_letter",
+      "timeout_seconds": 5,
+      "expected_seconds": 2,
+      "logging": "audit event with request_id, agent, timestamp, final_outcome, delivery_status, and latency"
+    }
+  ],
+  "constraints": {
+    "minimum_agents": 6,
+    "required_agents": [
+      "validation",
+      "fraud-check",
+      "approval",
+      "payment",
+      "notification"
+    ],
+    "agent_fields": [
+      "name",
+      "input",
+      "output",
+      "next",
+      "fallback",
+      "timeout_seconds",
+      "expected_seconds",
+      "logging"
+    ],
+    "conditional_branch": "validation routes to fraud-check if valid else notification",
+    "fallback_error_handler_per_agent": true,
+    "first_agent": "validation",
+    "last_agent": "notification",
+    "fraud_check_before_approval": true,
+    "payment_after_approval": true,
+    "expected_total_processing_seconds": 42,
+    "approved_and_rejected_outcomes": true,
+    "logging_audit_each_step": true,
+    "circular_dependencies": false,
+    "human_escalation_path": "human-escalation -> notification",
+    "timeout_per_agent": true
+  }
+}

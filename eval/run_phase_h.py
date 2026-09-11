@@ -419,6 +419,7 @@ def main():
     parser.add_argument("--nothink-root", action="store_true", help="Disable thinking via enable_thinking=false at root of request body (GLM-5 / GLM-5.2 style)")
     parser.add_argument("--nothink", action="store_true", help="Disable thinking via chat_template_kwargs.thinking=false (Kimi style)")
     parser.add_argument("--thinking-budget", type=int, help="Cap reasoning tokens via chat_template_kwargs.thinking_budget (GLM enable_thinking + bounded reasoning)")
+    parser.add_argument("--nothink-template", action="store_true", help="Disable thinking via chat_template_kwargs.enable_thinking=false (Qwen3.x on llama.cpp --jinja; verified on Qwen3.8-27B 2026-09-11)")
     args = parser.parse_args()
 
     rotator = None
@@ -444,6 +445,8 @@ def main():
         extra_body["chat_template_kwargs"] = {"thinking": False}
     elif args.thinking_budget:
         extra_body["chat_template_kwargs"] = {"enable_thinking": True, "thinking_budget": args.thinking_budget}
+    elif args.nothink_template:
+        extra_body["chat_template_kwargs"] = {"enable_thinking": False}
 
     out_dir = Path(f"test_results/{args.model}/phase_h")
     out_dir.mkdir(parents=True, exist_ok=True)

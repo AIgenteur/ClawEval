@@ -1,0 +1,17 @@
+{
+  "q1": "Use CRDTs for text and metadata to guarantee convergence without central locking; keep server-side validation and optional OT compatibility for legacy clients.",
+  "q2": "Use WebSocket for bidirectional low-latency sync; use SSE only as a fallback for read-only notifications or environments where WebSocket is blocked.",
+  "q3": "PostgreSQL as the primary document storage database, using JSONB for flexible document metadata and operation logs, with object storage for binary assets.",
+  "q4": "Allow offline edits locally using a CRDT or operation queue, persist operations in IndexedDB, and reconcile with the server on reconnect by applying and merging pending operations.",
+  "q5": "Use Redis Pub/Sub for low-latency ephemeral real-time event fan-out, with Kafka as an optional durable event log for audit, replay, and analytics at scale.",
+  "q6": "Run stateless WebSocket gateway nodes behind a load balancer; each node subscribes to shared Redis or NATS channels for document rooms, allowing any node to serve any client and scale horizontally by adding nodes.",
+  "q7": "Share cursor and selection state as ephemeral presence messages over WebSocket, throttled and debounced on the client, broadcast to the document room, and never persisted as document content.",
+  "q8": "Use OAuth 2.0 or OIDC for identity, issue short-lived JWT access tokens plus refresh tokens, authenticate WebSocket handshakes with the JWT, and enforce RBAC or ABAC for document access.",
+  "q9": "Implement version history with an append-only operation log plus periodic snapshots; store operations in PostgreSQL and snapshots in object storage, enabling restore by replaying operations from the nearest snapshot.",
+  "q10": "Serve static assets from a CDN with immutable hashed filenames, long cache-control headers, origin pull caching, WAF protection, and versioned bundle releases for safe rollouts.",
+  "q11": "Split large documents into chunks or sections, lazy-load only visible or active chunks, use range-based synchronization, compress operations, and render with virtualization to keep memory and network usage bounded.",
+  "q12": "Apply token-bucket or sliding-window rate limiting per user, IP, and document in Redis, with separate limits for operations, presence updates, and uploads, returning 429 with Retry-After when exceeded.",
+  "q13": "Use PostgreSQL point-in-time recovery, nightly snapshots, object storage versioning and multi-region replication, immutable backups, and regular restore drills to meet RPO and RTO targets.",
+  "q14": "Use client-side chunked resumable uploads to object storage via signed URLs, deduplicate by content hash, store metadata in PostgreSQL, and process thumbnails, virus scans, and transformations asynchronously through a queue.",
+  "q15": "Use OpenTelemetry for traces, metrics, and logs, with Prometheus and Grafana for metrics, Loki or ELK for logs, Sentry for errors, APM for performance, SLO-based alerting, and synthetic tests for collaboration health."
+}
